@@ -69,4 +69,21 @@ class MockitoSugarTest extends FlatSpec with MockitoSugar with scalatest.Matcher
     captor1.getValue shouldBe "I'm not gonna pass the second argument"
     captor2.getValue shouldBe "default value"
   }
+
+  "spy[T]" should "create a valid spy" in {
+    val aSpy = spy(new Foo)
+
+    when(aSpy.bar) thenReturn "mocked!"
+
+    aSpy.bar shouldBe "mocked!"
+  }
+
+  "spyLambda[T]" should "create a valid spy for lambdas and anonymous classes" in {
+    val aSpy = spyLambda((arg: String) => s"Got: $arg")
+
+    when(aSpy.apply(any)) thenReturn "mocked!"
+
+    aSpy("hi!") shouldBe "mocked!"
+    verify(aSpy).apply("hi!")
+  }
 }

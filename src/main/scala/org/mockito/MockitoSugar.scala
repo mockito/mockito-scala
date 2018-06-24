@@ -225,7 +225,12 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
   /**
     * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API
     */
-  def spy[T](mockObj: T): T = Mockito.spy(mockObj)
+  def spy[T](realObj: T): T = Mockito.spy(realObj)
+
+  /**
+    * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API
+    */
+  def spyLambda[T <: AnyRef : ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
 
   /**
     * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API

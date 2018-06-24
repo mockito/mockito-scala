@@ -228,7 +228,8 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
   def spy[T](realObj: T): T = Mockito.spy(realObj)
 
   /**
-    * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API
+    * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
+    * they are created as final classes by the compiler
     */
   def spyLambda[T <: AnyRef : ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
 

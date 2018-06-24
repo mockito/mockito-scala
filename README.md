@@ -6,7 +6,7 @@
      alt="Mockito" />
 </a>
 
-The most popular mocking framework for Java, now in the Scala!!!.
+The most popular mocking framework for Java, now in Scala!!!.
 
 ## Why separate project?
 

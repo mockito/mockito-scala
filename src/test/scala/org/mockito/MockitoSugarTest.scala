@@ -9,6 +9,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
     def bar = "not mocked"
 
     def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = s"$noDefault - $default"
+
+    def iHaveByNameArgs(normal: String, byName: => String): String = s"$normal - $byName"
   }
 
   class Bar {
@@ -76,6 +78,16 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       aMock.traitMethod() shouldBe 69
 
       verify(aMock).traitMethod(30)
+    }
+
+    "work with by-name arguments" in {
+      val aMock = mock[Foo]
+
+      when(aMock.iHaveByNameArgs(any, any)) thenReturn "mocked!"
+
+      aMock.iHaveByNameArgs("arg1", "arg2") shouldBe "mocked!"
+
+      verify(aMock).iHaveByNameArgs(eqTo("arg1"), startsWith("arg"))
     }
   }
 

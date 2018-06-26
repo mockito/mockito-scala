@@ -1,9 +1,9 @@
 package org.mockito
 
 import org.scalatest
-import org.scalatest.FlatSpec
+import org.scalatest.WordSpec
 
-class MockitoSugarTest extends FlatSpec with MockitoSugar with scalatest.Matchers with ArgumentMatchersSugar {
+class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matchers with ArgumentMatchersSugar {
 
   class Foo {
     def bar = "not mocked"
@@ -17,73 +17,85 @@ class MockitoSugarTest extends FlatSpec with MockitoSugar with scalatest.Matcher
     def iAlsoHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = s"$noDefault - $default"
   }
 
-  "mock[T]" should "create a valid mock" in {
-    val aMock = mock[Foo]
+  "mock[T]" should {
+    "create a valid mock" in {
+      val aMock = mock[Foo]
 
-    when(aMock.bar) thenReturn "mocked!"
+      when(aMock.bar) thenReturn "mocked!"
 
-    aMock.bar shouldBe "mocked!"
+      aMock.bar shouldBe "mocked!"
+    }
+
+    "pre-configure the mock so it works with default arguments" in {
+      val aMock = mock[Foo]
+
+      aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
+      aMock.iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument")
+
+      verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
+      verify(aMock).iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument")
+    }
   }
 
-  "mock[T]" should "pre-configure the mock so it works with default arguments" in {
-    val aMock = mock[Foo]
+  "reset[T]" should {
+    "reset the mock and re-configure the mock so it works with default arguments" in {
+      val aMock = mock[Foo]
+      val anotherMock = mock[Bar]
 
-    aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
-    aMock.iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument")
+      reset(aMock, anotherMock)
 
-    verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
-    verify(aMock).iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument")
+      aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
+      anotherMock.iAlsoHaveSomeDefaultArguments("I'm not gonna pass the second argument")
+
+      verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
+      verify(anotherMock).iAlsoHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
+    }
   }
 
-  "reset[T]" should "reset the mock and re-configure the mock so it works with default arguments" in {
-    val aMock = mock[Foo]
-    val anotherMock = mock[Bar]
+  "verifyNoMoreInteractions" should {
+    "ignore the calls to the methods that provide default arguments" in {
+      val aMock = mock[Foo]
 
-    reset(aMock, anotherMock)
+      aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
 
-    aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
-    anotherMock.iAlsoHaveSomeDefaultArguments("I'm not gonna pass the second argument")
-
-    verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
-    verify(anotherMock).iAlsoHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
+      verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
+      verifyNoMoreInteractions(aMock)
+    }
   }
 
-  "verifyNoMoreInteractions" should "ignore the calls to the methods that provide default arguments" in {
-    val aMock = mock[Foo]
+  "argumentCaptor[T]" should {
+    "deal with default arguments" in {
+      val aMock = mock[Foo]
 
-    aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
+      aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
 
-    verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
-    verifyNoMoreInteractions(aMock)
+      val captor1 = argumentCaptor[String]
+      val captor2 = argumentCaptor[String]
+      verify(aMock).iHaveSomeDefaultArguments(captor1.capture(), captor2.capture())
+
+      captor1.getValue shouldBe "I'm not gonna pass the second argument"
+      captor2.getValue shouldBe "default value"
+    }
   }
 
-  "argumentCaptor[T]" should "deal with default arguments" in {
-    val aMock = mock[Foo]
+  "spy[T]" should {
+    "create a valid spy" in {
+      val aSpy = spy(new Foo)
 
-    aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
+      when(aSpy.bar) thenReturn "mocked!"
 
-    val captor1 = argumentCaptor[String]
-    val captor2 = argumentCaptor[String]
-    verify(aMock).iHaveSomeDefaultArguments(captor1.capture(), captor2.capture())
-
-    captor1.getValue shouldBe "I'm not gonna pass the second argument"
-    captor2.getValue shouldBe "default value"
+      aSpy.bar shouldBe "mocked!"
+    }
   }
 
-  "spy[T]" should "create a valid spy" in {
-    val aSpy = spy(new Foo)
+  "spyLambda[T]" should {
+    "create a valid spy for lambdas and anonymous classes" in {
+      val aSpy = spyLambda((arg: String) => s"Got: $arg")
 
-    when(aSpy.bar) thenReturn "mocked!"
+      when(aSpy.apply(any)) thenReturn "mocked!"
 
-    aSpy.bar shouldBe "mocked!"
-  }
-
-  "spyLambda[T]" should "create a valid spy for lambdas and anonymous classes" in {
-    val aSpy = spyLambda((arg: String) => s"Got: $arg")
-
-    when(aSpy.apply(any)) thenReturn "mocked!"
-
-    aSpy("hi!") shouldBe "mocked!"
-    verify(aSpy).apply("hi!")
+      aSpy("hi!") shouldBe "mocked!"
+      verify(aSpy).apply("hi!")
+    }
   }
 }

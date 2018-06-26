@@ -17,6 +17,10 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
     def iAlsoHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = s"$noDefault - $default"
   }
 
+  trait Baz {
+    def traitMethod: Int = 42
+  }
+
   "mock[T]" should {
     "create a valid mock" in {
       val aMock = mock[Foo]
@@ -34,6 +38,28 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
 
       verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
       verify(aMock).iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument")
+    }
+
+    "create a mock with default answer" in {
+      val aMock = mock[Foo](Answers.CALLS_REAL_METHODS)
+
+      aMock.bar shouldBe "not mocked"
+    }
+
+    "create a mock with name" in {
+      val aMock = mock[Foo]("Nice Mock")
+
+      aMock.toString shouldBe "Nice Mock"
+    }
+
+    "work with inline mixins" in {
+      val aMock = mock[Foo with Baz]
+
+      when(aMock.bar) thenReturn "mocked!"
+      when(aMock.traitMethod) thenReturn 69
+
+      aMock.bar shouldBe "mocked!"
+      aMock.traitMethod shouldBe 69
     }
   }
 

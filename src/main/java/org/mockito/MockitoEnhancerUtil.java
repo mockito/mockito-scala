@@ -30,8 +30,8 @@ import static org.mockito.Mockito.when;
  */
 class MockitoEnhancerUtil {
 
-    static <T> T stubMock(T aMock, Class<?> entityClass) {
-        Stream.of(entityClass.getMethods())
+    static <T> T stubMock(T aMock) {
+        Stream.of(aMock.getClass().getMethods())
             .filter(m -> !isStatic(m.getModifiers()))
             .filter(m -> m.getName().contains("$default$"))
             .forEach(defaultParamMethod -> when(call(defaultParamMethod, aMock)).thenCallRealMethod());

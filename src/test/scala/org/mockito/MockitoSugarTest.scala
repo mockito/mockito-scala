@@ -18,8 +18,10 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
   }
 
   trait Baz {
-    def traitMethod: Int = 42
+    def traitMethod(defaultArg: Int = 30): Int = defaultArg + 12
   }
+
+  class SomeClass extends Foo with Baz
 
   "mock[T]" should {
     "create a valid mock" in {
@@ -56,10 +58,24 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       val aMock = mock[Foo with Baz]
 
       when(aMock.bar) thenReturn "mocked!"
-      when(aMock.traitMethod) thenReturn 69
+      when(aMock.traitMethod(any)) thenReturn 69
 
       aMock.bar shouldBe "mocked!"
-      aMock.traitMethod shouldBe 69
+      aMock.traitMethod() shouldBe 69
+
+      verify(aMock).traitMethod(30)
+    }
+
+    "work with standard mixins" in {
+      val aMock = mock[SomeClass]
+
+      when(aMock.bar) thenReturn "mocked!"
+      when(aMock.traitMethod(any)) thenReturn 69
+
+      aMock.bar shouldBe "mocked!"
+      aMock.traitMethod() shouldBe 69
+
+      verify(aMock).traitMethod(30)
     }
   }
 

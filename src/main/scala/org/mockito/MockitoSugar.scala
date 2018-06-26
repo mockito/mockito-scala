@@ -11,16 +11,14 @@
 
 package org.mockito
 
-import org.mockito.Mockito.withSettings
 import org.mockito.MockitoEnhancerUtil.stubMock
 import org.mockito.MockitoSugar.clazz
-import org.mockito.internal.util.MockUtil
 import org.mockito.stubbing.{Answer, OngoingStubbing, Stubber}
 import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
-import scala.reflect.runtime.universe.{TypeTag, RefinedType}
+import scala.reflect.runtime.universe.TypeTag
 
 private[mockito] trait DoSomething {
   /**
@@ -80,7 +78,7 @@ private[mockito] trait MockitoEnhancer {
     * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
     * as the value for the second parameter would have been null...
     */
-  def mock[T <: AnyRef : ClassTag : TypeTag]: T = mock(withSettings())
+  def mock[T <: AnyRef : ClassTag : TypeTag]: T = mock(withSettings)
 
   /**
     * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
@@ -96,7 +94,7 @@ private[mockito] trait MockitoEnhancer {
     * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
     * as the value for the second parameter would have been null...
     */
-  def mock[T <: AnyRef : ClassTag : TypeTag](defaultAnswer: Answer[_]): T = mock(withSettings().defaultAnswer(defaultAnswer))
+  def mock[T <: AnyRef : ClassTag : TypeTag](defaultAnswer: Answer[_]): T = mock(withSettings.defaultAnswer(defaultAnswer))
 
   /**
     * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code>
@@ -112,17 +110,12 @@ private[mockito] trait MockitoEnhancer {
     * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
     * as the value for the second parameter would have been null...
     */
-  def mock[T <: AnyRef : ClassTag](mockSettings: MockSettings)(implicit tag: TypeTag[T]): T = {
-    val interfaces: List[Class[_]] = tag.tpe match {
-      case RefinedType(types, _) => types.map(tag.mirror.runtimeClass).collect {
-        case c: Class[_] if c.isInterface => c
-      }
-      case _ => List.empty
-    }
+  def mock[T <: AnyRef : ClassTag : TypeTag](mockSettings: MockSettings): T = {
+    val interfaces = ReflectionUtils.interfaces
 
     val settings = if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*) else mockSettings
 
-    enhance(Mockito.mock(clazz, settings))
+    stubMock(Mockito.mock(clazz, settings))
   }
 
   /**
@@ -139,7 +132,7 @@ private[mockito] trait MockitoEnhancer {
     * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
     * as the value for the second parameter would have been null...
     */
-  def mock[T <: AnyRef : ClassTag : TypeTag](name: String): T = mock(withSettings().name(name))
+  def mock[T <: AnyRef : ClassTag : TypeTag](name: String): T = mock(withSettings.name(name))
 
 
   /**
@@ -148,11 +141,19 @@ private[mockito] trait MockitoEnhancer {
     */
   def reset(mocks: AnyRef*): Unit = {
     Mockito.reset(mocks: _*)
-    mocks.foreach(m => stubMock(m, MockUtil.getMockSettings(m).getTypeToMock))
+    mocks.foreach(stubMock)
   }
 
-
+  /**
+    * Delegates to <code>Mockito.mockingDetails()</code>, it's only here to expose the full Mockito API
+    */
   def mockingDetails(toInspect: AnyRef): MockingDetails = Mockito.mockingDetails(toInspect)
+
+  /**
+    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
+    */
+  def withSettings: MockSettings = Mockito.withSettings()
+
 
   /**
     * Delegates to <code>Mockito.verifyNoMoreInteractions(Object... mocks)</code>, but ignores the default stubs that
@@ -169,8 +170,6 @@ private[mockito] trait MockitoEnhancer {
 
     Mockito.verifyNoMoreInteractions(mocks: _*)
   }
-
-  private def enhance[T <: AnyRef : ClassTag](m: T): T = stubMock(m, clazz)
 }
 
 private[mockito] trait Verifications {
@@ -260,11 +259,6 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
     * Delegates to <code>Mockito.validateMockitoUsage()</code>, it's only here to expose the full Mockito API
     */
   def validateMockitoUsage(): Unit = Mockito.validateMockitoUsage()
-
-  /**
-    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
-    */
-  def withSettings: MockSettings = Mockito.withSettings()
 
   /**
     * Delegates to <code>Mockito.verifyZeroInteractions()</code>, it's only here to expose the full Mockito API

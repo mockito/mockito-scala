@@ -1,6 +1,20 @@
+import scala.io.Source
+import scala.language.postfixOps
+import scala.util.Try
+
 name := "mockito-scala"
 organization := "org.mockito"
-version := "0.0.1"
+
+//Load version from the file so that Gradle/Shipkit and SBT use the same version
+version := {
+  val pattern = """^version=(.+)$""".r
+  val source = Source.fromFile("version.properties")
+  val version = Try(source.getLines.collectFirst {
+    case pattern(v) => v
+  }.get)
+  source.close
+  version.get
+}
 
 scalaVersion := "2.12.6"
 

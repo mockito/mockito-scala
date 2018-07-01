@@ -17,7 +17,7 @@ The library has independent developers, release cycle and versioning from core m
 Add the latest version to your dependencies
 
 ### SBT
-```libraryDependencies += "org.mockito" %% "mockito-scala" % "0.1" % Test```
+```libraryDependencies += "org.mockito" %% "mockito-scala" % "0.0.1" % Test```
 
 Then mixin one (or both) of the following traits as required
 

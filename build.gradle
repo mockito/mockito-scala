@@ -1,0 +1,23 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
+    dependencies {
+        classpath "org.shipkit:shipkit:2.0.26"
+    }
+}
+
+apply plugin: "org.shipkit.single-project"
+
+task build(type: Exec) {
+    commandLine "./build.sh"
+}
+
+//Performing hard to reverse release operation (git push) as late as possible
+gitPush.mustRunAfter build
+
+task clean(type: Exec) {
+    commandLine "./clean.sh"
+}

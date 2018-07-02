@@ -1,0 +1,37 @@
+shipkit {
+    gitHub.repository = "mockito/mockito-scala"
+
+    gitHub.readOnlyAuthToken = "a0a4c0f41c200f7c653323014d6a72a127764e17"
+
+    gitHub.writeAuthToken = System.getenv("GH_WRITE_TOKEN")
+}
+
+allprojects {
+    plugins.withId("org.shipkit.bintray") {
+
+        //Bintray configuration is handled by JFrog Bintray Gradle Plugin
+        //For reference see the official documentation: https://github.com/bintray/gradle-bintray-plugin
+        bintray {
+
+            key = System.getenv("BINTRAY_API_KEY")
+
+            pkg {
+                repo = 'maven'
+                user = 'szczepiq'
+                name = 'mockito-scala'
+                userOrg = 'mockito'
+                licenses = ['MIT']
+                labels = ['mocks', 'tdd', 'unit tests']
+                publish = false //can be changed to 'false' for testing
+
+                version {
+                    mavenCentralSync {
+                        sync = true
+                        user = System.env.NEXUS_TOKEN_USER
+                        password = System.env.NEXUS_TOKEN_PWD
+                    }
+                }
+            }
+        }
+    }
+}

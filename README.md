@@ -6,7 +6,9 @@
      alt="Mockito" />
 </a>
 
-The most popular mocking framework for Java, now in Scala!!!.
+The most popular mocking framework for Java, now in Scala!!!
+
+[![Build Status](https://travis-ci.org/mockito/mockito-scala.svg?branch=master)](https://travis-ci.org/mockito/mockito-scala)
 
 ## Why separate project?
 

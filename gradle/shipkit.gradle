@@ -1,10 +1,10 @@
 shipkit {
     gitHub.repository = "mockito/mockito-scala"
-
     gitHub.readOnlyAuthToken = "a0a4c0f41c200f7c653323014d6a72a127764e17"
-
     gitHub.writeAuthToken = System.getenv("GH_WRITE_TOKEN")
 }
+
+ext.releaseSpec = fileTree("dist")
 
 allprojects {
     plugins.withId("org.shipkit.bintray") {
@@ -22,7 +22,7 @@ allprojects {
                 userOrg = 'mockito'
                 licenses = ['MIT']
                 labels = ['mocks', 'tdd', 'unit tests']
-                publish = false //can be changed to 'false' for testing
+                publish = true //can be changed to 'false' for testing
 
                 version {
                     mavenCentralSync {

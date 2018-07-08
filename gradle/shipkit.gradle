@@ -4,6 +4,7 @@ shipkit {
     gitHub.writeAuthToken = System.getenv("GH_WRITE_TOKEN")
 }
 
+//all contents of this directory will be uploaded to Bintray
 ext.releaseSpec = fileTree("dist")
 
 allprojects {
@@ -22,7 +23,12 @@ allprojects {
                 userOrg = 'mockito'
                 licenses = ['MIT']
                 labels = ['mocks', 'tdd', 'unit tests']
-                publish = true //can be changed to 'false' for testing
+				publish = true //can be changed to 'false' for testing
+                
+                filesSpec {
+           			from releaseSpec
+           			into '.'
+       			}
 
                 version {
                     mavenCentralSync {

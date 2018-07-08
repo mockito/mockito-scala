@@ -5,7 +5,7 @@ shipkit {
 }
 
 //all contents of this directory will be uploaded to Bintray
-ext.releaseSpec = fileTree("dist")
+ext.releaseSpec = fileTree("target/dist")
 
 allprojects {
     plugins.withId("org.shipkit.bintray") {
@@ -24,7 +24,7 @@ allprojects {
                 licenses = ['MIT']
                 labels = ['mocks', 'tdd', 'unit tests']
 				publish = true //can be changed to 'false' for testing
-                
+
                 filesSpec {
            			from releaseSpec
            			into '.'

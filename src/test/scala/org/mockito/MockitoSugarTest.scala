@@ -83,6 +83,18 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
     "work with by-name arguments" in {
       val aMock = mock[Foo]
 
+      when(aMock.iHaveByNameArgs("arg1", "arg2")) thenReturn "mocked!"
+
+      aMock.iHaveByNameArgs("arg1", "arg2") shouldBe "mocked!"
+      aMock.iHaveByNameArgs("arg1", "arg3") shouldBe null
+
+      verify(aMock).iHaveByNameArgs("arg1", "arg2")
+      verify(aMock).iHaveByNameArgs("arg1", "arg3")
+    }
+
+    "work with by-name arguments and matchers" in {
+      val aMock = mock[Foo]
+
       when(aMock.iHaveByNameArgs(any, any)) thenReturn "mocked!"
 
       aMock.iHaveByNameArgs("arg1", "arg2") shouldBe "mocked!"

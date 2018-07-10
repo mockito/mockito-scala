@@ -5,14 +5,12 @@
 package org.mockito.internal.invocation;
 
 import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentExtractor;
 import org.mockito.internal.matchers.ArrayEquals;
 import org.mockito.internal.matchers.Equals;
-import scala.Function0;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * by Szczepan Faber, created at: 3/31/12
@@ -24,11 +22,18 @@ public class ArgumentsProcessor {
         int nParams = method.getParameterTypes().length;
         if (args != null && args.length > nParams)
             args = Arrays.copyOf(args, nParams); // drop extra args (currently -- Kotlin continuation synthetic arg)
-        return expandVarArgs(method.isVarArgs(), unwrapByNameArgs(args));
+        return expandVarArgs(method.isVarArgs(), unwrapByNameArgs(method, args));
     }
 
-    private static Object[] unwrapByNameArgs(Object[] args) {
-        return Stream.of(args).map(a -> a instanceof Function0 ? ((Function0) a).apply() : a).toArray();
+    public static Map<Class<?>, ArgumentExtractor> extractors = new ConcurrentHashMap<>();
+
+    private static Object[] unwrapByNameArgs(MockitoMethod method, Object[] args) {
+        Class<?> declaringClass = method.getJavaMethod().getDeclaringClass();
+        if(extractors.containsKey(declaringClass)) {
+            return extractors.get(declaringClass).transformArgs(method.getName(), args);
+        } else {
+            return args;
+        }
     }
 
     // expands array varArgs that are given by runtime (1, [a, b]) into true

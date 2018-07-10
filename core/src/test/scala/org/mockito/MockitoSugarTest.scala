@@ -11,7 +11,13 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
     def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String =
       s"$noDefault - $default"
 
-    def iHaveByNameArgs(normal: String, byName: => String): String = s"$normal - $byName"
+    def iHaveByNameArgs(normal: String, byName: => String, byName2: => String): String = s"$normal - $byName - $byName2"
+
+    def iStartWithByNameArgs(byName: => String, normal: String): String = s"$normal - $byName"
+
+    def iHaveFunction0Args(normal: String, f0: () => String): String = s"$normal - $f0"
+
+    def iHaveByNameAndFunction0Args(normal: String, f0: () => String, byName: => String): String = s"$normal - $byName - $f0"
   }
 
   class Bar {
@@ -93,26 +99,48 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       verify(aMock).traitMethod(30)
     }
 
-    "work with by-name arguments" in {
+    "work with by-name arguments (argument order doesn't matter when not using matchers)" in {
       val aMock = mock[Foo]
 
-      when(aMock.iHaveByNameArgs("arg1", "arg2")) thenReturn "mocked!"
+      when(aMock.iStartWithByNameArgs("arg1", "arg2")) thenReturn "mocked!"
 
-      aMock.iHaveByNameArgs("arg1", "arg2") shouldBe "mocked!"
-      aMock.iHaveByNameArgs("arg1", "arg3") shouldBe null
+      aMock.iStartWithByNameArgs("arg1", "arg2") shouldBe "mocked!"
+      aMock.iStartWithByNameArgs("arg1", "arg3") shouldBe null
 
-      verify(aMock).iHaveByNameArgs("arg1", "arg2")
-      verify(aMock).iHaveByNameArgs("arg1", "arg3")
+      verify(aMock).iStartWithByNameArgs("arg1", "arg2")
+      verify(aMock).iStartWithByNameArgs("arg1", "arg3")
     }
 
-    "work with by-name arguments and matchers" in {
+    "work with by-name arguments and matchers (by-name arguments have to be the last ones when using matchers)" in {
       val aMock = mock[Foo]
 
-      when(aMock.iHaveByNameArgs(any, any)) thenReturn "mocked!"
+      when(aMock.iHaveByNameArgs(any, any, any)) thenReturn "mocked!"
 
-      aMock.iHaveByNameArgs("arg1", "arg2") shouldBe "mocked!"
+      aMock.iHaveByNameArgs("arg1", "arg2", "arg3") shouldBe "mocked!"
 
-      verify(aMock).iHaveByNameArgs(eqTo("arg1"), startsWith("arg"))
+      verify(aMock).iHaveByNameArgs(eqTo("arg1"), endsWith("g2"), eqTo("arg3"))
+    }
+
+    "work with Function0 arguments" in {
+      val aMock = mock[Foo]
+
+      when(aMock.iHaveFunction0Args(eqTo("arg1"), function0("arg2"))) thenReturn "mocked!"
+
+      aMock.iHaveFunction0Args("arg1", () => "arg2") shouldBe "mocked!"
+      aMock.iHaveFunction0Args("arg1", () => "arg3") shouldBe null
+
+      verify(aMock).iHaveFunction0Args(eqTo("arg1"), function0("arg2"))
+      verify(aMock).iHaveFunction0Args(eqTo("arg1"), function0("arg3"))
+    }
+
+    "work with by-name and Function0 arguments (by-name arguments have to be the last ones when using matchers)" in {
+      val aMock = mock[Foo]
+
+      when(aMock.iHaveByNameAndFunction0Args(any, any, any)) thenReturn "mocked!"
+
+      aMock.iHaveByNameAndFunction0Args("arg1", () => "arg2", "arg3") shouldBe "mocked!"
+
+      verify(aMock).iHaveByNameAndFunction0Args(eqTo("arg1"), function0("arg2"), startsWith("arg"))
     }
   }
 

@@ -10,36 +10,33 @@ The most popular mocking framework for Java, now in Scala!!!
 
 [![Build Status](https://travis-ci.org/mockito/mockito-scala.svg?branch=master)](https://travis-ci.org/mockito/mockito-scala)
 
+[![Download](https://api.bintray.com/packages/mockito/maven/mockito-scala/images/download.svg) ](https://bintray.com/mockito/maven/mockito-scala/_latestVersion)
+[![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.mockito%22%20AND%20a%3A%22mockito-scala%22)
 ## Why separate project?
 
 The library has independent developers, release cycle and versioning from core mockito library (https://github.com/mockito/mockito). This is intentional because core Mockito developers don't use Scala and cannot confidently review PRs, and set the vision for the Scala library.
 
 ## Getting started
 
-Add the latest version to your dependencies
-
-### SBT
-```libraryDependencies += "org.mockito" %% "mockito-scala" % "0.0.1" % Test```
-
 Then mixin one (or both) of the following traits as required
 
-## ```org.mockito.MockitoSugar```
+## `org.mockito.MockitoSugar`
 
-This trait wraps the API available on ```org.mockito.Mockito``` from the Java version, but it provides a more Scala-like syntax, mainly
+This trait wraps the API available on `org.mockito.Mockito` from the Java version, but it provides a more Scala-like syntax, mainly
 *   Fixes the compiler errors that sometimes occurred when using overloaded methods that use varargs like doReturn
-*   Eliminates the need to use ```classOf[T]```
+*   Eliminates the need to use `classOf[T]`
 *   Eliminates parenthesis when possible to make the test code more readable
-*   Adds ```spyLambda[T]``` to allow spying lambdas (they don't work with the standard spy as they are created as final classes by the compiler)
-*   Supports mocking inline mixins like ```mock[MyClass with MyTrait]```
+*   Adds `spyLambda[T]` to allow spying lambdas (they don't work with the standard spy as they are created as final classes by the compiler)
+*   Supports mocking inline mixins like `mock[MyClass with MyTrait]`
 
 The companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired
 
-## ```org.mockito.ArgumentMatchersSugar```
+## `org.mockito.ArgumentMatchersSugar`
 
-This trait exposes all the existent ```org.mockito.ArgumentMatchers``` but again it gives them a more Scala-like syntax, mainly
-*   ```eq``` was renamed to ```eqTo``` to avoid clashing with the Scala ```eq``` operator for identity equality
-*   ```any``` resolves to the correct type most of the times, removing the need of using the likes of ```anyString```, ```anyInt```, etc
-*   ```isNull``` and ```isNotNull``` are deprecated as using nulls in Scala is clear code smell
+This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it gives them a more Scala-like syntax, mainly
+*   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality
+*   `any` resolves to the correct type most of the times, removing the need of using the likes of `anyString`, `anyInt`, etc
+*   `isNull` and `isNotNull` are deprecated as using nulls in Scala is clear code smell
 
 Again, the companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired
 

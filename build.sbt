@@ -5,6 +5,13 @@ import scala.util.Try
 name := "mockito-scala"
 organization := "org.mockito"
 
+licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
+homepage := Some(url("https://github.com/mockito/mockito-scala"))
+scmInfo := Some(ScmInfo(url("https://github.com/mockito/mockito-scala"), "git@github.com:mockito/mockito-scala.git"))
+developers := List(
+  Developer("bbonanno", "Bruno Bonanno", "bbonanno@gmail.com", url("https://github.com/bbonanno"))
+)
+
 //Load version from the file so that Gradle/Shipkit and SBT use the same version
 version := {
   val pattern = """^version=(.+)$""".r

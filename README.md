@@ -16,6 +16,12 @@ The most popular mocking framework for Java, now in Scala!!!
 
 The library has independent developers, release cycle and versioning from core mockito library (https://github.com/mockito/mockito). This is intentional because core Mockito developers don't use Scala and cannot confidently review PRs, and set the vision for the Scala library.
 
+## Dependency
+
+*   Artifact identifier: "org.mockito:mockito-scala_2.12:VERSION"
+*   Latest version - see [release notes](/docs/release-notes.md)
+*   Repositories: [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cmockito-scala_2.12) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
+
 ## Getting started
 
 Then mixin one (or both) of the following traits as required

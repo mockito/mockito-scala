@@ -1,4 +1,4 @@
-package org.mockito
+package org.mockito.matchers
 
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
@@ -31,7 +31,7 @@ object ValueClassMatchers {
     val paramType = tpe.decl(param.name).typeSignature.finalResultType
 
     c.Expr[ValueClassMatchers[T]] { q"""
-      new org.mockito.ValueClassMatchers[$tpe] {
+      new org.mockito.matchers.ValueClassMatchers[$tpe] {
         override def anyVal: $tpe = new $tpe(org.mockito.ArgumentMatchers.any[$paramType]())
         override def eqToVal(v: Any): $tpe = new $tpe(org.mockito.ArgumentMatchers.eq[$paramType](v.asInstanceOf[$paramType]))
       }

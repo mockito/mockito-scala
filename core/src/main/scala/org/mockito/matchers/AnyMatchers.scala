@@ -11,7 +11,7 @@
 
 package org.mockito.matchers
 
-import org.mockito.{ ValueClassMatchers, ArgumentMatchers => JavaMatchers }
+import org.mockito.{ ArgumentMatchers => JavaMatchers }
 
 private[mockito] trait AnyMatchers {
 

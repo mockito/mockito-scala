@@ -11,7 +11,7 @@
 
 package org.mockito.matchers
 
-import org.mockito.{ArgumentMatchers => JavaMatchers}
+import org.mockito.{ ValueClassMatchers, ArgumentMatchers => JavaMatchers }
 
 private[mockito] trait AnyMatchers {
 
@@ -77,12 +77,17 @@ private[mockito] trait AnyMatchers {
    */
   def any[T]: T = JavaMatchers.any[T]()
 
-    /**
-      * Delegates to <code>ArgumentMatchers.anyByte()</code>, it's only here so we expose all the `ArgumentMatchers`
-      * on a single place as any[T] would do the job just fine
-      *
-      */
-    def anyByte: Byte = JavaMatchers.anyByte
+  /**
+    * Wraps the standard 'any' matcher on the value class provided, this one requires the type to be explicit
+    */
+  def anyVal[T](implicit valueClassMatchers: ValueClassMatchers[T]): T = valueClassMatchers.anyVal
+
+  /**
+   * Delegates to <code>ArgumentMatchers.anyByte()</code>, it's only here so we expose all the `ArgumentMatchers`
+   * on a single place as any[T] would do the job just fine
+   *
+   */
+  def anyByte: Byte = JavaMatchers.anyByte
 
   /**
    * Delegates to <code>ArgumentMatchers.anyBoolean()</code>, it's only here so we expose all the `ArgumentMatchers`

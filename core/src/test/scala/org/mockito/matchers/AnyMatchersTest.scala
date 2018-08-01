@@ -1,9 +1,12 @@
 package org.mockito.matchers
 
 import org.mockito.MockitoSugar
-import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
+import org.mockito.matchers.AnyMatchersTest._
+import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
 
-class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers {
+object AnyMatchersTest {
+  class ValueClass(val v: String)   extends AnyVal
+  case class ValueCaseClass(v: Int) extends AnyVal
 
   class Foo {
     def bar[T](v: T): T = v
@@ -34,8 +37,16 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
 
     def barMap[K, V](v: Map[K, V]): Map[K, V] = v
 
-        def barSet[T](v: Set[T]): Set[T] = v
-    }
+    def barSet[T](v: Set[T]): Set[T] = v
+
+    def valueClass(v: ValueClass): String = v.v
+
+    def valueCaseClass(v: ValueCaseClass): Int = v.v
+  }
+
+}
+
+class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers {
 
   "any[Collection]" should "work with Scala types" in {
     val aMock = mock[Foo]
@@ -75,8 +86,20 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
     verify(aMock).barTyped("meh")
   }
 
-    "any" should "work with AnyVal" in {
-        val aMock = mock[Foo]
+  "anyVal" should "work with a value class" in {
+    val aMock = mock[Foo]
+
+    when(aMock.valueClass(anyVal[ValueClass])) thenReturn "mocked!"
+    aMock.valueClass(new ValueClass("meh")) shouldBe "mocked!"
+    verify(aMock).valueClass(new ValueClass("meh"))
+
+    when(aMock.valueCaseClass(anyVal[ValueCaseClass])) thenReturn 100
+    aMock.valueCaseClass(ValueCaseClass(1)) shouldBe 100
+    verify(aMock).valueCaseClass(ValueCaseClass(1))
+  }
+
+  "any" should "work with AnyVal" in {
+    val aMock = mock[Foo]
 
     when(aMock.barByte(any)) thenReturn 10.toByte
     aMock.barByte(1) shouldBe 10

@@ -64,6 +64,7 @@ lazy val macroSub = (project in file("macro"))
   .settings(
     commonSettings,
     libraryDependencies += scalaReflect.value,
+    libraryDependencies += "org.mockito" % "mockito-core" % "2.19.0",
     publish := {},
     publishLocal := {}
   )

@@ -13,157 +13,164 @@ package org.mockito
 
 import org.mockito.MockitoEnhancerUtil.stubMock
 import org.mockito.MockitoSugar.clazz
-import org.mockito.stubbing.{Answer, OngoingStubbing, Stubber}
-import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
+import org.mockito.stubbing.{ Answer, OngoingStubbing, Stubber }
+import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
 private[mockito] trait DoSomething {
-  /**
-    * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code>
-    * but fixes the following compiler issue that happens because the overloaded vararg on the Java side
-    *
-    * Error:(33, 25) ambiguous reference to overloaded definition,
-    * both method doReturn in class Mockito of type (x$1: Any, x$2: Object*)org.mockito.stubbing.Stubber
-    * and  method doReturn in class Mockito of type (x$1: Any)org.mockito.stubbing.Stubber
-    * match argument types (`Type`)
-    *
-    */
-  def doReturn[T](toBeReturned: T, toBeReturnedNext: T*): Stubber =
-    Mockito.doReturn(toBeReturned, toBeReturnedNext.map(_.asInstanceOf[Object]): _*)
 
   /**
-    * Delegates to <code>Mockito.doThrow</code>, it's only here so we expose all the Mockito API
-    * on a single place
-    */
+   * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code>
+   * but fixes the following compiler issue that happens because the overloaded vararg on the Java side
+   *
+   * Error:(33, 25) ambiguous reference to overloaded definition,
+   * both method doReturn in class Mockito of type (x$1: Any, x$2: Object*)org.mockito.stubbing.Stubber
+   * and  method doReturn in class Mockito of type (x$1: Any)org.mockito.stubbing.Stubber
+   * match argument types (`Type`)
+   *
+   */
+  def doReturn[T](toBeReturned: T, toBeReturnedNext: T*): Stubber =
+    Mockito.doReturn(
+      toBeReturned,
+      toBeReturnedNext.map(_.asInstanceOf[Object]): _*
+    )
+
+  /**
+   * Delegates to <code>Mockito.doThrow</code>, it's only here so we expose all the Mockito API
+   * on a single place
+   */
   def doThrow(toBeThrown: Throwable*): Stubber = Mockito.doThrow(toBeThrown: _*)
 
   /**
-    * Delegates to <code>Mockito.doThrow(type: Class[T])</code>
-    * It provides a nicer API as you can, for instance, do doThrow[Throwable] instead of doThrow(classOf[Throwable])
-    *
-    */
-  def doThrow[T <: Throwable : ClassTag]: Stubber = Mockito.doThrow(clazz)
+   * Delegates to <code>Mockito.doThrow(type: Class[T])</code>
+   * It provides a nicer API as you can, for instance, do doThrow[Throwable] instead of doThrow(classOf[Throwable])
+   *
+   */
+  def doThrow[T <: Throwable: ClassTag]: Stubber = Mockito.doThrow(clazz)
 
   /**
-    * Delegates to <code>Mockito.doNothing()</code>, it removes the parenthesis to have a cleaner API
-    */
+   * Delegates to <code>Mockito.doNothing()</code>, it removes the parenthesis to have a cleaner API
+   */
   def doNothing: Stubber = Mockito.doNothing()
 
   /**
-    * Delegates to <code>Mockito.doCallRealMethod()</code>, it removes the parenthesis to have a cleaner API
-    */
+   * Delegates to <code>Mockito.doCallRealMethod()</code>, it removes the parenthesis to have a cleaner API
+   */
   def doCallRealMethod: Stubber = Mockito.doCallRealMethod()
 
   /**
-    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
+   */
   def doAnswer(answer: Answer[_]): Stubber = Mockito.doAnswer(answer)
 }
 
 private[mockito] trait MockitoEnhancer {
-  /**
-    * Delegates to <code>Mockito.mock(type: Class[T])</code>
-    * It provides a nicer API as you can, for instance, do <code>mock[MyClass]</code>
-    * instead of <code>mock(classOf[MyClass])</code>
-    *
-    * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
-    * are called, ie:
-    * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
-    *
-    * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
-    * then you could have not verified it like
-    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
-    * as the value for the second parameter would have been null...
-    */
-  def mock[T <: AnyRef : ClassTag : TypeTag]: T = mock(withSettings)
 
   /**
-    * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
-    * It provides a nicer API as you can, for instance, do <code>mock[MyClass](defaultAnswer)</code>
-    * instead of <code>mock(classOf[MyClass], defaultAnswer)</code>
-    *
-    * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
-    * are called, ie:
-    * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
-    *
-    * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
-    * then you could have not verified it like
-    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
-    * as the value for the second parameter would have been null...
-    */
-  def mock[T <: AnyRef : ClassTag : TypeTag](defaultAnswer: Answer[_]): T = mock(withSettings.defaultAnswer(defaultAnswer))
+   * Delegates to <code>Mockito.mock(type: Class[T])</code>
+   * It provides a nicer API as you can, for instance, do <code>mock[MyClass]</code>
+   * instead of <code>mock(classOf[MyClass])</code>
+   *
+   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
+   * are called, ie:
+   * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
+   *
+   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
+   * then you could have not verified it like
+   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
+   * as the value for the second parameter would have been null...
+   */
+  def mock[T <: AnyRef: ClassTag: TypeTag]: T = mock(withSettings)
 
   /**
-    * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code>
-    * It provides a nicer API as you can, for instance, do <code>mock[MyClass](mockSettings)</code>
-    * instead of <code>mock(classOf[MyClass], mockSettings)</code>
-    *
-    * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
-    * are called, ie:
-    * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
-    *
-    * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
-    * then you could have not verified it like
-    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
-    * as the value for the second parameter would have been null...
-    */
-  def mock[T <: AnyRef : ClassTag : TypeTag](mockSettings: MockSettings): T = {
+   * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
+   * It provides a nicer API as you can, for instance, do <code>mock[MyClass](defaultAnswer)</code>
+   * instead of <code>mock(classOf[MyClass], defaultAnswer)</code>
+   *
+   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
+   * are called, ie:
+   * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
+   *
+   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
+   * then you could have not verified it like
+   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
+   * as the value for the second parameter would have been null...
+   */
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T =
+    mock(withSettings.defaultAnswer(defaultAnswer))
+
+  /**
+   * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code>
+   * It provides a nicer API as you can, for instance, do <code>mock[MyClass](mockSettings)</code>
+   * instead of <code>mock(classOf[MyClass], mockSettings)</code>
+   *
+   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
+   * are called, ie:
+   * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
+   *
+   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
+   * then you could have not verified it like
+   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
+   * as the value for the second parameter would have been null...
+   */
+  def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = {
     val interfaces = ReflectionUtils.interfaces
 
-    val settings = if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*) else mockSettings
+    val settings =
+      if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
+      else mockSettings
 
     stubMock(Mockito.mock(clazz, settings))
   }
 
   /**
-    * Delegates to <code>Mockito.mock(type: Class[T], name: String)</code>
-    * It provides a nicer API as you can, for instance, do <code>mock[MyClass](name)</code>
-    * instead of <code>mock(classOf[MyClass], name)</code>
-    *
-    * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
-    * are called, ie:
-    * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
-    *
-    * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
-    * then you could have not verified it like
-    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
-    * as the value for the second parameter would have been null...
-    */
-  def mock[T <: AnyRef : ClassTag : TypeTag](name: String): T = mock(withSettings.name(name))
-
+   * Delegates to <code>Mockito.mock(type: Class[T], name: String)</code>
+   * It provides a nicer API as you can, for instance, do <code>mock[MyClass](name)</code>
+   * instead of <code>mock(classOf[MyClass], name)</code>
+   *
+   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
+   * are called, ie:
+   * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
+   *
+   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
+   * then you could have not verified it like
+   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
+   * as the value for the second parameter would have been null...
+   */
+  def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T =
+    mock(withSettings.name(name))
 
   /**
-    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that
-    * deal with default argument values
-    */
+   * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that
+   * deal with default argument values
+   */
   def reset(mocks: AnyRef*): Unit = {
     Mockito.reset(mocks: _*)
     mocks.foreach(stubMock)
   }
 
   /**
-    * Delegates to <code>Mockito.mockingDetails()</code>, it's only here to expose the full Mockito API
-    */
-  def mockingDetails(toInspect: AnyRef): MockingDetails = Mockito.mockingDetails(toInspect)
+   * Delegates to <code>Mockito.mockingDetails()</code>, it's only here to expose the full Mockito API
+   */
+  def mockingDetails(toInspect: AnyRef): MockingDetails =
+    Mockito.mockingDetails(toInspect)
 
   /**
-    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
+   */
   def withSettings: MockSettings = Mockito.withSettings()
 
-
   /**
-    * Delegates to <code>Mockito.verifyNoMoreInteractions(Object... mocks)</code>, but ignores the default stubs that
-    * deal with default argument values
-    */
+   * Delegates to <code>Mockito.verifyNoMoreInteractions(Object... mocks)</code>, but ignores the default stubs that
+   * deal with default argument values
+   */
   def verifyNoMoreInteractions(mocks: AnyRef*): Unit = {
 
     mocks.foreach { m =>
-      mockingDetails(m)
-        .getInvocations.asScala
+      mockingDetails(m).getInvocations.asScala
         .filter(_.getMethod.getName.contains("$default$"))
         .foreach(_.ignoreForVerification())
     }
@@ -175,116 +182,125 @@ private[mockito] trait MockitoEnhancer {
 private[mockito] trait Verifications {
 
   /**
-    * Delegates to <code>Mockito.atLeastOnce()</code>, it removes the parenthesis to have a cleaner API
-    */
+   * Delegates to <code>Mockito.atLeastOnce()</code>, it removes the parenthesis to have a cleaner API
+   */
   def atLeastOnce: VerificationMode = Mockito.atLeastOnce()
 
   /**
-    * Delegates to <code>Mockito.never()</code>, it removes the parenthesis to have a cleaner API
-    */
+   * Delegates to <code>Mockito.never()</code>, it removes the parenthesis to have a cleaner API
+   */
   def never: VerificationMode = Mockito.never()
 
   /**
-    * Delegates to <code>Mockito.only()</code>, it removes the parenthesis to have a cleaner API
-    */
+   * Delegates to <code>Mockito.only()</code>, it removes the parenthesis to have a cleaner API
+   */
   def only: VerificationMode = Mockito.only()
 
   /**
-    * Delegates to <code>Mockito.timeout()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.timeout()</code>, it's only here to expose the full Mockito API
+   */
   def timeout(millis: Int): VerificationWithTimeout = Mockito.timeout(millis)
 
   /**
-    * Delegates to <code>Mockito.times()</code>, it's only here to expose the full Mockito API
-    */
-  def times(wantedNumberOfInvocations: Int): VerificationMode = Mockito.times(wantedNumberOfInvocations)
+   * Delegates to <code>Mockito.times()</code>, it's only here to expose the full Mockito API
+   */
+  def times(wantedNumberOfInvocations: Int): VerificationMode =
+    Mockito.times(wantedNumberOfInvocations)
 
   /**
-    * Delegates to <code>Mockito.calls()</code>, it's only here to expose the full Mockito API
-    */
-  def calls(wantedNumberOfInvocations: Int): VerificationMode = Mockito.calls(wantedNumberOfInvocations)
+   * Delegates to <code>Mockito.calls()</code>, it's only here to expose the full Mockito API
+   */
+  def calls(wantedNumberOfInvocations: Int): VerificationMode =
+    Mockito.calls(wantedNumberOfInvocations)
 
   /**
-    * Delegates to <code>Mockito.atMost()</code>, it's only here to expose the full Mockito API
-    */
-  def atMost(maxNumberOfInvocations: Int): VerificationMode = Mockito.atMost(maxNumberOfInvocations)
+   * Delegates to <code>Mockito.atMost()</code>, it's only here to expose the full Mockito API
+   */
+  def atMost(maxNumberOfInvocations: Int): VerificationMode =
+    Mockito.atMost(maxNumberOfInvocations)
 
   /**
-    * Delegates to <code>Mockito.atLeast()</code>, it's only here to expose the full Mockito API
-    */
-  def atLeast(minNumberOfInvocations: Int): VerificationMode = Mockito.atLeast(minNumberOfInvocations)
+   * Delegates to <code>Mockito.atLeast()</code>, it's only here to expose the full Mockito API
+   */
+  def atLeast(minNumberOfInvocations: Int): VerificationMode =
+    Mockito.atLeast(minNumberOfInvocations)
 }
 
 /**
-  * Trait that provides some basic syntax sugar.
-  *
-  * The idea is based on org.scalatest.mockito.MockitoSugar but it adds 100% of the Mockito API
-  *
-  * It also solve problems like overloaded varargs calls to Java code and pre-stub the mocks so the default arguments
-  * in the method parameters work as expected
-  *
-  * @author Bruno Bonanno
-  */
+ * Trait that provides some basic syntax sugar.
+ *
+ * The idea is based on org.scalatest.mockito.MockitoSugar but it adds 100% of the Mockito API
+ *
+ * It also solve problems like overloaded varargs calls to Java code and pre-stub the mocks so the default arguments
+ * in the method parameters work as expected
+ *
+ * @author Bruno Bonanno
+ */
 trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
 
   /**
-    * Delegates to <code>ArgumentCaptor.forClass(type: Class[T])</code>
-    * It provides a nicer API as you can, for instance, do <code>argumentCaptor[SomeClass]</code>
-    * instead of <code>ArgumentCaptor.forClass(classOf[SomeClass])</code>
-    */
-  def argumentCaptor[T <: AnyRef : ClassTag]: ArgumentCaptor[T] = ArgumentCaptor.forClass(clazz)
+   * Delegates to <code>ArgumentCaptor.forClass(type: Class[T])</code>
+   * It provides a nicer API as you can, for instance, do <code>argumentCaptor[SomeClass]</code>
+   * instead of <code>ArgumentCaptor.forClass(classOf[SomeClass])</code>
+   */
+  def argumentCaptor[T <: AnyRef: ClassTag]: ArgumentCaptor[T] =
+    ArgumentCaptor.forClass(clazz)
 
   /**
-    * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API
+   */
   def spy[T](realObj: T): T = Mockito.spy(realObj)
 
   /**
-    * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
-    * they are created as final classes by the compiler
-    */
-  def spyLambda[T <: AnyRef : ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
+   * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
+   * they are created as final classes by the compiler
+   */
+  def spyLambda[T <: AnyRef: ClassTag](realObj: T): T =
+    Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
 
   /**
-    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
+   */
   def when[T](methodCall: T): OngoingStubbing[T] = Mockito.when(methodCall)
 
   /**
-    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
-    */
-  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
+   * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
+   */
+  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] =
+    Mockito.ignoreStubs(mocks: _*)
 
   /**
-    * Delegates to <code>Mockito.validateMockitoUsage()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.validateMockitoUsage()</code>, it's only here to expose the full Mockito API
+   */
   def validateMockitoUsage(): Unit = Mockito.validateMockitoUsage()
 
   /**
-    * Delegates to <code>Mockito.verifyZeroInteractions()</code>, it's only here to expose the full Mockito API
-    */
-  def verifyZeroInteractions(mocks: AnyRef*): Unit = Mockito.verifyZeroInteractions(mocks: _*)
+   * Delegates to <code>Mockito.verifyZeroInteractions()</code>, it's only here to expose the full Mockito API
+   */
+  def verifyZeroInteractions(mocks: AnyRef*): Unit =
+    Mockito.verifyZeroInteractions(mocks: _*)
 
   /**
-    * Delegates to <code>Mockito.inOrder()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.inOrder()</code>, it's only here to expose the full Mockito API
+   */
   def inOrder(mocks: AnyRef*): InOrder = Mockito.inOrder(mocks: _*)
 
   /**
-    * Delegates to <code>Mockito.verify()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.verify()</code>, it's only here to expose the full Mockito API
+   */
   def verify[T](mock: T): T = Mockito.verify(mock)
 
   /**
-    * Delegates to <code>Mockito.verify()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.verify()</code>, it's only here to expose the full Mockito API
+   */
   def verify[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
 
 }
 
 /**
-  * Simple object to allow the usage of the trait without mixing it in
-  */
+ * Simple object to allow the usage of the trait without mixing it in
+ */
 object MockitoSugar extends MockitoSugar {
-  private[mockito] def clazz[T <: AnyRef](implicit classTag: ClassTag[T]) = classTag.runtimeClass.asInstanceOf[Class[T]]
+  private[mockito] def clazz[T <: AnyRef](implicit classTag: ClassTag[T]) =
+    classTag.runtimeClass.asInstanceOf[Class[T]]
 }

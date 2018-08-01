@@ -32,9 +32,9 @@ class MockitoEnhancerUtil {
 
     static <T> T stubMock(T aMock) {
         Stream.of(aMock.getClass().getMethods())
-            .filter(m -> !isStatic(m.getModifiers()))
-            .filter(m -> m.getName().contains("$default$"))
-            .forEach(defaultParamMethod -> when(call(defaultParamMethod, aMock)).thenCallRealMethod());
+                .filter(m -> !isStatic(m.getModifiers()))
+                .filter(m -> m.getName().contains("$default$"))
+                .forEach(defaultParamMethod -> when(call(defaultParamMethod, aMock)).thenCallRealMethod());
 
         return aMock;
     }

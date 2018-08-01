@@ -8,13 +8,17 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
   class Foo {
     def bar = "not mocked"
 
-    def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = s"$noDefault - $default"
+    def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String =
+      s"$noDefault - $default"
   }
 
   class Bar {
     def baz = "not mocked"
 
-    def iAlsoHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = s"$noDefault - $default"
+    def iAlsoHaveSomeDefaultArguments(
+        noDefault: String,
+        default: String = "default value"
+    ): String = s"$noDefault - $default"
   }
 
   trait Baz {
@@ -36,10 +40,19 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       val aMock = mock[Foo]
 
       aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
-      aMock.iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument")
+      aMock.iHaveSomeDefaultArguments(
+        "I'm gonna pass the second argument",
+        "second argument"
+      )
 
-      verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
-      verify(aMock).iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument")
+      verify(aMock).iHaveSomeDefaultArguments(
+        "I'm not gonna pass the second argument",
+        "default value"
+      )
+      verify(aMock).iHaveSomeDefaultArguments(
+        "I'm gonna pass the second argument",
+        "second argument"
+      )
     }
 
     "create a mock with default answer" in {
@@ -81,16 +94,24 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
 
   "reset[T]" should {
     "reset the mock and re-configure the mock so it works with default arguments" in {
-      val aMock = mock[Foo]
+      val aMock       = mock[Foo]
       val anotherMock = mock[Bar]
 
       reset(aMock, anotherMock)
 
       aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
-      anotherMock.iAlsoHaveSomeDefaultArguments("I'm not gonna pass the second argument")
+      anotherMock.iAlsoHaveSomeDefaultArguments(
+        "I'm not gonna pass the second argument"
+      )
 
-      verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
-      verify(anotherMock).iAlsoHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
+      verify(aMock).iHaveSomeDefaultArguments(
+        "I'm not gonna pass the second argument",
+        "default value"
+      )
+      verify(anotherMock).iAlsoHaveSomeDefaultArguments(
+        "I'm not gonna pass the second argument",
+        "default value"
+      )
     }
   }
 
@@ -100,7 +121,10 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
 
       aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
 
-      verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
+      verify(aMock).iHaveSomeDefaultArguments(
+        "I'm not gonna pass the second argument",
+        "default value"
+      )
       verifyNoMoreInteractions(aMock)
     }
   }
@@ -113,7 +137,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
 
       val captor1 = argumentCaptor[String]
       val captor2 = argumentCaptor[String]
-      verify(aMock).iHaveSomeDefaultArguments(captor1.capture(), captor2.capture())
+      verify(aMock)
+        .iHaveSomeDefaultArguments(captor1.capture(), captor2.capture())
 
       captor1.getValue shouldBe "I'm not gonna pass the second argument"
       captor2.getValue shouldBe "default value"

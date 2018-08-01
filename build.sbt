@@ -11,7 +11,7 @@ lazy val commonSettings =
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
     version := {
       val pattern = """^version=(.+)$""".r
-      val source = Source.fromFile("version.properties")
+      val source  = Source.fromFile("version.properties")
       val version = Try(source.getLines.collectFirst {
         case pattern(v) => v
       }.get)

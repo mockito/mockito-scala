@@ -67,5 +67,12 @@ lazy val macroSub = (project in file("macro"))
     commonSettings,
     libraryDependencies ++= commonLibraries,
     publish := {},
-    publishLocal := {}
+    publishLocal := {},
+    publishArtifact := false
   )
+
+lazy val root = (project in file("."))
+  .settings(
+    publish := {},
+    publishLocal := {}
+  ) aggregate core

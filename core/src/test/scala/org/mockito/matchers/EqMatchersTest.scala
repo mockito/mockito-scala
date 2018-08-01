@@ -29,6 +29,20 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
     def barLong(v: Long): Long = v
 
     def baz(v: Baz): Baz = v
+
+    def valueClass(v: ValueClass): String = v.v
+
+    def valueCaseClass(v: ValueCaseClass): Int = v.v
+  }
+
+  "eqToVal[T]" should "work with value classes" in {
+    val aMock = mock[Foo]
+
+    aMock.valueClass(new ValueClass("meh"))
+    verify(aMock).valueClass(eqToVal[ValueClass]("meh"))
+
+    aMock.valueCaseClass(ValueCaseClass(100))
+    verify(aMock).valueCaseClass(eqToVal[ValueCaseClass](100))
   }
 
   "eqTo[T]" should "work with AnyRef" in {

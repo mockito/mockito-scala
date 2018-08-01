@@ -1,12 +1,9 @@
 package org.mockito.matchers
 
 import org.mockito.MockitoSugar
-import org.mockito.matchers.AnyMatchersTest._
 import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
 
-object AnyMatchersTest {
-  class ValueClass(val v: String)   extends AnyVal
-  case class ValueCaseClass(v: Int) extends AnyVal
+class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers {
 
   class Foo {
     def bar[T](v: T): T = v
@@ -43,10 +40,6 @@ object AnyMatchersTest {
 
     def valueCaseClass(v: ValueCaseClass): Int = v.v
   }
-
-}
-
-class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers {
 
   "any[Collection]" should "work with Scala types" in {
     val aMock = mock[Foo]

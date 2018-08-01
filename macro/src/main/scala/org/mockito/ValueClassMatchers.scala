@@ -7,6 +7,8 @@ trait ValueClassMatchers[T] {
 
   def anyVal: T
 
+  def eqToVal(v: Any): T
+
 }
 
 object ValueClassMatchers {
@@ -28,12 +30,11 @@ object ValueClassMatchers {
 
     val paramType = tpe.decl(param.name).typeSignature.finalResultType
 
-    val r = c.Expr[ValueClassMatchers[T]] { q"""
+    c.Expr[ValueClassMatchers[T]] { q"""
       new org.mockito.ValueClassMatchers[$tpe] {
         override def anyVal: $tpe = new $tpe(org.mockito.ArgumentMatchers.any[$paramType]())
+        override def eqToVal(v: Any): $tpe = new $tpe(org.mockito.ArgumentMatchers.eq[$paramType](v.asInstanceOf[$paramType]))
       }
     """ }
-    println(show(r))
-    r
   }
 }

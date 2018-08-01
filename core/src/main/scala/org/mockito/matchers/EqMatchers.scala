@@ -11,7 +11,7 @@
 
 package org.mockito.matchers
 
-import org.mockito.{ ArgumentMatchers => JavaMatchers }
+import org.mockito.{ ValueClassMatchers, ArgumentMatchers => JavaMatchers }
 
 import scala.reflect.ClassTag
 
@@ -25,6 +25,11 @@ private[mockito] trait EqMatchers {
   def eqTo[T](value: T): T = JavaMatchers.eq(value)
 
   /**
+   * Wraps the standard 'ArgumentMatchers.eq()' matcher on the value class provided, this one requires the type to be explicit
+   */
+  def eqToVal[T](value: Any)(implicit valueClassMatchers: ValueClassMatchers[T]): T = valueClassMatchers.eqToVal(value)
+
+  /**
    * Delegates to <code>ArgumentMatchers.same()</code>, it's only here so we expose all the `ArgumentMatchers`
    * on a single place
    *
@@ -36,14 +41,12 @@ private[mockito] trait EqMatchers {
    * It provides a nicer API as you can, for instance, do isA[String] instead of isA(classOf[String])
    *
    */
-  def isA[T](implicit classTag: ClassTag[T]): T =
-    JavaMatchers.isA(classTag.runtimeClass.asInstanceOf[Class[T]])
+  def isA[T](implicit classTag: ClassTag[T]): T = JavaMatchers.isA(classTag.runtimeClass.asInstanceOf[Class[T]])
 
   /**
    * Delegates to <code>ArgumentMatchers.refEq()</code>, it's only here so we expose all the `ArgumentMatchers`
    * on a single place
    *
    */
-  def refEq[T](value: T, excludeFields: String*): T =
-    JavaMatchers.refEq(value, excludeFields: _*)
+  def refEq[T](value: T, excludeFields: String*): T = JavaMatchers.refEq(value, excludeFields: _*)
 }

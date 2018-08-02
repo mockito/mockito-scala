@@ -51,7 +51,7 @@ Again, the companion object also extends the trait to allow the usage of the API
 
 The matchers for the value classes always require the type to be explicit, apart from that, they should be used as any other matcher, e.g.
    ```
-   when(myObj.myMethod(any[MyValueClass]) thenReturn "something"
+   when(myObj.myMethod(anyVal[MyValueClass]) thenReturn "something"
    
    myObj.myMethod(MyValueClass(456)) shouldBe "something"
    

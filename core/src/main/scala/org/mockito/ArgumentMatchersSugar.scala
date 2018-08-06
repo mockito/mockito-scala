@@ -28,7 +28,7 @@ trait ArgumentMatchersSugar
     with ThatMatchers
     with StringThatMatchers
     with NullMatchers
-      with FunctionMatchers
+    with FunctionMatchers
 
 /**
  * Simple object to allow the usage of the trait without mixing it in

@@ -45,10 +45,10 @@ The companion object also extends the trait to allow the usage of the API withou
 
 ## `org.mockito.ArgumentMatchersSugar`
 
-This trait exposes all the existent ```org.mockito.ArgumentMatchers``` but again it gives them a more Scala-like syntax, mainly
-*   ```eq``` was renamed to ```eqTo``` to avoid clashing with the Scala ```eq``` operator for identity equality
-*   ```any``` resolves to the correct type most of the times, removing the need of using the likes of ```anyString```, ```anyInt```, etc
-*   ```isNull``` and ```isNotNull``` are deprecated as using nulls in Scala is clear code smell
+This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it gives them a more Scala-like syntax, mainly
+*   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality
+*   `any` resolves to the correct type most of the times, removing the need of using the likes of `anyString`, `anyInt`, etc
+*   `isNull` and `isNotNull` are deprecated as using nulls in Scala is clear code smell
 *   Adds support for value classes via `anyVal[T]` and `eqToVal[T]()`
 *   Adds `function0` to easily match for a function that returns a given value
 

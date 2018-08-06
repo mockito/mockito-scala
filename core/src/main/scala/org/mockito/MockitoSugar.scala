@@ -119,6 +119,8 @@ private[mockito] trait MockitoEnhancer {
   def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = {
     val interfaces = ReflectionUtils.interfaces
 
+    ReflectionUtils.markMethodsWithLazyArgs(clazz)
+
     val settings =
       if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
       else mockSettings

@@ -23,7 +23,7 @@ lazy val commonSettings =
   )
 
 lazy val commonLibraries = Seq(
-  "org.mockito" % "mockito-core" % "2.19.0",
+  "org.mockito" % "mockito-core" % "2.21.0",
   "org.scala-lang" % "scala-reflect" % _scalaVersion
 )
 

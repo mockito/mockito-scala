@@ -23,7 +23,7 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cmockito-scala_2.12) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 
-###For a more detailed explanation of the features please read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda) article series
+For a more detailed explanation of the features please read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda) article series
 
 
 ## Getting started

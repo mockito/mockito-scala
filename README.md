@@ -22,6 +22,10 @@ The library has independent developers, release cycle and versioning from core m
 *   Latest version - see [release notes](/docs/release-notes.md)
 *   Repositories: [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cmockito-scala_2.12) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
+
+###For a more detailed explanation of the features please read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda) article series
+
+
 ## Getting started
 
 Then mixin one (or both) of the following traits as required
@@ -40,6 +44,7 @@ This trait wraps the API available on `org.mockito.Mockito` from the Java versio
     *   Full support when only some arguments in a method are by-name, but we use NO matchers at all
     *   Partial support when only some arguments in a method are by-name and we use specific matchers, 
     in this scenario the stubbing will only work if the by-name arguments are the last ones in the method signature
+*   Adds support for working with default arguments
 
 The companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired
 

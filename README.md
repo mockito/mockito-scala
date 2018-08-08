@@ -23,6 +23,11 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cmockito-scala_2.12) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 
+**IMPORTANT!** mockito-scala will pull the right version of mockito-core as a transitive dependency, 
+but if for some reason you'd like to have both libraries explicitly declared in your build file, please make sure
+you declare mockito-core first, as we currently rely on a class loader hack to make by-name arguments work.
+
+
 For a more detailed explanation of the features please read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda) article series
 
 

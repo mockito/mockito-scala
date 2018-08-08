@@ -1,7 +1,7 @@
 package org.mockito.matchers
 
 import scala.language.experimental.macros
-import scala.reflect.macros.whitebox
+import scala.reflect.macros.blackbox
 
 trait ValueClassMatchers[T] {
 
@@ -15,7 +15,7 @@ object ValueClassMatchers {
 
   implicit def materializeValueClassMatchers[T]: ValueClassMatchers[T] = macro materializeValueClassMatchersMacro[T]
 
-  def materializeValueClassMatchersMacro[T: c.WeakTypeTag](c: whitebox.Context): c.Expr[ValueClassMatchers[T]] = {
+  def materializeValueClassMatchersMacro[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ValueClassMatchers[T]] = {
     import c.universe._
     val tpe = weakTypeOf[T]
 

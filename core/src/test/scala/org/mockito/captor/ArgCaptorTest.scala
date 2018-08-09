@@ -34,7 +34,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).stringArgument(captor)
 
-      captor === "it worked!"
+      captor <-> "it worked!"
     }
 
     "capture a simple AnyVal argument" in {
@@ -45,7 +45,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).intArgument(captor)
 
-      captor === "it worked!"
+      captor <-> 42
     }
 
     "capture a complex argument" in {
@@ -56,7 +56,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).complexArgument(captor)
 
-      captor === Map("Works" -> 1)
+      captor <-> Map("Works" -> 1)
     }
 
     "expose the captured value to use with custom matchers" in {
@@ -92,7 +92,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).valueCaseClass(captor)
 
-      captor === Name("Batman")
+      captor <-> Name("Batman")
       captor.value shouldBe Name("Batman")
       captor.values should contain only Name("Batman")
     }
@@ -105,7 +105,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).valueClass(captor)
 
-      captor === new Email("batman@batcave.gotham")
+      captor <-> new Email("batman@batcave.gotham")
       captor.value shouldBe new Email("batman@batcave.gotham")
       captor.values should contain only new Email("batman@batcave.gotham")
     }

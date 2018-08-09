@@ -97,7 +97,7 @@ aMock.stringArgument("it worked!")
 
 verify(aMock).stringArgument(captor)
 
-captor === "it worked!"
+captor <-> "it worked!"
 ```
 
 As you can see there is no need to call `capture()` nor `getValue` anymore (although they're still there if you need them)

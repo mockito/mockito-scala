@@ -12,7 +12,7 @@ trait ArgCaptor[T] {
 
   def values: List[T]
 
-  def ===(expectation: T): Unit =
+  def <->(expectation: T): Unit =
     if (expectation != value) throw new AssertionError(s"Got [$value] instead of [$expectation]")
 }
 

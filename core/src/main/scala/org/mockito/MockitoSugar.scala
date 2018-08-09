@@ -253,8 +253,7 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
    * It provides a nicer API as you can, for instance, do <code>argumentCaptor[SomeClass]</code>
    * instead of <code>ArgumentCaptor.forClass(classOf[SomeClass])</code>
    */
-  def argumentCaptor[T <: AnyRef: ClassTag]: ArgumentCaptor[T] =
-    ArgumentCaptor.forClass(clazz)
+  def argumentCaptor[T: ClassTag]: ArgumentCaptor[T] = ArgumentCaptor.forClass(clazz)
 
   /**
    * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API

@@ -62,13 +62,50 @@ Again, the companion object also extends the trait to allow the usage of the API
 ### Value Class Matchers
 
 The matchers for the value classes always require the type to be explicit, apart from that, they should be used as any other matcher, e.g.
+   ```scala
+when(myObj.myMethod(anyVal[MyValueClass]) thenReturn "something"
+
+myObj.myMethod(MyValueClass(456)) shouldBe "something"
+
+verify(myObj).myMethod(eqToVal[MyValueClass](456))
    ```
-   when(myObj.myMethod(anyVal[MyValueClass]) thenReturn "something"
-   
-   myObj.myMethod(MyValueClass(456)) shouldBe "something"
-   
-   verify(myObj).myMethod(eqToVal[MyValueClass](456))
-   ```
+
+## Improved ArgumentCaptor
+
+A new set of classes were added to make it easier, cleaner and more elegant to work with ArgumentCaptors, they also add 
+support to capture value classes without any annoying syntax
+
+There is a new `trait org.mockito.captor.ArgCaptor[T]` that exposes a nicer API
+
+Before:
+```scala
+val aMock  = mock[Foo]
+val captor = argumentCaptor[String]
+
+aMock.stringArgument("it worked!")
+
+verify(aMock).stringArgument(captor.capture())
+
+captor.getValue shouldBe "it worked!"
+```
+Now:
+```scala
+val aMock  = mock[Foo]
+val captor = Captor[String]
+
+aMock.stringArgument("it worked!")
+
+verify(aMock).stringArgument(captor)
+
+captor <-> "it worked!"
+```
+
+As you can see there is no need to call `capture()` nor `getValue` anymore (although they're still there if you need them)
+
+There is another constructor `ValCaptor[T]` that should be used to capture value classes
+
+Both `Captor[T]` and `ValCaptor[T]` return an instance of `ArgCaptor[T]` so the API is the same for both
+
 
 ## Experimental features
 
@@ -77,7 +114,7 @@ The matchers for the value classes always require the type to be explicit, apart
 If you want to use it, you have to mix-in an extra trait (`org.mockito.ByNameExperimental`) 
 in your test class, after `org.mockito.MockitoSugar`, so your test file would look like
 
-```
+```scala
 class MyTest extends WordSpec with MockitoSugar with ByNameExperimental
 ```
 

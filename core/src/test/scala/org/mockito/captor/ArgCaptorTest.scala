@@ -1,20 +1,28 @@
 package org.mockito.captor
 
 import org.mockito.MockitoSugar
-import org.mockito.captor.CaptorTest._
+import org.mockito.captor.ArgCaptorTest._
 import org.scalatest.{Matchers, WordSpec}
 
-object CaptorTest {
+object ArgCaptorTest {
+  case class Name(name: String) extends AnyVal
+
+  class Email(val email: String) extends AnyVal
+
   class Foo {
     def stringArgument(s: String): String = s
 
     def intArgument(i: Int): Int = i
 
     def complexArgument(m: Map[String, Int]): Map[String, Int] = m
+
+    def valueCaseClass(name: Name): String = name.name
+
+    def valueClass(email: Email): String = email.email
   }
 }
 
-class CaptorTest extends WordSpec with MockitoSugar with Matchers {
+class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
   "Captor" should {
 
@@ -73,7 +81,33 @@ class CaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       captor.values should contain only ("it worked!", "it worked again!")
     }
-
   }
 
+  "ValCaptor" should {
+    "work with value case classes" in {
+      val aMock  = mock[Foo]
+      val captor = ValCaptor[Name]
+
+      aMock.valueCaseClass(Name("Batman"))
+
+      verify(aMock).valueCaseClass(captor)
+
+      captor === Name("Batman")
+      captor.value shouldBe Name("Batman")
+      captor.values should contain only Name("Batman")
+    }
+
+    "work with value non-case classes" in {
+      val aMock  = mock[Foo]
+      val captor = ValCaptor[Email]
+
+      aMock.valueClass(new Email("batman@batcave.gotham"))
+
+      verify(aMock).valueClass(captor)
+
+      captor === new Email("batman@batcave.gotham")
+      captor.value shouldBe new Email("batman@batcave.gotham")
+      captor.values should contain only new Email("batman@batcave.gotham")
+    }
+  }
 }

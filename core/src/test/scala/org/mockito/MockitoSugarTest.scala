@@ -3,7 +3,12 @@ package org.mockito
 import org.scalatest
 import org.scalatest.WordSpec
 
-class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matchers with ArgumentMatchersSugar {
+class MockitoSugarTest
+    extends WordSpec
+    with MockitoSugar
+    with scalatest.Matchers
+    with ArgumentMatchersSugar
+    with ByNameExperimental {
 
   class Foo {
     def bar = "not mocked"
@@ -17,7 +22,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
 
     def iHaveFunction0Args(normal: String, f0: () => String): String = s"$normal - $f0"
 
-    def iHaveByNameAndFunction0Args(normal: String, f0: () => String, byName: => String): String = s"$normal - $byName - $f0"
+    def iHaveByNameAndFunction0Args(normal: String, f0: () => String, byName: => String): String =
+      s"$normal - $byName - $f0"
   }
 
   class Bar {

@@ -20,6 +20,22 @@ import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
+private[mockito] trait MockCreator {
+  def mock[T <: AnyRef: ClassTag: TypeTag]: T
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T
+  def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
+  def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T
+}
+
+trait ByNameExperimental extends MockCreator {
+
+  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = {
+    ReflectionUtils.markMethodsWithLazyArgs(clazz)
+    super.mock[T](mockSettings)
+  }
+
+}
+
 private[mockito] trait DoSomething {
 
   /**
@@ -67,7 +83,7 @@ private[mockito] trait DoSomething {
   def doAnswer(answer: Answer[_]): Stubber = Mockito.doAnswer(answer)
 }
 
-private[mockito] trait MockitoEnhancer {
+private[mockito] trait MockitoEnhancer extends MockCreator {
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T])</code>
@@ -83,7 +99,7 @@ private[mockito] trait MockitoEnhancer {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  def mock[T <: AnyRef: ClassTag: TypeTag]: T = mock(withSettings)
+  override def mock[T <: AnyRef: ClassTag: TypeTag]: T = mock(withSettings)
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
@@ -99,7 +115,7 @@ private[mockito] trait MockitoEnhancer {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T =
+  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T =
     mock(withSettings.defaultAnswer(defaultAnswer))
 
   /**
@@ -116,10 +132,8 @@ private[mockito] trait MockitoEnhancer {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = {
+  override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = {
     val interfaces = ReflectionUtils.interfaces
-
-    ReflectionUtils.markMethodsWithLazyArgs(clazz)
 
     val settings =
       if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
@@ -142,8 +156,7 @@ private[mockito] trait MockitoEnhancer {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T =
-    mock(withSettings.name(name))
+  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T = mock(withSettings.name(name))
 
   /**
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that
@@ -157,8 +170,7 @@ private[mockito] trait MockitoEnhancer {
   /**
    * Delegates to <code>Mockito.mockingDetails()</code>, it's only here to expose the full Mockito API
    */
-  def mockingDetails(toInspect: AnyRef): MockingDetails =
-    Mockito.mockingDetails(toInspect)
+  def mockingDetails(toInspect: AnyRef): MockingDetails = Mockito.mockingDetails(toInspect)
 
   /**
    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
@@ -206,26 +218,22 @@ private[mockito] trait Verifications {
   /**
    * Delegates to <code>Mockito.times()</code>, it's only here to expose the full Mockito API
    */
-  def times(wantedNumberOfInvocations: Int): VerificationMode =
-    Mockito.times(wantedNumberOfInvocations)
+  def times(wantedNumberOfInvocations: Int): VerificationMode = Mockito.times(wantedNumberOfInvocations)
 
   /**
    * Delegates to <code>Mockito.calls()</code>, it's only here to expose the full Mockito API
    */
-  def calls(wantedNumberOfInvocations: Int): VerificationMode =
-    Mockito.calls(wantedNumberOfInvocations)
+  def calls(wantedNumberOfInvocations: Int): VerificationMode = Mockito.calls(wantedNumberOfInvocations)
 
   /**
    * Delegates to <code>Mockito.atMost()</code>, it's only here to expose the full Mockito API
    */
-  def atMost(maxNumberOfInvocations: Int): VerificationMode =
-    Mockito.atMost(maxNumberOfInvocations)
+  def atMost(maxNumberOfInvocations: Int): VerificationMode = Mockito.atMost(maxNumberOfInvocations)
 
   /**
    * Delegates to <code>Mockito.atLeast()</code>, it's only here to expose the full Mockito API
    */
-  def atLeast(minNumberOfInvocations: Int): VerificationMode =
-    Mockito.atLeast(minNumberOfInvocations)
+  def atLeast(minNumberOfInvocations: Int): VerificationMode = Mockito.atLeast(minNumberOfInvocations)
 }
 
 /**
@@ -268,8 +276,7 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
   /**
    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
    */
-  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] =
-    Mockito.ignoreStubs(mocks: _*)
+  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
 
   /**
    * Delegates to <code>Mockito.validateMockitoUsage()</code>, it's only here to expose the full Mockito API
@@ -279,8 +286,7 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
   /**
    * Delegates to <code>Mockito.verifyZeroInteractions()</code>, it's only here to expose the full Mockito API
    */
-  def verifyZeroInteractions(mocks: AnyRef*): Unit =
-    Mockito.verifyZeroInteractions(mocks: _*)
+  def verifyZeroInteractions(mocks: AnyRef*): Unit = Mockito.verifyZeroInteractions(mocks: _*)
 
   /**
    * Delegates to <code>Mockito.inOrder()</code>, it's only here to expose the full Mockito API

@@ -23,11 +23,6 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cmockito-scala_2.12) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 
-**IMPORTANT!** mockito-scala will pull the right version of mockito-core as a transitive dependency, 
-but if for some reason you'd like to have both libraries explicitly declared in your build file, please make sure
-you declare mockito-core first, as we currently rely on a class loader hack to make by-name arguments work.
-
-
 For a more detailed explanation of the features please read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda) article series
 
 
@@ -43,7 +38,7 @@ This trait wraps the API available on `org.mockito.Mockito` from the Java versio
 *   Eliminates parenthesis when possible to make the test code more readable
 *   Adds `spyLambda[T]` to allow spying lambdas (they don't work with the standard spy as they are created as final classes by the compiler)
 *   Supports mocking inline mixins like `mock[MyClass with MyTrait]`
-*   Supports by-name arguments in some scenarios
+*   Supports by-name arguments in some scenarios [EXPERIMENTAL](#experimental-features)
     *   Full support when all arguments in a method are by-name
     *   Full support when only some arguments in a method are by-name, but we use the `any[T]` matcher for every argument
     *   Full support when only some arguments in a method are by-name, but we use NO matchers at all
@@ -75,6 +70,25 @@ The matchers for the value classes always require the type to be explicit, apart
    verify(myObj).myMethod(eqToVal[MyValueClass](456))
    ```
 
+## Experimental features
+
+* **by-name** arguments is currently an experimental feature as the implementation is a bit hacky and it gave some people problems
+
+If you want to use it, you have to mix-in an extra trait (`org.mockito.ByNameExperimental`) 
+in your test class, after `org.mockito.MockitoSugar`, so your test file would look like
+
+```
+class MyTest extends WordSpec with MockitoSugar with ByNameExperimental
+```
+
+It is important to notice that this feature relies on the class loader order to work, as we currently have to override a class
+from `mockito-core`, you should not have to do anything special to make it work, `mockito-scala` already pulls the right 
+version of `mockito-core` as a transitive dependency and it should be the only dependency you need, **BUT**, if you start getting 
+weird exceptions while trying to use `org.mockito.ByNameExperimental` you can try to be explicit with the `mockito-core` dependency.
+I can't tell you if you should put it before or after the `mockito-scala` dependency in your build file as it depends a lot
+on which build tool and IDE you use, so try it out.
+
+We are working with the mockito-core developers to add the necessary features in it so we can get rid of this hack as soon as we can, stay tuned!
 
 ## Authors
 

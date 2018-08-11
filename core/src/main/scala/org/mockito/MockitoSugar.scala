@@ -42,10 +42,10 @@ private[mockito] trait DoSomething {
    * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code>
    * but fixes the following compiler issue that happens because the overloaded vararg on the Java side
    *
-   * Error:(33, 25) ambiguous reference to overloaded definition,
+   * {{{Error:(33, 25) ambiguous reference to overloaded definition,
    * both method doReturn in class Mockito of type (x$1: Any, x$2: Object*)org.mockito.stubbing.Stubber
    * and  method doReturn in class Mockito of type (x$1: Any)org.mockito.stubbing.Stubber
-   * match argument types (`Type`)
+   * match argument types (`Type`)}}}
    *
    */
   def doReturn[T](toBeReturned: T, toBeReturnedNext: T*): Stubber =

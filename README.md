@@ -106,6 +106,33 @@ There is another constructor `ValCaptor[T]` that should be used to capture value
 
 Both `Captor[T]` and `ValCaptor[T]` return an instance of `ArgCaptor[T]` so the API is the same for both
 
+## `org.mockito.MockitoScalaSession`
+
+This is a wrapper around `org.mockito.MockitoSession`, it's main purpose (on top of having a Scala API) 
+is to filter out the `$default$` stubbings so they are not wrongly reported when we use Strict Stubs
+
+To use it just create an instance of it before your test code and call `finishMocking()` when your test is done, e.g.
+```scala
+val session = MockitoScalaSession()
+
+val foo = mock[Foo]
+when(foo.bar("pepe")) thenReturn "mocked"
+foo.bar("pepe") shouldBe "mocked"
+
+session.finishMocking()
+``` 
+
+## `org.mockito.integrations.scalatest.MockitoFixture`
+
+If you mix-in this trait on your test class **after** your favourite Spec trait, you will get an automatic 
+`MockitoScalaSession` around each one of your tests, so **all** of them will run in **Strict Stub** mode.
+
+This trait also includes `org.mockito.MockitoSugar` and `org.mockito.ArgumentMatchersSugar` so you have pretty much all 
+the mockito-scala API available in one go, i.e.
+
+```scala
+class MyTest extends WordSpec with MockitoFixture
+```
 
 ## Experimental features
 

@@ -134,6 +134,26 @@ the mockito-scala API available in one go, i.e.
 class MyTest extends WordSpec with MockitoFixture
 ```
 
+## `org.mockito.integrations.scalatest.ResetMocksAfterEachTest`
+
+Inspired by [this](https://stackoverflow.com/questions/51387234/is-there-a-per-test-non-specific-mock-reset-pattern-using-scalaplayspecmockito) StackOverflow question,
+mockito-scala provides this trait that helps to automatically reset any existent mock after each test is run
+The trait has to be mixed **after** `org.mockito.MockitoSugar` in order to work, otherwise your test will not compile
+The code shown in the StackOverflow question would look like this if using this mechanism
+
+```scala
+TestClass extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest
+
+private val foo = mock[Foo]
+
+override def fakeApplication(): Application = new GuiceApplicationBuilder().overrides(bind[Foo].toInstance(foo)).build
+```
+
+The main advantage being we don't have to remember to reset each one of the mocks...
+
+If for some reason we want to have a mock that is not reset automatically while using this trait, then it should be 
+created via the companion object of `org.mockito.MockitoSugar` so is not tracked by this mechanism
+
 ## Experimental features
 
 * **by-name** arguments is currently an experimental feature as the implementation is a bit hacky and it gave some people problems

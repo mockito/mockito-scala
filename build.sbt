@@ -24,7 +24,8 @@ lazy val commonSettings =
 
 lazy val commonLibraries = Seq(
   "org.mockito" % "mockito-core" % "2.21.0",
-  "org.scala-lang" % "scala-reflect" % _scalaVersion
+  "org.scala-lang" % "scala-reflect" % _scalaVersion,
+  "org.scalatest" %% "scalatest" % "3.0.5" % "provided"
 )
 
 lazy val core = (project in file("core"))
@@ -33,9 +34,6 @@ lazy val core = (project in file("core"))
     commonSettings,
     name := "mockito-scala",
     libraryDependencies ++= commonLibraries,
-    libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.0.5" % Test
-    ),
     // include the macro classes and resources in the main jar
     mappings in (Compile, packageBin) ++= mappings
       .in(macroSub, Compile, packageBin)

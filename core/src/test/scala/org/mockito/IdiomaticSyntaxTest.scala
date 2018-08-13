@@ -2,6 +2,7 @@ package org.mockito
 
 import org.scalatest
 import org.scalatest.WordSpec
+import org.mockito.captor.{ Captor => ArgCaptor }
 
 import scala.language.postfixOps
 
@@ -133,6 +134,17 @@ class IdiomaticSyntaxTest
       aMock.wasCalledOn.bar
 
       aMock wasNotUsedAgain
+    }
+
+    "work with a captor" in {
+      val aMock = mock[Foo]
+      val captor = ArgCaptor[Int]
+
+      aMock.doSomethingWithThisInt(42)
+
+      aMock.wasCalledOn.doSomethingWithThisInt(captor)
+
+      captor <-> 42
     }
 
   }

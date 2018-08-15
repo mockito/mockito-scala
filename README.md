@@ -214,6 +214,13 @@ on which build tool and IDE you use, so try it out.
 
 We are working with the mockito-core developers to add the necessary features in it so we can get rid of this hack as soon as we can, stay tuned!
 
+## Notes for Scala 2.11
+
+Please note that in Scala 2.11 the following features are not supported
+
+* Default arguments on methods defined in traits
+* Any kind of Matchers for methods with by-name parameters
+
 ## Authors
 
 * **Bruno Bonanno** - *Initial work* - [bbonanno](https://github.com/bbonanno)

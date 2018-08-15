@@ -13,10 +13,12 @@ package org.mockito;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.lang.reflect.Modifier.isStatic;
 import static java.text.MessageFormat.format;
+import static java.util.stream.Collectors.toSet;
 import static org.mockito.Mockito.when;
 
 /**
@@ -30,8 +32,25 @@ import static org.mockito.Mockito.when;
  */
 class MockitoEnhancerUtil {
 
-    static <T> T stubMock(T aMock) {
-        Stream.of(aMock.getClass().getMethods())
+    static <T> T stubConcreteDefaultMethods(T aMock) {
+
+        Set<String> interfaceMethods = Stream.of(aMock.getClass().getInterfaces())
+                .flatMap(i -> Stream.of(i.getMethods()))
+                .map(Method::getName)
+                .collect(toSet());
+
+        return stubDefaultMethods(
+                aMock,
+                Stream.of(aMock.getClass().getMethods()).filter(m -> !interfaceMethods.contains(m.getName()))
+        );
+    }
+
+    static <T> T stubAllDefaultMethods(T aMock) {
+        return stubDefaultMethods(aMock, Stream.of(aMock.getClass().getMethods()));
+    }
+
+    private static <T> T stubDefaultMethods(T aMock, Stream<Method> methods) {
+        methods
                 .filter(m -> !isStatic(m.getModifiers()))
                 .filter(m -> m.getName().contains("$default$"))
                 .forEach(defaultParamMethod -> when(call(defaultParamMethod, aMock)).thenCallRealMethod());

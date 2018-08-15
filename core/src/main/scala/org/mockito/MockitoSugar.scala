@@ -11,7 +11,6 @@
 
 package org.mockito
 
-import org.mockito.MockitoEnhancerUtil.stubMock
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.{Answer, OngoingStubbing, Stubber}
 import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
@@ -142,6 +141,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
     stubMock(Mockito.mock(clazz, settings))
   }
 
+  def stubMock[T](mock: T): T
+
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], name: String)</code>
    * It provides a nicer API as you can, for instance, do <code>mock[MyClass](name)</code>
@@ -246,7 +247,7 @@ private[mockito] trait Verifications {
  *
  * @author Bruno Bonanno
  */
-trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
+private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifications {
 
   /**
    * Delegates to <code>ArgumentCaptor.forClass(type: Class[T])</code>
@@ -303,8 +304,3 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
   def verify[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
 
 }
-
-/**
- * Simple object to allow the usage of the trait without mixing it in
- */
-object MockitoSugar extends MockitoSugar

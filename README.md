@@ -157,10 +157,11 @@ The main advantage being we don't have to remember to reset each one of the mock
 If for some reason we want to have a mock that is not reset automatically while using this trait, then it should be 
 created via the companion object of `org.mockito.MockitoSugar` so is not tracked by this mechanism
 
-## Idiomatic Syntax
+## Idiomatic Mockito
 
-By adding the trait `org.mockito.IdiomaticSyntax` you get access to some improved methods in the API, so now, 
-simple but very frequent actions can be writen in a more natural way
+By adding the trait `org.mockito.IdiomaticMockito` you get access to some improved methods in the API
+
+This API is heavily inspired on Scalatest's Matchers, so if have used them, you'll find it very familiar
 
 Here we can see the old syntax on the left and the new one on the right
 
@@ -172,25 +173,24 @@ trait Foo {
   
 val aMock = mock[Foo]  
   
-when(aMock.bar) thenReturn "mocked!"                         <=> aMock.bar shouldReturn "mocked!"
-when(aMock.bar) thenCallRealMethod()                         <=> aMock.bar shouldCallRealMethod
-when(aMock.bar).thenThrow[IllegalArgumentException]          <=> aMock.bar.shouldThrow[IllegalArgumentException]
-when(aMock.bar) thenThrow new IllegalArgumentException       <=> aMock.bar shouldThrow new IllegalArgumentException
-when(aMock.bar) thenAnswer(_ => "mocked!")                   <=> aMock.bar shouldAnswer (_ => "mocked!")
-when(aMock.bar(any)) thenAnswer(_.getArgument[Int](0) * 10)  <=> aMock.doSomethingWithThisInt(*) shouldAnswer (_.arg0[Int] * 10)
+when(aMock.bar) thenReturn "mocked!"                            <=> aMock.bar shouldReturn "mocked!"
+when(aMock.bar) thenReturn "mocked!" thenReturn "mocked again!" <=> aMock.bar shouldReturn "mocked!" andThen "mocked again!"
+when(aMock.bar) thenCallRealMethod()                            <=> aMock.bar shouldCallRealMethod
+when(aMock.bar).thenThrow[IllegalArgumentException]             <=> aMock.bar.shouldThrow[IllegalArgumentException]
+when(aMock.bar) thenThrow new IllegalArgumentException          <=> aMock.bar shouldThrow new IllegalArgumentException
+when(aMock.bar) thenAnswer(_ => "mocked!")                      <=> aMock.bar shouldAnswer "mocked!"
+when(aMock.bar(any)) thenAnswer(_.getArgument[Int](0) * 10)     <=> aMock.bar(*) shouldAnswer ((i: Int) => i * 10)
   
-verifyZeroInteractions(aMock)                                <=> aMock wasNotUsed
-verify(aMock).bar                                            <=> aMock.wasCalledOn.bar          or aMock wasCalledOn (_.bar)
-verify(aMock, only).bar                                      <=> aMock.wasOnlyCalledOn.bar      or aMock wasOnlyCalledOn (_.bar)
-verify(aMock, never).bar                                     <=> aMock.wasNeverCalledOn.bar     or aMock wasNeverCalledOn (_.bar)
-verify(aMock, times(2)).bar                                  <=> aMock.wasCalled.twiceOn.bar    or aMock wasCalledOn (_.bar) twice
-verify(aMock, times(6)).bar                                  <=> aMock.wasCalled.sixTimesOn.bar or aMock wasCalledOn (_.bar) sixTimes
-verifyNoMoreInteractions(aMock)                              <=> aMock wasNotUsedAgain
+verifyZeroInteractions(aMock)                                   <=> aMock was never called
+verify(aMock).bar                                               <=> aMock wasCalled on bar
+verify(aMock, only).bar                                         <=> aMock wasCalled onlyOn bar
+verify(aMock, never).bar                                        <=> aMock was never called on bar
+verify(aMock, times(2)).bar                                     <=> aMock wasCalled twiceOn bar
+verify(aMock, times(6)).bar                                     <=> aMock wasCalled sixTimesOn bar
+verifyNoMoreInteractions(aMock)                                 <=> aMock was never called again
 ```
 
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
-These are just a few examples, there are many more versions of the methods that allow you to extract arguments 
-of an invocation, check the number of times a method was invoked, etc 
 
 Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticSyntaxTest.scala) for more examples
 

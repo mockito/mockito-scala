@@ -12,7 +12,6 @@
 package org.mockito
 
 import org.mockito.MockitoEnhancerUtil.stubMock
-import org.mockito.MockitoSugar.clazz
 import org.mockito.stubbing.{ Answer, OngoingStubbing, Stubber }
 import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
 
@@ -307,7 +306,4 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications {
 /**
  * Simple object to allow the usage of the trait without mixing it in
  */
-object MockitoSugar extends MockitoSugar {
-  private[mockito] def clazz[T <: AnyRef](implicit classTag: ClassTag[T]) =
-    classTag.runtimeClass.asInstanceOf[Class[T]]
-}
+object MockitoSugar extends MockitoSugar

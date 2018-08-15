@@ -23,14 +23,11 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cmockito-scala_2.12) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 
-For a more detailed explanation of the features please read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda) article series
-
-
 ## Getting started
 
-Then mixin one (or both) of the following traits as required
-
 ## `org.mockito.MockitoSugar`
+
+For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda) 
 
 This trait wraps the API available on `org.mockito.Mockito` from the Java version, but it provides a more Scala-like syntax, mainly
 *   Fixes the compiler errors that sometimes occurred when using overloaded methods that use varargs like doReturn
@@ -49,6 +46,8 @@ This trait wraps the API available on `org.mockito.Mockito` from the Java versio
 The companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired
 
 ## `org.mockito.ArgumentMatchersSugar`
+
+For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-2-ba1a79cc4c53) 
 
 This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it gives them a more Scala-like syntax, mainly
 *   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality
@@ -71,6 +70,8 @@ verify(myObj).myMethod(eqToVal[MyValueClass](456))
    ```
 
 ## Improved ArgumentCaptor
+
+For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f) 
 
 A new set of classes were added to make it easier, cleaner and more elegant to work with ArgumentCaptors, they also add 
 support to capture value classes without any annoying syntax
@@ -124,6 +125,8 @@ session.finishMocking()
 
 ## `org.mockito.integrations.scalatest.MockitoFixture`
 
+For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f) 
+
 If you mix-in this trait on your test class **after** your favourite Spec trait, you will get an automatic 
 `MockitoScalaSession` around each one of your tests, so **all** of them will run in **Strict Stub** mode.
 
@@ -153,6 +156,43 @@ The main advantage being we don't have to remember to reset each one of the mock
 
 If for some reason we want to have a mock that is not reset automatically while using this trait, then it should be 
 created via the companion object of `org.mockito.MockitoSugar` so is not tracked by this mechanism
+
+## Idiomatic Mockito
+
+By adding the trait `org.mockito.IdiomaticMockito` you get access to some improved methods in the API
+
+This API is heavily inspired on Scalatest's Matchers, so if have used them, you'll find it very familiar
+
+Here we can see the old syntax on the left and the new one on the right
+
+```scala
+trait Foo {
+    def bar: String
+    def bar(v: Int): Int
+  }
+  
+val aMock = mock[Foo]  
+  
+when(aMock.bar) thenReturn "mocked!"                            <=> aMock.bar shouldReturn "mocked!"
+when(aMock.bar) thenReturn "mocked!" thenReturn "mocked again!" <=> aMock.bar shouldReturn "mocked!" andThen "mocked again!"
+when(aMock.bar) thenCallRealMethod()                            <=> aMock.bar shouldCallRealMethod
+when(aMock.bar).thenThrow[IllegalArgumentException]             <=> aMock.bar.shouldThrow[IllegalArgumentException]
+when(aMock.bar) thenThrow new IllegalArgumentException          <=> aMock.bar shouldThrow new IllegalArgumentException
+when(aMock.bar) thenAnswer(_ => "mocked!")                      <=> aMock.bar shouldAnswer "mocked!"
+when(aMock.bar(any)) thenAnswer(_.getArgument[Int](0) * 10)     <=> aMock.bar(*) shouldAnswer ((i: Int) => i * 10)
+  
+verifyZeroInteractions(aMock)                                   <=> aMock was never called
+verify(aMock).bar                                               <=> aMock wasCalled on bar
+verify(aMock, only).bar                                         <=> aMock wasCalled onlyOn bar
+verify(aMock, never).bar                                        <=> aMock was never called on bar
+verify(aMock, times(2)).bar                                     <=> aMock wasCalled twiceOn bar
+verify(aMock, times(6)).bar                                     <=> aMock wasCalled sixTimesOn bar
+verifyNoMoreInteractions(aMock)                                 <=> aMock was never called again
+```
+
+As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
+
+Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticSyntaxTest.scala) for more examples
 
 ## Experimental features
 

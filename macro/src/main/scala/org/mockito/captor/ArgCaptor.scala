@@ -14,6 +14,8 @@ trait ArgCaptor[T] {
 
   def <->(expectation: T): Unit =
     if (expectation != value) throw new AssertionError(s"Got [$value] instead of [$expectation]")
+
+  def shouldHave(expectation: T): Unit = <->(expectation)
 }
 
 object ArgCaptor {

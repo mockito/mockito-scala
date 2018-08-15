@@ -218,8 +218,8 @@ We are working with the mockito-core developers to add the necessary features in
 
 Please note that in Scala 2.11 the following features are not supported
 
-* Default arguments on methods defined in traits
-* Any kind of Matchers for methods with by-name parameters
+* Default arguments on methods defined in traits (they will behave as before, getting `null` or a default value if they are of a primitive type)
+* Any kind of ArgumentMatchers for methods with by-name parameters (they'll throw an exception if used with ArgumentMatchers)
 
 ## Authors
 

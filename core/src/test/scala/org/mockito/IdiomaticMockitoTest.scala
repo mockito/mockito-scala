@@ -24,14 +24,6 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
   "StubbingOps" should {
 
-    "not compile for a normal object (not a mock)" in {
-      val notAMock = new Foo{}
-
-      an[MissingMethodInvocationException] shouldBe thrownBy {
-        notAMock.bar shouldReturn "mocked!"
-      }
-    }
-
     "stub a return value" in {
       val aMock = mock[Foo]
 

@@ -6,15 +6,15 @@ import MockitoSugar.{verify, _}
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
-trait IdiomaticMockito {
+trait IdiomaticMockito extends MockCreator {
 
-  def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T = MockitoSugar.mock(name)
+  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T = MockitoSugar.mock[T](name)
 
-  def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = MockitoSugar.mock(mockSettings)
+  override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = MockitoSugar.mock[T](mockSettings)
 
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = MockitoSugar.mock(defaultAnswer)
+  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = MockitoSugar.mock[T](defaultAnswer)
 
-  def mock[T <: AnyRef: ClassTag: TypeTag]: T = MockitoSugar.mock
+  override def mock[T <: AnyRef: ClassTag: TypeTag]: T = MockitoSugar.mock[T]
 
   implicit class StubbingOps[T](stubbing: => T) {
 
@@ -26,26 +26,26 @@ trait IdiomaticMockito {
 
     def shouldThrow[E <: Throwable](e: E): OngoingStubbing[T] = when(stubbing) thenThrow e
 
-    def shouldAnswer(f: => T): OngoingStubbing[T] = when(stubbing) thenAnswer (_ => f)
+    def shouldAnswer(f: => T): OngoingStubbing[T] = when(stubbing) thenAnswer functionToAnswer(_ => f)
 
-    def shouldAnswer[P0](f: P0 => T): OngoingStubbing[T] = when(stubbing) thenAnswer (i => f(i.getArgument[P0](0)))
+    def shouldAnswer[P0](f: P0 => T): OngoingStubbing[T] = when(stubbing) thenAnswer functionToAnswer(i => f(i.getArgument[P0](0)))
 
     def shouldAnswer[P0, P1](f: (P0, P1) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i => f(i.getArgument[P0](0), i.getArgument[P1](1)))
+      when(stubbing) thenAnswer functionToAnswer(i => f(i.getArgument[P0](0), i.getArgument[P1](1)))
 
     def shouldAnswer[P0, P1, P2](f: (P0, P1, P2) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i => f(i.getArgument[P0](0), i.getArgument[P1](1), i.getArgument[P2](2)))
+      when(stubbing) thenAnswer functionToAnswer(i => f(i.getArgument[P0](0), i.getArgument[P1](1), i.getArgument[P2](2)))
 
     def shouldAnswer[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i =>
+      when(stubbing) thenAnswer functionToAnswer(i =>
         f(i.getArgument[P0](0), i.getArgument[P1](1), i.getArgument[P2](2), i.getArgument[P3](3)))
 
     def shouldAnswer[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i =>
+      when(stubbing) thenAnswer functionToAnswer(i =>
         f(i.getArgument[P0](0), i.getArgument[P1](1), i.getArgument[P2](2), i.getArgument[P3](3), i.getArgument[P4](4)))
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i =>
+      when(stubbing) thenAnswer functionToAnswer(i =>
         f(i.getArgument[P0](0),
           i.getArgument[P1](1),
           i.getArgument[P2](2),
@@ -54,7 +54,7 @@ trait IdiomaticMockito {
           i.getArgument[P5](5)))
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i =>
+      when(stubbing) thenAnswer functionToAnswer(i =>
         f(i.getArgument[P0](0),
           i.getArgument[P1](1),
           i.getArgument[P2](2),
@@ -64,7 +64,7 @@ trait IdiomaticMockito {
           i.getArgument[P6](6)))
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i =>
+      when(stubbing) thenAnswer functionToAnswer(i =>
         f(
           i.getArgument[P0](0),
           i.getArgument[P1](1),
@@ -78,7 +78,7 @@ trait IdiomaticMockito {
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8](
         f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i =>
+      when(stubbing) thenAnswer functionToAnswer(i =>
         f(
           i.getArgument[P0](0),
           i.getArgument[P1](1),
@@ -93,7 +93,7 @@ trait IdiomaticMockito {
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](
         f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i =>
+      when(stubbing) thenAnswer functionToAnswer(i =>
         f(
           i.getArgument[P0](0),
           i.getArgument[P1](1),
@@ -109,7 +109,7 @@ trait IdiomaticMockito {
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
         f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer (i =>
+      when(stubbing) thenAnswer functionToAnswer(i =>
         f(
           i.getArgument[P0](0),
           i.getArgument[P1](1),

@@ -4,11 +4,8 @@ import scala.io.Source
 import scala.language.postfixOps
 import scala.util.Try
 
-val _scalaVersion = "2.12.6"
-
 lazy val commonSettings =
   Seq(
-    scalaVersion := _scalaVersion,
     organization := "org.mockito",
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
     version := {
@@ -19,13 +16,13 @@ lazy val commonSettings =
       }.get)
       source.close
       version.get
-    }
+    },
+    crossScalaVersions := Seq("2.11.12", "2.12.6")
   )
 
 lazy val commonLibraries = Seq(
-  "org.mockito" % "mockito-core" % "2.21.0",
-  "org.scala-lang" % "scala-reflect" % _scalaVersion,
-  "org.scalatest" %% "scalatest" % "3.0.5" % "provided"
+  "org.mockito"   % "mockito-core" % "2.21.0",
+  "org.scalatest" %% "scalatest"   % "3.0.5" % "provided"
 )
 
 lazy val core = (project in file("core"))
@@ -34,6 +31,7 @@ lazy val core = (project in file("core"))
     commonSettings,
     name := "mockito-scala",
     libraryDependencies ++= commonLibraries,
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     // include the macro classes and resources in the main jar
     mappings in (Compile, packageBin) ++= mappings
       .in(macroSub, Compile, packageBin)
@@ -64,6 +62,7 @@ lazy val macroSub = (project in file("macro"))
   .settings(
     commonSettings,
     libraryDependencies ++= commonLibraries,
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     publish := {},
     publishLocal := {},
     publishArtifact := false

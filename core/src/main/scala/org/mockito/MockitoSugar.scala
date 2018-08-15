@@ -12,8 +12,9 @@
 package org.mockito
 
 import org.mockito.MockitoEnhancerUtil.stubMock
-import org.mockito.stubbing.{ Answer, OngoingStubbing, Stubber }
-import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.{Answer, OngoingStubbing, Stubber}
+import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -79,7 +80,7 @@ private[mockito] trait DoSomething {
   /**
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
-  def doAnswer(answer: Answer[_]): Stubber = Mockito.doAnswer(answer)
+  def doAnswer[T](f: InvocationOnMock => T): Stubber = Mockito.doAnswer(functionToAnswer(f))
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {

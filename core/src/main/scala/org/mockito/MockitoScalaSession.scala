@@ -27,7 +27,7 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
 object MockitoScalaSession {
   def apply(name: String = "<Unnamed Session>",
             strictness: Strictness = STRICT_STUBS,
-            logger: MockitoSessionLogger = println) = new MockitoScalaSession(name, strictness, logger)
+            logger: MockitoSessionLogger = MockitoScalaLogger) = new MockitoScalaSession(name, strictness, logger)
 
   object SyntheticLocation extends Location
   object SyntheticMethodInvocation extends DescribedInvocation {
@@ -51,4 +51,8 @@ object MockitoScalaSession {
           case _                           => ()
         }
   }
+}
+
+object MockitoScalaLogger extends MockitoSessionLogger {
+  override def log(hint: String): Unit = println(hint)
 }

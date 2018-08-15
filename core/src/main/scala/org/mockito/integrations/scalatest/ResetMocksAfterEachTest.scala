@@ -3,17 +3,18 @@ package org.mockito.integrations.scalatest
 import java.util.concurrent.ConcurrentHashMap
 
 import org.mockito.stubbing.Answer
-import org.mockito.{ MockCreator, MockSettings, MockitoSugar }
-import org.scalatest.{ Outcome, TestSuite }
+import org.mockito.{MockCreator, MockSettings, MockitoSugar}
+import org.scalatest.{Outcome, TestSuite}
 
+import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
 trait ResetMocksAfterEachTest extends TestSuite with MockCreator { self: MockCreator =>
 
-  private val mocksToReset = ConcurrentHashMap.newKeySet[AnyRef]()
+  private val mocksToReset = ConcurrentHashMap.newKeySet[AnyRef]().asScala
 
-  private def resetAll(): Unit = mocksToReset.forEach(MockitoSugar.reset(_))
+  private def resetAll(): Unit = mocksToReset.foreach(MockitoSugar.reset(_))
 
   override protected def withFixture(test: NoArgTest): Outcome = {
     val outcome = super.withFixture(test)

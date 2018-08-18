@@ -4,7 +4,7 @@ import org.scalatest.{ Matchers, WordSpec }
 
 class MockitoFixtureTest extends WordSpec with MockitoFixture with Matchers {
 
-  trait Foo {
+  class Foo {
     def bar(a: String) = "bar"
     def baz(a: String = "default") = a
   }

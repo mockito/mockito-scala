@@ -11,7 +11,7 @@ The most popular mocking framework for Java, now in Scala!!!
 [![Build Status](https://travis-ci.org/mockito/mockito-scala.svg?branch=master)](https://travis-ci.org/mockito/mockito-scala)
 
 [![Download](https://api.bintray.com/packages/mockito/maven/mockito-scala/images/download.svg) ](https://bintray.com/mockito/maven/mockito-scala/_latestVersion)
-[![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala_2.12.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.mockito%22%20AND%20a%3A%22mockito-scala_2.12%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala_2.12.svg)](https://search.maven.org/search?q=mockito-scala)
 ## Why separate project?
 
 The library has independent developers, release cycle and versioning from core mockito library (https://github.com/mockito/mockito). This is intentional because core Mockito developers don't use Scala and cannot confidently review PRs, and set the vision for the Scala library.
@@ -20,7 +20,7 @@ The library has independent developers, release cycle and versioning from core m
 
 *   Artifact identifier: "org.mockito:mockito-scala_2.12:VERSION"
 *   Latest version - see [release notes](/docs/release-notes.md)
-*   Repositories: [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cmockito-scala_2.12) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
+*   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 
 ## Getting started
@@ -213,6 +213,13 @@ I can't tell you if you should put it before or after the `mockito-scala` depend
 on which build tool and IDE you use, so try it out.
 
 We are working with the mockito-core developers to add the necessary features in it so we can get rid of this hack as soon as we can, stay tuned!
+
+## Notes for Scala 2.11
+
+Please note that in Scala 2.11 the following features are not supported
+
+* Default arguments on methods defined in traits (they will behave as before, getting `null` or a default value if they are of a primitive type)
+* Any kind of ArgumentMatchers for methods with by-name parameters (they'll throw an exception if used with ArgumentMatchers)
 
 ## Authors
 

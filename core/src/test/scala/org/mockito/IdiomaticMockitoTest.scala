@@ -1,10 +1,9 @@
 package org.mockito
 
 import org.mockito.captor.{Captor => ArgCaptor}
-import org.mockito.exceptions.misusing.MissingMethodInvocationException
+import org.mockito.exceptions.verification._
 import org.scalatest
 import org.scalatest.WordSpec
-import org.mockito.exceptions.verification._
 
 import scala.language.postfixOps
 
@@ -20,6 +19,15 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
     def doSomethingWithThisIntAndStringAndBoolean(v: Int, v2: String, v3: Boolean): String = v + v2 + v3
 
+    def returnBar: Bar = new Bar
+
+    def highOrderFunction(f: Int => String): String = f(42)
+
+    def iReturnAFunction(v: Int): Int => String = i => i * v toString
+  }
+
+  class Bar {
+    def iHaveDefaultArgs(v: String = "default"): String = v
   }
 
   "StubbingOps" should {
@@ -66,7 +74,27 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
     }
 
-    "simplify stubbing an answer where we don't care about any param " in {
+    "chain exception and value" in {
+      val aMock = mock[Foo]
+
+      aMock.bar shouldThrow new IllegalArgumentException andThen "mocked!"
+
+      an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
+
+      aMock.bar shouldBe "mocked!"
+    }
+
+    "chain value and exception" in {
+      val aMock = mock[Foo]
+
+      aMock.bar shouldReturn "mocked!" andThen new IllegalArgumentException
+
+      aMock.bar shouldBe "mocked!"
+      an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
+    }
+
+    //useful if we want to delay the evaluation of whatever we are returning until the method is called
+    "simplify stubbing an answer where we don't care about any param" in {
       val aMock = mock[Foo]
 
       aMock.bar shouldAnswer "mocked!"
@@ -89,6 +117,15 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
     }
 
+    "chain answers" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2) andThenAnswer ((i: Int) => i * 15 + 9)
+
+      aMock.doSomethingWithThisInt(4) shouldBe 42
+      aMock.doSomethingWithThisInt(4) shouldBe 69
+    }
+
     "allow using less params than method on answer stubbing" in {
       val aMock = mock[Foo]
 
@@ -96,6 +133,33 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
                                                                               s: String) => i * 10 + s.toInt toString)
 
       aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42"
+    }
+
+    "stub a mock inline that has default args" in {
+      val aMock = mock[Foo]
+
+      aMock.returnBar shouldReturn mock[Bar] andThen mock[Bar]
+
+      aMock.returnBar shouldBe a[Bar]
+      aMock.returnBar shouldBe a[Bar]
+    }
+
+    "stub a high order function" in {
+      val aMock = mock[Foo]
+
+      aMock.highOrderFunction(*) shouldReturn "mocked!"
+
+      aMock.highOrderFunction(_.toString) shouldBe "mocked!"
+    }
+
+    "stub a method that returns a function" in {
+      val aMock = mock[Foo]
+
+      aMock.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2) toString) andThenCallRealMethod
+
+      aMock.iReturnAFunction(0)(42) shouldBe "42"
+      aMock.iReturnAFunction(0)(42) shouldBe "84"
+      aMock.iReturnAFunction(3)(3) shouldBe "9"
     }
   }
 

@@ -180,6 +180,12 @@ when(aMock.bar).thenThrow[IllegalArgumentException]             <=> aMock.bar.sh
 when(aMock.bar) thenThrow new IllegalArgumentException          <=> aMock.bar shouldThrow new IllegalArgumentException
 when(aMock.bar) thenAnswer(_ => "mocked!")                      <=> aMock.bar shouldAnswer "mocked!"
 when(aMock.bar(any)) thenAnswer(_.getArgument[Int](0) * 10)     <=> aMock.bar(*) shouldAnswer ((i: Int) => i * 10)
+
+doReturn("mocked!").when(aMock).bar                             <=> "mocked!" willBe returned by aMock bar
+doAnswer(_ => "mocked!").when(aMock).bar                        <=> "mocked!" willBe answered by aMock bar
+doAnswer(_.getArgument[Int](0) * 10).when(aMock).bar(any)       <=> ((i: Int) => i * 10) willBe answered by aMock bar *
+doCallRealMethod.when(aMock).bar                                <=> theRealMethod willBe called by aMock bar
+doThrow(new IllegalArgumentException).when(aMock).bar           <=> new IllegalArgumentException willBe thrown by aMock bar
   
 verifyZeroInteractions(aMock)                                   <=> aMock was never called
 verify(aMock).bar                                               <=> aMock wasCalled on bar

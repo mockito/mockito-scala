@@ -24,6 +24,9 @@ private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T
   def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
   def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T
+
+  def spy[T](realObj: T): T
+  def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
 }
 
 trait ByNameExperimental extends MockCreator {
@@ -79,7 +82,7 @@ private[mockito] trait DoSomething {
   /**
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
-  def doAnswer[T](f: InvocationOnMock => T): Stubber = Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[T](f: InvocationOnMock => T): Stubber = Mockito.doAnswer(invocationToAnswer(f))
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {

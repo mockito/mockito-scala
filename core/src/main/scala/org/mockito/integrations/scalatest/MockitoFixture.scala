@@ -1,7 +1,7 @@
 package org.mockito.integrations.scalatest
 
 import org.mockito._
-import org.scalatest.{Outcome, TestSuite}
+import org.scalatest.{ Outcome, TestSuite }
 
 trait MockitoFixture extends TestSuite with MockitoSugar with ArgumentMatchersSugar {
 
@@ -13,4 +13,3 @@ trait MockitoFixture extends TestSuite with MockitoSugar with ArgumentMatchersSu
   }
 
 }
-

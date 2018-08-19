@@ -78,8 +78,8 @@ private[mockito] trait AnyMatchers {
   def any[T]: T = JavaMatchers.any[T]()
 
   /**
-    * Wraps the standard 'any' matcher on the value class provided, this one requires the type to be explicit
-    */
+   * Wraps the standard 'any' matcher on the value class provided, this one requires the type to be explicit
+   */
   def anyVal[T](implicit valueClassMatchers: ValueClassMatchers[T]): T = valueClassMatchers.anyVal
 
   /**

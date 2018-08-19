@@ -3,8 +3,8 @@ package org.mockito.integrations.scalatest
 import java.util.concurrent.ConcurrentHashMap
 
 import org.mockito.stubbing.Answer
-import org.mockito.{MockCreator, MockSettings, MockitoSugar}
-import org.scalatest.{Outcome, TestSuite}
+import org.mockito.{ MockCreator, MockSettings, MockitoSugar }
+import org.scalatest.{ Outcome, TestSuite }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag

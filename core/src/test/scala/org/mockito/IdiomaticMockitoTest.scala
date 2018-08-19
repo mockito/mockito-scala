@@ -1,6 +1,6 @@
 package org.mockito
 
-import org.mockito.captor.{Captor => ArgCaptor}
+import org.mockito.captor.{ Captor => ArgCaptor }
 import org.mockito.exceptions.verification._
 import org.scalatest
 import org.scalatest.WordSpec
@@ -24,6 +24,8 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     def highOrderFunction(f: Int => String): String = f(42)
 
     def iReturnAFunction(v: Int): Int => String = i => i * v toString
+
+    def iBlowUp: String = throw new IllegalArgumentException("I was called!")
   }
 
   class Bar {
@@ -31,7 +33,6 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
   }
 
   "StubbingOps" should {
-
     "stub a return value" in {
       val aMock = mock[Foo]
 
@@ -80,7 +81,6 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.bar shouldThrow new IllegalArgumentException andThen "mocked!"
 
       an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
-
       aMock.bar shouldBe "mocked!"
     }
 
@@ -160,6 +160,56 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.iReturnAFunction(0)(42) shouldBe "42"
       aMock.iReturnAFunction(0)(42) shouldBe "84"
       aMock.iReturnAFunction(3)(3) shouldBe "9"
+    }
+  }
+
+  "DoSomethingOps" should {
+    "stub a spy that would fail if the real impl is called" in {
+      val aSpy = spy(new Foo)
+
+      an[IllegalArgumentException] should be thrownBy {
+        aSpy.iBlowUp shouldReturn "mocked!"
+      }
+
+      "mocked!" willBe returned by aSpy iBlowUp
+
+      aSpy.iBlowUp shouldBe "mocked!"
+    }
+
+    "stub a spy with an answer" in {
+      val aSpy = spy(new Foo)
+
+      ((i: Int) => i * 10 + 2) willBe answered by aSpy doSomethingWithThisInt *
+      ((i: Int, s: String) => i * 10 + s.toInt toString) willBe answered by aSpy doSomethingWithThisIntAndString (*, *)
+      ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt toString) + boolean) willBe answered by aSpy doSomethingWithThisIntAndStringAndBoolean (*, *, *)
+      ((() => "mocked!") willBe answered by aSpy).bar
+      "mocked!" willBe answered by aSpy baz
+
+      aSpy.bar shouldBe "mocked!"
+      aSpy.baz shouldBe "mocked!"
+      aSpy.doSomethingWithThisInt(4) shouldBe 42
+      aSpy.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
+      aSpy.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
+    }
+
+    "stub a real call" in {
+      val aMock = mock[Foo]
+
+      theRealMethod willBe called by aMock bar
+
+      aMock.bar shouldBe "not mocked"
+    }
+
+    "stub a failure" in {
+      val aMock = mock[Foo]
+
+      new IllegalArgumentException willBe thrown by aMock bar
+
+      an[IllegalArgumentException] should be thrownBy {
+        aMock.bar
+      }
+
+      """"some value" willBe thrown by aMock bar""" shouldNot compile
     }
   }
 

@@ -2,7 +2,7 @@ package org.mockito.captor
 
 import org.mockito.MockitoSugar
 import org.mockito.captor.ArgCaptorTest._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{ Matchers, WordSpec }
 
 object ArgCaptorTest {
   case class Name(name: String) extends AnyVal

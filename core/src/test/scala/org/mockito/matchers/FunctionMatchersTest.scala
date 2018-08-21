@@ -2,7 +2,7 @@ package org.mockito.matchers
 
 import org.mockito.MockitoSugar
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
-import org.scalatest.{WordSpec, Matchers => ScalaTestMatchers}
+import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
 
 class FunctionMatchersTest extends WordSpec with MockitoSugar with ScalaTestMatchers with FunctionMatchers {
 
@@ -25,9 +25,8 @@ class FunctionMatchersTest extends WordSpec with MockitoSugar with ScalaTestMatc
 
       aMock.iHaveFunction0(() => "not meh")
 
-      an [ArgumentsAreDifferent] should be thrownBy verify(aMock).iHaveFunction0(function0("meh"))
+      an[ArgumentsAreDifferent] should be thrownBy verify(aMock).iHaveFunction0(function0("meh"))
     }
   }
 
 }
-

@@ -1,7 +1,7 @@
 package org.mockito
 import org.mockito.MockitoScalaSession.IgnoreDefaultArgumentsMockListener
 import org.mockito.internal.stubbing.StubbedInvocationMatcher
-import org.mockito.invocation.{DescribedInvocation, Location}
+import org.mockito.invocation.{ DescribedInvocation, Location }
 import org.mockito.listeners.MockCreationListener
 import org.mockito.mock.MockCreationSettings
 import org.mockito.quality.Strictness

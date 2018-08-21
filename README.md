@@ -180,6 +180,12 @@ when(aMock.bar).thenThrow[IllegalArgumentException]             <=> aMock.bar.sh
 when(aMock.bar) thenThrow new IllegalArgumentException          <=> aMock.bar shouldThrow new IllegalArgumentException
 when(aMock.bar) thenAnswer(_ => "mocked!")                      <=> aMock.bar shouldAnswer "mocked!"
 when(aMock.bar(any)) thenAnswer(_.getArgument[Int](0) * 10)     <=> aMock.bar(*) shouldAnswer ((i: Int) => i * 10)
+
+doReturn("mocked!").when(aMock).bar                             <=> "mocked!" willBe returned by aMock bar
+doAnswer(_ => "mocked!").when(aMock).bar                        <=> "mocked!" willBe answered by aMock bar
+doAnswer(_.getArgument[Int](0) * 10).when(aMock).bar(any)       <=> ((i: Int) => i * 10) willBe answered by aMock bar *
+doCallRealMethod.when(aMock).bar                                <=> theRealMethod willBe called by aMock bar
+doThrow(new IllegalArgumentException).when(aMock).bar           <=> new IllegalArgumentException willBe thrown by aMock bar
   
 verifyZeroInteractions(aMock)                                   <=> aMock was never called
 verify(aMock).bar                                               <=> aMock wasCalled on bar
@@ -188,11 +194,17 @@ verify(aMock, never).bar                                        <=> aMock was ne
 verify(aMock, times(2)).bar                                     <=> aMock wasCalled twiceOn bar
 verify(aMock, times(6)).bar                                     <=> aMock wasCalled sixTimesOn bar
 verifyNoMoreInteractions(aMock)                                 <=> aMock was never called again
+
+val order = inOrder(mock1, mock2)                               <=> InOrder(mock1, mock2) { implicit order =>
+order.verify(mock2).someMethod()                                <=>   mock2 wasCalled on someMethod ()
+order.verify(mock1).anotherMethod()                             <=>   mock1 wasCalled on anotherMethod () 
+                                                                <=> }
+
 ```
 
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
 
-Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticSyntaxTest.scala) for more examples
+Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticMockitoTest.scala) for more examples
 
 ## Experimental features
 

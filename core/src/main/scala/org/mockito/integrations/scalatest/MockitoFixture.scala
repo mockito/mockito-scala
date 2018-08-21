@@ -1,15 +1,12 @@
 package org.mockito.integrations.scalatest
 
 import org.mockito._
-import org.scalatest.{ Outcome, TestSuite }
+import org.scalatest.{ Outcome, Suite, TestSuite }
 
-trait MockitoFixture extends TestSuite with MockitoSugar with ArgumentMatchersSugar {
+trait MockitoFixture extends TestSuite with MockitoSugar with ArgumentMatchersSugar { this: Suite =>
 
-  override def withFixture(test: NoArgTest): Outcome = {
-    val session = MockitoScalaSession(name = s"MockitoFixtureSession[${test.name}]")
-    val outcome = super.withFixture(test)
-    session.finishMocking()
-    outcome
-  }
-
+  abstract override def withFixture(test: NoArgTest): Outcome =
+    MockitoScalaSession(name = s"MockitoFixtureSession[${test.name}]") {
+      super.withFixture(test)
+    }
 }

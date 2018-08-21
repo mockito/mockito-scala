@@ -112,20 +112,19 @@ Both `Captor[T]` and `ValCaptor[T]` return an instance of `ArgCaptor[T]` so the 
 ## `org.mockito.MockitoScalaSession`
 
 This is a wrapper around `org.mockito.MockitoSession`, it's main purpose (on top of having a Scala API) 
-is to filter out the `$default$` stubbings so they are not wrongly reported when we use Strict Stubs
+is to improve the search of mis-used mocks and unexpected invocations to reduce debugging effort when something doesn't work
 
-To use it just create an instance of it before your test code and call `finishMocking()` when your test is done, e.g.
+To use it just wrap your code with it, e.g.
 ```scala
-val session = MockitoScalaSession()
-
-val foo = mock[Foo]
-when(foo.bar("pepe")) thenReturn "mocked"
-foo.bar("pepe") shouldBe "mocked"
-
-session.finishMocking()
+MockitoScalaSession() {
+    val foo = mock[Foo]
+    when(foo.bar("pepe")) thenReturn "mocked"
+    foo.bar("pepe") shouldBe "mocked"
+}
 ``` 
+That's it! that block of code will execute within a session and will handle 
 
-## `org.mockito.integrations.scalatest.MockitoFixture`
+## MockitoFixture
 
 For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f) 
 
@@ -137,6 +136,12 @@ the mockito-scala API available in one go, i.e.
 
 ```scala
 class MyTest extends WordSpec with MockitoFixture
+```
+
+In case you want to use the Idiomatic Syntax just do
+
+```scala
+class MyTest extends WordSpec with IdiomaticMockitoFixture
 ```
 
 ## `org.mockito.integrations.scalatest.ResetMocksAfterEachTest`

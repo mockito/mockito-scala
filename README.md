@@ -194,6 +194,12 @@ verify(aMock, never).bar                                        <=> aMock was ne
 verify(aMock, times(2)).bar                                     <=> aMock wasCalled twiceOn bar
 verify(aMock, times(6)).bar                                     <=> aMock wasCalled sixTimesOn bar
 verifyNoMoreInteractions(aMock)                                 <=> aMock was never called again
+
+val order = inOrder(mock1, mock2)                               <=> InOrder(mock1, mock2) { implicit order =>
+order.verify(mock2).someMethod()                                <=>   mock2 wasCalled on someMethod ()
+order.verify(mock1).anotherMethod()                             <=>   mock1 wasCalled on anotherMethod () 
+                                                                <=> }
+
 ```
 
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`

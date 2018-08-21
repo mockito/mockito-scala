@@ -195,16 +195,19 @@ trait IdiomaticMockito extends MockCreator {
   val nineTimesOn  = Times(9)
   val tenTimesOn   = Times(10)
 
-  implicit class VerificationOps[T <: AnyRef](mock: T) {
+  implicit class VerificationOps[T <: AnyRef](mock: T)(implicit order: Option[InOrder] = None) {
 
-    def wasCalled(on: On): T = verify(mock)
+    def wasCalled(on: On): T = order.fold(verify(mock))(_.verify(mock))
 
-    def wasCalled(t: Times): T = verify(mock, times(t.times))
+    def wasCalled(t: Times): T = order.fold(verify(mock, times(t.times)))(_.verify(mock, times(t.times)))
 
-    def wasCalled(onlyOn: OnlyOn): T = verify(mock, only)
+    def wasCalled(onlyOn: OnlyOn): T = order.fold(verify(mock, only))(_.verify(mock, only))
 
     def was(n: Never): NeverInstance[T] = NeverInstance(mock)
+  }
 
+  object InOrder {
+    def apply(mocks: AnyRef*)(verifications: Option[InOrder] => Unit): Unit = verifications(Some(Mockito.inOrder(mocks: _*)))
   }
 
   def *[T]: T = ArgumentMatchersSugar.any[T]

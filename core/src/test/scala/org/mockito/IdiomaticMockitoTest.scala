@@ -315,6 +315,21 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       }
     }
 
+    "check invocation order" in {
+      val mock1 = mock[Foo]
+      val mock2 = mock[Bar]
+
+      mock1.bar
+      mock2.iHaveDefaultArgs()
+
+      a[VerificationInOrderFailure] should be thrownBy {
+        InOrder(mock1, mock2) { implicit order =>
+          mock2 wasCalled on iHaveDefaultArgs ()
+          mock1 wasCalled on bar
+        }
+      }
+    }
+
   }
 
   "IdiomaticMatchers" should {

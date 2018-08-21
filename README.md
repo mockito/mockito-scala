@@ -204,7 +204,7 @@ order.verify(mock1).anotherMethod()                             <=>   mock1 wasC
 
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
 
-Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticSyntaxTest.scala) for more examples
+Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticMockitoTest.scala) for more examples
 
 ## Experimental features
 

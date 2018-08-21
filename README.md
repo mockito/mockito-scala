@@ -154,7 +154,7 @@ The trait has to be mixed **after** `org.mockito.MockitoSugar` in order to work,
 The code shown in the StackOverflow question would look like this if using this mechanism
 
 ```scala
-TestClass extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest
+class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest
 
 private val foo = mock[Foo]
 

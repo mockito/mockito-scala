@@ -23,6 +23,8 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 
+## Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test)
+
 ## Getting started
 
 ## `org.mockito.MockitoSugar`

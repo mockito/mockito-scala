@@ -27,7 +27,8 @@ trait ResetMocksAfterEachTest extends TestSuite with MockCreator { self: MockCre
     mock
   }
 
-  abstract override def mock[T <: AnyRef: ClassTag: TypeTag]: T = addMock(super.mock[T])
+  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: Answer[_]): T =
+    addMock(super.mock[T])
 
   abstract override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T =
     addMock(super.mock[T](defaultAnswer))
@@ -35,5 +36,6 @@ trait ResetMocksAfterEachTest extends TestSuite with MockCreator { self: MockCre
   abstract override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T =
     addMock(super.mock[T](mockSettings))
 
-  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T = addMock(super.mock[T](name))
+  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: Answer[_]): T =
+    addMock(super.mock[T](name))
 }

@@ -11,19 +11,23 @@
 
 package org.mockito
 
+import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.{Answer, OngoingStubbing, Stubber}
-import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
+import org.mockito.stubbing.{ Answer, OngoingStubbing, Stubber }
+import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
 private[mockito] trait MockCreator {
-  def mock[T <: AnyRef: ClassTag: TypeTag]: T
+
+  implicit val defaultAnswer: Answer[_] = ScalaDefaultAnswer
+
+  def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: Answer[_] = ScalaDefaultAnswer): T
   def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T
   def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T
+  def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: Answer[_]): T
 
   def spy[T](realObj: T): T
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
@@ -101,7 +105,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag]: T = mock(withSettings)
+  override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: Answer[_] = ScalaDefaultAnswer): T =
+    mock(withSettings)
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
@@ -118,7 +123,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * as the value for the second parameter would have been null...
    */
   override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T =
-    mock(withSettings.defaultAnswer(defaultAnswer))
+    mock(withSettings(defaultAnswer))
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code>
@@ -137,14 +142,19 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = {
     val interfaces = ReflectionUtils.interfaces
 
+    mockSettings match {
+      case m: MockSettingsImpl[_] =>
+        require(m.getExtraInterfaces.isEmpty,
+                "If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
+      case _ =>
+    }
+
     val settings =
       if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
       else mockSettings
 
-    stubMock(Mockito.mock(clazz, settings))
+    Mockito.mock(clazz, settings)
   }
-
-  def stubMock[T](mock: T): T
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], name: String)</code>
@@ -160,16 +170,14 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T = mock(withSettings.name(name))
+  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: Answer[_]): T =
+    mock(withSettings.name(name))
 
   /**
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that
    * deal with default argument values
    */
-  def reset(mocks: AnyRef*): Unit = {
-    Mockito.reset(mocks: _*)
-    mocks.foreach(stubMock)
-  }
+  def reset(mocks: AnyRef*): Unit = Mockito.reset(mocks: _*)
 
   /**
    * Delegates to <code>Mockito.mockingDetails()</code>, it's only here to expose the full Mockito API
@@ -179,7 +187,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
    */
-  def withSettings: MockSettings = Mockito.withSettings()
+  def withSettings(implicit defaultAnswer: Answer[_]): MockSettings =
+    Mockito.withSettings().defaultAnswer(defaultAnswer)
 
   /**
    * Delegates to <code>Mockito.verifyNoMoreInteractions(Object... mocks)</code>, but ignores the default stubs that
@@ -268,8 +277,7 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
    * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
    * they are created as final classes by the compiler
    */
-  def spyLambda[T <: AnyRef: ClassTag](realObj: T): T =
-    Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
+  def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
 
   /**
    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
@@ -307,3 +315,10 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
   def verify[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
 
 }
+
+trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications with Rest
+
+/**
+ * Simple object to allow the usage of the trait without mixing it in
+ */
+object MockitoSugar extends MockitoSugar

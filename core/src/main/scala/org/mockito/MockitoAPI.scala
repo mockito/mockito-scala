@@ -39,6 +39,7 @@ trait ByNameExperimental extends MockCreator {
 
 }
 
+//noinspection MutatorLikeMethodIsParameterless
 private[mockito] trait DoSomething {
 
   /**

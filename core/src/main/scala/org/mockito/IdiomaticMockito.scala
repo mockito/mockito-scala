@@ -41,42 +41,34 @@ trait IdiomaticMockito extends MockCreator {
       when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2](f: (P0, P1, P2) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(
-        f)
+      when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(
-        f)
+      when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T): OngoingStubbing[T] =
       when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(
-        f)
+      when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(
-        f)
+      when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(
-        f)
+      when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8](
         f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(
-        f)
+      when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](
         f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(
-        f)
+      when(stubbing) thenAnswer functionToAnswer(f)
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
         f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(
-        f)
+      when(stubbing) thenAnswer functionToAnswer(f)
 
   }
 
@@ -217,13 +209,14 @@ trait IdiomaticMockito extends MockCreator {
   }
 
   object InOrder {
-    def apply(mocks: AnyRef*)(verifications: Option[InOrder] => Unit): Unit = verifications(Some(Mockito.inOrder(mocks: _*)))
+    def apply(mocks: AnyRef*)(verifications: Option[InOrder] => Unit): Unit =
+      verifications(Some(Mockito.inOrder(mocks: _*)))
   }
 
   def *[T]: T = ArgumentMatchersSugar.any[T]
 }
 
 /**
-  * Simple object to allow the usage of the trait without mixing it in
-  */
+ * Simple object to allow the usage of the trait without mixing it in
+ */
 object IdiomaticMockito extends IdiomaticMockito

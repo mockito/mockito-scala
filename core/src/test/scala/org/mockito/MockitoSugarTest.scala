@@ -1,7 +1,6 @@
 package org.mockito
 
 import org.scalatest
-import org.mockito.stubbing.Answer
 import org.scalatest.WordSpec
 
 //noinspection RedundantDefaultArgument
@@ -56,15 +55,15 @@ class MockitoSugarTest
     "create a mock with default answer" in {
       val aMock = mock[Foo](Answers.CALLS_REAL_METHODS)
 
-      mockingDetails(aMock).getMockCreationSettings.getDefaultAnswer should be theSameInstanceAs Answers.CALLS_REAL_METHODS
+      aMock.bar shouldBe "not mocked"
     }
 
     "create a mock with default answer from implicit scope" in {
-      implicit val defaultAnswer: Answer[_] = Answers.CALLS_REAL_METHODS
+      implicit val defaultAnswer: DefaultAnswer = CallsRealMethods
 
       val aMock = mock[Foo]
 
-      mockingDetails(aMock).getMockCreationSettings.getDefaultAnswer should be theSameInstanceAs Answers.CALLS_REAL_METHODS
+      aMock.bar shouldBe "not mocked"
     }
 
     "create a mock with name" in {
@@ -103,7 +102,7 @@ class MockitoSugarTest
       when(aMock.iStartWithByNameArgs("arg1", "arg2")) thenReturn "mocked!"
 
       aMock.iStartWithByNameArgs("arg1", "arg2") shouldBe "mocked!"
-      aMock.iStartWithByNameArgs("arg1", "arg3") shouldBe ""
+      aMock.iStartWithByNameArgs("arg1", "arg3") shouldBe null
 
       verify(aMock).iStartWithByNameArgs("arg1", "arg2")
       verify(aMock).iStartWithByNameArgs("arg1", "arg3")
@@ -115,7 +114,7 @@ class MockitoSugarTest
       when(aMock.iHaveFunction0Args(eqTo("arg1"), function0("arg2"))) thenReturn "mocked!"
 
       aMock.iHaveFunction0Args("arg1", () => "arg2") shouldBe "mocked!"
-      aMock.iHaveFunction0Args("arg1", () => "arg3") shouldBe ""
+      aMock.iHaveFunction0Args("arg1", () => "arg3") shouldBe null
 
       verify(aMock).iHaveFunction0Args(eqTo("arg1"), function0("arg2"))
       verify(aMock).iHaveFunction0Args(eqTo("arg1"), function0("arg3"))
@@ -138,7 +137,7 @@ class MockitoSugarTest
 
       reset(aMock)
 
-      aMock.bar shouldBe ""
+      aMock.bar shouldBe null
     }
   }
 

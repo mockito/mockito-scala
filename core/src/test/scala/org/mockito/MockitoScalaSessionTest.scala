@@ -62,7 +62,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
         }
       }
 
-      thrown.getMessage should startWith("Unexpected invocations found")
+      thrown.getMessage should startWith("A NullPointerException was thrown, check if maybe related to")
     }
 
     "check SmartNull" in {

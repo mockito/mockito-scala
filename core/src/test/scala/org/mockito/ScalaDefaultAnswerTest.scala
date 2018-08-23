@@ -4,8 +4,10 @@ import org.scalatest
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.ScalaDefaultAnswerTest._
 import org.mockito.exceptions.base.MockitoException
-import org.scalatest.{EitherValues, FlatSpec, TryValues}
+import org.scalatest.{OptionValues, TryValues, WordSpec}
+import org.scalatest.concurrent.ScalaFutures
 
+import scala.concurrent.Future
 import scala.util.{Success, Try}
 
 object ScalaDefaultAnswerTest {
@@ -13,8 +15,6 @@ object ScalaDefaultAnswerTest {
     def bar(a: String) = "bar"
 
     def baz(a: String = "default"): String = a
-
-    def some(i: Int): Option[String] = None
 
     def valueClass: ValueClass = ValueClass(42)
 
@@ -40,63 +40,94 @@ object ScalaDefaultAnswerTest {
     def returnsVector: Vector[String]           = Vector("not mocked!")
     def returnsEither: Either[Boolean, String]  = Right("not mocked!")
     def returnsTry: Try[String]                 = Success("not mocked!")
+    def returnsFuture: Future[String]           = Future.successful("not mocked!")
     def returnsBigDecimal: BigDecimal           = BigDecimal(42)
     def returnsBigInt: BigInt                   = BigInt(42)
     def returnsStringBuilder: StringBuilder     = StringBuilder.newBuilder.append("not mocked!")
   }
+
+  class Primitives {
+    def barByte: Byte = 1.toByte
+    def barBoolean: Boolean = true
+    def barChar: Char = '1'
+    def barDouble: Double = 1
+    def barInt: Int = 1
+    def barFloat: Float = 1
+    def barShort: Short = 1
+    def barLong: Long = 1
+  }
 }
 
-class ScalaDefaultAnswerTest extends FlatSpec with scalatest.Matchers with IdiomaticMockito with TryValues with EitherValues {
+class ScalaDefaultAnswerTest
+    extends WordSpec
+    with scalatest.Matchers
+    with IdiomaticMockito
+    with TryValues
+    with OptionValues
+    with ScalaFutures {
 
-  trait Setup {
-    val aMock: Foo = mock[Foo](ScalaDefaultAnswer)
-  }
+  "DefaultAnswer.defaultAnswer" should {
+    val aMock: Foo = mock[Foo](DefaultAnswer.defaultAnswer)
 
-  it should "call real method for default arguments" in new Setup {
-    aMock baz ()
+    "call real method for default arguments" in {
+      aMock baz ()
 
-    aMock wasCalled on baz "default"
-  }
-
-  it should "return an empty instance for a known class" in new Setup {
-    aMock.some(42) shouldBe empty
-  }
-
-  it should "return a smart null for unknown cases" in new Setup {
-    val smartNull: Bar = aMock.userClass()
-
-    smartNull should not be null
-
-    val throwable: SmartNullPointerException = the[SmartNullPointerException] thrownBy {
-      smartNull.callMeMaybe()
+      aMock wasCalled on baz "default"
     }
 
-    throwable.getMessage shouldBe
-    s"""You have a NullPointerException because this method call was *not* stubbed correctly:
-        |[foo.userClass(42);] on the Mock [$aMock]""".stripMargin
+    "return a smart null for unknown cases" in {
+      val smartNull: Bar = aMock.userClass()
+
+      smartNull should not be null
+
+      val throwable: SmartNullPointerException = the[SmartNullPointerException] thrownBy {
+        smartNull.callMeMaybe()
+      }
+
+      throwable.getMessage shouldBe
+        s"""You have a NullPointerException because this method call was *not* stubbed correctly:
+           |[foo.userClass(42);] on the Mock [$aMock]""".stripMargin
+    }
+
+    "return a default value for primitives" in {
+      val primitives = mock[Primitives]
+
+      primitives.barByte shouldBe 0.toByte
+      primitives.barBoolean shouldBe false
+      primitives.barChar shouldBe 0
+      primitives.barDouble shouldBe 0
+      primitives.barInt shouldBe 0
+      primitives.barFloat shouldBe 0
+      primitives.barShort shouldBe 0
+      primitives.barLong shouldBe 0
+    }
+
+    "return a smart value for value classes" in {
+      aMock.valueClass.v shouldBe 0
+    }
   }
 
-  it should "return a smart value for value classes" in new Setup {
-    aMock.valueClass.v shouldBe 0
-  }
+  "ReturnsEmptyValues"  should {
+    "return the empty values for known classes" in {
+      val aMock = mock[KnownTypes](ReturnsEmptyValues)
 
-  it should "return the empty values for known classes" in {
-    val aMock = mock[KnownTypes](ScalaDefaultAnswer)
-
-    aMock.returnsOption shouldBe None
-    aMock.returnsList shouldBe List.empty
-    aMock.returnsSet shouldBe Set.empty
-    aMock.returnsSeq shouldBe Seq.empty
-    aMock.returnsIterable shouldBe Iterable.empty
-    aMock.returnsTraversable shouldBe Traversable.empty
-    aMock.returnsIndexedSeq shouldBe IndexedSeq.empty
-    aMock.returnsIterator shouldBe Iterator.empty
-    aMock.returnsStream shouldBe Stream.empty
-    aMock.returnsVector shouldBe Vector.empty
-    aMock.returnsTry.failure.exception shouldBe a[MockitoException]
-    aMock.returnsTry.failure.exception.getMessage shouldBe "Auto stub provided by mockito-scala"
-    aMock.returnsBigDecimal shouldBe BigDecimal(0)
-    aMock.returnsBigInt shouldBe BigInt(0)
-    aMock.returnsStringBuilder shouldBe StringBuilder.newBuilder
+      aMock.returnsOption shouldBe None
+      aMock.returnsList shouldBe List.empty
+      aMock.returnsSet shouldBe Set.empty
+      aMock.returnsSeq shouldBe Seq.empty
+      aMock.returnsIterable shouldBe Iterable.empty
+      aMock.returnsTraversable shouldBe Traversable.empty
+      aMock.returnsIndexedSeq shouldBe IndexedSeq.empty
+      aMock.returnsIterator shouldBe Iterator.empty
+      aMock.returnsStream shouldBe Stream.empty
+      aMock.returnsVector shouldBe Vector.empty
+      aMock.returnsTry.failure.exception shouldBe a[MockitoException]
+      aMock.returnsTry.failure.exception.getMessage shouldBe "Auto stub provided by mockito-scala"
+      aMock.returnsFuture.failed.value.value.success.value shouldBe a[MockitoException]
+      aMock.returnsFuture.failed.value.value.success.value.getMessage shouldBe "Auto stub provided by mockito-scala"
+      aMock.returnsBigDecimal shouldBe BigDecimal(0)
+      aMock.returnsBigInt shouldBe BigInt(0)
+      aMock.returnsStringBuilder shouldBe StringBuilder.newBuilder
+    }
   }
 }

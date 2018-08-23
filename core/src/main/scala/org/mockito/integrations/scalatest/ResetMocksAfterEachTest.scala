@@ -2,9 +2,9 @@ package org.mockito.integrations.scalatest
 
 import java.util.concurrent.ConcurrentHashMap
 
+import org.mockito.{DefaultAnswer, MockCreator, MockitoSugar, MockSettings}
 import org.mockito.stubbing.Answer
-import org.mockito.{ MockCreator, MockSettings, MockitoSugar }
-import org.scalatest.{ Outcome, TestSuite }
+import org.scalatest.{Outcome, TestSuite}
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -34,7 +34,7 @@ trait ResetMocksAfterEachTest extends TestSuite with MockCreator { self: MockCre
     mock
   }
 
-  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: Answer[_]): T =
+  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T =
     addMock(super.mock[T])
 
   abstract override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T =
@@ -43,6 +43,6 @@ trait ResetMocksAfterEachTest extends TestSuite with MockCreator { self: MockCre
   abstract override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T =
     addMock(super.mock[T](mockSettings))
 
-  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: Answer[_]): T =
+  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
     addMock(super.mock[T](name))
 }

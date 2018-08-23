@@ -1,21 +1,21 @@
 package org.mockito
 
-import org.mockito.stubbing.{ Answer, OngoingStubbing }
-import MockitoSugar.{ verify, _ }
+import org.mockito.stubbing.{Answer, OngoingStubbing}
+import org.mockito.MockitoSugar.{verify, _}
 
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
 trait IdiomaticMockito extends MockCreator {
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: Answer[_]): T =
+  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
     MockitoSugar.mock[T](name)
 
   override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = MockitoSugar.mock[T](mockSettings)
 
   override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = MockitoSugar.mock[T](defaultAnswer)
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: Answer[_] = ScalaDefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T =
     MockitoSugar.mock[T]
 
   override def spy[T](realObj: T): T = MockitoSugar.spy(realObj)

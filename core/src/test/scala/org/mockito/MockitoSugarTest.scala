@@ -20,6 +20,8 @@ class MockitoSugarTest
     def iStartWithByNameArgs(byName: => String, normal: String): String = s"$normal - $byName"
 
     def iHaveFunction0Args(normal: String, f0: () => String): String = s"$normal - $f0"
+
+    def returnBar: Bar = ???
   }
 
   class Bar {
@@ -40,6 +42,14 @@ class MockitoSugarTest
       when(aMock.bar) thenReturn "mocked!"
 
       aMock.bar shouldBe "mocked!"
+    }
+
+    "create a mock while stubbing another" in {
+      val aMock = mock[Foo]
+
+      when(aMock.returnBar) thenReturn mock[Bar]
+
+      aMock.returnBar shouldBe a[Bar]
     }
 
     "default answer should deal with default arguments" in {

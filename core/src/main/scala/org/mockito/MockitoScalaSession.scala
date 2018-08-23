@@ -2,7 +2,7 @@ package org.mockito
 
 import org.mockito.MockitoScalaSession.UnexpectedInvocationsMockListener
 import org.mockito.exceptions.misusing.UnexpectedInvocationException
-import org.mockito.invocation.{ DescribedInvocation, Invocation, Location }
+import org.mockito.invocation.{DescribedInvocation, Invocation, Location}
 import org.mockito.listeners.MockCreationListener
 import org.mockito.mock.MockCreationSettings
 import org.mockito.quality.Strictness
@@ -12,7 +12,7 @@ import org.mockito.session.MockitoSessionLogger
 import scala.collection.mutable
 import scala.collection.JavaConverters._
 
-class MockitoScalaSession private (name: String, strictness: Strictness, logger: MockitoSessionLogger) {
+class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoSessionLogger) {
   private val listener       = new UnexpectedInvocationsMockListener
   private val mockitoSession = Mockito.mockitoSession().name(name).logger(logger).strictness(strictness).startMocking()
 

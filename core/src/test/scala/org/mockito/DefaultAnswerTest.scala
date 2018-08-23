@@ -2,7 +2,7 @@ package org.mockito
 
 import org.scalatest
 import org.mockito.exceptions.verification.SmartNullPointerException
-import org.mockito.ScalaDefaultAnswerTest._
+import org.mockito.DefaultAnswerTest._
 import org.mockito.exceptions.base.MockitoException
 import org.scalatest.{OptionValues, TryValues, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
@@ -10,7 +10,7 @@ import org.scalatest.concurrent.ScalaFutures
 import scala.concurrent.Future
 import scala.util.{Success, Try}
 
-object ScalaDefaultAnswerTest {
+object DefaultAnswerTest {
   class Foo {
     def bar(a: String) = "bar"
 
@@ -19,6 +19,8 @@ object ScalaDefaultAnswerTest {
     def valueClass: ValueClass = ValueClass(42)
 
     def userClass(v: Int = 42): Bar = new Bar
+
+    def returnsList: List[String] = List("not mocked!")
   }
 
   case class ValueClass(v: Int) extends AnyVal
@@ -47,18 +49,18 @@ object ScalaDefaultAnswerTest {
   }
 
   class Primitives {
-    def barByte: Byte = 1.toByte
+    def barByte: Byte       = 1.toByte
     def barBoolean: Boolean = true
-    def barChar: Char = '1'
-    def barDouble: Double = 1
-    def barInt: Int = 1
-    def barFloat: Float = 1
-    def barShort: Short = 1
-    def barLong: Long = 1
+    def barChar: Char       = '1'
+    def barDouble: Double   = 1
+    def barInt: Int         = 1
+    def barFloat: Float     = 1
+    def barShort: Short     = 1
+    def barLong: Long       = 1
   }
 }
 
-class ScalaDefaultAnswerTest
+class DefaultAnswerTest
     extends WordSpec
     with scalatest.Matchers
     with IdiomaticMockito
@@ -85,8 +87,22 @@ class ScalaDefaultAnswerTest
       }
 
       throwable.getMessage shouldBe
-        s"""You have a NullPointerException because this method call was *not* stubbed correctly:
+      s"""You have a NullPointerException because this method call was *not* stubbed correctly:
            |[foo.userClass(42);] on the Mock [$aMock]""".stripMargin
+    }
+
+    "return a smart standard monads" in {
+      val smartNull: List[String] = aMock.returnsList
+
+      smartNull should not be null
+
+      val throwable: SmartNullPointerException = the[SmartNullPointerException] thrownBy {
+        smartNull.isEmpty
+      }
+
+      throwable.getMessage shouldBe
+      s"""You have a NullPointerException because this method call was *not* stubbed correctly:
+           |[foo.returnsList();] on the Mock [$aMock]""".stripMargin
     }
 
     "return a default value for primitives" in {
@@ -107,7 +123,7 @@ class ScalaDefaultAnswerTest
     }
   }
 
-  "ReturnsEmptyValues"  should {
+  "ReturnsEmptyValues" should {
     "return the empty values for known classes" in {
       val aMock = mock[KnownTypes](ReturnsEmptyValues)
 

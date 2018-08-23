@@ -29,7 +29,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
   "MockitoScalaSession" should {
     "check unused stubs" in {
       an[UnnecessaryStubbingException] should be thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           val foo = mock[Foo]
 
           foo.bar(*) shouldReturn "mocked"
@@ -39,7 +39,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "check incorrect stubs" in {
       an[PotentialStubbingProblem] should be thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           val foo = mock[Foo]
 
           foo.bar("pepe") shouldReturn "mocked"
@@ -51,7 +51,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "check incorrect stubs after the expected one was called" in {
       val thrown = the[UnexpectedInvocationException] thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           val foo = mock[Foo]
 
           foo.bar("pepe") shouldReturn "mocked"
@@ -67,7 +67,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "check SmartNull" in {
       val thrown = the[SmartNullPointerException] thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           val foo = mock[Foo]
 
           foo.userClass.callMeMaybe
@@ -79,7 +79,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "check incorrect stubs after the expected one was called on a final class" in {
       val thrown = the[UnexpectedInvocationException] thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           val foo = mock[Foo]
 
           foo.userClassFinal.callMeMaybe
@@ -91,7 +91,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "check unexpected invocations" in {
       val thrown = the[UnexpectedInvocationException] thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           val foo = mock[Foo]
 
           foo.bar("pepe")
@@ -102,7 +102,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
     }
 
     "not check unexpected invocations if the call was verified" in {
-      MockitoScalaSession() {
+      MockitoScalaSession().run {
         val foo = mock[Foo]
 
         foo.bar("pepe")
@@ -113,7 +113,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "check incorrect stubs with default arguments" in {
       an[PotentialStubbingProblem] should be thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           val foo = mock[Foo]
 
           foo.baz("pepe") shouldReturn "mocked"
@@ -124,7 +124,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
     }
 
     "work with default arguments" in {
-      MockitoScalaSession() {
+      MockitoScalaSession().run {
         val foo = mock[Foo]
 
         foo.baz() shouldReturn "mocked"
@@ -134,7 +134,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
     }
 
     "work with default arguments when passing an argument" in {
-      MockitoScalaSession() {
+      MockitoScalaSession().run {
         val foo = mock[Foo]
 
         foo.baz("papa") shouldReturn "mocked"
@@ -144,7 +144,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
     }
 
     "work with default arguments when passing an argument but production code doesn't" in {
-      MockitoScalaSession() {
+      MockitoScalaSession().run {
         val foo = mock[Foo]
 
         foo.baz("default") shouldReturn "mocked"
@@ -155,7 +155,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "re-throw an exception produced by the test" in {
       an[IllegalArgumentException] should be thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           throw new IllegalArgumentException
         }
       }
@@ -163,7 +163,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "re-throw an real NPE produced by the test (an NPE not related to an un-stubbed mock call)" in {
       an[NullPointerException] should be thrownBy {
-        MockitoScalaSession() {
+        MockitoScalaSession().run {
           throw new NullPointerException
         }
       }

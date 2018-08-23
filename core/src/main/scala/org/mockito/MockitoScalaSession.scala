@@ -18,7 +18,7 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
 
   Mockito.framework().addListener(listener)
 
-  private def finishMocking(t: Option[Throwable] = None): Unit =
+  def finishMocking(t: Option[Throwable] = None): Unit =
     try {
       t.fold {
         mockitoSession.finishMocking()
@@ -31,32 +31,32 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
             throw new UnexpectedInvocationException(s"""A NullPointerException was thrown, check if maybe related to
                |$unStubbedCalls""".stripMargin,
                                                     e)
-          throw e
+          else throw e
         case other =>
-        mockitoSession.finishMocking(other)
-        throw other
+          mockitoSession.finishMocking(other)
+          throw other
       }
     } finally {
       Mockito.framework().removeListener(listener)
     }
-}
 
-object MockitoScalaSession {
-  def apply[T](name: String = "<Unnamed Session>",
-               strictness: Strictness = STRICT_STUBS,
-               logger: MockitoSessionLogger = MockitoScalaLogger)(block: => T): T = {
-
-    val session = new MockitoScalaSession(name, strictness, logger)
+  def run[T](block: => T): T =
     try {
       val result = block
-      session.finishMocking()
+      finishMocking()
       result
     } catch {
       case e: Throwable =>
-        session.finishMocking(Some(e))
+        finishMocking(Some(e))
         throw e
     }
-  }
+}
+
+object MockitoScalaSession {
+  def apply(name: String = "<Unnamed Session>",
+            strictness: Strictness = STRICT_STUBS,
+            logger: MockitoSessionLogger = MockitoScalaLogger): MockitoScalaSession =
+    new MockitoScalaSession(name, strictness, logger)
 
   object SyntheticLocation extends Location
   object SyntheticMethodInvocation extends DescribedInvocation {

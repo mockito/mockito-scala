@@ -118,13 +118,14 @@ is to improve the search of mis-used mocks and unexpected invocations to reduce 
 
 To use it just wrap your code with it, e.g.
 ```scala
-MockitoScalaSession() {
+MockitoScalaSession().run {
     val foo = mock[Foo]
     when(foo.bar("pepe")) thenReturn "mocked"
     foo.bar("pepe") shouldBe "mocked"
 }
 ``` 
-That's it! that block of code will execute within a session and will handle 
+That's it! that block of code will execute within a session which will take care of checking the use of the framework and,
+if the test fails, it will try to find out if the failure could be related to a mock being used incorrectly
 
 ## MockitoFixture
 

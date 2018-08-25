@@ -11,8 +11,13 @@
 
 package org.mockito
 
+import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
+import org.mockito.internal.handler.ScalaMockHandler
+import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
+import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.mock.MockCreationSettings
 import org.mockito.stubbing.{Answer, OngoingStubbing, Stubber}
 import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
 
@@ -28,15 +33,6 @@ private[mockito] trait MockCreator {
 
   def spy[T](realObj: T): T
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
-}
-
-trait ByNameExperimental extends MockCreator {
-
-  abstract override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = {
-    ReflectionUtils.markMethodsWithLazyArgs(clazz)
-    super.mock[T](mockSettings)
-  }
-
 }
 
 //noinspection MutatorLikeMethodIsParameterless
@@ -151,7 +147,25 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
       else mockSettings
 
-    Mockito.mock(clazz, settings)
+    ReflectionUtils.markMethodsWithLazyArgs(clazz)
+
+    def createMock(settings: MockCreationSettings[T]): T = {
+      val mock             = getMockMaker.createMock(settings, ScalaMockHandler(settings))
+      val spiedInstance    = settings.getSpiedInstance
+      if (spiedInstance != null) new LenientCopyTool().copyToMock(spiedInstance, mock)
+      mock
+    }
+
+    settings match {
+      case s: MockSettingsImpl[_] =>
+        val creationSettings = s.build[T](clazz)
+        val mock             = createMock(creationSettings)
+        mockingProgress.mockingStarted(mock, creationSettings)
+        mock
+      case _ =>
+        throw new IllegalArgumentException(s"""Unexpected implementation of '${settings.getClass.getCanonicalName}'
+             |At the moment, you cannot provide your own implementations of that class.""".stripMargin)
+    }
   }
 
   /**
@@ -175,7 +189,21 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that
    * deal with default argument values
    */
-  def reset(mocks: AnyRef*): Unit = Mockito.reset(mocks: _*)
+  def reset(mocks: AnyRef*): Unit = {
+    val mp = mockingProgress()
+    mp.validateState()
+    mp.reset()
+    mp.resetOngoingStubbing()
+
+    mocks.foreach { m =>
+
+      val oldHandler = mockingDetails(m).getMockHandler
+      val settings = oldHandler.getMockSettings
+      val newHandler = ScalaMockHandler(settings)
+
+      getMockMaker.resetMock(m, newHandler, settings)
+    }
+  }
 
   /**
    * Delegates to <code>Mockito.mockingDetails()</code>, it's only here to expose the full Mockito API

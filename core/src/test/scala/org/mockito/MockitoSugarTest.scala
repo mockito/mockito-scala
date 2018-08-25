@@ -4,33 +4,28 @@ import org.scalatest
 import org.scalatest.WordSpec
 
 //noinspection RedundantDefaultArgument
-class MockitoSugarTest
-    extends WordSpec
-    with MockitoSugar
-    with scalatest.Matchers
-    with ArgumentMatchersSugar
-    with ByNameExperimental {
+class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matchers with ArgumentMatchersSugar {
 
   class Foo {
     def bar = "not mocked"
 
-    def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String =
-      s"$noDefault - $default"
+    def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = ???
 
-    def iStartWithByNameArgs(byName: => String, normal: String): String = s"$normal - $byName"
+    def iStartWithByNameArgs(byName: => String, normal: String): String = ???
 
-    def iHaveFunction0Args(normal: String, f0: () => String): String = s"$normal - $f0"
+    def iHavePrimitiveByNameArgs(byName: => Int, normal: String): String = ???
+
+    def iHaveFunction0Args(normal: String, f0: () => String): String = ???
 
     def returnBar: Bar = ???
   }
 
   class Bar {
-    def iAlsoHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String =
-      s"$noDefault - $default"
+    def iAlsoHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = ???
   }
 
   trait Baz {
-    def traitMethod(arg: Int): Int = arg + 12
+    def traitMethod(arg: Int): Int = ???
   }
 
   class SomeClass extends Foo with Baz
@@ -112,10 +107,22 @@ class MockitoSugarTest
       when(aMock.iStartWithByNameArgs("arg1", "arg2")) thenReturn "mocked!"
 
       aMock.iStartWithByNameArgs("arg1", "arg2") shouldBe "mocked!"
-      aMock.iStartWithByNameArgs("arg1", "arg3") shouldBe null
+      aMock.iStartWithByNameArgs("arg111", "arg2") shouldBe null
 
       verify(aMock).iStartWithByNameArgs("arg1", "arg2")
-      verify(aMock).iStartWithByNameArgs("arg1", "arg3")
+      verify(aMock).iStartWithByNameArgs("arg111", "arg2")
+    }
+
+    "work with primitive by-name arguments" in {
+      val aMock = mock[Foo]
+
+      when(aMock.iHavePrimitiveByNameArgs(1, "arg2")) thenReturn "mocked!"
+
+      aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
+      aMock.iHavePrimitiveByNameArgs(2, "arg2") shouldBe null
+
+      verify(aMock).iHavePrimitiveByNameArgs(1, "arg2")
+      verify(aMock).iHavePrimitiveByNameArgs(2, "arg2")
     }
 
     "work with Function0 arguments" in {
@@ -139,15 +146,23 @@ class MockitoSugarTest
 
   "reset[T]" should {
     "reset mocks" in {
-      val aMock       = mock[Foo]
+      val aMock = mock[Foo]
 
       when(aMock.bar) thenReturn "mocked!"
+      when(aMock.iHavePrimitiveByNameArgs(1, "arg2")) thenReturn "mocked!"
 
       aMock.bar shouldBe "mocked!"
+      aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
 
       reset(aMock)
 
       aMock.bar shouldBe null
+      aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe null
+
+      //to verify the reset mock handler still handles by-name params
+      when(aMock.iHavePrimitiveByNameArgs(1, "arg2")) thenReturn "mocked!"
+
+      aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
     }
   }
 

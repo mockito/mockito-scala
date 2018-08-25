@@ -8,38 +8,32 @@ import org.mockito.internal.util.ObjectMethodsGuru.isToStringMethod
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.mockito.Answers._
+import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 
 import scala.concurrent.Future
 import scala.util.{Failure, Try}
 
 trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[Any]] { self =>
-  override def answer(invocation: InvocationOnMock): Any = apply(invocation).orNull
+  override def answer(invocation: InvocationOnMock): Any =
+    if (invocation.getMethod.getName.contains("$default$") && !isAbstract(invocation.getMethod.getModifiers))
+      invocation.callRealMethod()
+    else
+      apply(invocation).orNull
 
   def orElse(next: DefaultAnswer): DefaultAnswer = new DefaultAnswer {
-    override def apply(invocation: InvocationOnMock): Option[Any] = self(invocation).orElse(next.apply(invocation))
+    override def apply(invocation: InvocationOnMock): Option[Any] = self(invocation).orElse(next(invocation))
   }
 }
 
 object DefaultAnswer {
-  implicit val defaultAnswer: DefaultAnswer = DefaultParametersHandler orElse ReturnsDefaults orElse SmartNulls
-}
-
-object DefaultParametersHandler extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] =
-    if (invocation.getMethod.getName.contains("$default$") && !isAbstract(invocation.getMethod.getModifiers))
-      Some(invocation.callRealMethod())
-    else None
+  implicit val defaultAnswer: DefaultAnswer = ReturnsDefaults orElse ReturnsSmartNulls
 }
 
 object ReturnsDefaults extends DefaultAnswer {
   override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEFAULTS.answer(invocation))
 }
 
-object CallsRealMethods extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(CALLS_REAL_METHODS.answer(invocation))
-}
-
-object SmartNulls extends DefaultAnswer {
+object ReturnsSmartNulls extends DefaultAnswer {
   override def apply(invocation: InvocationOnMock): Option[Any] = {
     val returnType = invocation.getMethod.getReturnType
 
@@ -62,7 +56,17 @@ object SmartNulls extends DefaultAnswer {
   }
 }
 
+object ReturnsDeepStubs extends DefaultAnswer {
+  override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEEP_STUBS.answer(invocation))
+}
+
+object CallsRealMethods extends DefaultAnswer {
+  override def apply(invocation: InvocationOnMock): Option[Any] = Option(CALLS_REAL_METHODS.answer(invocation))
+}
+
 object ReturnsEmptyValues extends DefaultAnswer {
+  private val javaEmptyValuesAndPrimitives = new ReturnsMoreEmptyValues
+
   private[mockito] lazy val emptyValues: Map[Class[_], AnyRef] = Map(
     classOf[Option[_]]      -> Option.empty,
     classOf[List[_]]        -> List.empty,
@@ -81,5 +85,6 @@ object ReturnsEmptyValues extends DefaultAnswer {
     classOf[StringBuilder]  -> StringBuilder.newBuilder
   )
 
-  override def apply(invocation: InvocationOnMock): Option[Any] = emptyValues.get(invocation.getMethod.getReturnType)
+  override def apply(invocation: InvocationOnMock): Option[Any] =
+    Option(javaEmptyValuesAndPrimitives.answer(invocation)).orElse(emptyValues.get(invocation.getMethod.getReturnType))
 }

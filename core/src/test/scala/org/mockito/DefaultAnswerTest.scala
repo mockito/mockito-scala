@@ -4,6 +4,7 @@ import org.scalatest
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.DefaultAnswerTest._
 import org.mockito.exceptions.base.MockitoException
+import org.mockito.invocation.InvocationOnMock
 import org.scalatest.{OptionValues, TryValues, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
 
@@ -68,6 +69,18 @@ class DefaultAnswerTest
     with OptionValues
     with ScalaFutures {
 
+  "DefaultAnswer" should {
+    "resolve default parameters" in {
+      val aMock: Foo = mock[Foo](new DefaultAnswer {
+        override def apply(v1: InvocationOnMock): Option[Any] = None
+      })
+
+      aMock baz ()
+
+      aMock wasCalled on baz "default"
+    }
+  }
+
   "DefaultAnswer.defaultAnswer" should {
     val aMock: Foo = mock[Foo](DefaultAnswer.defaultAnswer)
 
@@ -91,7 +104,7 @@ class DefaultAnswerTest
            |[foo.userClass(42);] on the Mock [$aMock]""".stripMargin
     }
 
-    "return a smart standard monads" in {
+    "return a smart standard monad" in {
       val smartNull: List[String] = aMock.returnsList
 
       smartNull should not be null
@@ -118,12 +131,25 @@ class DefaultAnswerTest
       primitives.barLong shouldBe 0
     }
 
-    "return a smart value for value classes" in {
+    "work for value classes" in {
       aMock.valueClass.v shouldBe 0
     }
   }
 
   "ReturnsEmptyValues" should {
+    "return a default value for primitives" in {
+      val primitives = mock[Primitives](ReturnsEmptyValues)
+
+      primitives.barByte shouldBe 0.toByte
+      primitives.barBoolean shouldBe false
+      primitives.barChar shouldBe 0
+      primitives.barDouble shouldBe 0
+      primitives.barInt shouldBe 0
+      primitives.barFloat shouldBe 0
+      primitives.barShort shouldBe 0
+      primitives.barLong shouldBe 0
+    }
+
     "return the empty values for known classes" in {
       val aMock = mock[KnownTypes](ReturnsEmptyValues)
 

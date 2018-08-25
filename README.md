@@ -23,6 +23,8 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 
+## Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test)
+
 ## Getting started
 
 ## `org.mockito.MockitoSugar`
@@ -98,7 +100,9 @@ aMock.stringArgument("it worked!")
 
 verify(aMock).stringArgument(captor)
 
-captor <-> "it worked!"
+captor <-> "it worked!" 
+//or 
+captor shouldHave "it worked!"
 ```
 
 As you can see there is no need to call `capture()` nor `getValue` anymore (although they're still there if you need them)
@@ -110,20 +114,20 @@ Both `Captor[T]` and `ValCaptor[T]` return an instance of `ArgCaptor[T]` so the 
 ## `org.mockito.MockitoScalaSession`
 
 This is a wrapper around `org.mockito.MockitoSession`, it's main purpose (on top of having a Scala API) 
-is to filter out the `$default$` stubbings so they are not wrongly reported when we use Strict Stubs
+is to improve the search of mis-used mocks and unexpected invocations to reduce debugging effort when something doesn't work
 
-To use it just create an instance of it before your test code and call `finishMocking()` when your test is done, e.g.
+To use it just wrap your code with it, e.g.
 ```scala
-val session = MockitoScalaSession()
-
-val foo = mock[Foo]
-when(foo.bar("pepe")) thenReturn "mocked"
-foo.bar("pepe") shouldBe "mocked"
-
-session.finishMocking()
+MockitoScalaSession().run {
+    val foo = mock[Foo]
+    when(foo.bar("pepe")) thenReturn "mocked"
+    foo.bar("pepe") shouldBe "mocked"
+}
 ``` 
+That's it! that block of code will execute within a session which will take care of checking the use of the framework and,
+if the test fails, it will try to find out if the failure could be related to a mock being used incorrectly
 
-## `org.mockito.integrations.scalatest.MockitoFixture`
+## MockitoFixture
 
 For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f) 
 
@@ -137,6 +141,12 @@ the mockito-scala API available in one go, i.e.
 class MyTest extends WordSpec with MockitoFixture
 ```
 
+In case you want to use the Idiomatic Syntax just do
+
+```scala
+class MyTest extends WordSpec with IdiomaticMockitoFixture
+```
+
 ## `org.mockito.integrations.scalatest.ResetMocksAfterEachTest`
 
 Inspired by [this](https://stackoverflow.com/questions/51387234/is-there-a-per-test-non-specific-mock-reset-pattern-using-scalaplayspecmockito) StackOverflow question,
@@ -144,8 +154,10 @@ mockito-scala provides this trait that helps to automatically reset any existent
 The trait has to be mixed **after** `org.mockito.MockitoSugar` in order to work, otherwise your test will not compile
 The code shown in the StackOverflow question would look like this if using this mechanism
 
+NOTE: MockitoFixture and ResetMocksAfterEachTest are mutually exclusive, so don't expect them to work together
+
 ```scala
-TestClass extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest
+class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest
 
 private val foo = mock[Foo]
 
@@ -205,6 +217,56 @@ order.verify(mock1).anotherMethod()                             <=>   mock1 wasC
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
 
 Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticMockitoTest.scala) for more examples
+
+## Default Answers
+We defined a new type `org.mockito.DefaultAnswer` which is used to configure the default behaviour of a mock when a non-stubbed invocation
+is made on it, the default behaviour is different to the Java version, instead of returning null for any non-primitive or non-final class,
+mockito-scala will return a "Smart Null", which is basically a mock of the type returned by the called method.
+The main advantage of this is that if the code tries to call any method on this mock, instead of failing with a NPE we will
+throw a different exception with a hint of the non-stubbed method call (including its params) that returned this Smart Null,
+this will make it much easier to find and fix a non-stubbed call
+
+Most of the Answers defined in `org.mockito.Answers` have it's counterpart as a `org.mockito.DefaultAnswer`, and on top of that
+we also provide `org.mockito.ReturnsEmptyValues` which will try its best to return an empty object for well known types, 
+i.e. `Nil` for `List`, `None` for `Option` etc.
+This DefaultAnswer is not part of the default behaviour as we think a SmartNull is better, to explain why, let's imagine we
+have the following code.
+
+```scala
+class UserRepository {
+  def find(id: Int): Option[User]
+}
+class UserController(userRepository: UserRepository) {
+  def get(userId: Int): Option[Json] = userRepository.find(userId).map(_.toJson)
+}
+
+class UserControllerTest extends WordSpec with IdiomaticMockito {
+
+  "get" should {
+     "return the expected json" in {
+        val repo = mock[UserRepository]
+        val testObj = new UserController(repo)
+
+        testObj.get(123) shouldBe Some(Json(....)) //overly simplified for clarity
+      }
+    }
+}
+```
+
+Now, in that example that test could fail in 3 different ways
+
+1) With the standard implementation of Mockito, the mock would return null and we would get a NullPointerException, which we all agree it's far from ideal, as it's hard to know where did it happen in non trivial code
+2) With the default/empty values, we would get a `None`, so the final result would be `None` and we will get an assertion error as `None` is not `Some(Json(....))`, but I'm not sure how much improvement over the NPE this would be, because in a non-trivial method we may have many dependencies returning `Option` and it could be hard to track down which one is returning `None` and why
+3) With a smart-null, we would return a `mock[Option]` and as soon as our code calls to `.map()` that mock would fail with an exception telling you what non-stubbed method was called and on which mock (in the example would say something you called the `find` method on some `mock of type UserRepository`) 
+
+And that's why we use option 3 as default
+
+Of course you can override the default behaviour, for this you have 2 options
+
+1) If you wanna do it just for a particular mock, you can, at creation time do `mock[MyType](MyDefaultAnswer)`
+2) If you wanna do it for all the mocks in a test, you can define an `implicit`, i.e. `implicit val defaultAnswer: DefaultAnswer = MyDefaultAnswer`
+
+DefaultAnswers are also composable, so for example if you wanted empty values first and then smart nulls you could do `implicit val defaultAnswer: DefaultAnswer = ReturnsEmptyValues orElse ReturnsSmartNulls`
 
 ## Experimental features
 

@@ -1,8 +1,8 @@
 package org.mockito.integrations.scalatest
 
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.{Matchers, WordSpec}
 
-class MockitoFixtureTest extends WordSpec with MockitoFixture with Matchers {
+class IdiomaticMockitoFixtureTest extends WordSpec with IdiomaticMockitoFixture with Matchers {
 
   class Foo {
     def bar(a: String) = "bar"
@@ -15,12 +15,15 @@ class MockitoFixtureTest extends WordSpec with MockitoFixture with Matchers {
   "MockitoFixture" should {
     "check the mocks were called with the right arguments" in {
       val foo = mock[Foo]
-      when(foo.bar("pepe")) thenReturn "mocked"
+
+      foo.bar(*) shouldReturn "mocked"
+
       foo.bar("pepe") shouldBe "mocked"
     }
 
     "work on tests with setup" in new Setup {
-      doReturn("mocked").when(foo).bar("pepe")
+      "mocked" willBe returned by foo bar "pepe"
+
       foo.bar("pepe") shouldBe "mocked"
     }
   }

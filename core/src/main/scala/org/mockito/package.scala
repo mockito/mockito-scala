@@ -113,4 +113,9 @@ package object mockito {
           i.getArgument[P10](10)
       ))
 
+  implicit class AnswerOps[T](val a: Answer[T]) extends AnyVal {
+    def lift: DefaultAnswer = new DefaultAnswer {
+      override def apply(invocation: InvocationOnMock): Option[Any] = Option(a.answer(invocation))
+    }
+  }
 }

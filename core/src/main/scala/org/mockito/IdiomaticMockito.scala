@@ -1,20 +1,22 @@
 package org.mockito
 
-import org.mockito.stubbing.{ Answer, OngoingStubbing }
-import MockitoSugar.{ verify, _ }
+import org.mockito.stubbing.{Answer, OngoingStubbing}
+import org.mockito.MockitoSugar.{verify, _}
 
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
 trait IdiomaticMockito extends MockCreator {
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String): T = MockitoSugar.mock[T](name)
+  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
+    MockitoSugar.mock[T](name)
 
   override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = MockitoSugar.mock[T](mockSettings)
 
   override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = MockitoSugar.mock[T](defaultAnswer)
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag]: T = MockitoSugar.mock[T]
+  override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T =
+    MockitoSugar.mock[T]
 
   override def spy[T](realObj: T): T = MockitoSugar.spy(realObj)
 
@@ -207,8 +209,14 @@ trait IdiomaticMockito extends MockCreator {
   }
 
   object InOrder {
-    def apply(mocks: AnyRef*)(verifications: Option[InOrder] => Unit): Unit = verifications(Some(Mockito.inOrder(mocks: _*)))
+    def apply(mocks: AnyRef*)(verifications: Option[InOrder] => Unit): Unit =
+      verifications(Some(Mockito.inOrder(mocks: _*)))
   }
 
   def *[T]: T = ArgumentMatchersSugar.any[T]
 }
+
+/**
+ * Simple object to allow the usage of the trait without mixing it in
+ */
+object IdiomaticMockito extends IdiomaticMockito

@@ -3,6 +3,7 @@ package org.mockito
 import org.scalatest
 import org.scalatest.WordSpec
 
+//noinspection RedundantDefaultArgument
 class MockitoSugarTest
     extends WordSpec
     with MockitoSugar
@@ -19,6 +20,8 @@ class MockitoSugarTest
     def iStartWithByNameArgs(byName: => String, normal: String): String = s"$normal - $byName"
 
     def iHaveFunction0Args(normal: String, f0: () => String): String = s"$normal - $f0"
+
+    def returnBar: Bar = ???
   }
 
   class Bar {
@@ -41,7 +44,15 @@ class MockitoSugarTest
       aMock.bar shouldBe "mocked!"
     }
 
-    "pre-configure the mock so it works with default arguments" in {
+    "create a mock while stubbing another" in {
+      val aMock = mock[Foo]
+
+      when(aMock.returnBar) thenReturn mock[Bar]
+
+      aMock.returnBar shouldBe a[Bar]
+    }
+
+    "default answer should deal with default arguments" in {
       val aMock = mock[Foo]
 
       aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
@@ -53,6 +64,14 @@ class MockitoSugarTest
 
     "create a mock with default answer" in {
       val aMock = mock[Foo](Answers.CALLS_REAL_METHODS)
+
+      aMock.bar shouldBe "not mocked"
+    }
+
+    "create a mock with default answer from implicit scope" in {
+      implicit val defaultAnswer: DefaultAnswer = CallsRealMethods
+
+      val aMock = mock[Foo]
 
       aMock.bar shouldBe "not mocked"
     }
@@ -110,20 +129,25 @@ class MockitoSugarTest
       verify(aMock).iHaveFunction0Args(eqTo("arg1"), function0("arg2"))
       verify(aMock).iHaveFunction0Args(eqTo("arg1"), function0("arg3"))
     }
+
+    "should stop the user passing traits in the settings" in {
+      a[IllegalArgumentException] should be thrownBy {
+        mock[Foo](withSettings.extraInterfaces(classOf[Baz]))
+      }
+    }
   }
 
   "reset[T]" should {
-    "reset the mock and re-configure the mock so it works with default arguments" in {
+    "reset mocks" in {
       val aMock       = mock[Foo]
-      val anotherMock = mock[Bar]
 
-      reset(aMock, anotherMock)
+      when(aMock.bar) thenReturn "mocked!"
 
-      aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
-      anotherMock.iAlsoHaveSomeDefaultArguments("I'm not gonna pass the second argument")
+      aMock.bar shouldBe "mocked!"
 
-      verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
-      verify(anotherMock).iAlsoHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")
+      reset(aMock)
+
+      aMock.bar shouldBe null
     }
   }
 

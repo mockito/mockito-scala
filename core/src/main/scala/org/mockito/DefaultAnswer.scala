@@ -26,7 +26,7 @@ trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[A
 }
 
 object DefaultAnswer {
-  implicit val defaultAnswer: DefaultAnswer = ReturnsDefaults orElse ReturnsSmartNulls
+  implicit val defaultAnswer: DefaultAnswer = ReturnsSmartNulls
 }
 
 object ReturnsDefaults extends DefaultAnswer {
@@ -34,7 +34,7 @@ object ReturnsDefaults extends DefaultAnswer {
 }
 
 object ReturnsSmartNulls extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = {
+  override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEFAULTS.answer(invocation)).orElse {
     val returnType = invocation.getMethod.getReturnType
 
     if (!returnType.isPrimitive && !isFinal(returnType.getModifiers))

@@ -154,6 +154,8 @@ mockito-scala provides this trait that helps to automatically reset any existent
 The trait has to be mixed **after** `org.mockito.MockitoSugar` in order to work, otherwise your test will not compile
 The code shown in the StackOverflow question would look like this if using this mechanism
 
+NOTE: MockitoFixture and ResetMocksAfterEachTest are mutually exclusive, so don't expect them to work together
+
 ```scala
 class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest
 
@@ -215,6 +217,56 @@ order.verify(mock1).anotherMethod()                             <=>   mock1 wasC
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
 
 Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticMockitoTest.scala) for more examples
+
+## Default Answers
+We defined a new type `org.mockito.DefaultAnswer` which is used to configure the default behaviour of a mock when a non-stubbed invocation
+is made on it, the default behaviour is different to the Java version, instead of returning null for any non-primitive or non-final class,
+mockito-scala will return a "Smart Null", which is basically a mock of the type returned by the called method.
+The main advantage of this is that if the code tries to call any method on this mock, instead of failing with a NPE we will
+throw a different exception with a hint of the non-stubbed method call (including its params) that returned this Smart Null,
+this will make it much easier to find and fix a non-stubbed call
+
+Most of the Answers defined in `org.mockito.Answers` have it's counterpart as a `org.mockito.DefaultAnswer`, and on top of that
+we also provide `org.mockito.ReturnsEmptyValues` which will try its best to return an empty object for well known types, 
+i.e. `Nil` for `List`, `None` for `Option` etc.
+This DefaultAnswer is not part of the default behaviour as we think a SmartNull is better, to explain why, let's imagine we
+have the following code.
+
+```scala
+class UserRepository {
+  def find(id: Int): Option[User]
+}
+class UserController(userRepository: UserRepository) {
+  def get(userId: Int): Option[Json] = userRepository.find(userId).map(_.toJson)
+}
+
+class UserControllerTest extends WordSpec with IdiomaticMockito {
+
+  "get" should {
+     "return the expected json" in {
+        val repo = mock[UserRepository]
+        val testObj = new UserController(repo)
+
+        testObj.get(123) shouldBe Some(Json(....)) //overly simplified for clarity
+      }
+    }
+}
+```
+
+Now, in that example that test could fail in 3 different ways
+
+1) With the standard implementation of Mockito, the mock would return null and we would get a NullPointerException, which we all agree it's far from ideal, as it's hard to know where did it happen in non trivial code
+2) With the default/empty values, we would get a `None`, so the final result would be `None` and we will get an assertion error as `None` is not `Some(Json(....))`, but I'm not sure how much improvement over the NPE this would be, because in a non-trivial method we may have many dependencies returning `Option` and it could be hard to track down which one is returning `None` and why
+3) With a smart-null, we would return a `mock[Option]` and as soon as our code calls to `.map()` that mock would fail with an exception telling you what non-stubbed method was called and on which mock (in the example would say something you called the `find` method on some `mock of type UserRepository`) 
+
+And that's why we use option 3 as default
+
+Of course you can override the default behaviour, for this you have 2 options
+
+1) If you wanna do it just for a particular mock, you can, at creation time do `mock[MyType](MyDefaultAnswer)`
+2) If you wanna do it for all the mocks in a test, you can define an `implicit`, i.e. `implicit val defaultAnswer: DefaultAnswer = MyDefaultAnswer`
+
+DefaultAnswers are also composable, so for example if you wanted empty values first and then smart nulls you could do `implicit val defaultAnswer: DefaultAnswer = ReturnsEmptyValues orElse ReturnsSmartNulls`
 
 ## Experimental features
 

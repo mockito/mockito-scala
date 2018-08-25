@@ -147,6 +147,35 @@ In case you want to use the Idiomatic Syntax just do
 class MyTest extends WordSpec with IdiomaticMockitoFixture
 ```
 
+IMPORTANT: A session is defined on a per-test basis, and only the mocks created within the scope of the session are 
+handled by it, so if you have class level fields with mocks, i.e. mocks that are not created within the test, they will
+be ignored by the session. If you use the same mocks in all or most of the tests and want to avoid the boilerplate while
+still usfing the advantages of strict stubbing then declare those mocks in a setup trait.
+
+```scala
+class MySpec extends WordSpec with MockitoFixture {
+   trait Setup {
+      val myMock = mock[Sth] 
+      myMock.someMethod shouldReturn "something" /*stub common to **all** tests -notice that if it's not used by all of them then the session will find it as an unused stubbing on those-*/
+   }
+
+   "some feature" should {
+       "test whatever i want" in new Setup {
+            myMock.someOtherMethod(*) shouldReturn None /*stub specific only to this test*/
+             ...test
+       }
+
+      "test something else" in new Setup {
+             myMock.someOtherMethod("expected value") shouldReturn Some("result")  /*stub specific only to this test*/
+             ...test
+       }
+   }
+}
+```
+
+This will give you a fresh new instance of `myMock` for each test but at the same time you only declare the creation/common stubbing once.
+
+
 ## `org.mockito.integrations.scalatest.ResetMocksAfterEachTest`
 
 Inspired by [this](https://stackoverflow.com/questions/51387234/is-there-a-per-test-non-specific-mock-reset-pattern-using-scalaplayspecmockito) StackOverflow question,

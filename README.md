@@ -53,7 +53,7 @@ For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/i
 
 This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it gives them a more Scala-like syntax, mainly
 *   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality
-*   `any` resolves to the correct type most of the times, removing the need of using the likes of `anyString`, `anyInt`, etc
+*   `any` works even when the type can't be inferred, removing the need of using the likes of `anyString`, `anyInt`, etc (see [Notes](#dead-code-warning))
 *   `isNull` and `isNotNull` are deprecated as using nulls in Scala is clear code smell
 *   Adds support for value classes via `anyVal[T]` and `eqToVal[T]()`
 *   Adds `function0` to easily match for a function that returns a given value
@@ -297,12 +297,27 @@ Of course you can override the default behaviour, for this you have 2 options
 
 DefaultAnswers are also composable, so for example if you wanted empty values first and then smart nulls you could do `implicit val defaultAnswer: DefaultAnswer = ReturnsEmptyValues orElse ReturnsSmartNulls`
 
-## Notes for Scala 2.11
+## Notes
 
+# Dead code warning
+if you have enabled the compiler flag `-Ywarn-dead-code`, you will see the warning _dead code following this construct_ 
+when using the `any` or `*` matchers , this is because in some cases the compiler can not infer the return type of those 
+matchers and it will default to `Nothing`, and this compiler warning is shown every time `Nothing` is found on our code.
+This will **NOT** affect the behaviour of Mockito nor your test in any way, so it can be ignored, but in case you 
+want to get rid of it then you have 2 options:
+
+1) If you are not too fuss about dead code warnings in test code, you can add `scalacOptions in Test -= "-Ywarn-dead-code"` to 
+your build.sbt and that warning will be ignored for your tests **only**
+2) If you wanna keep the warning enabled for potentially real dead code statements, but get rid of the warnings related to the 
+matchers usage then you have to explicitly provide the type for the matcher, thus `any` would become `any[MyType]` and
+`*` would become `*[MyType]` (you can also use `anyShort`, `anyInt`, etc for the primitive types)
+ 
+# Scala 2.11
 Please note that in Scala 2.11 the following features are not supported
 
-* Default arguments on methods defined in traits (they will behave as before, getting `null` or a default value if they are of a primitive type)
-* Any kind of ArgumentMatchers for methods with by-name parameters (they'll throw an exception if used with ArgumentMatchers)
+* Default arguments on methods defined in traits (they will behave as before, getting `null` or a default value if they 
+are of a primitive type)
+* Any kind of `ArgumentMatcher[T]` for methods with by-name parameters (they'll throw an exception if used with `ArgumentMatcher[T]`)
 
 ## Authors
 

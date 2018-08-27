@@ -1,10 +1,11 @@
-package org.mockito
+package org.mockito.stubbing
 
 import org.scalatest
-import org.mockito.exceptions.verification.SmartNullPointerException
-import org.mockito.DefaultAnswerTest._
+import org.mockito.IdiomaticMockito
 import org.mockito.exceptions.base.MockitoException
+import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.DefaultAnswerTest._
 import org.scalatest.{OptionValues, TryValues, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
 

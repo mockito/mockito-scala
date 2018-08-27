@@ -16,9 +16,8 @@ import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
-import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{Answer, OngoingStubbing, Stubber}
+import org.mockito.stubbing.{DefaultAnswer, ScalaFirstStubbing, Stubber}
 import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
 
 import scala.collection.JavaConverters._
@@ -27,7 +26,7 @@ import scala.reflect.runtime.universe.TypeTag
 
 private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = mock[T](DefaultAnswer(defaultAnswer))
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T = mock[T](DefaultAnswer(defaultAnswer))
   def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T
   def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
   def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
@@ -88,7 +87,30 @@ private[mockito] trait DoSomething {
   /**
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
-  def doAnswer[T](f: InvocationOnMock => T): Stubber = Mockito.doAnswer(invocationToAnswer(f))
+  def doAnswer[R](f: => R): Stubber =
+    Mockito.doAnswer(invocationToAnswer(_ => f))
+  def doAnswer[P0, R](f: P0 => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, R](f: (P0, P1) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, R](f: (P0, P1, P2) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, R](f: (P0, P1, P2, P3) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, R](f: (P0, P1, P2, P3, P4) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, R](f: (P0, P1, P2, P3, P4, P5) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, R](f: (P0, P1, P2, P3, P4, P5, P6) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, R](f: (P0, P1, P2, P3, P4, P5, P6, P7) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {
@@ -145,8 +167,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 
     mockSettings match {
       case m: MockSettingsImpl[_] =>
-        require(m.getExtraInterfaces.isEmpty,
-                "If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
+        require(m.getExtraInterfaces.isEmpty, "If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
       case _ =>
     }
 
@@ -301,7 +322,7 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
   /**
    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
    */
-  def when[T](methodCall: T): OngoingStubbing[T] = Mockito.when(methodCall)
+  def when[T](methodCall: T): ScalaFirstStubbing[T] = Mockito.when(methodCall)
 
   /**
    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API

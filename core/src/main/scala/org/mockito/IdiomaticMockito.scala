@@ -1,6 +1,6 @@
 package org.mockito
 
-import org.mockito.stubbing.{ Answer, OngoingStubbing }
+import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaOngoingStubbing }
 import org.mockito.MockitoSugar.{ verify, _ }
 
 import scala.reflect.ClassTag
@@ -25,51 +25,49 @@ trait IdiomaticMockito extends MockCreator {
 
   implicit class StubbingOps[T](stubbing: => T) {
 
-    def shouldReturn(value: T): OngoingStubbing[T] = when(stubbing) thenReturn value
+    def shouldReturn(value: T): ScalaOngoingStubbing[T] = when(stubbing) thenReturn value
 
-    def shouldCallRealMethod: OngoingStubbing[T] = when(stubbing) thenCallRealMethod ()
+    def shouldCallRealMethod: ScalaOngoingStubbing[T] = when(stubbing) thenCallRealMethod ()
 
-    def shouldThrow[E <: Throwable: ClassTag]: OngoingStubbing[T] = when(stubbing) thenThrow clazz
+    def shouldThrow[E <: Throwable: ClassTag]: ScalaOngoingStubbing[T] = when(stubbing).thenThrow[E]
 
-    def shouldThrow[E <: Throwable](e: E): OngoingStubbing[T] = when(stubbing) thenThrow e
+    def shouldThrow[E <: Throwable](e: E): ScalaOngoingStubbing[T] = when(stubbing) thenThrow e
 
-    def shouldAnswer(f: => T): OngoingStubbing[T] = when(stubbing) thenAnswer invocationToAnswer(_ => f)
+    def shouldAnswer(f: => T): ScalaOngoingStubbing[T] = when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0](f: P0 => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1](f: (P0, P1) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1](f: (P0, P1) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1, P2](f: (P0, P1, P2) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1, P2](f: (P0, P1, P2) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
     def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): OngoingStubbing[T] =
-      when(stubbing) thenAnswer functionToAnswer(f)
+        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaOngoingStubbing[T] =
+      when(stubbing) thenAnswer f
 
   }
 
@@ -121,53 +119,6 @@ trait IdiomaticMockito extends MockCreator {
 
   implicit class ThrowSomethingOps[R <: Throwable](v: R) {
     def willBe(thrown: Thrown): ThrownBy = new ThrownBy(v)
-  }
-
-  implicit class OngoingStubbingOps[T](ongoingStubbing: OngoingStubbing[T]) {
-
-    def andThen(value: T): OngoingStubbing[T] = ongoingStubbing thenReturn value
-
-    def andThenCallRealMethod: OngoingStubbing[T] = ongoingStubbing thenCallRealMethod ()
-
-    def andThen[E <: Throwable](e: E): OngoingStubbing[T] = ongoingStubbing thenThrow e
-
-    def andThenAnswer(f: => T): OngoingStubbing[T] = ongoingStubbing thenAnswer invocationToAnswer(_ => f)
-
-    def andThenAnswer[P0](f: P0 => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1](f: (P0, P1) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2](f: (P0, P1, P2) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
-
-    def andThenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): OngoingStubbing[T] =
-      ongoingStubbing thenAnswer functionToAnswer(f)
   }
 
   class On

@@ -241,8 +241,6 @@ trait IdiomaticMockito extends MockCreator {
     def apply(mocks: AnyRef*)(verifications: Option[InOrder] => Unit): Unit =
       verifications(Some(Mockito.inOrder(mocks: _*)))
   }
-
-  def *[T]: T = ArgumentMatchersSugar.any[T]
 }
 
 /**

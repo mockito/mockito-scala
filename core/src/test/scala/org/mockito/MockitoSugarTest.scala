@@ -1,6 +1,7 @@
 package org.mockito
 
 import org.scalatest
+import org.mockito.captor.ArgCaptor
 import org.scalatest.WordSpec
 
 //noinspection RedundantDefaultArgument
@@ -183,12 +184,12 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
 
       aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
 
-      val captor1 = argumentCaptor[String]
-      val captor2 = argumentCaptor[String]
-      verify(aMock).iHaveSomeDefaultArguments(captor1.capture(), captor2.capture())
+      val captor1 = ArgCaptor[String]
+      val captor2 = ArgCaptor[String]
+      verify(aMock).iHaveSomeDefaultArguments(captor1, captor2)
 
-      captor1.getValue shouldBe "I'm not gonna pass the second argument"
-      captor2.getValue shouldBe "default value"
+      captor1 shouldHave "I'm not gonna pass the second argument"
+      captor2 shouldHave "default value"
     }
   }
 

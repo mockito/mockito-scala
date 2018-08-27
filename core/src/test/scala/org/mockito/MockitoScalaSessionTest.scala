@@ -6,7 +6,11 @@ import org.mockito.exceptions.verification.SmartNullPointerException
 import org.scalatest.WordSpec
 
 //noinspection RedundantDefaultArgument
-class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalatest.Matchers {
+class MockitoScalaSessionTest
+    extends WordSpec
+    with IdiomaticMockito
+    with scalatest.Matchers
+    with ArgumentMatchersSugar {
 
   class Foo {
     def bar(a: String) = "bar"
@@ -74,7 +78,8 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
         }
       }
 
-      thrown.getMessage should startWith("You have a NullPointerException because this method call was *not* stubbed correctly")
+      thrown.getMessage should startWith(
+        "You have a NullPointerException because this method call was *not* stubbed correctly")
     }
 
     "check incorrect stubs after the expected one was called on a final class" in {

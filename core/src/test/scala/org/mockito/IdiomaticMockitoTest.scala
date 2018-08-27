@@ -7,7 +7,7 @@ import org.scalatest.WordSpec
 
 import scala.language.postfixOps
 
-class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with IdiomaticMockito {
+class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 
   class Foo {
     def bar = "not mocked"
@@ -328,17 +328,6 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
           mock1 wasCalled on bar
         }
       }
-    }
-
-  }
-
-  "IdiomaticMatchers" should {
-    "allow to write '*' instead of any" in {
-      val aMock = mock[Foo]
-
-      aMock.doSomethingWithThisInt(*) shouldReturn 42
-
-      aMock.doSomethingWithThisInt(-1) shouldBe 42
     }
   }
 }

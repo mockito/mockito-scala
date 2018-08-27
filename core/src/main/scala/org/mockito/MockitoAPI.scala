@@ -99,8 +99,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T =
-    mock(withSettings)
+  override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T = mock(withSettings)
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
@@ -150,8 +149,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
     ReflectionUtils.markMethodsWithLazyArgs(clazz)
 
     def createMock(settings: MockCreationSettings[T]): T = {
-      val mock             = getMockMaker.createMock(settings, ScalaMockHandler(settings))
-      val spiedInstance    = settings.getSpiedInstance
+      val mock          = getMockMaker.createMock(settings, ScalaMockHandler(settings))
+      val spiedInstance = settings.getSpiedInstance
       if (spiedInstance != null) new LenientCopyTool().copyToMock(spiedInstance, mock)
       mock
     }
@@ -196,9 +195,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
     mp.resetOngoingStubbing()
 
     mocks.foreach { m =>
-
       val oldHandler = mockingDetails(m).getMockHandler
-      val settings = oldHandler.getMockSettings
+      val settings   = oldHandler.getMockSettings
       val newHandler = ScalaMockHandler(settings)
 
       getMockMaker.resetMock(m, newHandler, settings)

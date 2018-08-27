@@ -288,13 +288,6 @@ private[mockito] trait Verifications {
 private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifications {
 
   /**
-   * Delegates to <code>ArgumentCaptor.forClass(type: Class[T])</code>
-   * It provides a nicer API as you can, for instance, do <code>argumentCaptor[SomeClass]</code>
-   * instead of <code>ArgumentCaptor.forClass(classOf[SomeClass])</code>
-   */
-  def argumentCaptor[T: ClassTag]: ArgumentCaptor[T] = ArgumentCaptor.forClass(clazz)
-
-  /**
    * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API
    */
   def spy[T](realObj: T): T = Mockito.spy(realObj)

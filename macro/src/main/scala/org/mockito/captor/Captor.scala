@@ -1,10 +1,12 @@
 package org.mockito.captor
 
+import org.mockito.exceptions.verification.ArgumentsAreDifferent
+
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 import scala.reflect.macros.blackbox
 
-trait ArgCaptor[T] {
+trait Captor[T] {
 
   def capture: T
 
@@ -12,19 +14,16 @@ trait ArgCaptor[T] {
 
   def values: List[T]
 
-  def <->(expectation: T): Unit =
-    if (expectation != value) throw new AssertionError(s"Got [$value] instead of [$expectation]")
-
-  def shouldHave(expectation: T): Unit = <->(expectation)
+  def shouldHave(expectation: T): Unit = if (expectation != value) throw new ArgumentsAreDifferent(s"Got [$value] instead of [$expectation]")
 }
 
-object ArgCaptor {
+object Captor {
 
-  implicit def asCapture[T](c: ArgCaptor[T]): T = c.capture
+  implicit def asCapture[T](c: Captor[T]): T = c.capture
 
-  implicit def materializeValueClassCaptor[T]: ArgCaptor[T] = macro materializeValueClassCaptorMacro[T]
+  implicit def materializeValueClassCaptor[T]: Captor[T] = macro materializeValueClassCaptorMacro[T]
 
-  def materializeValueClassCaptorMacro[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ArgCaptor[T]] = {
+  def materializeValueClassCaptorMacro[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[Captor[T]] = {
     import c.universe._
     val tpe = weakTypeOf[T]
 
@@ -39,9 +38,9 @@ object ArgCaptor {
 
     val paramType = tpe.decl(param.name).typeSignature.finalResultType
 
-    c.Expr[ArgCaptor[T]] {
+    c.Expr[Captor[T]] {
       q"""
-      new org.mockito.captor.ArgCaptor[$tpe] {
+      new org.mockito.captor.Captor[$tpe] {
 
         import scala.collection.JavaConverters._
 

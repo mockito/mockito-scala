@@ -28,40 +28,40 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
     "capture a simple AnyRef argument" in {
       val aMock  = mock[Foo]
-      val captor = Captor[String]
+      val captor = ArgCaptor[String]
 
       aMock.stringArgument("it worked!")
 
       verify(aMock).stringArgument(captor)
 
-      captor <-> "it worked!"
+      captor shouldHave "it worked!"
     }
 
     "capture a simple AnyVal argument" in {
       val aMock  = mock[Foo]
-      val captor = Captor[Int]
+      val captor = ArgCaptor[Int]
 
       aMock.intArgument(42)
 
       verify(aMock).intArgument(captor)
 
-      captor <-> 42
+      captor shouldHave 42
     }
 
     "capture a complex argument" in {
       val aMock  = mock[Foo]
-      val captor = Captor[Map[String, Int]]
+      val captor = ArgCaptor[Map[String, Int]]
 
       aMock.complexArgument(Map("Works" -> 1))
 
       verify(aMock).complexArgument(captor)
 
-      captor <-> Map("Works" -> 1)
+      captor shouldHave Map("Works" -> 1)
     }
 
     "expose the captured value to use with custom matchers" in {
       val aMock  = mock[Foo]
-      val captor = Captor[String]
+      val captor = ArgCaptor[String]
 
       aMock.stringArgument("it worked!")
 
@@ -72,7 +72,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
     "expose all the captured values to use with custom matchers" in {
       val aMock  = mock[Foo]
-      val captor = Captor[String]
+      val captor = ArgCaptor[String]
 
       aMock.stringArgument("it worked!")
       aMock.stringArgument("it worked again!")
@@ -92,7 +92,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).valueCaseClass(captor)
 
-      captor <-> Name("Batman")
+      captor shouldHave Name("Batman")
       captor.value shouldBe Name("Batman")
       captor.values should contain only Name("Batman")
     }
@@ -105,7 +105,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).valueClass(captor)
 
-      captor <-> new Email("batman@batcave.gotham")
+      captor shouldHave new Email("batman@batcave.gotham")
       captor.value shouldBe new Email("batman@batcave.gotham")
       captor.values should contain only new Email("batman@batcave.gotham")
     }

@@ -1,8 +1,8 @@
 package org.mockito
 
-import org.mockito.captor.{ Captor => ArgCaptor }
-import org.mockito.exceptions.verification._
 import org.scalatest
+import org.mockito.captor.ArgCaptor
+import org.mockito.exceptions.verification._
 import org.scalatest.WordSpec
 
 import scala.language.postfixOps
@@ -342,7 +342,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       captor shouldHave 42
 
-      an[AssertionError] should be thrownBy {
+      an[ArgumentsAreDifferent] should be thrownBy {
         captor shouldHave 43
       }
     }

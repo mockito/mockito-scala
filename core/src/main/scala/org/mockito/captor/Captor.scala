@@ -1,14 +1,14 @@
 package org.mockito.captor
 
-import org.mockito.MockitoSugar
+import org.mockito.{ArgumentCaptor, _}
 
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
-class Captor[T: ClassTag] extends ArgCaptor[T] {
+private class WrapperCaptor[T: ClassTag] extends Captor[T] {
 
-  private val argumentCaptor = MockitoSugar.argumentCaptor[T]
+  private val argumentCaptor: ArgumentCaptor[T] = ArgumentCaptor.forClass(clazz)
 
   override def capture: T = argumentCaptor.capture()
 
@@ -17,10 +17,10 @@ class Captor[T: ClassTag] extends ArgCaptor[T] {
   override def values: List[T] = argumentCaptor.getAllValues.asScala.toList
 }
 
-object Captor {
-  def apply[T: ClassTag]: ArgCaptor[T] = new Captor[T]
+object ArgCaptor {
+  def apply[T: ClassTag]: Captor[T] = new WrapperCaptor[T]
 }
 
 object ValCaptor {
-  def apply[T](implicit c: ArgCaptor[T]): ArgCaptor[T] = c
+  def apply[T](implicit c: Captor[T]): Captor[T] = c
 }

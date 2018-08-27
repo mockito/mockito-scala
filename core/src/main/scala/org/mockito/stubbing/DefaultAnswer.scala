@@ -1,12 +1,12 @@
-package org.mockito
+package org.mockito.stubbing
 
 import java.lang.reflect.Modifier.{isAbstract, isFinal}
 
+import org.mockito.Mockito
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.internal.util.ObjectMethodsGuru.isToStringMethod
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
 import org.mockito.Answers._
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 

@@ -248,15 +248,15 @@ As you can see the new syntax reads a bit more natural, also notice you can use 
 Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticMockitoTest.scala) for more examples
 
 ## Default Answers
-We defined a new type `org.mockito.DefaultAnswer` which is used to configure the default behaviour of a mock when a non-stubbed invocation
+We defined a new type `org.mockito.stubbing.DefaultAnswer` which is used to configure the default behaviour of a mock when a non-stubbed invocation
 is made on it, the default behaviour is different to the Java version, instead of returning null for any non-primitive or non-final class,
 mockito-scala will return a "Smart Null", which is basically a mock of the type returned by the called method.
 The main advantage of this is that if the code tries to call any method on this mock, instead of failing with a NPE we will
 throw a different exception with a hint of the non-stubbed method call (including its params) that returned this Smart Null,
 this will make it much easier to find and fix a non-stubbed call
 
-Most of the Answers defined in `org.mockito.Answers` have it's counterpart as a `org.mockito.DefaultAnswer`, and on top of that
-we also provide `org.mockito.ReturnsEmptyValues` which will try its best to return an empty object for well known types, 
+Most of the Answers defined in `org.mockito.Answers` have it's counterpart as a `org.mockito.stubbing.DefaultAnswer`, and on top of that
+we also provide `org.mockito.stubbing.ReturnsEmptyValues` which will try its best to return an empty object for well known types, 
 i.e. `Nil` for `List`, `None` for `Option` etc.
 This DefaultAnswer is not part of the default behaviour as we think a SmartNull is better, to explain why, let's imagine we
 have the following code.

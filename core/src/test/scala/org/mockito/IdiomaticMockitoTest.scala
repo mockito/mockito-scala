@@ -3,6 +3,7 @@ package org.mockito
 import org.scalatest
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
+import org.mockito.invocation.InvocationOnMock
 import org.scalatest.WordSpec
 
 import scala.language.postfixOps
@@ -87,7 +88,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "chain value and exception" in {
       val aMock = mock[Foo]
 
-      aMock.bar shouldReturn "mocked!" andThen new IllegalArgumentException
+      aMock.bar shouldReturn "mocked!" andThenThrow new IllegalArgumentException
 
       aMock.bar shouldBe "mocked!"
       an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
@@ -109,12 +110,19 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.doSomethingWithThisIntAndString(*, *) shouldAnswer ((i: Int, s: String) => i * 10 + s.toInt toString)
       aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
                                                                               s: String,
-                                                                              boolean: Boolean) =>
-                                                                               (i * 10 + s.toInt toString) + boolean)
+                                                                              boolean: Boolean) => (i * 10 + s.toInt toString) + boolean)
 
       aMock.doSomethingWithThisInt(4) shouldBe 42
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
       aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
+    }
+
+    "simplify answer API (invocation usage)" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2)
+
+      aMock.doSomethingWithThisInt(4) shouldBe 42
     }
 
     "chain answers" in {
@@ -126,11 +134,20 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.doSomethingWithThisInt(4) shouldBe 69
     }
 
+    "chain answers (invocation usage)" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2) andThenAnswer (
+          (i: InvocationOnMock) => i.getArgument[Int](0) * 15 + 9)
+
+      aMock.doSomethingWithThisInt(4) shouldBe 42
+      aMock.doSomethingWithThisInt(4) shouldBe 69
+    }
+
     "allow using less params than method on answer stubbing" in {
       val aMock = mock[Foo]
 
-      aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
-                                                                              s: String) => i * 10 + s.toInt toString)
+      aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int, s: String) => i * 10 + s.toInt toString)
 
       aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42"
     }
@@ -155,7 +172,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "stub a method that returns a function" in {
       val aMock = mock[Foo]
 
-      aMock.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2) toString) andThenCallRealMethod
+      aMock.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2) toString) andThenCallRealMethod ()
 
       aMock.iReturnAFunction(0)(42) shouldBe "42"
       aMock.iReturnAFunction(0)(42) shouldBe "84"

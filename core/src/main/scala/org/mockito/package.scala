@@ -6,7 +6,7 @@ import org.mockito.stubbing.Answer
 import scala.reflect.ClassTag
 
 package object mockito {
-  def clazz[T <: AnyRef](implicit classTag: ClassTag[T]): Class[T] = classTag.runtimeClass.asInstanceOf[Class[T]]
+  def clazz[T](implicit classTag: ClassTag[T]): Class[T] = classTag.runtimeClass.asInstanceOf[Class[T]]
 
   //noinspection ConvertExpressionToSAM
   def invocationToAnswer[T](f: InvocationOnMock => T): Answer[T] = new Answer[T] {
@@ -112,10 +112,4 @@ package object mockito {
           i.getArgument[P9](9),
           i.getArgument[P10](10)
       ))
-
-  implicit class AnswerOps[T](val a: Answer[T]) extends AnyVal {
-    def lift: DefaultAnswer = new DefaultAnswer {
-      override def apply(invocation: InvocationOnMock): Option[Any] = Option(a.answer(invocation))
-    }
-  }
 }

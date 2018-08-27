@@ -2,7 +2,7 @@ package org.mockito
 
 import java.util.function
 
-import org.mockito.internal.invocation.ArgumentsProcessor
+import org.mockito.internal.handler.ScalaMockHandler.{ArgumentExtractor, Extractors}
 
 import scala.reflect.runtime.universe._
 
@@ -18,7 +18,7 @@ private[mockito] object ReflectionUtils {
     }
 
   def markMethodsWithLazyArgs(clazz: Class[_]): Unit =
-    ArgumentsProcessor.extractors.computeIfAbsent(
+    Extractors.computeIfAbsent(
       clazz,
       new function.Function[Class[_], ArgumentExtractor] {
         override def apply(t: Class[_]): ArgumentExtractor = {
@@ -40,18 +40,4 @@ private[mockito] object ReflectionUtils {
         }
       }
     )
-}
-
-case class ArgumentExtractor(toTransform: Map[String, Set[Int]]) {
-
-  def transformArgs(methodName: String, args: Array[Any]): Array[Any] =
-    toTransform
-      .get(methodName)
-      .map { transformIndexes =>
-        args.zipWithIndex.map {
-          case (arg: Function0[_], idx) if transformIndexes.contains(idx) => arg()
-          case (arg, _)                                                   => arg
-        }
-      }
-      .getOrElse(args)
 }

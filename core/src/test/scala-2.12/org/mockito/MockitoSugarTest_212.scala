@@ -1,25 +1,21 @@
 package org.mockito
+
 import org.scalatest
 import org.scalatest.WordSpec
 
-class MockitoSugarTest_212
-    extends WordSpec
-    with MockitoSugar
-    with scalatest.Matchers
-    with ArgumentMatchersSugar
-    with ByNameExperimental {
+//noinspection RedundantDefaultArgument
+class MockitoSugarTest_212 extends WordSpec with MockitoSugar with scalatest.Matchers with ArgumentMatchersSugar {
 
   class Foo {
     def bar = "not mocked"
 
-    def iHaveByNameArgs(normal: String, byName: => String, byName2: => String): String = s"$normal - $byName - $byName2"
+    def iHaveByNameArgs(normal: String, byName: => String, byName2: => String): String = ???
 
-    def iHaveByNameAndFunction0Args(normal: String, f0: () => String, byName: => String): String =
-      s"$normal - $byName - $f0"
+    def iHaveByNameAndFunction0Args(normal: String, f0: () => String, byName: => String): String = ???
   }
 
   trait Baz {
-    def traitMethod(defaultArg: Int = 30): Int = defaultArg + 12
+    def traitMethod(defaultArg: Int = 30, anotherDefault: String = "hola"): Int = ???
   }
 
   class SomeClass extends Foo with Baz
@@ -30,12 +26,12 @@ class MockitoSugarTest_212
       val aMock = mock[Foo with Baz]
 
       when(aMock.bar) thenReturn "mocked!"
-      when(aMock.traitMethod(any)) thenReturn 69
+      when(aMock.traitMethod(any, any)) thenReturn 69
 
       aMock.bar shouldBe "mocked!"
       aMock.traitMethod() shouldBe 69
 
-      verify(aMock).traitMethod(30)
+      verify(aMock).traitMethod(30, "hola")
     }
 
     "work with by-name arguments and matchers (by-name arguments have to be the last ones when using matchers)" in {

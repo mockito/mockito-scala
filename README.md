@@ -37,7 +37,7 @@ This trait wraps the API available on `org.mockito.Mockito` from the Java versio
 *   Eliminates parenthesis when possible to make the test code more readable
 *   Adds `spyLambda[T]` to allow spying lambdas (they don't work with the standard spy as they are created as final classes by the compiler)
 *   Supports mocking inline mixins like `mock[MyClass with MyTrait]`
-*   Supports by-name arguments in some scenarios [EXPERIMENTAL](#experimental-features)
+*   Supports by-name arguments in some scenarios
     *   Full support when all arguments in a method are by-name
     *   Full support when only some arguments in a method are by-name, but we use the `any[T]` matcher for every argument
     *   Full support when only some arguments in a method are by-name, but we use NO matchers at all
@@ -53,7 +53,7 @@ For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/i
 
 This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it gives them a more Scala-like syntax, mainly
 *   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality
-*   `any` resolves to the correct type most of the times, removing the need of using the likes of `anyString`, `anyInt`, etc
+*   `any` works even when the type can't be inferred, removing the need of using the likes of `anyString`, `anyInt`, etc (see [Notes](#dead-code-warning))
 *   `isNull` and `isNotNull` are deprecated as using nulls in Scala is clear code smell
 *   Adds support for value classes via `anyVal[T]` and `eqToVal[T]()`
 *   Adds `function0` to easily match for a function that returns a given value
@@ -146,6 +146,35 @@ In case you want to use the Idiomatic Syntax just do
 ```scala
 class MyTest extends WordSpec with IdiomaticMockitoFixture
 ```
+
+IMPORTANT: A session is defined on a per-test basis, and only the mocks created within the scope of the session are 
+handled by it, so if you have class level fields with mocks, i.e. mocks that are not created within the test, they will
+be ignored by the session. If you use the same mocks in all or most of the tests and want to avoid the boilerplate while
+still usfing the advantages of strict stubbing then declare those mocks in a setup trait.
+
+```scala
+class MySpec extends WordSpec with MockitoFixture {
+   trait Setup {
+      val myMock = mock[Sth] 
+      myMock.someMethod shouldReturn "something" /*stub common to **all** tests -notice that if it's not used by all of them then the session will find it as an unused stubbing on those-*/
+   }
+
+   "some feature" should {
+       "test whatever i want" in new Setup {
+            myMock.someOtherMethod(*) shouldReturn None /*stub specific only to this test*/
+             ...test
+       }
+
+      "test something else" in new Setup {
+             myMock.someOtherMethod("expected value") shouldReturn Some("result")  /*stub specific only to this test*/
+             ...test
+       }
+   }
+}
+```
+
+This will give you a fresh new instance of `myMock` for each test but at the same time you only declare the creation/common stubbing once.
+
 
 ## `org.mockito.integrations.scalatest.ResetMocksAfterEachTest`
 
@@ -268,32 +297,27 @@ Of course you can override the default behaviour, for this you have 2 options
 
 DefaultAnswers are also composable, so for example if you wanted empty values first and then smart nulls you could do `implicit val defaultAnswer: DefaultAnswer = ReturnsEmptyValues orElse ReturnsSmartNulls`
 
-## Experimental features
+## Notes
 
-* **by-name** arguments is currently an experimental feature as the implementation is a bit hacky and it gave some people problems
+# Dead code warning
+if you have enabled the compiler flag `-Ywarn-dead-code`, you will see the warning _dead code following this construct_ 
+when using the `any` or `*` matchers , this is because in some cases the compiler can not infer the return type of those 
+matchers and it will default to `Nothing`, and this compiler warning is shown every time `Nothing` is found on our code.
+This will **NOT** affect the behaviour of Mockito nor your test in any way, so it can be ignored, but in case you 
+want to get rid of it then you have 2 options:
 
-If you want to use it, you have to mix-in an extra trait (`org.mockito.ByNameExperimental`) 
-in your test class, after `org.mockito.MockitoSugar`, so your test file would look like
-
-```scala
-class MyTest extends WordSpec with MockitoSugar with ByNameExperimental
-```
-
-It is important to notice that this feature relies on the class loader order to work, as we currently have to override a class
-from `mockito-core`, you should not have to do anything special to make it work, `mockito-scala` already pulls the right 
-version of `mockito-core` as a transitive dependency and it should be the only dependency you need, **BUT**, if you start getting 
-weird exceptions while trying to use `org.mockito.ByNameExperimental` you can try to be explicit with the `mockito-core` dependency.
-I can't tell you if you should put it before or after the `mockito-scala` dependency in your build file as it depends a lot
-on which build tool and IDE you use, so try it out.
-
-We are working with the mockito-core developers to add the necessary features in it so we can get rid of this hack as soon as we can, stay tuned!
-
-## Notes for Scala 2.11
-
+1) If you are not too fuss about dead code warnings in test code, you can add `scalacOptions in Test -= "-Ywarn-dead-code"` to 
+your build.sbt and that warning will be ignored for your tests **only**
+2) If you wanna keep the warning enabled for potentially real dead code statements, but get rid of the warnings related to the 
+matchers usage then you have to explicitly provide the type for the matcher, thus `any` would become `any[MyType]` and
+`*` would become `*[MyType]` (you can also use `anyShort`, `anyInt`, etc for the primitive types)
+ 
+# Scala 2.11
 Please note that in Scala 2.11 the following features are not supported
 
-* Default arguments on methods defined in traits (they will behave as before, getting `null` or a default value if they are of a primitive type)
-* Any kind of ArgumentMatchers for methods with by-name parameters (they'll throw an exception if used with ArgumentMatchers)
+* Default arguments on methods defined in traits (they will behave as before, getting `null` or a default value if they 
+are of a primitive type)
+* Any kind of `ArgumentMatcher[T]` for methods with by-name parameters (they'll throw an exception if used with `ArgumentMatcher[T]`)
 
 ## Authors
 

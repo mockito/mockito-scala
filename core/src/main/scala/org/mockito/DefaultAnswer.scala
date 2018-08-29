@@ -27,11 +27,18 @@ trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[A
 
 object DefaultAnswer {
   implicit val defaultAnswer: DefaultAnswer = ReturnsSmartNulls
+
+  def apply(from: Answer[_]): DefaultAnswer = new DecoratedAnswer(from)
 }
 
-object ReturnsDefaults extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEFAULTS.answer(invocation))
+class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {
+  override def apply(invocation: InvocationOnMock): Option[Any] = Option(from.answer(invocation))
 }
+
+
+object ReturnsDefaults extends DecoratedAnswer(RETURNS_DEFAULTS)
+object ReturnsDeepStubs extends DecoratedAnswer(RETURNS_DEEP_STUBS)
+object CallsRealMethods extends DecoratedAnswer(CALLS_REAL_METHODS)
 
 object ReturnsSmartNulls extends DefaultAnswer {
   override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEFAULTS.answer(invocation)).orElse {
@@ -54,14 +61,6 @@ object ReturnsSmartNulls extends DefaultAnswer {
           s"""You have a NullPointerException because this method call was *not* stubbed correctly:
              |[$unStubbedInvocation] on the Mock [${unStubbedInvocation.getMock}]""".stripMargin)
   }
-}
-
-object ReturnsDeepStubs extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEEP_STUBS.answer(invocation))
-}
-
-object CallsRealMethods extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(CALLS_REAL_METHODS.answer(invocation))
 }
 
 object ReturnsEmptyValues extends DefaultAnswer {

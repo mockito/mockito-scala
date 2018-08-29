@@ -27,7 +27,8 @@ import scala.reflect.runtime.universe.TypeTag
 
 private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = mock[T](DefaultAnswer(defaultAnswer))
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T
   def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
   def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
 
@@ -115,8 +116,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T =
-    mock(withSettings(defaultAnswer.lift))
+  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T =
+    mock(withSettings(defaultAnswer))
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code>

@@ -85,16 +85,16 @@ object MockitoScalaSession {
   }
 
   class UnexpectedInvocationsMockListener extends MockCreationListener {
-    def reportUnStubbedCalls(): UnexpectedInvocations =
-      UnexpectedInvocations(
-        mocks
-          .map(MockitoSugar.mockingDetails)
-          .flatMap(_.getInvocations.asScala)
-          .filter(_.stubInfo() == null)
-          .filterNot(_.isVerified)
-          .filterNot(_.getMethod.getName.contains("$default$"))
-          .toSet
-      )
+    def reportUnStubbedCalls(): UnexpectedInvocations = UnexpectedInvocations(
+      mocks
+        .map(MockitoSugar.mockingDetails)
+        .filterNot(_.getMockCreationSettings.isLenient)
+        .flatMap(_.getInvocations.asScala)
+        .filter(_.stubInfo() == null)
+        .filterNot(_.isVerified)
+        .filterNot(_.getMethod.getName.contains("$default$"))
+        .toSet
+    )
 
     private val mocks = mutable.Set.empty[AnyRef]
 

@@ -34,6 +34,13 @@ private[mockito] trait MockCreator {
 
   def spy[T](realObj: T): T
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
+
+  /**
+    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
+    */
+  def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
+    Mockito.withSettings().defaultAnswer(defaultAnswer)
+
 }
 
 //noinspection MutatorLikeMethodIsParameterless
@@ -208,12 +215,6 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * Delegates to <code>Mockito.mockingDetails()</code>, it's only here to expose the full Mockito API
    */
   def mockingDetails(toInspect: AnyRef): MockingDetails = Mockito.mockingDetails(toInspect)
-
-  /**
-   * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
-   */
-  def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
-    Mockito.withSettings().defaultAnswer(defaultAnswer)
 
   /**
    * Delegates to <code>Mockito.verifyNoMoreInteractions(Object... mocks)</code>, but ignores the default stubs that

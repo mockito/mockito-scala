@@ -168,6 +168,18 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
         }
       }
     }
+
+    "don't check unused stubs for lenient mocks" in {
+      MockitoScalaSession().run {
+        val foo = mock[Foo](withSettings.lenient())
+
+        foo.bar("pepe") shouldReturn "mocked"
+
+        foo.bar("pepe")
+
+        foo.bar("paco")
+      }
+    }
   }
 
 }

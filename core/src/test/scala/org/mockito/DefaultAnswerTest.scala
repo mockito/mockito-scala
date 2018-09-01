@@ -134,7 +134,7 @@ class DefaultAnswerTest
 
   "ReturnsEmptyValues" should {
     "return a default value for primitives" in {
-      val primitives = mock[Primitives](ReturnsEmptyValues)
+      val primitives = mock[Primitives](DefaultAnswers.ReturnsEmptyValues)
 
       primitives.barByte shouldBe 0.toByte
       primitives.barBoolean shouldBe false
@@ -147,7 +147,7 @@ class DefaultAnswerTest
     }
 
     "return the empty values for known classes" in {
-      val aMock = mock[KnownTypes](ReturnsEmptyValues)
+      val aMock = mock[KnownTypes](DefaultAnswers.ReturnsEmptyValues)
 
       aMock.returnsOption shouldBe None
       aMock.returnsList shouldBe List.empty

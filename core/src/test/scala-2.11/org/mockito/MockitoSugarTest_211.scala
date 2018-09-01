@@ -17,7 +17,7 @@ class MockitoSugarTest_211 extends WordSpec with MockitoSugar with scalatest.Mat
 
       aMock.traitMethod() shouldBe 69
 
-      verify(aMock).traitMethod(0, null)
+      verify(aMock).traitMethod(0, "")
     }
   }
 }

@@ -107,7 +107,7 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       when(aMock.iStartWithByNameArgs("arg1", "arg2")) thenReturn "mocked!"
 
       aMock.iStartWithByNameArgs("arg1", "arg2") shouldBe "mocked!"
-      aMock.iStartWithByNameArgs("arg111", "arg2") shouldBe null
+      aMock.iStartWithByNameArgs("arg111", "arg2") shouldBe ""
 
       verify(aMock).iStartWithByNameArgs("arg1", "arg2")
       verify(aMock).iStartWithByNameArgs("arg111", "arg2")
@@ -119,7 +119,7 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       when(aMock.iHavePrimitiveByNameArgs(1, "arg2")) thenReturn "mocked!"
 
       aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
-      aMock.iHavePrimitiveByNameArgs(2, "arg2") shouldBe null
+      aMock.iHavePrimitiveByNameArgs(2, "arg2") shouldBe ""
 
       verify(aMock).iHavePrimitiveByNameArgs(1, "arg2")
       verify(aMock).iHavePrimitiveByNameArgs(2, "arg2")
@@ -131,7 +131,7 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       when(aMock.iHaveFunction0Args(eqTo("arg1"), function0("arg2"))) thenReturn "mocked!"
 
       aMock.iHaveFunction0Args("arg1", () => "arg2") shouldBe "mocked!"
-      aMock.iHaveFunction0Args("arg1", () => "arg3") shouldBe null
+      aMock.iHaveFunction0Args("arg1", () => "arg3") shouldBe ""
 
       verify(aMock).iHaveFunction0Args(eqTo("arg1"), function0("arg2"))
       verify(aMock).iHaveFunction0Args(eqTo("arg1"), function0("arg3"))
@@ -156,8 +156,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
 
       reset(aMock)
 
-      aMock.bar shouldBe null
-      aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe null
+      aMock.bar shouldBe ""
+      aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe ""
 
       //to verify the reset mock handler still handles by-name params
       when(aMock.iHavePrimitiveByNameArgs(1, "arg2")) thenReturn "mocked!"

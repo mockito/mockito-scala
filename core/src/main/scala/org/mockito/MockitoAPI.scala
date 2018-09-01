@@ -27,12 +27,20 @@ import scala.reflect.runtime.universe.TypeTag
 
 private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = mock[T](DefaultAnswer(defaultAnswer))
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T
   def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
   def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
 
   def spy[T](realObj: T): T
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
+
+  /**
+    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
+    */
+  def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
+    Mockito.withSettings().defaultAnswer(defaultAnswer)
+
 }
 
 //noinspection MutatorLikeMethodIsParameterless
@@ -115,8 +123,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T =
-    mock(withSettings(defaultAnswer.lift))
+  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T =
+    mock(withSettings(defaultAnswer))
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code>
@@ -207,12 +215,6 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * Delegates to <code>Mockito.mockingDetails()</code>, it's only here to expose the full Mockito API
    */
   def mockingDetails(toInspect: AnyRef): MockingDetails = Mockito.mockingDetails(toInspect)
-
-  /**
-   * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
-   */
-  def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
-    Mockito.withSettings().defaultAnswer(defaultAnswer)
 
   /**
    * Delegates to <code>Mockito.verifyNoMoreInteractions(Object... mocks)</code>, but ignores the default stubs that

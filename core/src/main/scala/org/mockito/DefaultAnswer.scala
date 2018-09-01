@@ -1,10 +1,8 @@
 package org.mockito
 
-import java.lang.reflect.Modifier.{isAbstract, isFinal}
+import java.lang.reflect.Modifier.isAbstract
 
 import org.mockito.exceptions.base.MockitoException
-import org.mockito.exceptions.verification.SmartNullPointerException
-import org.mockito.internal.util.ObjectMethodsGuru.isToStringMethod
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.mockito.Answers._
@@ -27,43 +25,18 @@ trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[A
 
 object DefaultAnswer {
   implicit val defaultAnswer: DefaultAnswer = ReturnsSmartNulls
+
+  def apply(from: Answer[_]): DefaultAnswer = new DecoratedAnswer(from)
 }
 
-object ReturnsDefaults extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEFAULTS.answer(invocation))
+class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {
+  override def apply(invocation: InvocationOnMock): Option[Any] = Option(from.answer(invocation))
 }
 
-object ReturnsSmartNulls extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEFAULTS.answer(invocation)).orElse {
-    val returnType = invocation.getMethod.getReturnType
-
-    if (!returnType.isPrimitive && !isFinal(returnType.getModifiers))
-      Some(Mockito.mock(returnType, ThrowsSmartNullPointer(invocation)))
-    else
-      None
-  }
-
-  private case class ThrowsSmartNullPointer(unStubbedInvocation: InvocationOnMock) extends Answer[Any] {
-
-    override def answer(currentInvocation: InvocationOnMock): Any =
-      if (isToStringMethod(currentInvocation.getMethod))
-        s"""SmartNull returned by this un-stubbed method call on a mock:
-           |${unStubbedInvocation.toString}""".stripMargin
-      else
-        throw new SmartNullPointerException(
-          s"""You have a NullPointerException because this method call was *not* stubbed correctly:
-             |[$unStubbedInvocation] on the Mock [${unStubbedInvocation.getMock}]""".stripMargin)
-  }
-}
-
-object ReturnsDeepStubs extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEEP_STUBS.answer(invocation))
-}
-
-object CallsRealMethods extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(CALLS_REAL_METHODS.answer(invocation))
-}
-
+object ReturnsDefaults   extends DecoratedAnswer(RETURNS_DEFAULTS)
+object ReturnsDeepStubs  extends DecoratedAnswer(RETURNS_DEEP_STUBS)
+object CallsRealMethods  extends DecoratedAnswer(CALLS_REAL_METHODS)
+object ReturnsSmartNulls extends DecoratedAnswer(RETURNS_SMART_NULLS)
 object ReturnsEmptyValues extends DefaultAnswer {
   private val javaEmptyValuesAndPrimitives = new ReturnsMoreEmptyValues
 
@@ -87,4 +60,15 @@ object ReturnsEmptyValues extends DefaultAnswer {
 
   override def apply(invocation: InvocationOnMock): Option[Any] =
     Option(javaEmptyValuesAndPrimitives.answer(invocation)).orElse(emptyValues.get(invocation.getMethod.getReturnType))
+}
+
+/**
+ * Simple object to act as an 'enum' of DefaultAnswers
+ */
+object DefaultAnswers {
+  val ReturnsDefaults: DefaultAnswer    = org.mockito.ReturnsDefaults
+  val ReturnsDeepStubs: DefaultAnswer   = org.mockito.ReturnsDeepStubs
+  val CallsRealMethods: DefaultAnswer   = org.mockito.CallsRealMethods
+  val ReturnsSmartNulls: DefaultAnswer  = org.mockito.ReturnsSmartNulls
+  val ReturnsEmptyValues: DefaultAnswer = org.mockito.ReturnsEmptyValues
 }

@@ -95,13 +95,11 @@ class DefaultAnswerTest
 
       smartNull should not be null
 
-      val throwable: SmartNullPointerException = the[SmartNullPointerException] thrownBy {
+      val throwable = the[SmartNullPointerException] thrownBy {
         smartNull.callMeMaybe()
       }
 
-      throwable.getMessage shouldBe
-      s"""You have a NullPointerException because this method call was *not* stubbed correctly:
-           |[foo.userClass(42);] on the Mock [$aMock]""".stripMargin
+      throwable.getMessage should include("You have a NullPointerException here:")
     }
 
     "return a smart standard monad" in {
@@ -113,9 +111,7 @@ class DefaultAnswerTest
         smartNull.isEmpty
       }
 
-      throwable.getMessage shouldBe
-      s"""You have a NullPointerException because this method call was *not* stubbed correctly:
-           |[foo.returnsList();] on the Mock [$aMock]""".stripMargin
+      throwable.getMessage should include("You have a NullPointerException here:")
     }
 
     "return a default value for primitives" in {
@@ -138,7 +134,7 @@ class DefaultAnswerTest
 
   "ReturnsEmptyValues" should {
     "return a default value for primitives" in {
-      val primitives = mock[Primitives](ReturnsEmptyValues)
+      val primitives = mock[Primitives](DefaultAnswers.ReturnsEmptyValues)
 
       primitives.barByte shouldBe 0.toByte
       primitives.barBoolean shouldBe false
@@ -151,7 +147,7 @@ class DefaultAnswerTest
     }
 
     "return the empty values for known classes" in {
-      val aMock = mock[KnownTypes](ReturnsEmptyValues)
+      val aMock = mock[KnownTypes](DefaultAnswers.ReturnsEmptyValues)
 
       aMock.returnsOption shouldBe None
       aMock.returnsList shouldBe List.empty

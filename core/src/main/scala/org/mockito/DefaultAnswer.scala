@@ -33,11 +33,10 @@ class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {
   override def apply(invocation: InvocationOnMock): Option[Any] = Option(from.answer(invocation))
 }
 
-object ReturnsDefaults extends DecoratedAnswer(RETURNS_DEFAULTS)
-object ReturnsDeepStubs extends DecoratedAnswer(RETURNS_DEEP_STUBS)
-object CallsRealMethods extends DecoratedAnswer(CALLS_REAL_METHODS)
+object ReturnsDefaults   extends DecoratedAnswer(RETURNS_DEFAULTS)
+object ReturnsDeepStubs  extends DecoratedAnswer(RETURNS_DEEP_STUBS)
+object CallsRealMethods  extends DecoratedAnswer(CALLS_REAL_METHODS)
 object ReturnsSmartNulls extends DecoratedAnswer(RETURNS_SMART_NULLS)
-
 object ReturnsEmptyValues extends DefaultAnswer {
   private val javaEmptyValuesAndPrimitives = new ReturnsMoreEmptyValues
 
@@ -61,4 +60,15 @@ object ReturnsEmptyValues extends DefaultAnswer {
 
   override def apply(invocation: InvocationOnMock): Option[Any] =
     Option(javaEmptyValuesAndPrimitives.answer(invocation)).orElse(emptyValues.get(invocation.getMethod.getReturnType))
+}
+
+/**
+ * Simple object to act as an 'enum' of DefaultAnswers
+ */
+object DefaultAnswers {
+  val ReturnsDefaults: DefaultAnswer    = org.mockito.ReturnsDefaults
+  val ReturnsDeepStubs: DefaultAnswer   = org.mockito.ReturnsDeepStubs
+  val CallsRealMethods: DefaultAnswer   = org.mockito.CallsRealMethods
+  val ReturnsSmartNulls: DefaultAnswer  = org.mockito.ReturnsSmartNulls
+  val ReturnsEmptyValues: DefaultAnswer = org.mockito.ReturnsEmptyValues
 }

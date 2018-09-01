@@ -1,7 +1,8 @@
 package org.mockito
 
-import org.mockito.MockitoScalaSession.UnexpectedInvocationsMockListener
-import org.mockito.exceptions.misusing.UnexpectedInvocationException
+import org.mockito.MockitoScalaSession.{MockitoScalaSessionListener, UnexpectedInvocations}
+import org.mockito.exceptions.misusing.{UnexpectedInvocationException, UnnecessaryStubbingException}
+import org.mockito.internal.stubbing.StubbedInvocationMatcher
 import org.mockito.invocation.{DescribedInvocation, Invocation, Location}
 import org.mockito.listeners.MockCreationListener
 import org.mockito.mock.MockCreationSettings
@@ -13,7 +14,7 @@ import scala.collection.mutable
 import scala.collection.JavaConverters._
 
 class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoSessionLogger) {
-  private val listener       = new UnexpectedInvocationsMockListener
+  private val listener       = new MockitoScalaSessionListener
   private val mockitoSession = Mockito.mockitoSession().name(name).logger(logger).strictness(strictness).startMocking()
 
   Mockito.framework().addListener(listener)
@@ -22,16 +23,17 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
     try {
       t.fold {
         mockitoSession.finishMocking()
-        listener.reportUnStubbedCalls().reportUnexpectedInvocations()
+        listener.reportIssues().foreach(_.report())
       } {
         case e: NullPointerException =>
           mockitoSession.finishMocking(e)
-          val unStubbedCalls = listener.reportUnStubbedCalls()
-          if (unStubbedCalls.nonEmpty)
-            throw new UnexpectedInvocationException(s"""A NullPointerException was thrown, check if maybe related to
-               |$unStubbedCalls""".stripMargin,
-                                                    e)
-          else throw e
+          listener.reportIssues().foreach {
+            case unStubbedCalls: UnexpectedInvocations if unStubbedCalls.nonEmpty =>
+              throw new UnexpectedInvocationException(s"""A NullPointerException was thrown, check if maybe related to
+                   |$unStubbedCalls""".stripMargin,
+                                                      e)
+            case _ => throw e
+          }
         case other =>
           mockitoSession.finishMocking(other)
           throw other
@@ -63,7 +65,11 @@ object MockitoScalaSession {
     override def getLocation: Location = SyntheticLocation
   }
 
-  case class UnexpectedInvocations(invocations: Set[Invocation]) {
+  trait Reporter {
+    def report(): Unit
+  }
+
+  case class UnexpectedInvocations(invocations: Set[Invocation]) extends Reporter {
     def nonEmpty: Boolean = invocations.nonEmpty
 
     override def toString: String =
@@ -80,25 +86,59 @@ object MockitoScalaSession {
            |Please make sure you aren't missing any stubbing or that your code actually does what you want""".stripMargin
       } else "No unexpected invocations found"
 
-    def reportUnexpectedInvocations(): Unit =
-      if (nonEmpty) throw new UnexpectedInvocationException(toString)
+    def report(): Unit = if (nonEmpty) throw new UnexpectedInvocationException(toString)
   }
 
-  class UnexpectedInvocationsMockListener extends MockCreationListener {
-    def reportUnStubbedCalls(): UnexpectedInvocations = UnexpectedInvocations(
-      mocks
-        .map(MockitoSugar.mockingDetails)
-        .filterNot(_.getMockCreationSettings.isLenient)
-        .flatMap(_.getInvocations.asScala)
-        .filter(_.stubInfo() == null)
+  case class UnusedStubbings(stubbings: Set[StubbedInvocationMatcher]) extends Reporter {
+    def nonEmpty: Boolean = stubbings.nonEmpty
+
+    override def toString: String =
+      if (nonEmpty) {
+        val locations = stubbings.zipWithIndex
+          .map {
+            case (stubbing, idx) => s"${idx + 1}. $stubbing ${stubbing.getLocation}"
+          }
+          .mkString("\n")
+        s"""Unnecessary stubbings detected.
+           |
+           |Clean & maintainable test code requires zero unnecessary code.
+           |Following stubbings are unnecessary (click to navigate to relevant line of code):
+           |$locations
+           |Please remove unnecessary stubbings or use 'lenient' strictness. More info: javadoc for UnnecessaryStubbingException class.""".stripMargin
+      } else "No unexpected invocations found"
+
+    def report(): Unit = if (nonEmpty) throw new UnnecessaryStubbingException(toString)
+  }
+
+  class MockitoScalaSessionListener extends MockCreationListener {
+    def reportIssues(): Seq[Reporter] = {
+      val mockDetails = mocks.toSet.map(MockitoSugar.mockingDetails)
+
+      val stubbings = mockDetails
+        .flatMap(_.getStubbings.asScala)
+        .collect {
+          case s: StubbedInvocationMatcher => s
+        }
+
+      val invocations = mockDetails.flatMap(_.getInvocations.asScala)
+
+      val unexpectedInvocations = invocations
         .filterNot(_.isVerified)
         .filterNot(_.getMethod.getName.contains("$default$"))
-        .toSet
-    )
+        .filterNot(i => stubbings.exists(_.matches(i)))
+
+      val unusedStubbings = stubbings.filterNot(sm => invocations.exists(sm.matches)).filter(!_.wasUsed())
+
+      Seq(
+        UnexpectedInvocations(unexpectedInvocations),
+        UnusedStubbings(unusedStubbings)
+      )
+    }
 
     private val mocks = mutable.Set.empty[AnyRef]
 
-    override def onMockCreated(mock: AnyRef, settings: MockCreationSettings[_]): Unit = mocks += mock
+    override def onMockCreated(mock: AnyRef, settings: MockCreationSettings[_]): Unit =
+      if (!settings.isLenient) mocks += mock
   }
 }
 

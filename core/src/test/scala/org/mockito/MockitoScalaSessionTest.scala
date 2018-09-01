@@ -3,10 +3,10 @@ package org.mockito
 import org.scalatest
 import org.mockito.exceptions.misusing.{PotentialStubbingProblem, UnexpectedInvocationException, UnnecessaryStubbingException}
 import org.mockito.exceptions.verification.SmartNullPointerException
-import org.scalatest.WordSpec
+import org.scalatest.{OptionValues, WordSpec}
 
 //noinspection RedundantDefaultArgument
-class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalatest.Matchers {
+class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalatest.Matchers with OptionValues {
 
   class Foo {
     def bar(a: String) = "bar"
@@ -19,11 +19,17 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
   }
 
   class Bar {
-    def callMeMaybe: Option[Boolean] = None
+    def callMeMaybe: Baz = ???
+    def dontCallMe: Baz  = ???
+  }
+
+  class Baz {
+    def callMe: Option[String]     = ???
+    def dontCallMe: Option[String] = ???
   }
 
   final class BarFinal {
-    def callMeMaybe: Option[Boolean] = None
+    def callMeMaybe: Option[Boolean] = ???
   }
 
   "MockitoScalaSession" should {
@@ -74,7 +80,8 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
         }
       }
 
-      thrown.getMessage should startWith("You have a NullPointerException because this method call was *not* stubbed correctly")
+      thrown.getMessage should startWith(
+        "You have a NullPointerException because this method call was *not* stubbed correctly")
     }
 
     "check incorrect stubs after the expected one was called on a final class" in {
@@ -179,6 +186,55 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
         foo.bar("paco")
       }
+    }
+
+    "work with nested deep stubs" in {
+      MockitoScalaSession().run {
+        val foo = mock[Foo](ReturnsDeepStubs)
+
+        foo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
+
+        foo.userClass.callMeMaybe.callMe.value shouldBe "my number"
+      }
+    }
+
+    "not fail if a final deep stub is called in a non stubbed method" in {
+      MockitoScalaSession().run {
+        val foo = mock[Foo](ReturnsDeepStubs)
+
+        foo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
+
+        foo.userClass.callMeMaybe.callMe.value shouldBe "my number"
+
+        foo.userClass.callMeMaybe.dontCallMe
+
+      }
+    }
+
+    "not fail if a nested deep stub is called in a non stubbed method" in {
+      MockitoScalaSession().run {
+        val foo = mock[Foo](ReturnsDeepStubs)
+
+        foo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
+
+        foo.userClass.callMeMaybe.callMe.value shouldBe "my number"
+
+        foo.userClass.dontCallMe
+
+      }
+    }
+
+    "fail if a nested deep stub is stubbed but not used" in {
+      val thrown = the[UnnecessaryStubbingException] thrownBy {
+        MockitoScalaSession().run {
+          val foo = mock[Foo](ReturnsDeepStubs)
+
+          foo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
+
+        }
+      }
+
+      thrown.getMessage should startWith("Unnecessary stubbings detected")
     }
   }
 

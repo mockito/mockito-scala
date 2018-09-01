@@ -1,10 +1,8 @@
 package org.mockito
 
-import java.lang.reflect.Modifier.{isAbstract, isFinal}
+import java.lang.reflect.Modifier.isAbstract
 
 import org.mockito.exceptions.base.MockitoException
-import org.mockito.exceptions.verification.SmartNullPointerException
-import org.mockito.internal.util.ObjectMethodsGuru.isToStringMethod
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.mockito.Answers._
@@ -35,33 +33,10 @@ class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {
   override def apply(invocation: InvocationOnMock): Option[Any] = Option(from.answer(invocation))
 }
 
-
 object ReturnsDefaults extends DecoratedAnswer(RETURNS_DEFAULTS)
 object ReturnsDeepStubs extends DecoratedAnswer(RETURNS_DEEP_STUBS)
 object CallsRealMethods extends DecoratedAnswer(CALLS_REAL_METHODS)
-
-object ReturnsSmartNulls extends DefaultAnswer {
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(RETURNS_DEFAULTS.answer(invocation)).orElse {
-    val returnType = invocation.getMethod.getReturnType
-
-    if (!returnType.isPrimitive && !isFinal(returnType.getModifiers))
-      Some(Mockito.mock(returnType, ThrowsSmartNullPointer(invocation)))
-    else
-      None
-  }
-
-  private case class ThrowsSmartNullPointer(unStubbedInvocation: InvocationOnMock) extends Answer[Any] {
-
-    override def answer(currentInvocation: InvocationOnMock): Any =
-      if (isToStringMethod(currentInvocation.getMethod))
-        s"""SmartNull returned by this un-stubbed method call on a mock:
-           |${unStubbedInvocation.toString}""".stripMargin
-      else
-        throw new SmartNullPointerException(
-          s"""You have a NullPointerException because this method call was *not* stubbed correctly:
-             |[$unStubbedInvocation] on the Mock [${unStubbedInvocation.getMock}]""".stripMargin)
-  }
-}
+object ReturnsSmartNulls extends DecoratedAnswer(RETURNS_SMART_NULLS)
 
 object ReturnsEmptyValues extends DefaultAnswer {
   private val javaEmptyValuesAndPrimitives = new ReturnsMoreEmptyValues

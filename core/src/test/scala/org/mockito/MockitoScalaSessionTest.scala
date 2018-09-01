@@ -68,7 +68,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
         }
       }
 
-      thrown.getMessage should startWith("A NullPointerException was thrown, check if maybe related to")
+      thrown.getMessage should startWith("Unexpected invocations found")
     }
 
     "check SmartNull" in {
@@ -80,8 +80,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
         }
       }
 
-      thrown.getMessage should startWith(
-        "You have a NullPointerException because this method call was *not* stubbed correctly")
+      thrown.getMessage should include("You have a NullPointerException here:")
     }
 
     "check incorrect stubs after the expected one was called on a final class" in {

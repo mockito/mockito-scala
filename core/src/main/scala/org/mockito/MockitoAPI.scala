@@ -17,7 +17,7 @@ import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{DefaultAnswer, ScalaFirstStubbing, Stubber}
+import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaFirstStubbing, Stubber}
 import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
 
 import scala.collection.JavaConverters._
@@ -26,7 +26,7 @@ import scala.reflect.runtime.universe.TypeTag
 
 private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T = mock[T](DefaultAnswer(defaultAnswer))
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[T]): T = mock[T](DefaultAnswer(defaultAnswer))
   def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T
   def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
   def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T

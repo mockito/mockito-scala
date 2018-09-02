@@ -2,7 +2,6 @@ package org.mockito.stubbing
 
 import java.lang.reflect.Modifier.isAbstract
 
-import org.mockito.Mockito
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.Answers._
@@ -60,15 +59,4 @@ object ReturnsEmptyValues extends DefaultAnswer {
 
   override def apply(invocation: InvocationOnMock): Option[Any] =
     Option(javaEmptyValuesAndPrimitives.answer(invocation)).orElse(emptyValues.get(invocation.getMethod.getReturnType))
-}
-
-/**
- * Simple object to act as an 'enum' of DefaultAnswers
- */
-object DefaultAnswers {
-  val ReturnsDefaults: DefaultAnswer    = org.mockito.ReturnsDefaults
-  val ReturnsDeepStubs: DefaultAnswer   = org.mockito.ReturnsDeepStubs
-  val CallsRealMethods: DefaultAnswer   = org.mockito.CallsRealMethods
-  val ReturnsSmartNulls: DefaultAnswer  = org.mockito.ReturnsSmartNulls
-  val ReturnsEmptyValues: DefaultAnswer = org.mockito.ReturnsEmptyValues
 }

@@ -1,7 +1,7 @@
 package org.mockito.stubbing
 
 import org.scalatest
-import org.mockito.IdiomaticMockito
+import org.mockito.{DefaultAnswers, IdiomaticMockito}
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.invocation.InvocationOnMock
@@ -62,13 +62,7 @@ object DefaultAnswerTest {
   }
 }
 
-class DefaultAnswerTest
-    extends WordSpec
-    with scalatest.Matchers
-    with IdiomaticMockito
-    with TryValues
-    with OptionValues
-    with ScalaFutures {
+class DefaultAnswerTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with TryValues with OptionValues with ScalaFutures {
 
   "DefaultAnswer" should {
     "resolve default parameters" in {

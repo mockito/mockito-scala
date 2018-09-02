@@ -1,10 +1,10 @@
 package org.mockito
 
 import org.scalatest
-import org.mockito.exceptions.misusing.{ PotentialStubbingProblem, UnexpectedInvocationException, UnnecessaryStubbingException }
+import org.mockito.exceptions.misusing.{PotentialStubbingProblem, UnexpectedInvocationException, UnnecessaryStubbingException}
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.quality.Strictness
-import org.scalatest.{ OptionValues, WordSpec }
+import org.scalatest.{OptionValues, WordSpec}
 
 //noinspection RedundantDefaultArgument
 class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalatest.Matchers with ArgumentMatchersSugar with OptionValues {
@@ -259,7 +259,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
     }
     "work with nested deep stubs" in {
       MockitoScalaSession().run {
-        val foo = mock[Foo](ReturnsDeepStubs)
+        val foo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
         foo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
 
@@ -269,7 +269,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "not fail if a final deep stub is called in a non stubbed method" in {
       MockitoScalaSession().run {
-        val foo = mock[Foo](ReturnsDeepStubs)
+        val foo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
         foo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
 
@@ -282,7 +282,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
     "not fail if a nested deep stub is called in a non stubbed method" in {
       MockitoScalaSession().run {
-        val foo = mock[Foo](ReturnsDeepStubs)
+        val foo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
         foo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
 
@@ -296,7 +296,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
     "fail if a nested deep stub is stubbed but not used" in {
       val thrown = the[UnnecessaryStubbingException] thrownBy {
         MockitoScalaSession().run {
-          val foo = mock[Foo](ReturnsDeepStubs)
+          val foo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
           foo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
 

@@ -16,6 +16,7 @@ import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
+import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
 import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaFirstStubbing, Stubber}
 import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
@@ -26,7 +27,7 @@ import scala.reflect.runtime.universe.TypeTag
 
 private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[T]): T = mock[T](DefaultAnswer(defaultAnswer))
+  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = mock[T](DefaultAnswer(defaultAnswer))
   def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T
   def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
   def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
@@ -35,8 +36,8 @@ private[mockito] trait MockCreator {
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
 
   /**
-    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
+   */
   def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
     Mockito.withSettings().defaultAnswer(defaultAnswer)
 
@@ -89,8 +90,10 @@ private[mockito] trait DoSomething {
    */
   def doAnswer[R](f: => R): Stubber =
     Mockito.doAnswer(invocationToAnswer(_ => f))
-  def doAnswer[P0, R](f: P0 => R): Stubber =
-    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0: ClassTag, R](f: P0 => R): Stubber = clazz[P0] match {
+    case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
+    case _                                   => Mockito.doAnswer(functionToAnswer(f))
+  }
   def doAnswer[P0, P1, R](f: (P0, P1) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
   def doAnswer[P0, P1, P2, R](f: (P0, P1, P2) => R): Stubber =

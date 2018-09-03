@@ -1,5 +1,6 @@
 package org.mockito
 
+import org.mockito.invocation.InvocationOnMock
 import org.scalatest.{WordSpec, Matchers => ScalaTestMatchers}
 
 import scala.language.postfixOps
@@ -53,6 +54,16 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
       val aMock = mock[Foo]
 
       doAnswer((i: Int, s: String) => i * 10 + s.toInt toString).when(aMock).doSomethingWithThisIntAndString(*, *)
+
+      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
+    }
+
+    "simplify answer API (invocation usage)" in {
+      val aMock = mock[Foo]
+
+      doAnswer((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + i.getArgument[String](1).toInt toString)
+        .when(aMock)
+        .doSomethingWithThisIntAndString(*, *)
 
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
     }

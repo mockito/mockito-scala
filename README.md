@@ -25,6 +25,15 @@ The library has independent developers, release cycle and versioning from core m
 
 ## Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test)
 
+## Migration Notes for version 1.0.0
+* `DefaultAnswer` was moved from `org.mockito.DefaultAnswer` to `org.mockito.stubbing.DefaultAnswer`
+* The recommended way to use the pre-defined `DefaultAnswer`s is via the object `org.mockito.DefaultAnswers`
+* `*` matcher is now defined in `org.mockito.ArgumentMatchersSugar`, mixin (or use the companion object) this trait whenever you wanna use it
+* `argumentCaptor[String]` was removed, replace by either `ArgCaptor[T]` (`Captor[T]` was renamed to `ArgCaptor[T]` to add clarity) or `ValCaptor[T]` as needed, (see [Improved ArgumentCaptor](#improved-argumentcaptor)) 
+* The usage of `org.mockito.Answer[T]` was removed from the API in favour of [Function Answers](#function-answers)
+* If you were using something like `doAnswer(_ => <something>).when ...` to lazily compute a return value when the method is actually called you should now write it like `doAnswer(<something>).when ...`, no need of passing a function as that argument is by-name
+* If you have chained return values like `when(myMock.foo) thenReturn "a" thenReturn "b" etc...` the syntax has changed a bit to `when(myMock.foo) thenReturn "a" andThen "b" etc...`
+
 ## Getting started
 
 ## `org.mockito.MockitoSugar`
@@ -63,13 +72,13 @@ Again, the companion object also extends the trait to allow the usage of the API
 ### Value Class Matchers
 
 The matchers for the value classes always require the type to be explicit, apart from that, they should be used as any other matcher, e.g.
-   ```scala
+```scala
 when(myObj.myMethod(anyVal[MyValueClass]) thenReturn "something"
 
 myObj.myMethod(MyValueClass(456)) shouldBe "something"
 
 verify(myObj).myMethod(eqToVal[MyValueClass](456))
-   ```
+```
 
 ## Improved ArgumentCaptor
 
@@ -94,7 +103,7 @@ captor.getValue shouldBe "it worked!"
 Now:
 ```scala
 val aMock  = mock[Foo]
-val captor = Captor[String]
+val captor = ArgCaptor[String]
 
 aMock.stringArgument("it worked!")
 
@@ -109,7 +118,7 @@ As you can see there is no need to call `capture()` nor `getValue` anymore (alth
 
 There is another constructor `ValCaptor[T]` that should be used to capture value classes
 
-Both `Captor[T]` and `ValCaptor[T]` return an instance of `ArgCaptor[T]` so the API is the same for both
+Both `ArgCaptor[T]` and `ValCaptor[T]` return an instance of `Captor[T]` so the API is the same for both
 
 ## `org.mockito.MockitoScalaSession`
 
@@ -301,6 +310,24 @@ Of course you can override the default behaviour, for this you have 2 options
 2) If you wanna do it for all the mocks in a test, you can define an `implicit`, i.e. `implicit val defaultAnswer: DefaultAnswer = MyDefaultAnswer`
 
 DefaultAnswers are also composable, so for example if you wanted empty values first and then smart nulls you could do `implicit val defaultAnswer: DefaultAnswer = ReturnsEmptyValues orElse ReturnsSmartNulls`
+
+## Function Answers
+`org.mockito.Answer[T]` can be a bit boilerplate-ish, mostly if you're still in Scala 2.11 (in 2.12 with SAM is much nicer),
+to simplify the usage for both versions is that we replaced it by standard scala functions, so instead of 
+```scala
+when(myMock.foo("bar", 42)) thenAnswer new Answer[String] {
+  override def answer(invocation: InvocationOnMock): String = i.getArgument[String](0) + i.getArgument[Int](1)
+}
+```
+We can now write: (this may be nothing new for users of 2.12, but at least now the API is consistent for both 2.11 and 2.12)
+```scala
+when(myMock.foo("bar", 42)) thenAnswer ((i: InvocationOnMock) => i.getArgument[String](0) + i.getArgument[Int](1))
+```
+
+I guess we all agree that's much better, but, it gets even better, we can now pass standard functions that work over the arguments, we only need to take care to pass the right types, so the previous example would become
+```scala
+when(myMock.foo("bar", 42)) thenAnswer ((v1: String, v2: Int) => v1 + v2)
+```
 
 ## Notes
 

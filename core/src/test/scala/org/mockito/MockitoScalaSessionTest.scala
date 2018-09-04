@@ -3,6 +3,7 @@ package org.mockito
 import org.scalatest
 import org.mockito.exceptions.misusing.{PotentialStubbingProblem, UnexpectedInvocationException, UnnecessaryStubbingException}
 import org.mockito.exceptions.verification.SmartNullPointerException
+import org.mockito.quality.Strictness
 import org.scalatest.{OptionValues, WordSpec}
 
 //noinspection RedundantDefaultArgument
@@ -175,7 +176,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
       }
     }
 
-    "don't check unused stubs for lenient mocks" in {
+    "don't check unexpected stubs for lenient mocks" in {
       MockitoScalaSession().run {
         val foo = mock[Foo](withSettings.lenient())
 
@@ -186,7 +187,76 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
         foo.bar("paco")
       }
     }
+    "check unexpected stubs for lenient mocks" in {
+      intercept[UnexpectedInvocationException] {
+        MockitoScalaSession().run {
+          val foo = mock[Foo]
 
+          foo.bar("pepe") shouldReturn "mocked"
+
+          foo.bar("pepe")
+
+          foo.bar("paco")
+        }
+      }
+    }
+
+    "don't check unexpected stubs in lenient setting" in {
+      MockitoScalaSession(strictness = Strictness.LENIENT).run {
+        val foo = mock[Foo]
+
+        foo.bar("pepe") shouldReturn "mocked"
+
+        foo.bar("pepe")
+
+        foo.bar("paco")
+      }
+    }
+    "check unexpected stubs in lenient setting" in {
+      intercept[UnexpectedInvocationException] {
+        MockitoScalaSession().run {
+          val foo = mock[Foo]
+
+          foo.bar("pepe") shouldReturn "mocked"
+
+          foo.bar("pepe")
+
+          foo.bar("paco")
+        }
+      }
+    }
+
+    "don't check unused stubs for lenient mocks" in {
+      MockitoScalaSession().run {
+        val foo = mock[Foo](withSettings.lenient())
+        foo.bar("pepe") shouldReturn "mocked"
+      }
+    }
+
+    "check unused stubs for not lenient mocks" in {
+      intercept[UnnecessaryStubbingException] {
+        MockitoScalaSession().run {
+          val foo = mock[Foo]
+          foo.bar("pepe") shouldReturn "mocked"
+        }
+      }
+    }
+
+    "don't check unused stubs in lenient setting" in {
+      MockitoScalaSession(strictness = Strictness.LENIENT).run {
+        val foo = mock[Foo]
+        foo.bar("pepe") shouldReturn "mocked"
+      }
+    }
+
+    "check unused stubs in not lenient setting" in {
+      intercept[UnnecessaryStubbingException] {
+        MockitoScalaSession(strictness = Strictness.STRICT_STUBS).run {
+          val foo = mock[Foo]
+          foo.bar("pepe") shouldReturn "mocked"
+        }
+      }
+    }
     "work with nested deep stubs" in {
       MockitoScalaSession().run {
         val foo = mock[Foo](ReturnsDeepStubs)

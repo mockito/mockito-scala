@@ -284,6 +284,38 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       }
     }
 
+    "check a method was called at least twice" in {
+      val aMock = mock[Foo]
+
+      aMock.bar
+
+      a[TooLittleActualInvocations] should be thrownBy {
+        aMock wasCalled atLeastTwiceOn bar
+      }
+
+      aMock.bar
+
+      aMock wasCalled atLeastTwiceOn bar
+    }
+
+    "check a method was called at most twice" in {
+      val aMock = mock[Foo]
+
+      aMock.bar
+
+      aMock wasCalled atMostTwiceOn bar
+
+      aMock.bar
+
+      aMock wasCalled atMostTwiceOn bar
+
+      aMock.bar
+
+      a[MoreThanAllowedActualInvocations] should be thrownBy {
+        aMock wasCalled atMostTwiceOn bar
+      }
+    }
+
     "check a method was called more times than expected" in {
       val aMock = mock[Foo]
 

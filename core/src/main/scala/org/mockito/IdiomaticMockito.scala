@@ -1,7 +1,7 @@
 package org.mockito
 
-import org.mockito.stubbing.{Answer, OngoingStubbing}
-import org.mockito.MockitoSugar.{verify, _}
+import org.mockito.stubbing.{ Answer, OngoingStubbing }
+import org.mockito.MockitoSugar.{ verify, _ }
 
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
@@ -13,7 +13,8 @@ trait IdiomaticMockito extends MockCreator {
 
   override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = MockitoSugar.mock[T](mockSettings)
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T = MockitoSugar.mock[T](defaultAnswer)
+  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T =
+    MockitoSugar.mock[T](defaultAnswer)
 
   override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T =
     MockitoSugar.mock[T]
@@ -180,28 +181,56 @@ trait IdiomaticMockito extends MockCreator {
   }
   class Again
   case class Times(times: Int)
+  case class AtLeast(times: Int)
+  case class AtMost(times: Int)
 
-  val on           = new On
-  val onlyOn       = new OnlyOn
-  val never        = new Never
-  val again        = new Again
-  val onceOn       = Times(1)
-  val twiceOn      = Times(2)
-  val thriceOn     = Times(3)
-  val threeTimesOn = Times(3)
-  val fourTimesOn  = Times(4)
-  val fiveTimesOn  = Times(5)
-  val sixTimesOn   = Times(6)
-  val sevenTimesOn = Times(7)
-  val eightTimesOn = Times(8)
-  val nineTimesOn  = Times(9)
-  val tenTimesOn   = Times(10)
+  val on                  = new On
+  val onlyOn              = new OnlyOn
+  val never               = new Never
+  val again               = new Again
+  val onceOn              = Times(1)
+  val twiceOn             = Times(2)
+  val thriceOn            = Times(3)
+  val threeTimesOn        = Times(3)
+  val fourTimesOn         = Times(4)
+  val fiveTimesOn         = Times(5)
+  val sixTimesOn          = Times(6)
+  val sevenTimesOn        = Times(7)
+  val eightTimesOn        = Times(8)
+  val nineTimesOn         = Times(9)
+  val tenTimesOn          = Times(10)
+  val atLeastOnceOn       = AtLeast(1)
+  val atLeastTwiceOn      = AtLeast(2)
+  val atLeastThriceOn     = AtLeast(3)
+  val atLeastThreeTimesOn = AtLeast(3)
+  val atLeastFourTimesOn  = AtLeast(4)
+  val atLeastFiveTimesOn  = AtLeast(5)
+  val atLeastSixTimesOn   = AtLeast(6)
+  val atLeastSevenTimesOn = AtLeast(7)
+  val atLeastEightTimesOn = AtLeast(8)
+  val atLeastNineTimesOn  = AtLeast(9)
+  val atLeastTenTimesOn   = AtLeast(10)
+  val atMostOnceOn        = AtMost(1)
+  val atMostTwiceOn       = AtMost(2)
+  val atMostThriceOn      = AtMost(3)
+  val atMostThreeTimesOn  = AtMost(3)
+  val atMostFourTimesOn   = AtMost(4)
+  val atMostFiveTimesOn   = AtMost(5)
+  val atMostSixTimesOn    = AtMost(6)
+  val atMostSevenTimesOn  = AtMost(7)
+  val atMostEightTimesOn  = AtMost(8)
+  val atMostNineTimesOn   = AtMost(9)
+  val atMostTenTimesOn    = AtMost(10)
 
   implicit class VerificationOps[T <: AnyRef](mock: T)(implicit order: Option[InOrder] = None) {
 
     def wasCalled(on: On): T = order.fold(verify(mock))(_.verify(mock))
 
     def wasCalled(t: Times): T = order.fold(verify(mock, times(t.times)))(_.verify(mock, times(t.times)))
+
+    def wasCalled(t: AtLeast): T = order.fold(verify(mock, atLeast(t.times)))(_.verify(mock, times(t.times)))
+
+    def wasCalled(t: AtMost): T = order.fold(verify(mock, atMost(t.times)))(_.verify(mock, times(t.times)))
 
     def wasCalled(onlyOn: OnlyOn): T = order.fold(verify(mock, only))(_.verify(mock, only))
 

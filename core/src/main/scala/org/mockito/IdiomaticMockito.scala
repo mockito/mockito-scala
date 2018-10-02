@@ -1,8 +1,10 @@
 package org.mockito
 
-import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaOngoingStubbing }
-import org.mockito.MockitoSugar.{ verify, _ }
+import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaOngoingStubbing}
+import org.mockito.MockitoSugar.{verify, _}
+import org.mockito.WhenMacro._
 
+import scala.language.experimental.macros
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
@@ -25,49 +27,13 @@ trait IdiomaticMockito extends MockCreator {
 
   implicit class StubbingOps[T](stubbing: => T) {
 
-    def shouldReturn(value: T): ScalaOngoingStubbing[T] = when(stubbing) thenReturn value
+    def shouldReturn: ReturnActions[T] = macro WhenMacro.shouldReturn[T]
 
-    def shouldCallRealMethod: ScalaOngoingStubbing[T] = when(stubbing) thenCallRealMethod ()
+    def shouldCallRealMethod: ScalaOngoingStubbing[T] = macro WhenMacro.shouldCallRealMethod[T]
 
-    def shouldThrow[E <: Throwable: ClassTag]: ScalaOngoingStubbing[T] = when(stubbing).thenThrow[E]
+    def shouldThrow: ThrowActions[T] = macro WhenMacro.shouldThrow[T]
 
-    def shouldThrow[E <: Throwable](e: E): ScalaOngoingStubbing[T] = when(stubbing) thenThrow e
-
-    def shouldAnswer(f: => T): ScalaOngoingStubbing[T] = when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1](f: (P0, P1) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2](f: (P0, P1, P2) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
-
-    def shouldAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaOngoingStubbing[T] =
-      when(stubbing) thenAnswer f
+    def shouldAnswer: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
 
   }
 

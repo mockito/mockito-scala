@@ -1,9 +1,9 @@
 package org.mockito
 
-import org.scalatest
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
+import org.scalatest
 import org.scalatest.WordSpec
 
 import scala.language.postfixOps
@@ -52,20 +52,22 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.bar shouldBe "mocked again!"
     }
 
+    "create a mock where I can mix matchers and normal parameters" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisIntAndString(*, "test") shouldReturn "mocked!"
+
+      aMock.doSomethingWithThisIntAndString(3, "test") shouldBe "mocked!"
+      aMock.doSomethingWithThisIntAndString(5, "test") shouldBe "mocked!"
+      aMock.doSomethingWithThisIntAndString(5, "est") shouldBe ""
+    }
+
     "stub a real call" in {
       val aMock = mock[Foo]
 
       aMock.bar shouldCallRealMethod
 
       aMock.bar shouldBe "not mocked"
-    }
-
-    "stub an exception to be thrown" in {
-      val aMock = mock[Foo]
-
-      aMock.bar.shouldThrow[IllegalArgumentException]
-
-      an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
     }
 
     "stub an exception instance to be thrown" in {
@@ -115,6 +117,16 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.doSomethingWithThisInt(4) shouldBe 42
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
       aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
+    }
+
+    "create a mock where I can mix matchers and normal parameters (answer)" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisIntAndString(*, "test") shouldAnswer "mocked!"
+
+      aMock.doSomethingWithThisIntAndString(3, "test") shouldBe "mocked!"
+      aMock.doSomethingWithThisIntAndString(5, "test") shouldBe "mocked!"
+      aMock.doSomethingWithThisIntAndString(5, "est") shouldBe ""
     }
 
     "simplify answer API (invocation usage)" in {

@@ -8,7 +8,7 @@ trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications w
   /**
     * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
     */
-  def when[T](expr: T): ScalaFirstStubbing[T] = macro WhenMacro.materialise[T]
+  def when[T](expr: T): ScalaFirstStubbing[T] = macro WhenMacro.traditionalWhen[T]
 
 }
 

@@ -1,7 +1,5 @@
 package org.mockito.stubbing
 
-import java.lang.reflect.Modifier.isAbstract
-
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.Answers._
@@ -11,11 +9,7 @@ import scala.concurrent.Future
 import scala.util.{Failure, Try}
 
 trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[Any]] { self =>
-  override def answer(invocation: InvocationOnMock): Any =
-    if (invocation.getMethod.getName.contains("$default$") && !isAbstract(invocation.getMethod.getModifiers))
-      invocation.callRealMethod()
-    else
-      apply(invocation).orNull
+  override def answer(invocation: InvocationOnMock): Any = apply(invocation).orNull
 
   def orElse(next: DefaultAnswer): DefaultAnswer = new DefaultAnswer {
     override def apply(invocation: InvocationOnMock): Option[Any] = self(invocation).orElse(next(invocation))

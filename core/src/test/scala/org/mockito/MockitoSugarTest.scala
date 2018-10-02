@@ -228,8 +228,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       val captor2 = ArgCaptor[String]
       verify(aMock).iHaveSomeDefaultArguments(captor1, captor2)
 
-      captor1 shouldHave "I'm not gonna pass the second argument"
-      captor2 shouldHave "default value"
+      captor1 hasCaptured "I'm not gonna pass the second argument"
+      captor2 hasCaptured "default value"
     }
   }
 

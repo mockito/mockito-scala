@@ -2,8 +2,8 @@ package org.mockito.captor
 
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
 
-import scala.language.implicitConversions
 import scala.language.experimental.macros
+import scala.language.implicitConversions
 import scala.reflect.macros.blackbox
 
 trait Captor[T] {
@@ -14,9 +14,7 @@ trait Captor[T] {
 
   def values: List[T]
 
-  def shouldHave(expectation: T): Unit = if (expectation != value) throw new ArgumentsAreDifferent(s"Got [$value] instead of [$expectation]")
-
-  def <->(expectation: T): Unit = shouldHave(expectation)
+  def hasCaptured(expectation: T): Unit = if (expectation != value) throw new ArgumentsAreDifferent(s"Got [$value] instead of [$expectation]")
 }
 
 object Captor {

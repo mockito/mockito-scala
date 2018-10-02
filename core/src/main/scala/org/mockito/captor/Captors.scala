@@ -1,6 +1,6 @@
 package org.mockito.captor
 
-import org.mockito.{ArgumentCaptor, _}
+import org.mockito._
 
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions

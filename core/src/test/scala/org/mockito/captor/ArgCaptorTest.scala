@@ -2,7 +2,7 @@ package org.mockito.captor
 
 import org.mockito.MockitoSugar
 import org.mockito.captor.ArgCaptorTest._
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.{Matchers, WordSpec}
 
 object ArgCaptorTest {
   case class Name(name: String) extends AnyVal
@@ -34,7 +34,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).stringArgument(captor)
 
-      captor shouldHave "it worked!"
+      captor hasCaptured "it worked!"
     }
 
     "capture a simple AnyVal argument" in {
@@ -45,7 +45,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).intArgument(captor)
 
-      captor shouldHave 42
+      captor hasCaptured 42
     }
 
     "capture a complex argument" in {
@@ -56,7 +56,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).complexArgument(captor)
 
-      captor shouldHave Map("Works" -> 1)
+      captor hasCaptured Map("Works" -> 1)
     }
 
     "expose the captured value to use with custom matchers" in {
@@ -92,7 +92,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).valueCaseClass(captor)
 
-      captor shouldHave Name("Batman")
+      captor hasCaptured Name("Batman")
       captor.value shouldBe Name("Batman")
       captor.values should contain only Name("Batman")
     }
@@ -105,7 +105,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).valueClass(captor)
 
-      captor shouldHave new Email("batman@batcave.gotham")
+      captor hasCaptured new Email("batman@batcave.gotham")
       captor.value shouldBe new Email("batman@batcave.gotham")
       captor.values should contain only new Email("batman@batcave.gotham")
     }

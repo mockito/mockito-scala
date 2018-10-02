@@ -369,10 +369,10 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock wasCalled on doSomethingWithThisInt captor
 
-      captor shouldHave 42
+      captor hasCaptured 42
 
       an[ArgumentsAreDifferent] should be thrownBy {
-        captor shouldHave 43
+        captor hasCaptured 43
       }
     }
 

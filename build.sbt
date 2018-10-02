@@ -25,8 +25,19 @@ lazy val commonLibraries = Seq(
   "org.scalatest" %% "scalatest"   % "3.0.5" % "provided"
 )
 
+lazy val common = (project in file("common"))
+  .settings(
+    commonSettings,
+    libraryDependencies += "org.mockito"   % "mockito-core" % "2.21.0",
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    publish := {},
+    publishLocal := {},
+    publishArtifact := false
+  )
+
 lazy val core = (project in file("core"))
   .dependsOn(macroSub % "compile-internal, test-internal")
+  .dependsOn(common)
   .settings(
     commonSettings,
     name := "mockito-scala",
@@ -59,6 +70,7 @@ lazy val core = (project in file("core"))
   )
 
 lazy val macroSub = (project in file("macro"))
+  .dependsOn(common)
   .settings(
     commonSettings,
     libraryDependencies ++= commonLibraries,

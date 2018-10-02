@@ -1,7 +1,6 @@
 package org.mockito.matchers
-import org.mockito.ArgumentMatcher
 
-import org.mockito.{ ArgumentMatchers => JavaMatchers }
+import org.mockito.{ArgumentMatcher, ArgumentMatchers => JavaMatchers}
 
 private[mockito] trait FunctionMatchers {
 

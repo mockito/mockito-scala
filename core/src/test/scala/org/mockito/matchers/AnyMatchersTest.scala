@@ -3,7 +3,7 @@ package org.mockito.matchers
 import org.mockito.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
 
-class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers {
+class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers with MacroBasedMatchers {
 
   class Foo {
     def bar[T](v: T): T = v

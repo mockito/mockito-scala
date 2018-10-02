@@ -8,23 +8,25 @@ import org.mockito.invocation.{Invocation, MockHandler}
 import org.mockito.mock.MockCreationSettings
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T]) extends MockHandlerImpl[T](mockSettings) {
-  override def handle(invocation: Invocation): AnyRef = {
-
-    val scalaInvocation = invocation match {
-      case i: InterceptedInvocation =>
-        val mockitoMethod: MockitoMethod = readField(i, "mockitoMethod")
-        new InterceptedInvocation(
-          readField(i, "mockRef"),
-          mockitoMethod,
-          unwrapByNameArgs(mockitoMethod, i.getRawArguments.asInstanceOf[Array[Any]]).asInstanceOf[Array[Object]],
-          readField(i, "realMethod"),
-          i.getLocation,
-          i.getSequenceNumber
-        )
-      case other => other
+  override def handle(invocation: Invocation): AnyRef =
+    if (invocation.getMethod.getName.contains("$default$"))
+      invocation.callRealMethod()
+    else {
+      val scalaInvocation = invocation match {
+        case i: InterceptedInvocation =>
+          val mockitoMethod: MockitoMethod = readField(i, "mockitoMethod")
+          new InterceptedInvocation(
+            readField(i, "mockRef"),
+            mockitoMethod,
+            unwrapByNameArgs(mockitoMethod, i.getRawArguments.asInstanceOf[Array[Any]]).asInstanceOf[Array[Object]],
+            readField(i, "realMethod"),
+            i.getLocation,
+            i.getSequenceNumber
+          )
+        case other => other
+      }
+      super.handle(scalaInvocation)
     }
-    super.handle(scalaInvocation)
-  }
 }
 
 object ScalaMockHandler {
@@ -59,4 +61,3 @@ object ScalaMockHandler {
         .getOrElse(args)
   }
 }
-

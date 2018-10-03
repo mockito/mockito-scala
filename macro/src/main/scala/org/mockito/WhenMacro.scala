@@ -97,9 +97,7 @@ object WhenMacro {
         case q"$_.StubbingOps[$t]($obj.$method[$targs]).shouldReturn" =>
           q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[$targs]))"
 
-        case o =>
-          println("other", show(o))
-          ???
+        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
 
@@ -167,9 +165,7 @@ object WhenMacro {
         case q"$_.StubbingOps[$t]($obj.$method[$targs]).shouldThrow" =>
           q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[$targs]))"
 
-        case o =>
-          println("other", show(o))
-          ???
+        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
 
@@ -226,9 +222,7 @@ object WhenMacro {
         case q"$_.StubbingOps[$t]($obj.$method[$targs]).shouldAnswer" =>
           q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[$targs]))"
 
-        case o =>
-          println("other", show(o))
-          ???
+        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
 
@@ -259,9 +253,7 @@ object WhenMacro {
 
         case q"$obj.$method[..$tagrs]" => q"new org.mockito.stubbing.ScalaFirstStubbing(org.mockito.Mockito.when[..$tagrs]($obj.$method))"
 
-        case o =>
-          println("other", show(o))
-          ???
+        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
   }

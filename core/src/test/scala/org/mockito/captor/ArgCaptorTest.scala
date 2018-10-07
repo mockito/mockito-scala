@@ -1,6 +1,6 @@
 package org.mockito.captor
 
-import org.mockito.MockitoSugar
+import org.mockito.{IdiomaticMockito, MockitoSugar}
 import org.mockito.captor.ArgCaptorTest._
 import org.scalatest.{Matchers, WordSpec}
 
@@ -12,13 +12,15 @@ object ArgCaptorTest {
   class Foo {
     def stringArgument(s: String): String = s
 
-    def intArgument(i: Int): Int = i
+    def intArgument(i: Int): Int = ???
 
-    def complexArgument(m: Map[String, Int]): Map[String, Int] = m
+    def complexArgument(m: Map[String, Int]): Map[String, Int] = ???
 
-    def valueCaseClass(name: Name): String = name.name
+    def valueCaseClass(name: Name): String = ???
 
-    def valueClass(email: Email): String = email.email
+    def valueClass(email: Email): String = ???
+
+    def valueClassAndValue(email: Email, s: String): String = ???
   }
 }
 
@@ -104,6 +106,19 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
       aMock.valueClass(new Email("batman@batcave.gotham"))
 
       verify(aMock).valueClass(captor)
+
+      captor hasCaptured new Email("batman@batcave.gotham")
+      captor.value shouldBe new Email("batman@batcave.gotham")
+      captor.values should contain only new Email("batman@batcave.gotham")
+    }
+
+    "work with mixture of value class & value param" in new IdiomaticMockito {
+      val aMock  = mock[Foo]
+      val captor = ValCaptor[Email]
+
+      aMock.valueClassAndValue(new Email("batman@batcave.gotham"), "42")
+
+      aMock.valueClassAndValue(captor, "42") wasCalled ()
 
       captor hasCaptured new Email("batman@batcave.gotham")
       captor.value shouldBe new Email("batman@batcave.gotham")

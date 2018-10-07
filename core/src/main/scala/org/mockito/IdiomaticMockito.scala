@@ -1,7 +1,8 @@
 package org.mockito
 
 import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaOngoingStubbing}
-import org.mockito.MockitoSugar.{verify, _}
+import org.mockito.MockitoSugar._
+import org.mockito.VerifyMacro.{AtLeast, AtMost, OnlyOn, Times}
 import org.mockito.WhenMacro._
 
 import scala.language.experimental.macros
@@ -35,6 +36,17 @@ trait IdiomaticMockito extends MockCreator {
 
     def shouldAnswer: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
 
+    def wasCalled()(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacro[T]
+
+    def wasNotCalled()(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasNotMacro[T]
+
+    def wasCalled(t: Times)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroTimes[T]
+
+    def wasCalled(t: AtLeast)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroAtLeast[T]
+
+    def wasCalled(t: AtMost)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroAtMost[T]
+
+    def wasCalled(t: OnlyOn)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroOnlyOn[T]
   }
 
   class Returned
@@ -88,75 +100,58 @@ trait IdiomaticMockito extends MockCreator {
   }
 
   class On
-  class OnlyOn
   class Never
   //noinspection UnitMethodIsParameterless
   case class NeverInstance[T <: AnyRef](mock: T) {
     def called: Unit               = verifyZeroInteractions(mock)
-    def called(on: On): T          = verify(mock, MockitoSugar.never)
     def called(again: Again): Unit = verifyNoMoreInteractions(mock)
   }
   class Again
-  case class Times(times: Int)
-  case class AtLeast(times: Int)
-  case class AtMost(times: Int)
 
-  val on                  = new On
-  val onlyOn              = new OnlyOn
-  val never               = new Never
-  val again               = new Again
-  val onceOn              = Times(1)
-  val twiceOn             = Times(2)
-  val thriceOn            = Times(3)
-  val threeTimesOn        = Times(3)
-  val fourTimesOn         = Times(4)
-  val fiveTimesOn         = Times(5)
-  val sixTimesOn          = Times(6)
-  val sevenTimesOn        = Times(7)
-  val eightTimesOn        = Times(8)
-  val nineTimesOn         = Times(9)
-  val tenTimesOn          = Times(10)
-  val atLeastOnceOn       = AtLeast(1)
-  val atLeastTwiceOn      = AtLeast(2)
-  val atLeastThriceOn     = AtLeast(3)
-  val atLeastThreeTimesOn = AtLeast(3)
-  val atLeastFourTimesOn  = AtLeast(4)
-  val atLeastFiveTimesOn  = AtLeast(5)
-  val atLeastSixTimesOn   = AtLeast(6)
-  val atLeastSevenTimesOn = AtLeast(7)
-  val atLeastEightTimesOn = AtLeast(8)
-  val atLeastNineTimesOn  = AtLeast(9)
-  val atLeastTenTimesOn   = AtLeast(10)
-  val atMostOnceOn        = AtMost(1)
-  val atMostTwiceOn       = AtMost(2)
-  val atMostThriceOn      = AtMost(3)
-  val atMostThreeTimesOn  = AtMost(3)
-  val atMostFourTimesOn   = AtMost(4)
-  val atMostFiveTimesOn   = AtMost(5)
-  val atMostSixTimesOn    = AtMost(6)
-  val atMostSevenTimesOn  = AtMost(7)
-  val atMostEightTimesOn  = AtMost(8)
-  val atMostNineTimesOn   = AtMost(9)
-  val atMostTenTimesOn    = AtMost(10)
+  val on                = new On
+  val onlyHere          = new OnlyOn
+  val never             = new Never
+  val again             = new Again
+  val once              = Times(1)
+  val twice             = Times(2)
+  val thrice            = Times(3)
+  val threeTimes        = Times(3)
+  val fourTimes         = Times(4)
+  val fiveTimes         = Times(5)
+  val sixTimes          = Times(6)
+  val sevenTimes        = Times(7)
+  val eightTimes        = Times(8)
+  val nineTimes         = Times(9)
+  val tenTimes          = Times(10)
+  val atLeastOnce       = AtLeast(1)
+  val atLeastTwice      = AtLeast(2)
+  val atLeastThrice     = AtLeast(3)
+  val atLeastThreeTimes = AtLeast(3)
+  val atLeastFourTimes  = AtLeast(4)
+  val atLeastFiveTimes  = AtLeast(5)
+  val atLeastSixTimes   = AtLeast(6)
+  val atLeastSevenTimes = AtLeast(7)
+  val atLeastEightTimes = AtLeast(8)
+  val atLeastNineTimes  = AtLeast(9)
+  val atLeastTenTimes   = AtLeast(10)
+  val atMostOnce        = AtMost(1)
+  val atMostTwice       = AtMost(2)
+  val atMostThrice      = AtMost(3)
+  val atMostThreeTimes  = AtMost(3)
+  val atMostFourTimes   = AtMost(4)
+  val atMostFiveTimes   = AtMost(5)
+  val atMostSixTimes    = AtMost(6)
+  val atMostSevenTimes  = AtMost(7)
+  val atMostEightTimes  = AtMost(8)
+  val atMostNineTimes   = AtMost(9)
+  val atMostTenTimes    = AtMost(10)
 
-  implicit class VerificationOps[T <: AnyRef](mock: T)(implicit order: Option[InOrder] = None) {
-
-    def wasCalled(on: On): T = order.fold(verify(mock))(_.verify(mock))
-
-    def wasCalled(t: Times): T = order.fold(verify(mock, times(t.times)))(_.verify(mock, times(t.times)))
-
-    def wasCalled(t: AtLeast): T = order.fold(verify(mock, atLeast(t.times)))(_.verify(mock, times(t.times)))
-
-    def wasCalled(t: AtMost): T = order.fold(verify(mock, atMost(t.times)))(_.verify(mock, times(t.times)))
-
-    def wasCalled(onlyOn: OnlyOn): T = order.fold(verify(mock, only))(_.verify(mock, only))
-
+  implicit class VerificationOps[T <: AnyRef](mock: T) {
     def was(n: Never): NeverInstance[T] = NeverInstance(mock)
   }
 
   object InOrder {
-    def apply(mocks: AnyRef*)(verifications: Option[InOrder] => Unit): Unit =
-      verifications(Some(Mockito.inOrder(mocks: _*)))
+    def apply(mocks: AnyRef*)(verifications: VerifyOrder => Unit): Unit = verifications(VerifyOrder.inOrder(mocks))
   }
 }
 

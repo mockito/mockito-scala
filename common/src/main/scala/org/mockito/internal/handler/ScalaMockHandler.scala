@@ -1,5 +1,6 @@
 package org.mockito.internal.handler
 
+import java.lang.reflect.Modifier.isAbstract
 import java.util.concurrent.ConcurrentHashMap
 
 import org.mockito.internal.handler.ScalaMockHandler._
@@ -9,7 +10,7 @@ import org.mockito.mock.MockCreationSettings
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T]) extends MockHandlerImpl[T](mockSettings) {
   override def handle(invocation: Invocation): AnyRef =
-    if (invocation.getMethod.getName.contains("$default$"))
+    if (invocation.getMethod.getName.contains("$default$") && !isAbstract(invocation.getMethod.getModifiers))
       invocation.callRealMethod()
     else {
       val scalaInvocation = invocation match {

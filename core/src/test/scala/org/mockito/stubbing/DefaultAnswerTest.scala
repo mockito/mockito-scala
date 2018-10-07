@@ -1,11 +1,10 @@
 package org.mockito.stubbing
 
-import org.scalatest
 import org.mockito.{DefaultAnswers, IdiomaticMockito}
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.exceptions.verification.SmartNullPointerException
-import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.DefaultAnswerTest._
+import org.scalatest
 import org.scalatest.{OptionValues, TryValues, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
 
@@ -63,27 +62,9 @@ object DefaultAnswerTest {
 }
 
 class DefaultAnswerTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with TryValues with OptionValues with ScalaFutures {
-
-  "DefaultAnswer" should {
-    "resolve default parameters" in {
-      val aMock: Foo = mock[Foo](new DefaultAnswer {
-        override def apply(v1: InvocationOnMock): Option[Any] = None
-      })
-
-      aMock baz ()
-
-      aMock wasCalled on baz "default"
-    }
-  }
-
+  
   "DefaultAnswer.defaultAnswer" should {
     val aMock: Foo = mock[Foo](DefaultAnswer.defaultAnswer)
-
-    "call real method for default arguments" in {
-      aMock baz ()
-
-      aMock wasCalled on baz "default"
-    }
 
     "return a smart null for unknown cases" in {
       val smartNull: Bar = aMock.userClass()

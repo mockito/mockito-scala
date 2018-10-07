@@ -1,9 +1,9 @@
 package org.mockito
 
-import org.scalatest
 import org.mockito.exceptions.misusing.{PotentialStubbingProblem, UnexpectedInvocationException, UnnecessaryStubbingException}
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.quality.Strictness
+import org.scalatest
 import org.scalatest.{OptionValues, WordSpec}
 
 //noinspection RedundantDefaultArgument
@@ -114,7 +114,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
         foo.bar("pepe")
 
-        foo wasCalled on bar "pepe"
+        foo.bar("pepe") wasCalled ()
       }
     }
 

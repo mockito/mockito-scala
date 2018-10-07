@@ -260,10 +260,10 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock.bar
 
-      aMock wasCalled on bar
+      aMock.bar wasCalled ()
 
       a[WantedButNotInvoked] should be thrownBy {
-        aMock wasCalled on baz
+        aMock.baz wasCalled ()
       }
     }
 
@@ -272,85 +272,85 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock.bar
 
-      aMock wasCalled onlyOn bar
+      aMock.bar wasCalled onlyHere
 
       a[NoInteractionsWanted] should be thrownBy {
         aMock.baz
 
-        aMock wasCalled onlyOn baz
+        aMock.baz wasCalled onlyHere
       }
     }
 
     "check a method was never called" in {
       val aMock = mock[Foo]
 
-      aMock was never called on bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasNotCalled ()
 
       a[NeverWantedButInvoked] should be thrownBy {
-        aMock.bar
+        aMock.doSomethingWithThisIntAndString(1, "test")
 
-        aMock was never called on bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasNotCalled ()
       }
     }
 
     "check a method was called twice" in {
       val aMock = mock[Foo]
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(1, "test")
 
       a[TooLittleActualInvocations] should be thrownBy {
-        aMock wasCalled twiceOn bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
       }
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(2, "test")
 
-      aMock wasCalled twiceOn bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(3, "test")
 
       a[TooManyActualInvocations] should be thrownBy {
-        aMock wasCalled twiceOn bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
       }
     }
 
     "check a method was called at least twice" in {
       val aMock = mock[Foo]
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(1, "test")
 
       a[TooLittleActualInvocations] should be thrownBy {
-        aMock wasCalled atLeastTwiceOn bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
       }
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(2, "test")
 
-      aMock wasCalled atLeastTwiceOn bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
     }
 
     "check a method was called at most twice" in {
       val aMock = mock[Foo]
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(1, "test")
 
-      aMock wasCalled atMostTwiceOn bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(2, "test")
 
-      aMock wasCalled atMostTwiceOn bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(3, "test")
 
       a[MoreThanAllowedActualInvocations] should be thrownBy {
-        aMock wasCalled atMostTwiceOn bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
       }
     }
 
-    "check a method was called more times than expected" in {
+    "check a mock was not called apart from the verified methods" in {
       val aMock = mock[Foo]
 
       aMock.bar
 
-      aMock wasCalled on bar
+      aMock.bar wasCalled ()
 
       aMock was never called again
 
@@ -362,17 +362,17 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     }
 
     "work with a captor" in {
-      val aMock  = mock[Foo]
-      val captor = ArgCaptor[Int]
+      val aMock     = mock[Foo]
+      val argCaptor = ArgCaptor[Int]
 
-      aMock.doSomethingWithThisInt(42)
+      aMock.doSomethingWithThisIntAndString(42, "test")
 
-      aMock wasCalled on doSomethingWithThisInt captor
+      aMock.doSomethingWithThisIntAndString(argCaptor, "test") wasCalled ()
 
-      captor hasCaptured 42
+      argCaptor hasCaptured 42
 
       an[ArgumentsAreDifferent] should be thrownBy {
-        captor hasCaptured 43
+        argCaptor hasCaptured 43
       }
     }
 
@@ -384,9 +384,9 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       mock2.iHaveDefaultArgs()
 
       a[VerificationInOrderFailure] should be thrownBy {
-        InOrder(mock1, mock2) { implicit order =>
-          mock2 wasCalled on iHaveDefaultArgs ()
-          mock1 wasCalled on bar
+        InOrder(mock1, mock2) { implicit order: VerifyOrder =>
+          mock2.iHaveDefaultArgs() wasCalled ()
+          mock1.bar wasCalled ()
         }
       }
     }

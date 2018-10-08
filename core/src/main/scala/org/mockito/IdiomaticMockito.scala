@@ -1,8 +1,8 @@
 package org.mockito
 
-import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaOngoingStubbing}
+import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaOngoingStubbing }
 import org.mockito.MockitoSugar._
-import org.mockito.VerifyMacro.{AtLeast, AtMost, OnlyOn, Times}
+import org.mockito.VerifyMacro.{ AtLeast, AtMost, OnlyOn, Times }
 import org.mockito.WhenMacro._
 
 import scala.language.experimental.macros
@@ -50,53 +50,40 @@ trait IdiomaticMockito extends MockCreator {
   }
 
   class Returned
-  class ReturnedBy[R](v: R) {
-    def by[M](mock: M): M = doReturn(v).when(mock)
+  object ReturnedBy {
+    def by[T](stubbing: T): T = macro DoSomethingMacro.returnedBy[T]
   }
 
   class Answered
-  class AnsweredBy(answer: Answer[Any]) {
-    def by[M](mock: M): M = Mockito.doAnswer(answer).when(mock)
+  object AnsweredBy {
+    def by[T](stubbing: T): T = macro DoSomethingMacro.answeredBy[T]
   }
 
-  class RealMethod {
-    def willBe(called: Called): Called = called
+  object RealMethod {
+    def willBe(called: Called.type): Called.type = called
   }
-  class Called {
-    def by[M](mock: M): M = doCallRealMethod.when(mock)
+  object Called {
+    def by[T](stubbing: T): T = macro DoSomethingMacro.calledBy[T]
   }
 
   class Thrown
-  class ThrownBy(v: Throwable) {
-    def by[M](mock: M): M = doThrow(v).when(mock)
+  object ThrownBy {
+    def by[T](stubbing: T): T = macro DoSomethingMacro.thrownBy[T]
   }
 
-  val called        = new Called
+  val called        = Called
   val thrown        = new Thrown
   val returned      = new Returned
   val answered      = new Answered
-  val theRealMethod = new RealMethod
+  val theRealMethod = RealMethod
 
   implicit class DoSomethingOps[R](v: R) {
-    def willBe(r: Returned): ReturnedBy[R] = new ReturnedBy(v)
-    def willBe(a: Answered): AnsweredBy = v match {
-      case f: Function0[_]                                => new AnsweredBy(invocationToAnswer(_ => f()))
-      case f: Function1[_, _]                             => new AnsweredBy(functionToAnswer(f))
-      case f: Function2[_, _, _]                          => new AnsweredBy(functionToAnswer(f))
-      case f: Function3[_, _, _, _]                       => new AnsweredBy(functionToAnswer(f))
-      case f: Function4[_, _, _, _, _]                    => new AnsweredBy(functionToAnswer(f))
-      case f: Function5[_, _, _, _, _, _]                 => new AnsweredBy(functionToAnswer(f))
-      case f: Function6[_, _, _, _, _, _, _]              => new AnsweredBy(functionToAnswer(f))
-      case f: Function7[_, _, _, _, _, _, _, _]           => new AnsweredBy(functionToAnswer(f))
-      case f: Function8[_, _, _, _, _, _, _, _, _]        => new AnsweredBy(functionToAnswer(f))
-      case f: Function9[_, _, _, _, _, _, _, _, _, _]     => new AnsweredBy(functionToAnswer(f))
-      case f: Function10[_, _, _, _, _, _, _, _, _, _, _] => new AnsweredBy(functionToAnswer(f))
-      case other                                          => new AnsweredBy(invocationToAnswer(_ => other))
-    }
+    def willBe(r: Returned): ReturnedBy.type = ReturnedBy
+    def willBe(a: Answered): AnsweredBy.type = AnsweredBy
   }
 
   implicit class ThrowSomethingOps[R <: Throwable](v: R) {
-    def willBe(thrown: Thrown): ThrownBy = new ThrownBy(v)
+    def willBe(thrown: Thrown): ThrownBy.type = ThrownBy
   }
 
   class On

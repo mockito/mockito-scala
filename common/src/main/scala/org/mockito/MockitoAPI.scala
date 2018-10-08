@@ -18,8 +18,8 @@ import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{Answer, DefaultAnswer, Stubber}
-import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
+import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
+import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -115,6 +115,8 @@ private[mockito] trait DoSomething {
   def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
 }
+
+private[mockito] object DoSomething extends DoSomething
 
 private[mockito] trait MockitoEnhancer extends MockCreator {
 
@@ -321,6 +323,11 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
    * they are created as final classes by the compiler
    */
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
+
+  /**
+   * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
+   */
+  def when[T](methodCall: T): ScalaFirstStubbing[T] = Mockito.when(methodCall)
 
   /**
    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API

@@ -22,7 +22,7 @@ class IdiomaticMockitoFixtureTest extends WordSpec with IdiomaticMockitoFixture 
     }
 
     "work on tests with setup" in new Setup {
-      "mocked" willBe returned by foo bar "pepe"
+      "mocked" willBe returned by foo.bar("pepe")
 
       foo.bar("pepe") shouldBe "mocked"
     }

@@ -4,7 +4,6 @@ import org.mockito.stubbing.{ScalaFirstStubbing, ScalaOngoingStubbing}
 import org.mockito.Utils._
 
 import scala.language.experimental.macros
-import scala.language.higherKinds
 import scala.reflect.macros.blackbox
 import scala.reflect.ClassTag
 
@@ -70,9 +69,7 @@ object WhenMacro {
         case q"$_.StubbingOps[$t]($obj.$method[$targs]).shouldCallRealMethod" =>
           q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[$targs]).thenCallRealMethod())"
 
-        case o =>
-          println("other", show(o))
-          ???
+        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
 
@@ -169,35 +166,4 @@ object WhenMacro {
     }
 
   }
-
-  def traditionalWhen[T: c.WeakTypeTag](c: blackbox.Context)(expr: c.Expr[T]): c.Expr[ScalaFirstStubbing[T]] = {
-    import c.universe._
-
-    val t = weakTypeOf[T]
-
-    c.Expr[ScalaFirstStubbing[T]] {
-      expr.tree match {
-        case q"$obj.$method(..$args)" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.stubbing.ScalaFirstStubbing(org.mockito.Mockito.when[$t]($obj.$method(..$newArgs)))"
-          } else
-            q"new org.mockito.stubbing.ScalaFirstStubbing(org.mockito.Mockito.when[$t]($obj.$method(..$args)))"
-
-        case q"$obj.$method[..$tagrs](..$args)" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.stubbing.ScalaFirstStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$tagrs](..$newArgs)))"
-          } else
-            q"new org.mockito.stubbing.ScalaFirstStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$tagrs](..$args)))"
-
-        case q"$obj.$method" => q"new org.mockito.stubbing.ScalaFirstStubbing(org.mockito.Mockito.when[$t]($obj.$method))"
-
-        case q"$obj.$method[..$tagrs]" => q"new org.mockito.stubbing.ScalaFirstStubbing(org.mockito.Mockito.when[..$tagrs]($obj.$method))"
-
-        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
-      }
-    }
-  }
-
 }

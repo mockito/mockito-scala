@@ -33,6 +33,20 @@ The library has independent developers, release cycle and versioning from core m
 * The usage of `org.mockito.Answer[T]` was removed from the API in favour of [Function Answers](#function-answers)
 * If you were using something like `doAnswer(_ => <something>).when ...` to lazily compute a return value when the method is actually called you should now write it like `doAnswer(<something>).when ...`, no need of passing a function as that argument is by-name
 * If you have chained return values like `when(myMock.foo) thenReturn "a" thenReturn "b" etc...` the syntax has changed a bit to `when(myMock.foo) thenReturn "a" andThen "b" etc...`
+* Idiomatic syntax has some changes to allow full support of mixing values and argument matchers
+```scala
+aMock wasCalled on bar              => aMock.bar wasCalled()
+aMock wasCalled onlyOn bar          => aMock.bar wasCalled onlyHere
+aMock was never called on bar       => aMock.bar wasNotCalled()
+aMock wasCalled twiceOn bar         => aMock.bar wasCalled twice
+aMock wasCalled sixTimesOn bar      => aMock.bar wasCalled sixTimes
+
+"mocked!" willBe returned by aMock bar                      => "mocked!" willBe returned by aMock.bar
+"mocked!" willBe answered by aMock bar                      => "mocked!" willBe answered by aMock.bar
+((i: Int) => i * 10) willBe answered by aMock bar *         => ((i: Int) => i * 10) willBe answered by aMock.bar(*)
+theRealMethod willBe called by aMock bar                    => theRealMethod willBe called by aMock.bar
+new IllegalArgumentException willBe thrown by aMock bar     => new IllegalArgumentException willBe thrown by aMock.bar
+```
 
 ## Getting started
 

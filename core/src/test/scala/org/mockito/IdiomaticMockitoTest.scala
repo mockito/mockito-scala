@@ -14,19 +14,19 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     def bar = "not mocked"
     def baz = "not mocked"
 
-    def doSomethingWithThisInt(v: Int): Int = v * 2
+    def doSomethingWithThisInt(v: Int): Int = ???
 
-    def doSomethingWithThisIntAndString(v: Int, v2: String): String = v + v2
+    def doSomethingWithThisIntAndString(v: Int, v2: String): String = "not mocked"
 
-    def doSomethingWithThisIntAndStringAndBoolean(v: Int, v2: String, v3: Boolean): String = v + v2 + v3
+    def doSomethingWithThisIntAndStringAndBoolean(v: Int, v2: String, v3: Boolean): String = "not mocked"
 
-    def returnBar: Bar = new Bar
+    def returnBar: Bar = ???
 
-    def highOrderFunction(f: Int => String): String = f(42)
+    def highOrderFunction(f: Int => String): String = "not mocked"
 
     def iReturnAFunction(v: Int): Int => String = i => i * v toString
 
-    def iBlowUp: String = throw new IllegalArgumentException("I was called!")
+    def iBlowUp(v: Int, v2: String): String = throw new IllegalArgumentException("I was called!")
   }
 
   class Bar {
@@ -197,45 +197,55 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       val aSpy = spy(new Foo)
 
       an[IllegalArgumentException] should be thrownBy {
-        aSpy.iBlowUp shouldReturn "mocked!"
+        aSpy.iBlowUp(*, *) shouldReturn "mocked!"
       }
 
-      "mocked!" willBe returned by aSpy iBlowUp
+      "mocked!" willBe returned by aSpy.iBlowUp(*, "ok")
 
-      aSpy.iBlowUp shouldBe "mocked!"
+      aSpy.iBlowUp(1, "ok") shouldBe "mocked!"
+      aSpy.iBlowUp(2, "ok") shouldBe "mocked!"
+
+      an[IllegalArgumentException] should be thrownBy {
+        aSpy.iBlowUp(2, "not ok")
+      }
     }
 
     "stub a spy with an answer" in {
       val aSpy = spy(new Foo)
 
-      ((i: Int) => i * 10 + 2) willBe answered by aSpy doSomethingWithThisInt *
-      ((i: Int, s: String) => i * 10 + s.toInt toString) willBe answered by aSpy doSomethingWithThisIntAndString (*, *)
-      ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt toString) + boolean) willBe answered by aSpy doSomethingWithThisIntAndStringAndBoolean (*, *, *)
-      ((() => "mocked!") willBe answered by aSpy).bar
-      "mocked!" willBe answered by aSpy baz
+      ((i: Int) => i * 10 + 2) willBe answered by aSpy.doSomethingWithThisInt(*)
+      ((i: Int, s: String) => i * 10 + s.toInt toString) willBe answered by aSpy.doSomethingWithThisIntAndString(*, *)
+      ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt toString) + boolean) willBe answered by aSpy
+        .doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
+      (() => "mocked!") willBe answered by aSpy.bar
+      "mocked!" willBe answered by aSpy.baz
 
       aSpy.bar shouldBe "mocked!"
       aSpy.baz shouldBe "mocked!"
       aSpy.doSomethingWithThisInt(4) shouldBe 42
       aSpy.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
       aSpy.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
+      aSpy.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = false) shouldBe "not mocked"
     }
 
     "stub a real call" in {
       val aMock = mock[Foo]
 
-      theRealMethod willBe called by aMock bar
+      theRealMethod willBe called by aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
 
-      aMock.bar shouldBe "not mocked"
+      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true) shouldBe "not mocked"
+      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false) shouldBe ""
     }
 
     "stub a failure" in {
       val aMock = mock[Foo]
 
-      new IllegalArgumentException willBe thrown by aMock bar
+      new IllegalArgumentException willBe thrown by aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
+
+      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false)
 
       an[IllegalArgumentException] should be thrownBy {
-        aMock.bar
+        aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true)
       }
 
       """"some value" willBe thrown by aMock bar""" shouldNot compile

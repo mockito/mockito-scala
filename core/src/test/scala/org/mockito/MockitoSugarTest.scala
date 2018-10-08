@@ -46,16 +46,6 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       aMock.bar shouldBe "mocked!"
     }
 
-    "create a mock where I can mix matchers and normal parameters" in {
-      val aMock = mock[Foo]
-
-      when(aMock.doSomethingWithThisIntAndString(*, "test")) thenReturn "mocked!"
-
-      aMock.doSomethingWithThisIntAndString(3, "test") shouldBe "mocked!"
-      aMock.doSomethingWithThisIntAndString(5, "test") shouldBe "mocked!"
-      aMock.doSomethingWithThisIntAndString(5, "est") shouldBe ""
-    }
-
     "create a mock with nice answer API (single param)" in {
       val aMock = mock[Baz]
 

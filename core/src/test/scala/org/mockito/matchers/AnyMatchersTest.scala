@@ -1,9 +1,9 @@
 package org.mockito.matchers
 
 import org.mockito.MockitoSugar
-import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
+import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
 
-class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers {
+class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers with MacroBasedMatchers {
 
   class Foo {
     def bar[T](v: T): T = v
@@ -161,5 +161,13 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
     when(aMock.barLong(anyLong)) thenReturn 100l
     aMock.barLong(1) shouldBe 100l
     verify(aMock).barLong(1l)
+  }
+
+  "*" should "be a valid alias of any" in {
+    val aMock = mock[Foo]
+
+    when(aMock.bar(*)) thenReturn 42
+
+    aMock.bar(-1) shouldBe 42
   }
 }

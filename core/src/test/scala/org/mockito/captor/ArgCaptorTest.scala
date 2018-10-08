@@ -1,8 +1,8 @@
 package org.mockito.captor
 
-import org.mockito.MockitoSugar
+import org.mockito.{IdiomaticMockito, MockitoSugar}
 import org.mockito.captor.ArgCaptorTest._
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.{Matchers, WordSpec}
 
 object ArgCaptorTest {
   case class Name(name: String) extends AnyVal
@@ -12,13 +12,15 @@ object ArgCaptorTest {
   class Foo {
     def stringArgument(s: String): String = s
 
-    def intArgument(i: Int): Int = i
+    def intArgument(i: Int): Int = ???
 
-    def complexArgument(m: Map[String, Int]): Map[String, Int] = m
+    def complexArgument(m: Map[String, Int]): Map[String, Int] = ???
 
-    def valueCaseClass(name: Name): String = name.name
+    def valueCaseClass(name: Name): String = ???
 
-    def valueClass(email: Email): String = email.email
+    def valueClass(email: Email): String = ???
+
+    def valueClassAndValue(email: Email, s: String): String = ???
   }
 }
 
@@ -28,40 +30,40 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
     "capture a simple AnyRef argument" in {
       val aMock  = mock[Foo]
-      val captor = Captor[String]
+      val captor = ArgCaptor[String]
 
       aMock.stringArgument("it worked!")
 
       verify(aMock).stringArgument(captor)
 
-      captor <-> "it worked!"
+      captor hasCaptured "it worked!"
     }
 
     "capture a simple AnyVal argument" in {
       val aMock  = mock[Foo]
-      val captor = Captor[Int]
+      val captor = ArgCaptor[Int]
 
       aMock.intArgument(42)
 
       verify(aMock).intArgument(captor)
 
-      captor <-> 42
+      captor hasCaptured 42
     }
 
     "capture a complex argument" in {
       val aMock  = mock[Foo]
-      val captor = Captor[Map[String, Int]]
+      val captor = ArgCaptor[Map[String, Int]]
 
       aMock.complexArgument(Map("Works" -> 1))
 
       verify(aMock).complexArgument(captor)
 
-      captor <-> Map("Works" -> 1)
+      captor hasCaptured Map("Works" -> 1)
     }
 
     "expose the captured value to use with custom matchers" in {
       val aMock  = mock[Foo]
-      val captor = Captor[String]
+      val captor = ArgCaptor[String]
 
       aMock.stringArgument("it worked!")
 
@@ -72,7 +74,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
     "expose all the captured values to use with custom matchers" in {
       val aMock  = mock[Foo]
-      val captor = Captor[String]
+      val captor = ArgCaptor[String]
 
       aMock.stringArgument("it worked!")
       aMock.stringArgument("it worked again!")
@@ -92,7 +94,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).valueCaseClass(captor)
 
-      captor <-> Name("Batman")
+      captor hasCaptured Name("Batman")
       captor.value shouldBe Name("Batman")
       captor.values should contain only Name("Batman")
     }
@@ -105,7 +107,20 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       verify(aMock).valueClass(captor)
 
-      captor <-> new Email("batman@batcave.gotham")
+      captor hasCaptured new Email("batman@batcave.gotham")
+      captor.value shouldBe new Email("batman@batcave.gotham")
+      captor.values should contain only new Email("batman@batcave.gotham")
+    }
+
+    "work with mixture of value class & value param" in new IdiomaticMockito {
+      val aMock  = mock[Foo]
+      val captor = ValCaptor[Email]
+
+      aMock.valueClassAndValue(new Email("batman@batcave.gotham"), "42")
+
+      aMock.valueClassAndValue(captor, "42") was called
+
+      captor hasCaptured new Email("batman@batcave.gotham")
       captor.value shouldBe new Email("batman@batcave.gotham")
       captor.values should contain only new Email("batman@batcave.gotham")
     }

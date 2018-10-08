@@ -1,5 +1,6 @@
 package org.mockito
 
+import org.mockito.stubbing.{CallsRealMethods, DefaultAnswer, ReturnsDefaults}
 import org.scalatest.{WordSpec, Matchers => ScalatestMatchers}
 
 //noinspection RedundantDefaultArgument
@@ -19,7 +20,7 @@ class MockitoSugar$Test extends WordSpec with ScalatestMatchers {
     }
 
     "create a mock with default answer" in {
-      val aMock = MockitoSugar.mock[Foo](Answers.CALLS_REAL_METHODS)
+      val aMock = MockitoSugar.mock[Foo](CallsRealMethods)
 
       aMock.bar shouldBe "not mocked"
     }

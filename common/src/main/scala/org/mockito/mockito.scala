@@ -6,7 +6,7 @@ import org.mockito.stubbing.Answer
 import scala.reflect.ClassTag
 
 package object mockito {
-  def clazz[T <: AnyRef](implicit classTag: ClassTag[T]): Class[T] = classTag.runtimeClass.asInstanceOf[Class[T]]
+  def clazz[T](implicit classTag: ClassTag[T]): Class[T] = classTag.runtimeClass.asInstanceOf[Class[T]]
 
   //noinspection ConvertExpressionToSAM
   def invocationToAnswer[T](f: InvocationOnMock => T): Answer[T] = new Answer[T] {

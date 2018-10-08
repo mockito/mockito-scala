@@ -18,8 +18,8 @@ import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{Answer, OngoingStubbing, Stubber}
-import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
+import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
+import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -36,8 +36,8 @@ private[mockito] trait MockCreator {
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
 
   /**
-    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
+   */
   def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
     Mockito.withSettings().defaultAnswer(defaultAnswer)
 
@@ -88,7 +88,32 @@ private[mockito] trait DoSomething {
   /**
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
-  def doAnswer[T](f: InvocationOnMock => T): Stubber = Mockito.doAnswer(invocationToAnswer(f))
+  def doAnswer[R](f: => R): Stubber =
+    Mockito.doAnswer(invocationToAnswer(_ => f))
+  def doAnswer[P0: ClassTag, R](f: P0 => R): Stubber = clazz[P0] match {
+    case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
+    case _                                   => Mockito.doAnswer(functionToAnswer(f))
+  }
+  def doAnswer[P0, P1, R](f: (P0, P1) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, R](f: (P0, P1, P2) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, R](f: (P0, P1, P2, P3) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, R](f: (P0, P1, P2, P3, P4) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, R](f: (P0, P1, P2, P3, P4, P5) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, R](f: (P0, P1, P2, P3, P4, P5, P6) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, R](f: (P0, P1, P2, P3, P4, P5, P6, P7) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {
@@ -145,8 +170,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 
     mockSettings match {
       case m: MockSettingsImpl[_] =>
-        require(m.getExtraInterfaces.isEmpty,
-                "If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
+        require(m.getExtraInterfaces.isEmpty, "If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
       case _ =>
     }
 
@@ -288,13 +312,6 @@ private[mockito] trait Verifications {
 private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifications {
 
   /**
-   * Delegates to <code>ArgumentCaptor.forClass(type: Class[T])</code>
-   * It provides a nicer API as you can, for instance, do <code>argumentCaptor[SomeClass]</code>
-   * instead of <code>ArgumentCaptor.forClass(classOf[SomeClass])</code>
-   */
-  def argumentCaptor[T: ClassTag]: ArgumentCaptor[T] = ArgumentCaptor.forClass(clazz)
-
-  /**
    * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API
    */
   def spy[T](realObj: T): T = Mockito.spy(realObj)
@@ -308,7 +325,7 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
   /**
    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
    */
-  def when[T](methodCall: T): OngoingStubbing[T] = Mockito.when(methodCall)
+  def when[T](methodCall: T): ScalaFirstStubbing[T] = Mockito.when(methodCall)
 
   /**
    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
@@ -342,9 +359,5 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
 
 }
 
-trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications with Rest
-
-/**
- * Simple object to allow the usage of the trait without mixing it in
- */
-object MockitoSugar extends MockitoSugar
+private[mockito] trait InternalMockitoSugar  extends MockitoEnhancer with DoSomething with Verifications with Rest
+private[mockito] object InternalMockitoSugar extends InternalMockitoSugar

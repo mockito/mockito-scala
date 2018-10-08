@@ -1,10 +1,7 @@
-package org.mockito
-
-import java.lang.reflect.Modifier.isAbstract
+package org.mockito.stubbing
 
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
 import org.mockito.Answers._
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 
@@ -12,11 +9,7 @@ import scala.concurrent.Future
 import scala.util.{Failure, Try}
 
 trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[Any]] { self =>
-  override def answer(invocation: InvocationOnMock): Any =
-    if (invocation.getMethod.getName.contains("$default$") && !isAbstract(invocation.getMethod.getModifiers))
-      invocation.callRealMethod()
-    else
-      apply(invocation).orNull
+  override def answer(invocation: InvocationOnMock): Any = apply(invocation).orNull
 
   def orElse(next: DefaultAnswer): DefaultAnswer = new DefaultAnswer {
     override def apply(invocation: InvocationOnMock): Option[Any] = self(invocation).orElse(next(invocation))
@@ -60,15 +53,4 @@ object ReturnsEmptyValues extends DefaultAnswer {
 
   override def apply(invocation: InvocationOnMock): Option[Any] =
     Option(javaEmptyValuesAndPrimitives.answer(invocation)).orElse(emptyValues.get(invocation.getMethod.getReturnType))
-}
-
-/**
- * Simple object to act as an 'enum' of DefaultAnswers
- */
-object DefaultAnswers {
-  val ReturnsDefaults: DefaultAnswer    = org.mockito.ReturnsDefaults
-  val ReturnsDeepStubs: DefaultAnswer   = org.mockito.ReturnsDeepStubs
-  val CallsRealMethods: DefaultAnswer   = org.mockito.CallsRealMethods
-  val ReturnsSmartNulls: DefaultAnswer  = org.mockito.ReturnsSmartNulls
-  val ReturnsEmptyValues: DefaultAnswer = org.mockito.ReturnsEmptyValues
 }

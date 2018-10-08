@@ -1,7 +1,12 @@
 package org.mockito
 
+import org.mockito.captor.ArgCaptor
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.{CallsRealMethods, DefaultAnswer}
 import org.scalatest
 import org.scalatest.WordSpec
+
+import scala.language.postfixOps
 
 //noinspection RedundantDefaultArgument
 class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matchers with ArgumentMatchersSugar {
@@ -18,6 +23,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
     def iHaveFunction0Args(normal: String, f0: () => String): String = ???
 
     def returnBar: Bar = ???
+
+    def doSomethingWithThisIntAndString(v: Int, v2: String): String = ???
   }
 
   class Bar {
@@ -39,6 +46,30 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
       aMock.bar shouldBe "mocked!"
     }
 
+    "create a mock with nice answer API (single param)" in {
+      val aMock = mock[Baz]
+
+      when(aMock.traitMethod(*)) thenAnswer ((i: Int) => i * 10 + 2)
+
+      aMock.traitMethod(4) shouldBe 42
+    }
+
+    "create a mock with nice answer API (invocation usage)" in {
+      val aMock = mock[Baz]
+
+      when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2)
+
+      aMock.traitMethod(4) shouldBe 42
+    }
+
+    "create a mock with nice answer API (multiple params)" in {
+      val aMock = mock[Foo]
+
+      when(aMock.doSomethingWithThisIntAndString(*,*)) thenAnswer ((i: Int, s: String) => i * 10 + s.toInt toString)
+
+      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
+    }
+
     "create a mock while stubbing another" in {
       val aMock = mock[Foo]
 
@@ -58,7 +89,7 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
     }
 
     "create a mock with default answer" in {
-      val aMock = mock[Foo](Answers.CALLS_REAL_METHODS)
+      val aMock = mock[Foo](CallsRealMethods)
 
       aMock.bar shouldBe "not mocked"
     }
@@ -183,12 +214,12 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with scalatest.Matcher
 
       aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
 
-      val captor1 = argumentCaptor[String]
-      val captor2 = argumentCaptor[String]
-      verify(aMock).iHaveSomeDefaultArguments(captor1.capture(), captor2.capture())
+      val captor1 = ArgCaptor[String]
+      val captor2 = ArgCaptor[String]
+      verify(aMock).iHaveSomeDefaultArguments(captor1, captor2)
 
-      captor1.getValue shouldBe "I'm not gonna pass the second argument"
-      captor2.getValue shouldBe "default value"
+      captor1 hasCaptured "I'm not gonna pass the second argument"
+      captor2 hasCaptured "default value"
     }
   }
 

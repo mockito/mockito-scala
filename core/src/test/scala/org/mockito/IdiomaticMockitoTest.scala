@@ -1,31 +1,34 @@
 package org.mockito
 
-import org.mockito.captor.{ Captor => ArgCaptor }
+import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
+import org.mockito.invocation.InvocationOnMock
 import org.scalatest
 import org.scalatest.WordSpec
 
 import scala.language.postfixOps
 
-class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with IdiomaticMockito {
+class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 
   class Foo {
     def bar = "not mocked"
     def baz = "not mocked"
 
-    def doSomethingWithThisInt(v: Int): Int = v * 2
+    def doSomethingWithThisInt(v: Int): Int = ???
 
-    def doSomethingWithThisIntAndString(v: Int, v2: String): String = v + v2
+    def doSomethingWithThisIntAndString(v: Int, v2: String): String = "not mocked"
 
-    def doSomethingWithThisIntAndStringAndBoolean(v: Int, v2: String, v3: Boolean): String = v + v2 + v3
+    def doSomethingWithThisIntAndStringAndBoolean(v: Int, v2: String, v3: Boolean): String = "not mocked"
 
-    def returnBar: Bar = new Bar
+    def returnBar: Bar = ???
 
-    def highOrderFunction(f: Int => String): String = f(42)
+    def highOrderFunction(f: Int => String): String = "not mocked"
 
     def iReturnAFunction(v: Int): Int => String = i => i * v toString
 
-    def iBlowUp: String = throw new IllegalArgumentException("I was called!")
+    def iBlowUp(v: Int, v2: String): String = throw new IllegalArgumentException("I was called!")
+
+    def iHaveTypeParams[A, B](a: A, b: B): String = "not mocked"
   }
 
   class Bar {
@@ -51,20 +54,24 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.bar shouldBe "mocked again!"
     }
 
+    "create a mock where I can mix matchers and normal parameters" in {
+      val aMock = mock[Foo]
+
+      aMock.iHaveTypeParams[Int, String](*, "test") shouldReturn "mocked!"
+
+      aMock.iHaveTypeParams(3, "test") shouldBe "mocked!"
+      aMock.iHaveTypeParams(5, "test") shouldBe "mocked!"
+      aMock.iHaveTypeParams(5, "est") shouldBe ""
+
+      aMock.iHaveTypeParams[Int, String](*, "test") wasCalled twice
+    }
+
     "stub a real call" in {
       val aMock = mock[Foo]
 
       aMock.bar shouldCallRealMethod
 
       aMock.bar shouldBe "not mocked"
-    }
-
-    "stub an exception to be thrown" in {
-      val aMock = mock[Foo]
-
-      aMock.bar.shouldThrow[IllegalArgumentException]
-
-      an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
     }
 
     "stub an exception instance to be thrown" in {
@@ -87,7 +94,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "chain value and exception" in {
       val aMock = mock[Foo]
 
-      aMock.bar shouldReturn "mocked!" andThen new IllegalArgumentException
+      aMock.bar shouldReturn "mocked!" andThenThrow new IllegalArgumentException
 
       aMock.bar shouldBe "mocked!"
       an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
@@ -109,12 +116,29 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.doSomethingWithThisIntAndString(*, *) shouldAnswer ((i: Int, s: String) => i * 10 + s.toInt toString)
       aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
                                                                               s: String,
-                                                                              boolean: Boolean) =>
-                                                                               (i * 10 + s.toInt toString) + boolean)
+                                                                              boolean: Boolean) => (i * 10 + s.toInt toString) + boolean)
 
       aMock.doSomethingWithThisInt(4) shouldBe 42
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
       aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
+    }
+
+    "create a mock where I can mix matchers and normal parameters (answer)" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisIntAndString(*, "test") shouldAnswer "mocked!"
+
+      aMock.doSomethingWithThisIntAndString(3, "test") shouldBe "mocked!"
+      aMock.doSomethingWithThisIntAndString(5, "test") shouldBe "mocked!"
+      aMock.doSomethingWithThisIntAndString(5, "est") shouldBe ""
+    }
+
+    "simplify answer API (invocation usage)" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2)
+
+      aMock.doSomethingWithThisInt(4) shouldBe 42
     }
 
     "chain answers" in {
@@ -126,11 +150,20 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.doSomethingWithThisInt(4) shouldBe 69
     }
 
+    "chain answers (invocation usage)" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2) andThenAnswer (
+          (i: InvocationOnMock) => i.getArgument[Int](0) * 15 + 9)
+
+      aMock.doSomethingWithThisInt(4) shouldBe 42
+      aMock.doSomethingWithThisInt(4) shouldBe 69
+    }
+
     "allow using less params than method on answer stubbing" in {
       val aMock = mock[Foo]
 
-      aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
-                                                                              s: String) => i * 10 + s.toInt toString)
+      aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int, s: String) => i * 10 + s.toInt toString)
 
       aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42"
     }
@@ -155,7 +188,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "stub a method that returns a function" in {
       val aMock = mock[Foo]
 
-      aMock.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2) toString) andThenCallRealMethod
+      aMock.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2) toString) andThenCallRealMethod ()
 
       aMock.iReturnAFunction(0)(42) shouldBe "42"
       aMock.iReturnAFunction(0)(42) shouldBe "84"
@@ -168,45 +201,55 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       val aSpy = spy(new Foo)
 
       an[IllegalArgumentException] should be thrownBy {
-        aSpy.iBlowUp shouldReturn "mocked!"
+        aSpy.iBlowUp(*, *) shouldReturn "mocked!"
       }
 
-      "mocked!" willBe returned by aSpy iBlowUp
+      "mocked!" willBe returned by aSpy.iBlowUp(*, "ok")
 
-      aSpy.iBlowUp shouldBe "mocked!"
+      aSpy.iBlowUp(1, "ok") shouldBe "mocked!"
+      aSpy.iBlowUp(2, "ok") shouldBe "mocked!"
+
+      an[IllegalArgumentException] should be thrownBy {
+        aSpy.iBlowUp(2, "not ok")
+      }
     }
 
     "stub a spy with an answer" in {
       val aSpy = spy(new Foo)
 
-      ((i: Int) => i * 10 + 2) willBe answered by aSpy doSomethingWithThisInt *
-      ((i: Int, s: String) => i * 10 + s.toInt toString) willBe answered by aSpy doSomethingWithThisIntAndString (*, *)
-      ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt toString) + boolean) willBe answered by aSpy doSomethingWithThisIntAndStringAndBoolean (*, *, *)
-      ((() => "mocked!") willBe answered by aSpy).bar
-      "mocked!" willBe answered by aSpy baz
+      ((i: Int) => i * 10 + 2) willBe answered by aSpy.doSomethingWithThisInt(*)
+      ((i: Int, s: String) => i * 10 + s.toInt toString) willBe answered by aSpy.doSomethingWithThisIntAndString(*, *)
+      ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt toString) + boolean) willBe answered by aSpy
+        .doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
+      (() => "mocked!") willBe answered by aSpy.bar
+      "mocked!" willBe answered by aSpy.baz
 
       aSpy.bar shouldBe "mocked!"
       aSpy.baz shouldBe "mocked!"
       aSpy.doSomethingWithThisInt(4) shouldBe 42
       aSpy.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
       aSpy.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
+      aSpy.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = false) shouldBe "not mocked"
     }
 
     "stub a real call" in {
       val aMock = mock[Foo]
 
-      theRealMethod willBe called by aMock bar
+      theRealMethod willBe called by aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
 
-      aMock.bar shouldBe "not mocked"
+      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true) shouldBe "not mocked"
+      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false) shouldBe ""
     }
 
     "stub a failure" in {
       val aMock = mock[Foo]
 
-      new IllegalArgumentException willBe thrown by aMock bar
+      new IllegalArgumentException willBe thrown by aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
+
+      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false)
 
       an[IllegalArgumentException] should be thrownBy {
-        aMock.bar
+        aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true)
       }
 
       """"some value" willBe thrown by aMock bar""" shouldNot compile
@@ -231,10 +274,10 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock.bar
 
-      aMock wasCalled on bar
+      aMock.bar was called
 
       a[WantedButNotInvoked] should be thrownBy {
-        aMock wasCalled on baz
+        aMock.baz was called
       }
     }
 
@@ -243,85 +286,85 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock.bar
 
-      aMock wasCalled onlyOn bar
+      aMock.bar wasCalled onlyHere
 
       a[NoInteractionsWanted] should be thrownBy {
         aMock.baz
 
-        aMock wasCalled onlyOn baz
+        aMock.baz wasCalled onlyHere
       }
     }
 
     "check a method was never called" in {
       val aMock = mock[Foo]
 
-      aMock was never called on bar
+      aMock.doSomethingWithThisIntAndString(*, "test") was never called
 
       a[NeverWantedButInvoked] should be thrownBy {
-        aMock.bar
+        aMock.doSomethingWithThisIntAndString(1, "test")
 
-        aMock was never called on bar
+        aMock.doSomethingWithThisIntAndString(*, "test") was never called
       }
     }
 
     "check a method was called twice" in {
       val aMock = mock[Foo]
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(1, "test")
 
       a[TooLittleActualInvocations] should be thrownBy {
-        aMock wasCalled twiceOn bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
       }
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(2, "test")
 
-      aMock wasCalled twiceOn bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(3, "test")
 
       a[TooManyActualInvocations] should be thrownBy {
-        aMock wasCalled twiceOn bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
       }
     }
 
     "check a method was called at least twice" in {
       val aMock = mock[Foo]
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(1, "test")
 
       a[TooLittleActualInvocations] should be thrownBy {
-        aMock wasCalled atLeastTwiceOn bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
       }
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(2, "test")
 
-      aMock wasCalled atLeastTwiceOn bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
     }
 
     "check a method was called at most twice" in {
       val aMock = mock[Foo]
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(1, "test")
 
-      aMock wasCalled atMostTwiceOn bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(2, "test")
 
-      aMock wasCalled atMostTwiceOn bar
+      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
 
-      aMock.bar
+      aMock.doSomethingWithThisIntAndString(3, "test")
 
       a[MoreThanAllowedActualInvocations] should be thrownBy {
-        aMock wasCalled atMostTwiceOn bar
+        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
       }
     }
 
-    "check a method was called more times than expected" in {
+    "check a mock was not called apart from the verified methods" in {
       val aMock = mock[Foo]
 
       aMock.bar
 
-      aMock wasCalled on bar
+      aMock.bar was called
 
       aMock was never called again
 
@@ -333,17 +376,17 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     }
 
     "work with a captor" in {
-      val aMock  = mock[Foo]
-      val captor = ArgCaptor[Int]
+      val aMock     = mock[Foo]
+      val argCaptor = ArgCaptor[Int]
 
-      aMock.doSomethingWithThisInt(42)
+      aMock.doSomethingWithThisIntAndString(42, "test")
 
-      aMock wasCalled on doSomethingWithThisInt captor
+      aMock.doSomethingWithThisIntAndString(argCaptor, "test") was called
 
-      captor shouldHave 42
+      argCaptor hasCaptured 42
 
-      an[AssertionError] should be thrownBy {
-        captor shouldHave 43
+      an[ArgumentsAreDifferent] should be thrownBy {
+        argCaptor hasCaptured 43
       }
     }
 
@@ -355,22 +398,11 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       mock2.iHaveDefaultArgs()
 
       a[VerificationInOrderFailure] should be thrownBy {
-        InOrder(mock1, mock2) { implicit order =>
-          mock2 wasCalled on iHaveDefaultArgs ()
-          mock1 wasCalled on bar
+        InOrder(mock1, mock2) { implicit order: VerifyOrder =>
+          mock2.iHaveDefaultArgs() was called
+          mock1.bar was called
         }
       }
-    }
-
-  }
-
-  "IdiomaticMatchers" should {
-    "allow to write '*' instead of any" in {
-      val aMock = mock[Foo]
-
-      aMock.doSomethingWithThisInt(*) shouldReturn 42
-
-      aMock.doSomethingWithThisInt(-1) shouldBe 42
     }
   }
 }

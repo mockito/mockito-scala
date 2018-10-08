@@ -35,9 +35,9 @@ The library has independent developers, release cycle and versioning from core m
 * If you have chained return values like `when(myMock.foo) thenReturn "a" thenReturn "b" etc...` the syntax has changed a bit to `when(myMock.foo) thenReturn "a" andThen "b" etc...`
 * Idiomatic syntax has some changes to allow full support of mixing values and argument matchers
 ```scala
-aMock wasCalled on bar              => aMock.bar wasCalled()
+aMock wasCalled on bar              => aMock.bar was called
 aMock wasCalled onlyOn bar          => aMock.bar wasCalled onlyHere
-aMock was never called on bar       => aMock.bar wasNotCalled()
+aMock was never called on bar       => aMock.bar was never called
 aMock wasCalled twiceOn bar         => aMock.bar wasCalled twice
 aMock wasCalled sixTimesOn bar      => aMock.bar wasCalled sixTimes
 

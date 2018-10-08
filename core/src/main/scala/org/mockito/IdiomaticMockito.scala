@@ -1,6 +1,6 @@
 package org.mockito
 
-import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaOngoingStubbing }
+import org.mockito.stubbing.{ DefaultAnswer, ScalaOngoingStubbing }
 import org.mockito.MockitoSugar._
 import org.mockito.VerifyMacro.{ AtLeast, AtMost, OnlyOn, Times }
 import org.mockito.WhenMacro._
@@ -36,9 +36,9 @@ trait IdiomaticMockito extends MockCreator {
 
     def shouldAnswer: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
 
-    def wasCalled()(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacro[T]
+    def was(called: Called.type)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacro[T]
 
-    def wasNotCalled()(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasNotMacro[T]
+    def was(n: Never): NeverInstance[T] = new NeverInstance(stubbing)
 
     def wasCalled(t: Times)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroTimes[T]
 
@@ -47,6 +47,7 @@ trait IdiomaticMockito extends MockCreator {
     def wasCalled(t: AtMost)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroAtMost[T]
 
     def wasCalled(t: OnlyOn)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroOnlyOn[T]
+
   }
 
   class Returned
@@ -62,20 +63,17 @@ trait IdiomaticMockito extends MockCreator {
   object RealMethod {
     def willBe(called: Called.type): Called.type = called
   }
-  object Called {
-    def by[T](stubbing: T): T = macro DoSomethingMacro.calledBy[T]
-  }
 
   class Thrown
   object ThrownBy {
     def by[T](stubbing: T): T = macro DoSomethingMacro.thrownBy[T]
   }
 
-  val called        = Called
-  val thrown        = new Thrown
-  val returned      = new Returned
-  val answered      = new Answered
-  val theRealMethod = RealMethod
+  val called: Called.type            = Called
+  val thrown: Thrown                 = new Thrown
+  val returned: Returned             = new Returned
+  val answered: Answered             = new Answered
+  val theRealMethod: RealMethod.type = RealMethod
 
   implicit class DoSomethingOps[R](v: R) {
     def willBe(r: Returned): ReturnedBy.type = ReturnedBy
@@ -89,9 +87,9 @@ trait IdiomaticMockito extends MockCreator {
   class On
   class Never
   //noinspection UnitMethodIsParameterless
-  case class NeverInstance[T <: AnyRef](mock: T) {
-    def called: Unit               = verifyZeroInteractions(mock)
-    def called(again: Again): Unit = verifyNoMoreInteractions(mock)
+  class NeverInstance[T](mock: => T) {
+    def called(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasNotMacro[T]
+    def called(again: Again)(implicit $ev: T <:< AnyRef): Unit = verifyNoMoreInteractions(mock.asInstanceOf[AnyRef])
   }
   class Again
 
@@ -133,12 +131,8 @@ trait IdiomaticMockito extends MockCreator {
   val atMostNineTimes   = AtMost(9)
   val atMostTenTimes    = AtMost(10)
 
-  implicit class VerificationOps[T <: AnyRef](mock: T) {
-    def was(n: Never): NeverInstance[T] = NeverInstance(mock)
-  }
-
   object InOrder {
-    def apply(mocks: AnyRef*)(verifications: VerifyOrder => Unit): Unit = verifications(VerifyOrder.inOrder(mocks))
+    def apply(mocks: AnyRef*)(verifications: VerifyInOrder => Unit): Unit = verifications(VerifyInOrder(mocks))
   }
 }
 

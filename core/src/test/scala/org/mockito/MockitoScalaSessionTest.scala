@@ -114,7 +114,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
 
         foo.bar("pepe")
 
-        foo.bar("pepe") wasCalled ()
+        foo.bar("pepe") was called
       }
     }
 

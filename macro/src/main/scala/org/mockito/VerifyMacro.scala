@@ -7,21 +7,25 @@ import scala.language.experimental.macros
 import scala.language.higherKinds
 import scala.reflect.macros.blackbox
 
+object Called {
+  def by[T](stubbing: T): T = macro DoSomethingMacro.calledBy[T]
+}
+
 object VerifyMacro {
 
-  def wasMacro[T: c.WeakTypeTag](c: blackbox.Context)()(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($obj.$method(..$args)).wasCalled()($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method(..$args)).was($_.called)($order)" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
             q"$order.verify($obj).$method(..$newArgs)"
           } else
             q"$order.verify($obj).$method(..$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method).wasCalled()($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method).was($_.called)($order)" =>
           q"$order.verify($obj).$method"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
@@ -29,25 +33,30 @@ object VerifyMacro {
     }
   }
 
-  def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)()(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($obj.$method(..$args)).wasNotCalled()($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method(..$args)).was($_.never).called($order)" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
             q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method(..$newArgs)"
           } else
             q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method(..$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method).wasNotCalled()($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method).was($_.never).called($order)" =>
           q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method"
+
+        case q"$_.StubbingOps[$_]($obj).was($_.never).called($_)" =>
+          q"org.mockito.InternalMockitoSugar.verifyNoMoreInteractions($obj)"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
   }
+
+
 
   case class Times(times: Int)
 
@@ -138,21 +147,24 @@ object VerifyMacro {
   }
 }
 
-trait VerifyOrder {
+sealed trait VerifyOrder {
   def verify[T](mock: T): T
   def verifyWithMode[T](mock: T, mode: VerificationMode): T
 }
 
+object VerifyUnOrdered extends VerifyOrder {
+  override def verify[T](mock: T): T                                 = Mockito.verify(mock)
+  override def verifyWithMode[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
+}
+
+case class VerifyInOrder(mocks: Seq[AnyRef]) extends VerifyOrder {
+  private val _inOrder = Mockito.inOrder(mocks: _*)
+
+  override def verify[T](mock: T): T                                 = _inOrder.verify(mock)
+  override def verifyWithMode[T](mock: T, mode: VerificationMode): T = _inOrder.verify(mock, mode)
+  def verifyNoMoreInteractions(): Unit                               = _inOrder.verifyNoMoreInteractions()
+}
+
 object VerifyOrder {
-  implicit val unOrdered: VerifyOrder = new VerifyOrder {
-    override def verify[T](mock: T): T                                 = Mockito.verify(mock)
-    override def verifyWithMode[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
-  }
-
-  def inOrder(mocks: Seq[AnyRef]): VerifyOrder = new VerifyOrder {
-    private val _inOrder = Mockito.inOrder(mocks: _*)
-
-    override def verify[T](mock: T): T                                 = _inOrder.verify(mock)
-    override def verifyWithMode[T](mock: T, mode: VerificationMode): T = _inOrder.verify(mock, mode)
-  }
+  implicit val unOrdered: VerifyOrder = VerifyUnOrdered
 }

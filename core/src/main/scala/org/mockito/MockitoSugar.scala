@@ -2,7 +2,7 @@ package org.mockito
 
 import scala.language.experimental.macros
 
-trait MockitoSugar extends MockitoEnhancer with DoSomething with Verifications with Rest
+trait MockitoSugar extends InternalMockitoSugar
 
 /**
   * Simple object to allow the usage of the trait without mixing it in

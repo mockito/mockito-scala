@@ -118,7 +118,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       aMock.valueClassAndValue(new Email("batman@batcave.gotham"), "42")
 
-      aMock.valueClassAndValue(captor, "42") wasCalled ()
+      aMock.valueClassAndValue(captor, "42") was called
 
       captor hasCaptured new Email("batman@batcave.gotham")
       captor.value shouldBe new Email("batman@batcave.gotham")

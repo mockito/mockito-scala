@@ -116,8 +116,6 @@ private[mockito] trait DoSomething {
     Mockito.doAnswer(functionToAnswer(f))
 }
 
-private[mockito] object DoSomething extends DoSomething
-
 private[mockito] trait MockitoEnhancer extends MockCreator {
 
   /**
@@ -360,3 +358,6 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
   def verify[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
 
 }
+
+private[mockito] trait InternalMockitoSugar  extends MockitoEnhancer with DoSomething with Verifications with Rest
+private[mockito] object InternalMockitoSugar extends InternalMockitoSugar

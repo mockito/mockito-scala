@@ -270,10 +270,10 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock.bar
 
-      aMock.bar wasCalled ()
+      aMock.bar was called
 
       a[WantedButNotInvoked] should be thrownBy {
-        aMock.baz wasCalled ()
+        aMock.baz was called
       }
     }
 
@@ -294,12 +294,12 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "check a method was never called" in {
       val aMock = mock[Foo]
 
-      aMock.doSomethingWithThisIntAndString(*, "test") wasNotCalled ()
+      aMock.doSomethingWithThisIntAndString(*, "test") was never called
 
       a[NeverWantedButInvoked] should be thrownBy {
         aMock.doSomethingWithThisIntAndString(1, "test")
 
-        aMock.doSomethingWithThisIntAndString(*, "test") wasNotCalled ()
+        aMock.doSomethingWithThisIntAndString(*, "test") was never called
       }
     }
 
@@ -360,7 +360,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock.bar
 
-      aMock.bar wasCalled ()
+      aMock.bar was called
 
       aMock was never called again
 
@@ -377,7 +377,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock.doSomethingWithThisIntAndString(42, "test")
 
-      aMock.doSomethingWithThisIntAndString(argCaptor, "test") wasCalled ()
+      aMock.doSomethingWithThisIntAndString(argCaptor, "test") was called
 
       argCaptor hasCaptured 42
 
@@ -395,8 +395,8 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       a[VerificationInOrderFailure] should be thrownBy {
         InOrder(mock1, mock2) { implicit order: VerifyOrder =>
-          mock2.iHaveDefaultArgs() wasCalled ()
-          mock1.bar wasCalled ()
+          mock2.iHaveDefaultArgs() was called
+          mock1.bar was called
         }
       }
     }

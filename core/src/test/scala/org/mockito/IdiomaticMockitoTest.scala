@@ -27,6 +27,8 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     def iReturnAFunction(v: Int): Int => String = i => i * v toString
 
     def iBlowUp(v: Int, v2: String): String = throw new IllegalArgumentException("I was called!")
+
+    def iHaveTypeParams[A, B](a: A, b: B): String = "not mocked"
   }
 
   class Bar {
@@ -55,11 +57,13 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "create a mock where I can mix matchers and normal parameters" in {
       val aMock = mock[Foo]
 
-      aMock.doSomethingWithThisIntAndString(*, "test") shouldReturn "mocked!"
+      aMock.iHaveTypeParams[Int, String](*, "test") shouldReturn "mocked!"
 
-      aMock.doSomethingWithThisIntAndString(3, "test") shouldBe "mocked!"
-      aMock.doSomethingWithThisIntAndString(5, "test") shouldBe "mocked!"
-      aMock.doSomethingWithThisIntAndString(5, "est") shouldBe ""
+      aMock.iHaveTypeParams(3, "test") shouldBe "mocked!"
+      aMock.iHaveTypeParams(5, "test") shouldBe "mocked!"
+      aMock.iHaveTypeParams(5, "est") shouldBe ""
+
+      aMock.iHaveTypeParams[Int, String](*, "test") wasCalled twice
     }
 
     "stub a real call" in {

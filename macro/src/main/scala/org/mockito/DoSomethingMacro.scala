@@ -13,25 +13,15 @@ object DoSomethingMacro {
 
     c.Expr[T] {
       c.macroApplication match {
-        case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method(..$args))" =>
+        case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method[..$targs](..$args))" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method(..$newArgs)"
+            q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](..$newArgs)"
           } else
-            q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method(..$args)"
+            q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](..$args)"
 
-        case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method[$targs](..$args))" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[$targs](..$newArgs)"
-          } else
-            q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[$targs](..$args)"
-
-        case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method)" =>
-          q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method"
-
-        case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method[$targs])" =>
-          q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[$targs]"
+        case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method[..$targs])" =>
+          q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -43,25 +33,15 @@ object DoSomethingMacro {
 
     c.Expr[T] {
       c.macroApplication match {
-        case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method(..$args))" =>
+        case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method[..$targs](..$args))" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method(..$newArgs)"
+            q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[..$targs](..$newArgs)"
           } else
-            q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method(..$args)"
+            q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[..$targs](..$args)"
 
-        case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method[$targs](..$args))" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[$targs](..$newArgs)"
-          } else
-            q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[$targs](..$args)"
-
-        case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method)" =>
-          q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method"
-
-        case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method[$targs])" =>
-          q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[$targs]"
+        case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method[..$targs])" =>
+          q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -73,25 +53,15 @@ object DoSomethingMacro {
 
     c.Expr[T] {
       c.macroApplication match {
-        case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method(..$args))" =>
+        case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method[..$targs](..$args))" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method(..$newArgs)"
+            q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[..$targs](..$newArgs)"
           } else
-            q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method(..$args)"
+            q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[..$targs](..$args)"
 
-        case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method[$targs](..$args))" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[$targs](..$newArgs)"
-          } else
-            q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[$targs](..$args)"
-
-        case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method)" =>
-          q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method"
-
-        case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method[$targs])" =>
-          q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[$targs]"
+        case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method[..$targs])" =>
+          q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -103,25 +73,15 @@ object DoSomethingMacro {
 
     c.Expr[T] {
       c.macroApplication match {
-        case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method(..$args))" =>
+        case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method[..$targs](..$args))" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method(..$newArgs)"
+            q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[..$targs](..$newArgs)"
           } else
-            q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method(..$args)"
+            q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[..$targs](..$args)"
 
-        case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method[$targs](..$args))" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[$targs](..$newArgs)"
-          } else
-            q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[$targs](..$args)"
-
-        case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method)" =>
-          q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method"
-
-        case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method[$targs])" =>
-          q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[$targs]"
+        case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method[..$targs])" =>
+          q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

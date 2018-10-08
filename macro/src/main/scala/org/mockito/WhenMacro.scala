@@ -1,6 +1,6 @@
 package org.mockito
 
-import org.mockito.stubbing.{ScalaFirstStubbing, ScalaOngoingStubbing}
+import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
 import org.mockito.Utils._
 
 import scala.language.experimental.macros
@@ -18,25 +18,15 @@ object WhenMacro {
 
     c.Expr[ReturnActions[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method(..$args)).shouldReturn" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](..$args)).shouldReturn" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method(..$newArgs)))"
+            q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](..$newArgs)))"
           } else
-            q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method(..$args)))"
+            q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](..$args)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[$targs](..$args)).shouldReturn" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[$targs](..$newArgs)))"
-          } else
-            q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[$targs](..$args)))"
-
-        case q"$_.StubbingOps[$t]($obj.$method).shouldReturn" =>
-          q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method))"
-
-        case q"$_.StubbingOps[$t]($obj.$method[$targs]).shouldReturn" =>
-          q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[$targs]))"
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldReturn" =>
+          q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -49,25 +39,15 @@ object WhenMacro {
 
     c.Expr[ScalaOngoingStubbing[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method(..$args)).shouldCallRealMethod" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](..$args)).shouldCallRealMethod" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method(..$newArgs)).thenCallRealMethod())"
+            q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs](..$newArgs)).thenCallRealMethod())"
           } else
-            q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method(..$args)).thenCallRealMethod())"
+            q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs](..$args)).thenCallRealMethod())"
 
-        case q"$_.StubbingOps[$t]($obj.$method[$targs](..$args)).shouldCallRealMethod" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[$targs](..$newArgs)).thenCallRealMethod())"
-          } else
-            q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[$targs](..$args)).thenCallRealMethod())"
-
-        case q"$_.StubbingOps[$t]($obj.$method).shouldCallRealMethod" =>
-          q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method).thenCallRealMethod())"
-
-        case q"$_.StubbingOps[$t]($obj.$method[$targs]).shouldCallRealMethod" =>
-          q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[$targs]).thenCallRealMethod())"
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldCallRealMethod" =>
+          q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs]).thenCallRealMethod())"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -84,25 +64,15 @@ object WhenMacro {
 
     c.Expr[ThrowActions[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method(..$args)).shouldThrow" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](..$args)).shouldThrow" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method(..$newArgs)))"
+            q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](..$newArgs)))"
           } else
-            q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method(..$args)))"
+            q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](..$args)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[$targs](..$args)).shouldThrow" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[$targs](..$newArgs)))"
-          } else
-            q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[$targs](..$args)))"
-
-        case q"$_.StubbingOps[$t]($obj.$method).shouldThrow" =>
-          q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method))"
-
-        case q"$_.StubbingOps[$t]($obj.$method[$targs]).shouldThrow" =>
-          q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[$targs]))"
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldThrow" =>
+          q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -141,25 +111,15 @@ object WhenMacro {
 
     c.Expr[AnswerActions[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method(..$args)).shouldAnswer" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](..$args)).shouldAnswer" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method(..$newArgs)))"
+            q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](..$newArgs)))"
           } else
-            q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method(..$args)))"
+            q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](..$args)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[$targs](..$args)).shouldAnswer" =>
-          if (args.exists(a => isMatcher(c)(a))) {
-            val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[$targs](..$newArgs)))"
-          } else
-            q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[$targs](..$args)))"
-
-        case q"$_.StubbingOps[$t]($obj.$method).shouldAnswer" =>
-          q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method))"
-
-        case q"$_.StubbingOps[$t]($obj.$method[$targs]).shouldAnswer" =>
-          q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[$targs]))"
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldAnswer" =>
+          q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

@@ -18,15 +18,15 @@ object VerifyMacro {
 
     c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($obj.$method(..$args)).was($_.called)($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs](..$args)).was($_.called)($order)" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"$order.verify($obj).$method(..$newArgs)"
+            q"$order.verify($obj).$method[..$targs](..$newArgs)"
           } else
-            q"$order.verify($obj).$method(..$args)"
+            q"$order.verify($obj).$method[..$targs](..$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method).was($_.called)($order)" =>
-          q"$order.verify($obj).$method"
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs]).was($_.called)($order)" =>
+          q"$order.verify($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -38,15 +38,15 @@ object VerifyMacro {
 
     c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($obj.$method(..$args)).was($_.never).called($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs](..$args)).was($_.never).called($order)" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method(..$newArgs)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs](..$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method(..$args)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs](..$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method).was($_.never).called($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method"
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs]).was($_.never).called($order)" =>
+          q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs]"
 
         case q"$_.StubbingOps[$_]($obj).was($_.never).called($_)" =>
           q"org.mockito.InternalMockitoSugar.verifyNoMoreInteractions($obj)"
@@ -65,15 +65,15 @@ object VerifyMacro {
 
     c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($obj.$method(..$args)).wasCalled($times)($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs](..$args)).wasCalled($times)($order)" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method(..$newArgs)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method[..$targs](..$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method(..$args)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method[..$targs](..$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method).wasCalled($times)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method"
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
+          q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -87,15 +87,15 @@ object VerifyMacro {
 
     c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($obj.$method(..$args)).wasCalled($times)($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs](..$args)).wasCalled($times)($order)" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method(..$newArgs)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method[..$targs](..$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method(..$args)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method[..$targs](..$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method).wasCalled($times)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method"
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
+          q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -109,15 +109,15 @@ object VerifyMacro {
 
     c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($obj.$method(..$args)).wasCalled($times)($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs](..$args)).wasCalled($times)($order)" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method(..$newArgs)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method[..$targs](..$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method(..$args)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method[..$targs](..$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method).wasCalled($times)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method"
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
+          q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -131,15 +131,15 @@ object VerifyMacro {
 
     c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($obj.$method(..$args)).wasCalled($_)($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs](..$args)).wasCalled($_)($order)" =>
           if (args.exists(a => isMatcher(c)(a))) {
             val newArgs: Seq[Tree] = args.map(a => transformArg(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method(..$newArgs)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method[..$targs](..$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method(..$args)"
+            q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method[..$targs](..$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method).wasCalled($_)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method"
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($_)($order)" =>
+          q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

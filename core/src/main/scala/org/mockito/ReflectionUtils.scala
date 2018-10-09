@@ -2,7 +2,7 @@ package org.mockito
 
 import java.util.function
 
-import org.mockito.internal.handler.ScalaMockHandler.{ArgumentExtractor, Extractors}
+import org.mockito.internal.handler.ScalaMockHandler.{ ArgumentExtractor, Extractors }
 
 import scala.reflect.runtime.universe._
 
@@ -26,15 +26,22 @@ private[mockito] object ReflectionUtils {
 
           val symbol = mirror.classSymbol(clazz)
 
-          val methodsWithLazyArgs = symbol.info.decls
-            .collect {
-              case s if s.isMethod =>
-                (s.name.toString, s.typeSignature.paramLists.flatten.zipWithIndex.collect {
-                  case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
-                }.toSet)
+          val methodsWithLazyArgs: Map[String, Set[Int]] = scala.util
+            .Try {
+              symbol.info.decls
+                .collect {
+                  case s if s.isMethod =>
+                    (s.name.toString, s.typeSignature.paramLists.flatten.zipWithIndex.collect {
+                      case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
+                    }.toSet)
+                }
+                .toMap
+                .filter(_._2.nonEmpty)
             }
-            .toMap
-            .filter(_._2.nonEmpty)
+            .getOrElse{
+              MockitoScalaLogger.log(s"Could not analyse by-name arguments for $clazz")
+              Map.empty
+            }
 
           ArgumentExtractor(methodsWithLazyArgs)
         }

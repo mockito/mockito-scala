@@ -10,6 +10,8 @@ import scala.language.postfixOps
 
 class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 
+  class Implicit[T]
+
   class Foo {
     def bar = "not mocked"
     def baz = "not mocked"
@@ -28,7 +30,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
     def iBlowUp(v: Int, v2: String): String = throw new IllegalArgumentException("I was called!")
 
-    def iHaveTypeParams[A, B](a: A, b: B): String = "not mocked"
+    def iHaveTypeParamsAndImplicits[A, B](a: A, b: B)(implicit v3: Implicit[A]): String = "not mocked"
   }
 
   class Bar {
@@ -54,16 +56,17 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.bar shouldBe "mocked again!"
     }
 
-    "create a mock where I can mix matchers and normal parameters" in {
+    "create a mock where I can mix matchers, normal and implicit parameters" in {
       val aMock = mock[Foo]
+      implicit val implicitValue: Implicit[Int] = mock[Implicit[Int]]
 
-      aMock.iHaveTypeParams[Int, String](*, "test") shouldReturn "mocked!"
+      aMock.iHaveTypeParamsAndImplicits[Int, String](*, "test") shouldReturn "mocked!"
 
-      aMock.iHaveTypeParams(3, "test") shouldBe "mocked!"
-      aMock.iHaveTypeParams(5, "test") shouldBe "mocked!"
-      aMock.iHaveTypeParams(5, "est") shouldBe ""
+      aMock.iHaveTypeParamsAndImplicits(3, "test") shouldBe "mocked!"
+      aMock.iHaveTypeParamsAndImplicits(5, "test") shouldBe "mocked!"
+      aMock.iHaveTypeParamsAndImplicits(5, "est") shouldBe ""
 
-      aMock.iHaveTypeParams[Int, String](*, "test") wasCalled twice
+      aMock.iHaveTypeParamsAndImplicits[Int, String](*, "test") wasCalled twice
     }
 
     "stub a real call" in {

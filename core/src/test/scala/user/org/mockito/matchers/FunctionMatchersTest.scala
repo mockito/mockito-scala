@@ -1,10 +1,10 @@
-package org.mockito.matchers
+package user.org.mockito.matchers
 
-import org.mockito.MockitoSugar
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
-import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
+import org.scalatest.{WordSpec, Matchers => ScalaTestMatchers}
 
-class FunctionMatchersTest extends WordSpec with MockitoSugar with ScalaTestMatchers with FunctionMatchers {
+class FunctionMatchersTest extends WordSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
   class Foo {
     def iHaveFunction0[T](v: () => T): T = v()

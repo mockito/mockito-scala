@@ -1,8 +1,9 @@
-package org.mockito
+package user.org.mockito
 
 import org.mockito.exceptions.misusing.{PotentialStubbingProblem, UnexpectedInvocationException, UnnecessaryStubbingException}
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.quality.Strictness
+import org.mockito.{ArgumentMatchersSugar, DefaultAnswers, IdiomaticMockito, MockitoScalaSession}
 import org.scalatest
 import org.scalatest.{OptionValues, WordSpec}
 

@@ -34,5 +34,3 @@ private[mockito] trait EqMatchers {
    */
   def refEq[T](value: T, excludeFields: String*): T = JavaMatchers.refEq(value, excludeFields: _*)
 }
-
-private[mockito] object EqMatchers extends EqMatchers

@@ -1,5 +1,6 @@
-package org.mockito
+package user.org.mockito
 
+import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito, VerifyOrder}
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
@@ -260,9 +261,24 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
   }
 
   "VerificationOps" should {
+
     "check a mock was not used" in {
       val aMock = mock[Foo]
 
+      aMock was never called
+
+      a[NoInteractionsWanted] should be thrownBy {
+        aMock.baz
+
+        aMock was never called
+      }
+    }
+
+    trait SetupNeverUsed {
+      val aMock = mock[Foo]
+    }
+
+    "check a mock was not used (with setup)" in new SetupNeverUsed {
       aMock was never called
 
       a[NoInteractionsWanted] should be thrownBy {

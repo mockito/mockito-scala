@@ -1,5 +1,6 @@
-package org.mockito.integrations.scalatest
+package user.org.mockito.integrations.scalatest
 
+import org.mockito.integrations.scalatest.IdiomaticMockitoFixture
 import org.scalatest.{Matchers, WordSpec}
 
 class IdiomaticMockitoFixtureTest extends WordSpec with IdiomaticMockitoFixture with Matchers {

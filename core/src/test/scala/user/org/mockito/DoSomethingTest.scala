@@ -1,5 +1,6 @@
-package org.mockito
+package user.org.mockito
 
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.mockito.invocation.InvocationOnMock
 import org.scalatest.{WordSpec, Matchers => ScalaTestMatchers}
 

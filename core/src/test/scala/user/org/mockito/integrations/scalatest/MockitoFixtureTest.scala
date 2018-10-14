@@ -1,6 +1,7 @@
-package org.mockito.integrations.scalatest
+package user.org.mockito.integrations.scalatest
 
-import org.scalatest.{ Matchers, WordSpec }
+import org.mockito.integrations.scalatest.MockitoFixture
+import org.scalatest.{Matchers, WordSpec}
 
 class MockitoFixtureTest extends WordSpec with MockitoFixture with Matchers {
 

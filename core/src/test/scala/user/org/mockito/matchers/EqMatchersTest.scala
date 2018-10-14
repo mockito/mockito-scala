@@ -1,9 +1,9 @@
-package org.mockito.matchers
+package user.org.mockito.matchers
 
-import org.mockito.MockitoSugar
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
 
-class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with EqMatchers with MacroBasedMatchers {
+class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
   case class Baz(param1: String, param2: String)
 

@@ -1,8 +1,9 @@
-package org.mockito.captor
+package user.org.mockito.captor
 
+import org.mockito.captor.{ArgCaptor, ValCaptor}
 import org.mockito.{IdiomaticMockito, MockitoSugar}
-import org.mockito.captor.ArgCaptorTest._
 import org.scalatest.{Matchers, WordSpec}
+import user.org.mockito.captor.ArgCaptorTest._
 
 object ArgCaptorTest {
   case class Name(name: String) extends AnyVal

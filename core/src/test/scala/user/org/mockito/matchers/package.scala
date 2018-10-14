@@ -1,4 +1,4 @@
-package org.mockito
+package user.org.mockito
 
 package object matchers {
   class ValueClass(val v: String)   extends AnyVal

@@ -1,10 +1,10 @@
-package org.mockito
+package user.org.mockito
 
-import org.scalatest
-import org.scalatest.WordSpec
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import org.scalatest.{Matchers, WordSpec}
 
 //noinspection RedundantDefaultArgument
-class MockitoSugarTest_212 extends WordSpec with MockitoSugar with scalatest.Matchers with ArgumentMatchersSugar {
+class MockitoSugarTest_212 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
 
   class Foo {
     def bar = "not mocked"

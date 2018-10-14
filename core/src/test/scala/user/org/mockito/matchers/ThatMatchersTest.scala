@@ -1,9 +1,9 @@
-package org.mockito.matchers
+package user.org.mockito.matchers
 
-import org.mockito.{ ArgumentMatcher, MockitoSugar }
-import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
+import org.mockito.{ArgumentMatcher, ArgumentMatchersSugar, MockitoSugar}
+import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
 
-class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ThatMatchers {
+class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
   class EqTo[T](value: T) extends ArgumentMatcher[T] {
     override def matches(argument: T): Boolean = argument == value

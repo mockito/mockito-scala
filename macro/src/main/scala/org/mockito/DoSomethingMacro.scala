@@ -16,12 +16,12 @@ object DoSomethingMacro {
         case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](...$newArgs)"
+            q"org.mockito.MockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](...$newArgs)"
           } else
-            q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](...$args)"
+            q"org.mockito.MockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](...$args)"
 
         case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method[..$targs])" =>
-          q"org.mockito.InternalMockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs]"
+          q"org.mockito.MockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -56,12 +56,12 @@ object DoSomethingMacro {
         case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[..$targs](...$newArgs)"
+            q"org.mockito.MockitoSugar.doThrow($v).when($obj).$method[..$targs](...$newArgs)"
           } else
-            q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[..$targs](...$args)"
+            q"org.mockito.MockitoSugar.doThrow($v).when($obj).$method[..$targs](...$args)"
 
         case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method[..$targs])" =>
-          q"org.mockito.InternalMockitoSugar.doThrow($v).when($obj).$method[..$targs]"
+          q"org.mockito.MockitoSugar.doThrow($v).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -76,12 +76,12 @@ object DoSomethingMacro {
         case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[..$targs](...$newArgs)"
+            q"org.mockito.MockitoSugar.doCallRealMethod.when($obj).$method[..$targs](...$newArgs)"
           } else
-            q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[..$targs](...$args)"
+            q"org.mockito.MockitoSugar.doCallRealMethod.when($obj).$method[..$targs](...$args)"
 
         case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method[..$targs])" =>
-          q"org.mockito.InternalMockitoSugar.doCallRealMethod.when($obj).$method[..$targs]"
+          q"org.mockito.MockitoSugar.doCallRealMethod.when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

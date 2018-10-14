@@ -1,9 +1,9 @@
-package org.mockito.matchers
+package user.org.mockito.matchers
 
-import org.mockito.MockitoSugar
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
 
-class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with AnyMatchers with MacroBasedMatchers {
+class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
   class Foo {
     def bar[T](v: T): T = v

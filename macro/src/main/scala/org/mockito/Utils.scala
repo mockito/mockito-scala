@@ -65,7 +65,7 @@ object Utils {
     if (isMatcher(c)(arg)) arg
     else
       arg match {
-        case q"$a" => q"org.mockito.matchers.EqMatchers.eqTo($a)"
+        case q"$a" => q"org.mockito.ArgumentMatchersSugar.eqTo($a)"
       }
   }
 }

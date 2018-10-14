@@ -1,7 +1,8 @@
-package org.mockito.integrations.scalatest
+package user.org.mockito.integrations.scalatest
 
 import org.mockito.MockitoSugar
-import org.scalatest.{ Matchers, WordSpec }
+import org.mockito.integrations.scalatest.ResetMocksAfterEachTest
+import org.scalatest.{Matchers, WordSpec}
 
 class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetMocksAfterEachTest with Matchers {
 

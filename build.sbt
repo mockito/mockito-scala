@@ -37,7 +37,7 @@ lazy val common = (project in file("common"))
 
 lazy val core = (project in file("core"))
   .dependsOn(macroSub % "compile-internal, test-internal")
-  .dependsOn(common)
+  .dependsOn(common % "compile-internal, test-internal")
   .settings(
     commonSettings,
     name := "mockito-scala",
@@ -50,6 +50,14 @@ lazy val core = (project in file("core"))
     // include the macro sources in the main source jar
     mappings in (Compile, packageSrc) ++= mappings
       .in(macroSub, Compile, packageSrc)
+      .value,
+    // include the common classes and resources in the main jar
+    mappings in (Compile, packageBin) ++= mappings
+      .in(common, Compile, packageBin)
+      .value,
+    // include the common sources in the main source jar
+    mappings in (Compile, packageSrc) ++= mappings
+      .in(common, Compile, packageSrc)
       .value,
     licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
     homepage := Some(url("https://github.com/mockito/mockito-scala")),

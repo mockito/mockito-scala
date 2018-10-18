@@ -17,7 +17,17 @@ lazy val commonSettings =
       source.close
       version.get
     },
-    crossScalaVersions := Seq("2.11.12", "2.12.6")
+    crossScalaVersions := Seq("2.11.12", "2.12.6"),
+    scalacOptions ++= Seq(
+      "-unchecked",
+      "-feature",
+      "-deprecation",
+      "-encoding", "UTF-8",
+      "-Ypartial-unification",
+      "-language:higherKinds",
+      "-Xfatal-warnings",
+//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher"
+    ),
   )
 
 lazy val commonLibraries = Seq(
@@ -28,7 +38,7 @@ lazy val commonLibraries = Seq(
 lazy val common = (project in file("common"))
   .settings(
     commonSettings,
-    libraryDependencies += "org.mockito"   % "mockito-core" % "2.21.0",
+    libraryDependencies += "org.mockito"    % "mockito-core"  % "2.21.0",
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     publish := {},
     publishLocal := {},

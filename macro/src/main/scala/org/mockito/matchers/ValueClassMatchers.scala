@@ -30,7 +30,7 @@ object ValueClassMatchers {
 
     val paramType = tpe.decl(param.name).typeSignature.finalResultType
 
-    c.Expr[ValueClassMatchers[T]] {
+    val r = c.Expr[ValueClassMatchers[T]] {
       q"""
       new org.mockito.matchers.ValueClassMatchers[$tpe] {
         override def anyVal: $tpe = new $tpe(org.mockito.ArgumentMatchers.any[$paramType]())
@@ -38,5 +38,7 @@ object ValueClassMatchers {
       }
     """
     }
+    if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
+    r
   }
 }

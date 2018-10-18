@@ -16,7 +16,7 @@ object VerifyMacro {
   def wasMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
-    c.Expr[Unit] {
+    val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).was($_.called)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -31,12 +31,14 @@ object VerifyMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    r
   }
 
   def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
-    c.Expr[Unit] {
+    val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($_.this.$obj).was($_.never).called($_)" =>
           q"org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
@@ -57,16 +59,16 @@ object VerifyMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    r
   }
-
-
 
   case class Times(times: Int)
 
   def wasMacroTimes[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[Times])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
-    c.Expr[Unit] {
+    val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -81,6 +83,8 @@ object VerifyMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    r
   }
 
   case class AtLeast(times: Int)
@@ -88,7 +92,7 @@ object VerifyMacro {
   def wasMacroAtLeast[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtLeast])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
-    c.Expr[Unit] {
+    val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -103,6 +107,8 @@ object VerifyMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    r
   }
 
   case class AtMost(times: Int)
@@ -110,7 +116,7 @@ object VerifyMacro {
   def wasMacroAtMost[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtMost])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
-    c.Expr[Unit] {
+    val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -125,6 +131,8 @@ object VerifyMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    r
   }
 
   class OnlyOn
@@ -132,7 +140,7 @@ object VerifyMacro {
   def wasMacroOnlyOn[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[OnlyOn])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
-    c.Expr[Unit] {
+    val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($_)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -147,6 +155,8 @@ object VerifyMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    r
   }
 }
 

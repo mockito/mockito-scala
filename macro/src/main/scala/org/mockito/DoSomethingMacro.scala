@@ -11,7 +11,7 @@ object DoSomethingMacro {
   def returnedBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T]): c.Expr[T] = {
     import c.universe._
 
-    c.Expr[T] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -26,12 +26,14 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    r
   }
 
   def answeredBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T]): c.Expr[T] = {
     import c.universe._
 
-    c.Expr[T] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -46,12 +48,14 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    r
   }
 
   def thrownBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T]): c.Expr[T] = {
     import c.universe._
 
-    c.Expr[T] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -66,12 +70,14 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    r
   }
 
   def calledBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T]): c.Expr[T] = {
     import c.universe._
 
-    c.Expr[T] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -86,6 +92,8 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
+    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    r
   }
 
   def argumentToAnswer(v: Any): Answer[Any] = v match {

@@ -10,7 +10,7 @@ private[mockito] trait NullMatchers {
    * on Scala
    *
    */
-  @deprecated
+  @deprecated(message = "Using nulls in Scala? you naughty, naughty developer...", since = "0.0.0")
   def isNull[T]: T = JavaMatchers.isNull[T]
 
   /**
@@ -19,6 +19,6 @@ private[mockito] trait NullMatchers {
    * on Scala
    *
    */
-  @deprecated
+  @deprecated(message = "Using nulls in Scala? you naughty, naughty developer...", since = "0.0.0")
   def isNotNull[T]: T = JavaMatchers.isNotNull[T]
 }

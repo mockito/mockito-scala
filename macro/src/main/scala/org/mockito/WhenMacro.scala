@@ -16,7 +16,7 @@ object WhenMacro {
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ReturnActions[T]] = {
     import c.universe._
 
-    c.Expr[ReturnActions[T]] {
+    val r = c.Expr[ReturnActions[T]] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldReturn" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -31,13 +31,14 @@ object WhenMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-
+    if (c.settings.contains("mockito-print-when")) println(show(r.tree))
+    r
   }
 
   def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ScalaOngoingStubbing[T]] = {
     import c.universe._
 
-    c.Expr[ScalaOngoingStubbing[T]] {
+    val r = c.Expr[ScalaOngoingStubbing[T]] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldCallRealMethod" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -52,7 +53,8 @@ object WhenMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-
+    if (c.settings.contains("mockito-print-when")) println(show(r.tree))
+    r
   }
 
   class ThrowActions[T](os: ScalaFirstStubbing[T]) {
@@ -62,7 +64,7 @@ object WhenMacro {
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ThrowActions[T]] = {
     import c.universe._
 
-    c.Expr[ThrowActions[T]] {
+    val r = c.Expr[ThrowActions[T]] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldThrow" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -77,7 +79,8 @@ object WhenMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-
+    if (c.settings.contains("mockito-print-when")) println(show(r.tree))
+    r
   }
 
   class AnswerActions[T](os: ScalaFirstStubbing[T]) {
@@ -109,7 +112,7 @@ object WhenMacro {
   def shouldAnswer[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[AnswerActions[T]] = {
     import c.universe._
 
-    c.Expr[AnswerActions[T]] {
+    val r = c.Expr[AnswerActions[T]] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldAnswer" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -124,6 +127,7 @@ object WhenMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-
+    if (c.settings.contains("mockito-print-when")) println(show(r.tree))
+    r
   }
 }

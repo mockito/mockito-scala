@@ -18,6 +18,7 @@ The library has independent developers, release cycle and versioning from core m
 
 ## Dependency
 
+*   Artifact identifier: "org.mockito:mockito-scala_2.11:VERSION"
 *   Artifact identifier: "org.mockito:mockito-scala_2.12:VERSION"
 *   Latest version - see [release notes](/docs/release-notes.md)
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
@@ -33,7 +34,7 @@ The library has independent developers, release cycle and versioning from core m
 * The usage of `org.mockito.Answer[T]` was removed from the API in favour of [Function Answers](#function-answers)
 * If you were using something like `doAnswer(_ => <something>).when ...` to lazily compute a return value when the method is actually called you should now write it like `doAnswer(<something>).when ...`, no need of passing a function as that argument is by-name
 * If you have chained return values like `when(myMock.foo) thenReturn "a" thenReturn "b" etc...` the syntax has changed a bit to `when(myMock.foo) thenReturn "a" andThen "b" etc...`
-* Idiomatic syntax has some changes to allow full support of mixing values and argument matchers
+* Idiomatic syntax has some changes to allow support of mixing values and argument matchers [Mix-and-Match](#mix-and-match)
 ```scala
 aMock wasCalled on bar              => aMock.bar was called
 aMock wasCalled onlyOn bar          => aMock.bar wasCalled onlyHere
@@ -229,9 +230,9 @@ Here we can see the old syntax on the left and the new one on the right
 
 ```scala
 trait Foo {
-    def bar: String
-    def bar(v: Int): Int
-  }
+  def bar: String
+  def bar(v: Int): Int
+}
   
 val aMock = mock[Foo]  
   
@@ -243,23 +244,24 @@ when(aMock.bar) thenThrow new IllegalArgumentException          <=> aMock.bar sh
 when(aMock.bar) thenAnswer(_ => "mocked!")                      <=> aMock.bar shouldAnswer "mocked!"
 when(aMock.bar(any)) thenAnswer(_.getArgument[Int](0) * 10)     <=> aMock.bar(*) shouldAnswer ((i: Int) => i * 10)
 
-doReturn("mocked!").when(aMock).bar                             <=> "mocked!" willBe returned by aMock bar
-doAnswer(_ => "mocked!").when(aMock).bar                        <=> "mocked!" willBe answered by aMock bar
-doAnswer(_.getArgument[Int](0) * 10).when(aMock).bar(any)       <=> ((i: Int) => i * 10) willBe answered by aMock bar *
-doCallRealMethod.when(aMock).bar                                <=> theRealMethod willBe called by aMock bar
-doThrow(new IllegalArgumentException).when(aMock).bar           <=> new IllegalArgumentException willBe thrown by aMock bar
+doReturn("mocked!").when(aMock).bar                             <=> "mocked!" willBe returned by aMock.bar
+doAnswer(_ => "mocked!").when(aMock).bar                        <=> "mocked!" willBe answered by aMock.bar
+doAnswer(_.getArgument[Int](0) * 10).when(aMock).bar(any)       <=> ((i: Int) => i * 10) willBe answered by aMock.bar(*)
+doCallRealMethod.when(aMock).bar                                <=> theRealMethod willBe called by aMock.bar
+doThrow(new IllegalArgumentException).when(aMock).bar           <=> new IllegalArgumentException willBe thrown by aMock.bar
   
 verifyZeroInteractions(aMock)                                   <=> aMock was never called
-verify(aMock).bar                                               <=> aMock wasCalled on bar
-verify(aMock, only).bar                                         <=> aMock wasCalled onlyOn bar
-verify(aMock, never).bar                                        <=> aMock was never called on bar
-verify(aMock, times(2)).bar                                     <=> aMock wasCalled twiceOn bar
-verify(aMock, times(6)).bar                                     <=> aMock wasCalled sixTimesOn bar
+verify(aMock).bar                                               <=> aMock.bar was called
+verify(aMock).bar(any)                                          <=> aMock.bar(*) was called
+verify(aMock, only).bar                                         <=> aMock.bar wasCalled onlyHere
+verify(aMock, never).bar                                        <=> aMock.bar was never called
+verify(aMock, times(2)).bar                                     <=> aMock.bar wasCalled twice
+verify(aMock, times(6)).bar                                     <=> aMock.bar wasCalled sixTimes
 verifyNoMoreInteractions(aMock)                                 <=> aMock was never called again
 
 val order = inOrder(mock1, mock2)                               <=> InOrder(mock1, mock2) { implicit order =>
-order.verify(mock2).someMethod()                                <=>   mock2 wasCalled on someMethod ()
-order.verify(mock1).anotherMethod()                             <=>   mock1 wasCalled on anotherMethod () 
+order.verify(mock2).someMethod()                                <=>   mock2.someMethod() was called
+order.verify(mock1).anotherMethod()                             <=>   mock1.anotherMethod() was called
                                                                 <=> }
 
 ```
@@ -340,6 +342,37 @@ I guess we all agree that's much better, but, it gets even better, we can now pa
 ```scala
 when(myMock.foo("bar", 42)) thenAnswer ((v1: String, v2: Int) => v1 + v2)
 ```
+
+##Mix and match
+#Mixing normal values with argument matchers
+Since mockito 1.0.0, when you use the idiomatic syntax, you are not forced anymore to use argument matchers for all your parameters as soon as you use one, 
+so stuff like this is now valid (not a comprehensive list, just a bunch of examples)
+```scala
+trait Foo {
+  def bar(v: Int, v2: Int, v3: Int = 42): Int
+}
+  
+val aMock = mock[Foo]  
+  
+aMock.bar(1,2) shouldReturn "mocked!"
+aMock.bar(1,*) shouldReturn "mocked!"
+aMock.bar(*,*) shouldReturn "mocked!"
+aMock.bar(*,*, 3) shouldReturn "mocked!"
+
+"mocked!" willBe returned by aMock.bar(1,2)
+"mocked!" willBe returned by aMock.bar(1,*)
+"mocked!" willBe returned by aMock.bar(*,*)
+"mocked!" willBe returned by aMock.bar(*,*, 3)
+
+aMock.bar(1,2) was called
+aMock.bar(1,*) was called
+aMock.bar(*,*) was called
+aMock.bar(*,*, 3) was called
+```
+So far there is one caveat, if you have a curried function that has default arguments on the second (or any following) argument list, the macro that achieves this will fail, 
+this is related to how the default method is created by the compiler.
+I'll write a more detailed explanation at some point, but there are more than one reason why this is probably never going to work
+The workaround is quite easy though, just provide a value (or a matcher) for that argument and you are good to go.
 
 ## Notes
 

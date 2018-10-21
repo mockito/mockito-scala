@@ -417,10 +417,15 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       mock2.iHaveDefaultArgs()
 
       a[VerificationInOrderFailure] should be thrownBy {
-        InOrder(mock1, mock2) { implicit order: VerifyOrder =>
+        InOrder(mock1, mock2) { implicit order =>
           mock2.iHaveDefaultArgs() was called
           mock1.bar was called
         }
+      }
+
+      InOrder(mock1, mock2) { implicit order =>
+        mock1.bar was called
+        mock2.iHaveDefaultArgs() was called
       }
     }
   }

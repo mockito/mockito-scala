@@ -14,7 +14,8 @@ trait Captor[T] {
 
   def values: List[T]
 
-  def hasCaptured(expectation: T): Unit = if (expectation != value) throw new ArgumentsAreDifferent(s"Got [$value] instead of [$expectation]")
+  def hasCaptured(expectation: T): Unit =
+    if (expectation != value) throw new ArgumentsAreDifferent(s"Got [$value] instead of [$expectation]")
 }
 
 object Captor {
@@ -38,7 +39,7 @@ object Captor {
 
     val paramType = tpe.decl(param.name).typeSignature.finalResultType
 
-    c.Expr[Captor[T]] {
+    val r = c.Expr[Captor[T]] {
       q"""
       new org.mockito.captor.Captor[$tpe] {
 
@@ -54,5 +55,7 @@ object Captor {
       }
     """
     }
+    if (c.settings.contains("mockito-print-captor")) println(show(r.tree))
+    r
   }
 }

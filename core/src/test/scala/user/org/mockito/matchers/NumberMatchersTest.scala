@@ -6,7 +6,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class NumberMatchersTest extends FlatSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar {
 
-  trait Foo {
+  class Foo {
     def pepe[N](n: N, v: String = "meh"): N = ???
   }
 

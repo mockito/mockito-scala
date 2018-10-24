@@ -1,6 +1,6 @@
 package org.mockito.matchers
 
-import org.mockito.{ArgumentMatcher, ArgumentMatchers => JavaMatchers}
+import org.mockito.{ ArgumentMatcher, ArgumentMatchers => JavaMatchers }
 
 private[mockito] trait ThatMatchers {
 
@@ -76,3 +76,5 @@ private[mockito] trait ThatMatchers {
   def longThat(matcher: ArgumentMatcher[Long]): Long = argThat(matcher)
 
 }
+
+private[mockito] object ThatMatchers extends ThatMatchers

@@ -51,7 +51,12 @@ object Utils {
         case q"$_.shortThat[$_]($_)"   => true
         case q"$_.longThat[$_]($_)"    => true
 
-        case q"$_.Captor.asCapture[$_]($_)"    => true
+        case q"$_.n.>[$_]($_)($_)" => true
+        case q"$_.n.>=[$_]($_)($_)" => true
+        case q"$_.n.<[$_]($_)($_)" => true
+        case q"$_.n.<=[$_]($_)($_)" => true
+
+        case q"$_.Captor.asCapture[$_]($_)" => true
 
         case _ => false
       }

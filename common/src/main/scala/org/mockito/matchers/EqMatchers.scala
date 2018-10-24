@@ -1,6 +1,7 @@
-package org.mockito.matchers
+package org.mockito
+package matchers
 
-import org.mockito.{ArgumentMatchers => JavaMatchers}
+import org.mockito.{ ArgumentMatchers => JavaMatchers }
 
 import scala.reflect.ClassTag
 
@@ -13,7 +14,7 @@ private[mockito] trait EqMatchers {
    */
   def eqTo[T](value: T): T = JavaMatchers.eq(value)
 
-   /**
+  /**
    * Delegates to <code>ArgumentMatchers.same()</code>, it's only here so we expose all the `ArgumentMatchers`
    * on a single place
    *
@@ -25,7 +26,7 @@ private[mockito] trait EqMatchers {
    * It provides a nicer API as you can, for instance, do isA[String] instead of isA(classOf[String])
    *
    */
-  def isA[T](implicit classTag: ClassTag[T]): T = JavaMatchers.isA(classTag.runtimeClass.asInstanceOf[Class[T]])
+  def isA[T: ClassTag]: T = JavaMatchers.isA(clazz)
 
   /**
    * Delegates to <code>ArgumentMatchers.refEq()</code>, it's only here so we expose all the `ArgumentMatchers`

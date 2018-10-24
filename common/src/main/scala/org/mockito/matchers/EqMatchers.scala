@@ -10,20 +10,26 @@ import scala.reflect.ClassTag
 private[mockito] trait EqMatchers {
 
   /**
-   * Delegates to <code>ArgumentMatchers.eq()</code>, it renames the method to <code>eqTo</code> to
-   * avoid clashes with the Scala <code>eq</code> method used for reference equality
-   *
+   * Creates a matcher that delegates on {{org.scalactic.Equality}} so you can always customise how the values are compared
    */
   def eqTo[T](value: T)(implicit $eq: Equality[T]): T =
     ThatMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(v: T): Boolean = $eq.areEqual(v, value)
-      override def toString: String = s"equality($value)"
+      override def toString: String = s"eqTo($value)"
     })
 
+  /**
+    * Creates a matcher that delegates on {{org.scalactic.TripleEqualsSupport.Spread}} so you can get around the lack of
+    * precision on floating points, e.g.
+    *
+    *     aMock.barDouble(4.999)
+    *     verify(aMock).barDouble(=~(5.0 +- 0.001))
+    *
+    */
   def =~[T](spread: Spread[T]): T =
     ThatMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(v: T): Boolean = spread.isWithin(v)
-      override def toString: String = s"aprox($spread)"
+      override def toString: String = s"=~($spread)"
     })
 
   /**

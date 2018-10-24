@@ -32,13 +32,14 @@ lazy val commonSettings =
 
 lazy val commonLibraries = Seq(
   "org.mockito"   % "mockito-core" % "2.21.0",
-  "org.scalatest" %% "scalatest"   % "3.0.5" % "provided"
+  "org.scalactic" %% "scalactic"   % "3.0.5",
+  "org.scalatest" %% "scalatest"   % "3.0.5" % "provided",
 )
 
 lazy val common = (project in file("common"))
   .settings(
     commonSettings,
-    libraryDependencies += "org.mockito"    % "mockito-core"  % "2.21.0",
+    libraryDependencies ++= commonLibraries,
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     publish := {},
     publishLocal := {},

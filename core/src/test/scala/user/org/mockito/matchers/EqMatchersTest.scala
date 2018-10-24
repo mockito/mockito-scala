@@ -1,6 +1,8 @@
 package user.org.mockito.matchers
 
 import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import org.mockito.exceptions.verification.WantedButNotInvoked
+import org.scalactic.{Equality, StringNormalizations}
 import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
 
 class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
@@ -150,5 +152,28 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
     aMock.baz(Baz("Hello", "World"))
     verify(aMock).baz(refEq(Baz("Hello", "World")))
     verify(aMock).baz(refEq(Baz("Hello", "Mars"), "param2"))
+  }
+
+  "eqTo[T]" should "work when an implicit Equality is in scope" in {
+    import StringNormalizations._
+
+    implicit val eq: Equality[String] = decided by defaultEquality[String] afterBeing lowerCased
+
+    val aMock = mock[Foo]
+
+    aMock.bar("meh")
+    verify(aMock).bar(eqTo("MEH"))
+  }
+
+  "aprox[T]" should "work" in {
+    val aMock = mock[Foo]
+
+    aMock.barDouble(4.999)
+
+    verify(aMock).barDouble(=~(5.0 +- 0.001))
+
+    an[WantedButNotInvoked] shouldBe thrownBy {
+      verify(aMock).barDouble(=~(5.0 +- 0.000001))
+    }
   }
 }

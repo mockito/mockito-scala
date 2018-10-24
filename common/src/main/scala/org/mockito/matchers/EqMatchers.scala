@@ -1,7 +1,9 @@
 package org.mockito
 package matchers
 
-import org.mockito.{ ArgumentMatchers => JavaMatchers }
+import org.mockito.{ArgumentMatchers => JavaMatchers}
+import org.scalactic.Equality
+import org.scalactic.TripleEqualsSupport.Spread
 
 import scala.reflect.ClassTag
 
@@ -12,7 +14,17 @@ private[mockito] trait EqMatchers {
    * avoid clashes with the Scala <code>eq</code> method used for reference equality
    *
    */
-  def eqTo[T](value: T): T = JavaMatchers.eq(value)
+  def eqTo[T](value: T)(implicit $eq: Equality[T]): T =
+    ThatMatchers.argThat(new ArgumentMatcher[T] {
+      override def matches(v: T): Boolean = $eq.areEqual(v, value)
+      override def toString: String = s"equality($value)"
+    })
+
+  def =~[T](spread: Spread[T]): T =
+    ThatMatchers.argThat(new ArgumentMatcher[T] {
+      override def matches(v: T): Boolean = spread.isWithin(v)
+      override def toString: String = s"aprox($spread)"
+    })
 
   /**
    * Delegates to <code>ArgumentMatchers.same()</code>, it's only here so we expose all the `ArgumentMatchers`

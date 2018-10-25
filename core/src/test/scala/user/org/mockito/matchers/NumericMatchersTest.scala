@@ -1,10 +1,10 @@
 package user.org.mockito.matchers
 
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.mockito.exceptions.verification.WantedButNotInvoked
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{ FlatSpec, Matchers }
 
-class NumberMatchersTest extends FlatSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar {
+class NumericMatchersTest extends FlatSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar {
 
   class Foo {
     def pepe[N](n: N, v: String = "meh"): N = ???
@@ -67,6 +67,18 @@ class NumberMatchersTest extends FlatSpec with IdiomaticMockito with Matchers wi
 
     an[WantedButNotInvoked] shouldBe thrownBy {
       aMock.pepe(n <= 3.0) was called
+    }
+  }
+
+  "=~" should "work" in {
+    val aMock = mock[Foo]
+
+    aMock.pepe(4.999)
+
+    aMock.pepe(n =~ 5.0 +- 0.001) was called
+
+    an[WantedButNotInvoked] shouldBe thrownBy {
+      aMock.pepe(n =~ 5.0 +- 0.00001) was called
     }
   }
 }

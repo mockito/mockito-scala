@@ -164,16 +164,4 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
     aMock.bar("meh")
     verify(aMock).bar(eqTo("MEH"))
   }
-
-  "aprox[T]" should "work" in {
-    val aMock = mock[Foo]
-
-    aMock.barDouble(4.999)
-
-    verify(aMock).barDouble(=~(5.0 +- 0.001))
-
-    an[WantedButNotInvoked] shouldBe thrownBy {
-      verify(aMock).barDouble(=~(5.0 +- 0.000001))
-    }
-  }
 }

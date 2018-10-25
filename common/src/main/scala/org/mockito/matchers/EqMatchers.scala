@@ -3,7 +3,6 @@ package matchers
 
 import org.mockito.{ArgumentMatchers => JavaMatchers}
 import org.scalactic.Equality
-import org.scalactic.TripleEqualsSupport.Spread
 
 import scala.reflect.ClassTag
 
@@ -16,20 +15,6 @@ private[mockito] trait EqMatchers {
     ThatMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(v: T): Boolean = $eq.areEqual(v, value)
       override def toString: String = s"eqTo($value)"
-    })
-
-  /**
-    * Creates a matcher that delegates on {{org.scalactic.TripleEqualsSupport.Spread}} so you can get around the lack of
-    * precision on floating points, e.g.
-    *
-    *     aMock.barDouble(4.999)
-    *     verify(aMock).barDouble(=~(5.0 +- 0.001))
-    *
-    */
-  def =~[T](spread: Spread[T]): T =
-    ThatMatchers.argThat(new ArgumentMatcher[T] {
-      override def matches(v: T): Boolean = spread.isWithin(v)
-      override def toString: String = s"=~($spread)"
     })
 
   /**

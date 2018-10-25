@@ -55,6 +55,7 @@ object Utils {
         case q"$_.n.>=[$_]($_)($_)" => true
         case q"$_.n.<[$_]($_)($_)" => true
         case q"$_.n.<=[$_]($_)($_)" => true
+        case q"$_.n.=~[$_]($_)" => true
 
         case q"$_.Captor.asCapture[$_]($_)" => true
 

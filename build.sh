@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-java -Xms512M -Xmx2G -Xss2M -XX:ReservedCodeCacheSize=192m -XX:+CMSClassUnloadingEnabled -Dfile.encoding=UTF-8 -jar sbt/sbt-launch.jar -Dsbt.parser.simple=true clean test 'set every publishTo := Some(Resolver.file("local-repo", file("target/dist")))' '+ publish'
+java -Xms512M -Xmx2G -Xss2M -XX:ReservedCodeCacheSize=192m -XX:+CMSClassUnloadingEnabled -Dfile.encoding=UTF-8 -jar sbt/sbt-launch.jar -Dsbt.parser.simple=true clean +test 'set every publishTo := Some(Resolver.file("local-repo", file("target/dist")))' '+ publish'

@@ -1,6 +1,7 @@
 package org.mockito.matchers
 
 import org.mockito.ArgumentMatcher
+import org.scalactic.TripleEqualsSupport.Spread
 
 /**
  * I transform everything to BigDecimal so any kind of number type can be compared
@@ -15,13 +16,55 @@ class N {
 
   import ThatMatchers.argThat
 
+  /**
+    * Creates a matcher that works only if there is a Numeric[T] associated with the type, this allows you to write stuff like
+    *
+    *     aMock.pepe(4.1)
+    *     aMock.pepe(n > 4) was called
+    *
+    */
   def >[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, ">", _ > _))
 
+  /**
+    * Creates a matcher that works only if there is a Numeric[T] associated with the type, this allows you to write stuff like
+    *
+    *     aMock.pepe(4)
+    *     aMock.pepe(n >= 4) was called
+    *
+    */
   def >=[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, ">=", _ >= _))
 
+  /**
+    * Creates a matcher that works only if there is a Numeric[T] associated with the type, this allows you to write stuff like
+    *
+    *     aMock.pepe(3.1)
+    *     aMock.pepe(n < 4) was called
+    *
+    */
   def <[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, "<", _ < _))
 
+  /**
+    * Creates a matcher that works only if there is a Numeric[T] associated with the type, this allows you to write stuff like
+    *
+    *     aMock.pepe(4)
+    *     aMock.pepe(n <= 4) was called
+    *
+    */
   def <=[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, "<=", _ <= _))
+
+  /**
+    * Creates a matcher that delegates on {{org.scalactic.TripleEqualsSupport.Spread}} so you can get around the lack of
+    * precision on floating points, e.g.
+    *
+    *     aMock.barDouble(4.999)
+    *     verify(aMock).barDouble(=~(5.0 +- 0.001))
+    *
+    */
+  def =~[T](spread: Spread[T]): T =
+    ThatMatchers.argThat(new ArgumentMatcher[T] {
+      override def matches(v: T): Boolean = spread.isWithin(v)
+      override def toString: String = s"=~($spread)"
+    })
 }
 
 private[mockito] trait NumericMatchers {

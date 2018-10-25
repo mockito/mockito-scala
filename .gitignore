@@ -3,3 +3,4 @@ target/
 dist/
 .gradle/
 build/
+*.sc

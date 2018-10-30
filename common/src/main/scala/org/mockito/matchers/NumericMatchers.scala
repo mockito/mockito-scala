@@ -1,6 +1,7 @@
 package org.mockito.matchers
 
 import org.mockito.ArgumentMatcher
+import org.scalactic.Tolerance
 import org.scalactic.TripleEqualsSupport.Spread
 
 /**
@@ -67,7 +68,7 @@ class N {
     })
 }
 
-private[mockito] trait NumericMatchers {
+private[mockito] trait NumericMatchers extends Tolerance {
 
   /**
    * Provides a starting point to write expressions like n > 3, etc

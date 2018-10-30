@@ -8,7 +8,7 @@
 
 The most popular mocking framework for Java, now in Scala!!!
 
-[![Build Status](https://travis-ci.org/mockito/mockito-scala.svg?branch=master)](https://travis-ci.org/mockito/mockito-scala)
+[![Build Status](https://travis-ci.org/mockito/mockito-scala.svg?branch=release/1.x)](https://travis-ci.org/mockito/mockito-scala)
 
 [![Download](https://api.bintray.com/packages/mockito/maven/mockito-scala/images/download.svg) ](https://bintray.com/mockito/maven/mockito-scala/_latestVersion)
 [![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala_2.12.svg)](https://search.maven.org/search?q=mockito-scala)
@@ -26,7 +26,7 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 
-## Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test)
+## Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
 
 ## Migration Notes for version 1.0.0
 * `DefaultAnswer` was moved from `org.mockito.DefaultAnswer` to `org.mockito.stubbing.DefaultAnswer`
@@ -38,11 +38,11 @@ The library has independent developers, release cycle and versioning from core m
 * If you have chained return values like `when(myMock.foo) thenReturn "a" thenReturn "b" etc...` the syntax has changed a bit to `when(myMock.foo) thenReturn "a" andThen "b" etc...`
 * Idiomatic syntax has some changes to allow support of mixing values and argument matchers [Mix-and-Match](#mix-and-match)
 ```scala
-aMock wasCalled on bar              => aMock.bar was called
-aMock wasCalled onlyOn bar          => aMock.bar wasCalled onlyHere
-aMock was never called on bar       => aMock.bar was never called
-aMock wasCalled twiceOn bar         => aMock.bar wasCalled twice
-aMock wasCalled sixTimesOn bar      => aMock.bar wasCalled sixTimes
+aMock wasCalled on bar                                      => aMock.bar was called
+aMock wasCalled onlyOn bar                                  => aMock.bar wasCalled onlyHere
+aMock was never called on bar                               => aMock.bar was never called
+aMock wasCalled twiceOn bar                                 => aMock.bar wasCalled twice
+aMock wasCalled sixTimesOn bar                              => aMock.bar wasCalled sixTimes
 
 "mocked!" willBe returned by aMock bar                      => "mocked!" willBe returned by aMock.bar
 "mocked!" willBe answered by aMock bar                      => "mocked!" willBe answered by aMock.bar
@@ -55,7 +55,7 @@ new IllegalArgumentException willBe thrown by aMock bar     => new IllegalArgume
 
 ## `org.mockito.MockitoSugar`
 
-For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda) 
+For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-ede30769cbda)
 
 This trait wraps the API available on `org.mockito.Mockito` from the Java version, but it provides a more Scala-like syntax, mainly
 *   Fixes the compiler errors that sometimes occurred when using overloaded methods that use varargs like doReturn
@@ -75,7 +75,7 @@ The companion object also extends the trait to allow the usage of the API withou
 
 ## `org.mockito.ArgumentMatchersSugar`
 
-For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-2-ba1a79cc4c53) 
+For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-2-ba1a79cc4c53)
 
 This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it gives them a more Scala-like syntax, mainly
 *   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality
@@ -99,7 +99,7 @@ verify(myObj).myMethod(eqToVal[MyValueClass](456))
 
 ## Improved ArgumentCaptor
 
-For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f) 
+For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f)
 
 A new set of classes were added to make it easier, cleaner and more elegant to work with ArgumentCaptors, they also add 
 support to capture value classes without any annoying syntax
@@ -153,7 +153,7 @@ if the test fails, it will try to find out if the failure could be related to a 
 
 ## MockitoFixture
 
-For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f) 
+For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f)
 
 If you mix-in this trait on your test class **after** your favourite Spec trait, you will get an automatic 
 `MockitoScalaSession` around each one of your tests, so **all** of them will run in **Strict Stub** mode.
@@ -270,7 +270,7 @@ order.verify(mock1).anotherMethod()                             <=>   mock1.anot
 
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
 
-Check the [tests](https://github.com/mockito/mockito-scala/blob/master/core/src/test/scala/org/mockito/IdiomaticMockitoTest.scala) for more examples
+Check the [tests](/core/src/test/scala/org/mockito/IdiomaticMockitoTest.scala) for more examples
 
 ## Default Answers
 We defined a new type `org.mockito.stubbing.DefaultAnswer` which is used to configure the default behaviour of a mock when a non-stubbed invocation
@@ -375,6 +375,39 @@ So far there is one caveat, if you have a curried function that has default argu
 this is related to how the default method is created by the compiler.
 I'll write a more detailed explanation at some point, but there are more than one reason why this is probably never going to work
 The workaround is quite easy though, just provide a value (or a matcher) for that argument and you are good to go.
+
+#Numeric matchers
+A new set of matchers to deal with number comparison were introduced (see [Scalactic tolerance](#tolerance) for aproximation),
+the syntax is slightly different to make them more readable, so now we can write stuff like (notice the 'n')
+```scala
+aMock.method(5)
+
+aMock.method(n > 4.99) was called
+aMock.method(n >= 5) was called
+aMock.method(n < 5.1) was called
+aMock.method(n <= 5) was called
+```  
+
+##Scalactic integration
+#Equality
+Since version 1.0.0 the `eqTo` matcher uses the `org.scalactic.Equality[T]` typeclass, this doesn't change anything on the API
+and existent code will not be affected, but it allows you to override the standard equality of any class by just providing an
+implicit `Equality` in scope, e.g.
+```scala
+implicit val fooEquality: Equality[Foo] = new Equality[Foo] { 
+  override def areEqual(a: Foo, b: Any): Boolean = /*Do the comparison as you like*/ 
+}
+
+aMock.method(eqTo(/*some foo instance/*))
+```
+
+#Tolerance
+You can use Scalactic's `Spread[T]` to deal with the precision errors in floating points, so you can now  write stuff like
+```scala
+aMock.method(4.999)
+
+aMock.method(n =~ 5.0 +- 0.001) was called
+```
 
 ## Notes
 

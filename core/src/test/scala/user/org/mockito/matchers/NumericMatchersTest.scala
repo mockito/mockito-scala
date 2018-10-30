@@ -1,14 +1,17 @@
 package user.org.mockito.matchers
 
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
 import org.mockito.exceptions.verification.WantedButNotInvoked
-import org.scalatest.{ FlatSpec, Matchers }
+import org.scalatest.{FlatSpec, Matchers}
+import user.org.mockito.matchers.NumericMatchersTest.Foo
 
-class NumericMatchersTest extends FlatSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar {
-
+object NumericMatchersTest {
   class Foo {
     def pepe[N](n: N, v: String = "meh"): N = ???
   }
+}
+
+class NumericMatchersTest extends FlatSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar {
 
   ">" should "work with any Numeric" in {
     val aMock = mock[Foo]
@@ -80,5 +83,15 @@ class NumericMatchersTest extends FlatSpec with IdiomaticMockito with Matchers w
     an[WantedButNotInvoked] shouldBe thrownBy {
       aMock.pepe(n =~ 5.0 +- 0.00001) was called
     }
+  }
+}
+
+class NumericMatchersTestNoMatchers extends FlatSpec with IdiomaticMockito with ArgumentMatchersSugar {
+  "=~" should "work without Scalatest Matchers" in {
+    val aMock = mock[Foo]
+
+    aMock.pepe(4.999)
+
+    aMock.pepe(n =~ 5.0 +- 0.001) was called
   }
 }

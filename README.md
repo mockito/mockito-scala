@@ -345,8 +345,11 @@ I guess we all agree that's much better, but, it gets even better, we can now pa
 when(myMock.foo("bar", 42)) thenAnswer ((v1: String, v2: Int) => v1 + v2)
 ```
 
+
 ##Mix and match
-#Mixing normal values with argument matchers
+
+###Mixing normal values with argument matchers
+
 Since mockito 1.0.0, when you use the idiomatic syntax, you are not forced anymore to use argument matchers for all your parameters as soon as you use one, 
 so stuff like this is now valid (not a comprehensive list, just a bunch of examples)
 ```scala
@@ -376,7 +379,9 @@ this is related to how the default method is created by the compiler.
 I'll write a more detailed explanation at some point, but there are more than one reason why this is probably never going to work
 The workaround is quite easy though, just provide a value (or a matcher) for that argument and you are good to go.
 
-#Numeric matchers
+
+##Numeric matchers
+
 A new set of matchers to deal with number comparison were introduced (see [Scalactic tolerance](#tolerance) for aproximation),
 the syntax is slightly different to make them more readable, so now we can write stuff like (notice the 'n')
 ```scala
@@ -388,8 +393,11 @@ aMock.method(n < 5.1) was called
 aMock.method(n <= 5) was called
 ```  
 
+
 ##Scalactic integration
-#Equality
+
+###Equality
+
 Since version 1.0.0 the `eqTo` matcher uses the `org.scalactic.Equality[T]` typeclass, this doesn't change anything on the API
 and existent code will not be affected, but it allows you to override the standard equality of any class by just providing an
 implicit `Equality` in scope, e.g.
@@ -401,7 +409,9 @@ implicit val fooEquality: Equality[Foo] = new Equality[Foo] {
 aMock.method(eqTo(/*some foo instance/*))
 ```
 
-#Tolerance
+
+###Tolerance
+
 You can use Scalactic's `Spread[T]` to deal with the precision errors in floating points, so you can now  write stuff like
 ```scala
 aMock.method(4.999)
@@ -409,9 +419,10 @@ aMock.method(4.999)
 aMock.method(n =~ 5.0 +- 0.001) was called
 ```
 
+
 ## Notes
 
-# Dead code warning
+### Dead code warning
 if you have enabled the compiler flag `-Ywarn-dead-code`, you will see the warning _dead code following this construct_ 
 when using the `any` or `*` matchers , this is because in some cases the compiler can not infer the return type of those 
 matchers and it will default to `Nothing`, and this compiler warning is shown every time `Nothing` is found on our code.
@@ -424,7 +435,7 @@ your build.sbt and that warning will be ignored for your tests **only**
 matchers usage then you have to explicitly provide the type for the matcher, thus `any` would become `any[MyType]` and
 `*` would become `*[MyType]` (you can also use `anyShort`, `anyInt`, etc for the primitive types)
  
-# Scala 2.11
+### Scala 2.11
 Please note that in Scala 2.11 the following features are not supported
 
 * Default arguments on methods defined in traits (they will behave as before, getting `null` or a default value if they 

@@ -346,9 +346,9 @@ when(myMock.foo("bar", 42)) thenAnswer ((v1: String, v2: Int) => v1 + v2)
 ```
 
 
-##Mix and match
+## Mix and match
 
-###Mixing normal values with argument matchers
+### Mixing normal values with argument matchers
 
 Since mockito 1.0.0, when you use the idiomatic syntax, you are not forced anymore to use argument matchers for all your parameters as soon as you use one, 
 so stuff like this is now valid (not a comprehensive list, just a bunch of examples)
@@ -380,7 +380,7 @@ I'll write a more detailed explanation at some point, but there are more than on
 The workaround is quite easy though, just provide a value (or a matcher) for that argument and you are good to go.
 
 
-##Numeric matchers
+## Numeric matchers
 
 A new set of matchers to deal with number comparison were introduced (see [Scalactic tolerance](#tolerance) for aproximation),
 the syntax is slightly different to make them more readable, so now we can write stuff like (notice the 'n')
@@ -394,9 +394,9 @@ aMock.method(n <= 5) was called
 ```  
 
 
-##Scalactic integration
+## Scalactic integration
 
-###Equality
+### Equality
 
 Since version 1.0.0 the `eqTo` matcher uses the `org.scalactic.Equality[T]` typeclass, this doesn't change anything on the API
 and existent code will not be affected, but it allows you to override the standard equality of any class by just providing an
@@ -410,7 +410,7 @@ aMock.method(eqTo(/*some foo instance/*))
 ```
 
 
-###Tolerance
+### Tolerance
 
 You can use Scalactic's `Spread[T]` to deal with the precision errors in floating points, so you can now  write stuff like
 ```scala

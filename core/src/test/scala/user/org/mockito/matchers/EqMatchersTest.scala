@@ -1,7 +1,6 @@
 package user.org.mockito.matchers
 
 import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
-import org.mockito.exceptions.verification.WantedButNotInvoked
 import org.scalactic.{Equality, StringNormalizations}
 import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
 
@@ -41,10 +40,12 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
     val aMock = mock[Foo]
 
     aMock.valueClass(new ValueClass("meh"))
-    verify(aMock).valueClass(eqToVal[ValueClass]("meh"))
+    verify(aMock).valueClass(eqToVal(new ValueClass("meh")))
 
     aMock.valueCaseClass(ValueCaseClass(100))
-    verify(aMock).valueCaseClass(eqToVal[ValueCaseClass](100))
+    verify(aMock).valueCaseClass(eqToVal(ValueCaseClass(100)))
+    val expected = ValueCaseClass(100)
+    verify(aMock).valueCaseClass(eqToVal(expected))
   }
 
   "eqTo[T]" should "work with AnyRef" in {

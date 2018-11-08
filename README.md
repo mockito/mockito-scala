@@ -50,6 +50,11 @@ aMock wasCalled sixTimesOn bar                              => aMock.bar wasCall
 theRealMethod willBe called by aMock bar                    => theRealMethod willBe called by aMock.bar
 new IllegalArgumentException willBe thrown by aMock bar     => new IllegalArgumentException willBe thrown by aMock.bar
 ```
+* eqToVal matcher syntax was improved to look more natural [Value Class Matchers](#value-class-matchers)
+```scala
+verify(myObj).myMethod(eqToVal[MyValueClass](456))    => verify(myObj).myMethod(eqToVal(MyValueClass(456)))
+myObj.myMethod(eqToVal[MyValueClass](456)) was called => myObj.myMethod(eqToVal(MyValueClass(456))) was called
+``` 
 
 ## Getting started
 
@@ -94,7 +99,7 @@ when(myObj.myMethod(anyVal[MyValueClass]) thenReturn "something"
 
 myObj.myMethod(MyValueClass(456)) shouldBe "something"
 
-verify(myObj).myMethod(eqToVal[MyValueClass](456))
+verify(myObj).myMethod(eqToVal(MyValueClass(456)))
 ```
 
 ## Improved ArgumentCaptor

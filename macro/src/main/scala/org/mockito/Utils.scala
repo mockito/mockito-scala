@@ -51,13 +51,18 @@ object Utils {
         case q"$_.shortThat[$_]($_)"   => true
         case q"$_.longThat[$_]($_)"    => true
 
-        case q"$_.n.>[$_]($_)($_)" => true
+        case q"$_.n.>[$_]($_)($_)"  => true
         case q"$_.n.>=[$_]($_)($_)" => true
-        case q"$_.n.<[$_]($_)($_)" => true
+        case q"$_.n.<[$_]($_)($_)"  => true
         case q"$_.n.<=[$_]($_)($_)" => true
-        case q"$_.n.=~[$_]($_)" => true
+        case q"$_.n.=~[$_]($_)"     => true
 
         case q"$_.Captor.asCapture[$_]($_)" => true
+
+        case q"($_(org.mockito.ArgumentMatchersSugar.eqTo[$_]($_)($_)): $_)"     => true
+        case q"(new $_(org.mockito.ArgumentMatchersSugar.eqTo[$_]($_)($_)): $_)" => true
+        case q"($_(org.mockito.ArgumentMatchers.any[$_]()): $_)"                 => true
+        case q"(new $_(org.mockito.ArgumentMatchers.any[$_]()): $_)"             => true
 
         case _ => false
       }

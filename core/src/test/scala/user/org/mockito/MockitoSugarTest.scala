@@ -2,11 +2,9 @@ package user.org.mockito
 
 import org.mockito.captor.ArgCaptor
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.{CallsRealMethods, DefaultAnswer}
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
-import org.scalatest.{Matchers, WordSpec}
-
-import scala.language.postfixOps
+import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer }
+import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.scalatest.{ Matchers, WordSpec }
 
 //noinspection RedundantDefaultArgument
 class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
@@ -65,7 +63,7 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
     "create a mock with nice answer API (multiple params)" in {
       val aMock = mock[Foo]
 
-      when(aMock.doSomethingWithThisIntAndString(*,*)) thenAnswer ((i: Int, s: String) => i * 10 + s.toInt toString)
+      when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
 
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
     }

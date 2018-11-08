@@ -2,7 +2,7 @@ package org.mockito
 
 import org.mockito.stubbing.{ DefaultAnswer, ScalaOngoingStubbing }
 import org.mockito.MockitoSugar._
-import org.mockito.VerifyMacro.{ AtLeast, AtMost, OnlyOn, Times }
+import org.mockito.VerifyMacro._
 import org.mockito.WhenMacro._
 
 import scala.language.experimental.macros
@@ -30,7 +30,7 @@ trait IdiomaticMockito extends MockCreator {
 
     def shouldReturn: ReturnActions[T] = macro WhenMacro.shouldReturn[T]
 
-    def shouldCallRealMethod: ScalaOngoingStubbing[T] = macro WhenMacro.shouldCallRealMethod[T]
+    def shouldCall(crm: RealMethod): ScalaOngoingStubbing[T] = macro WhenMacro.shouldCallRealMethod[T]
 
     def shouldThrow: ThrowActions[T] = macro WhenMacro.shouldThrow[T]
 
@@ -38,7 +38,9 @@ trait IdiomaticMockito extends MockCreator {
 
     def was(called: Called.type)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacro[T]
 
-    def was(n: Never): NeverInstance[T] = new NeverInstance(stubbing)
+    def wasNever(called: Called.type)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasNotMacro[T]
+
+    def wasNever(called: CalledAgain)(implicit $ev: T <:< AnyRef): Unit = verifyNoMoreInteractions(stubbing.asInstanceOf[AnyRef])
 
     def wasCalled(t: Times)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroTimes[T]
 
@@ -86,17 +88,14 @@ trait IdiomaticMockito extends MockCreator {
 
   class On
   class Never
-  //noinspection UnitMethodIsParameterless
-  class NeverInstance[T](mock: => T) {
-    def called(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasNotMacro[T]
-    def called(again: Again)(implicit $ev: T <:< AnyRef): Unit = verifyNoMoreInteractions(mock.asInstanceOf[AnyRef])
-  }
-  class Again
+  class CalledAgain
+
+  val calledAgain = new CalledAgain
+
+  val realMethod = new RealMethod
 
   val on                = new On
   val onlyHere          = new OnlyOn
-  val never             = new Never
-  val again             = new Again
   val once              = Times(1)
   val twice             = Times(2)
   val thrice            = Times(3)

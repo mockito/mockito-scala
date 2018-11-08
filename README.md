@@ -36,13 +36,17 @@ The library has independent developers, release cycle and versioning from core m
 * The usage of `org.mockito.Answer[T]` was removed from the API in favour of [Function Answers](#function-answers)
 * If you were using something like `doAnswer(_ => <something>).when ...` to lazily compute a return value when the method is actually called you should now write it like `doAnswer(<something>).when ...`, no need of passing a function as that argument is by-name
 * If you have chained return values like `when(myMock.foo) thenReturn "a" thenReturn "b" etc...` the syntax has changed a bit to `when(myMock.foo) thenReturn "a" andThen "b" etc...`
-* Idiomatic syntax has some changes to allow support of mixing values and argument matchers [Mix-and-Match](#mix-and-match)
+* Idiomatic syntax has some changes to remove postFix operations and also allow support for mixing values and argument matchers [Mix-and-Match](#mix-and-match)
 ```scala
+aMock.bar shouldCallRealMethod                              => aMock.bar shouldCall realMethod
+
 aMock wasCalled on bar                                      => aMock.bar was called
 aMock wasCalled onlyOn bar                                  => aMock.bar wasCalled onlyHere
-aMock was never called on bar                               => aMock.bar was never called
+aMock was never called on bar                               => aMock.bar wasNever called
 aMock wasCalled twiceOn bar                                 => aMock.bar wasCalled twice
 aMock wasCalled sixTimesOn bar                              => aMock.bar wasCalled sixTimes
+aMock was never called                                      => aMock.bar wasNever called
+aMock was never called again                                => aMock.bar wasNever calledAgain
 
 "mocked!" willBe returned by aMock bar                      => "mocked!" willBe returned by aMock.bar
 "mocked!" willBe answered by aMock bar                      => "mocked!" willBe answered by aMock.bar
@@ -245,7 +249,7 @@ val aMock = mock[Foo]
   
 when(aMock.bar) thenReturn "mocked!"                            <=> aMock.bar shouldReturn "mocked!"
 when(aMock.bar) thenReturn "mocked!" thenReturn "mocked again!" <=> aMock.bar shouldReturn "mocked!" andThen "mocked again!"
-when(aMock.bar) thenCallRealMethod()                            <=> aMock.bar shouldCallRealMethod
+when(aMock.bar) thenCallRealMethod()                            <=> aMock.bar shouldCall realMethod
 when(aMock.bar).thenThrow[IllegalArgumentException]             <=> aMock.bar.shouldThrow[IllegalArgumentException]
 when(aMock.bar) thenThrow new IllegalArgumentException          <=> aMock.bar shouldThrow new IllegalArgumentException
 when(aMock.bar) thenAnswer(_ => "mocked!")                      <=> aMock.bar shouldAnswer "mocked!"
@@ -257,14 +261,14 @@ doAnswer(_.getArgument[Int](0) * 10).when(aMock).bar(any)       <=> ((i: Int) =>
 doCallRealMethod.when(aMock).bar                                <=> theRealMethod willBe called by aMock.bar
 doThrow(new IllegalArgumentException).when(aMock).bar           <=> new IllegalArgumentException willBe thrown by aMock.bar
   
-verifyZeroInteractions(aMock)                                   <=> aMock was never called
+verifyZeroInteractions(aMock)                                   <=> aMock wasNever called
 verify(aMock).bar                                               <=> aMock.bar was called
 verify(aMock).bar(any)                                          <=> aMock.bar(*) was called
 verify(aMock, only).bar                                         <=> aMock.bar wasCalled onlyHere
-verify(aMock, never).bar                                        <=> aMock.bar was never called
+verify(aMock, never).bar                                        <=> aMock.bar wasNever called
 verify(aMock, times(2)).bar                                     <=> aMock.bar wasCalled twice
 verify(aMock, times(6)).bar                                     <=> aMock.bar wasCalled sixTimes
-verifyNoMoreInteractions(aMock)                                 <=> aMock was never called again
+verifyNoMoreInteractions(aMock)                                 <=> aMock wasNever calledAgain
 
 val order = inOrder(mock1, mock2)                               <=> InOrder(mock1, mock2) { implicit order =>
 order.verify(mock2).someMethod()                                <=>   mock2.someMethod() was called

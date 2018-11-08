@@ -35,19 +35,21 @@ object WhenMacro {
     r
   }
 
-  def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ScalaOngoingStubbing[T]] = {
+  class RealMethod
+
+  def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod]): c.Expr[ScalaOngoingStubbing[T]] = {
     import c.universe._
 
     val r = c.Expr[ScalaOngoingStubbing[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldCallRealMethod" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldCall($_.realMethod)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
             q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)).thenCallRealMethod())"
           } else
             q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)).thenCallRealMethod())"
 
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldCallRealMethod" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldCall($_.realMethod)" =>
           q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs]).thenCallRealMethod())"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")

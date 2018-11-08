@@ -3,12 +3,10 @@ package user.org.mockito
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest
 import org.scalatest.WordSpec
-import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
-
-import scala.language.postfixOps
+import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
 
 class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 
@@ -28,7 +26,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
     def highOrderFunction(f: Int => String): String = "not mocked"
 
-    def iReturnAFunction(v: Int): Int => String = i => i * v toString
+    def iReturnAFunction(v: Int): Int => String = i => (i * v).toString
 
     def iBlowUp(v: Int, v2: String): String = throw new IllegalArgumentException("I was called!")
 
@@ -78,7 +76,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "stub a real call" in {
       val aMock = mock[Foo]
 
-      aMock.bar shouldCallRealMethod
+      aMock.bar shouldCall realMethod
 
       aMock.bar shouldBe "not mocked"
     }
@@ -122,10 +120,10 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       val aMock = mock[Foo]
 
       aMock.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2)
-      aMock.doSomethingWithThisIntAndString(*, *) shouldAnswer ((i: Int, s: String) => i * 10 + s.toInt toString)
+      aMock.doSomethingWithThisIntAndString(*, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
       aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
                                                                               s: String,
-                                                                              boolean: Boolean) => (i * 10 + s.toInt toString) + boolean)
+                                                                              boolean: Boolean) => (i * 10 + s.toInt).toString + boolean)
 
       aMock.doSomethingWithThisInt(4) shouldBe 42
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
@@ -172,7 +170,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "allow using less params than method on answer stubbing" in {
       val aMock = mock[Foo]
 
-      aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int, s: String) => i * 10 + s.toInt toString)
+      aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
 
       aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42"
     }
@@ -197,7 +195,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "stub a method that returns a function" in {
       val aMock = mock[Foo]
 
-      aMock.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2) toString) andThenCallRealMethod ()
+      aMock.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2).toString) andThenCallRealMethod ()
 
       aMock.iReturnAFunction(0)(42) shouldBe "42"
       aMock.iReturnAFunction(0)(42) shouldBe "84"
@@ -227,8 +225,8 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       val aSpy = spy(new Foo)
 
       ((i: Int) => i * 10 + 2) willBe answered by aSpy.doSomethingWithThisInt(*)
-      ((i: Int, s: String) => i * 10 + s.toInt toString) willBe answered by aSpy.doSomethingWithThisIntAndString(*, *)
-      ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt toString) + boolean) willBe answered by aSpy
+      ((i: Int, s: String) => (i * 10 + s.toInt).toString) willBe answered by aSpy.doSomethingWithThisIntAndString(*, *)
+      ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt).toString + boolean) willBe answered by aSpy
         .doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
       (() => "mocked!") willBe answered by aSpy.bar
       "mocked!" willBe answered by aSpy.baz
@@ -270,12 +268,13 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "check a mock was not used" in {
       val aMock = mock[Foo]
 
-      aMock was never called
+      aMock wasNever called
+      aMock wasNever called
 
       a[NoInteractionsWanted] should be thrownBy {
         aMock.baz
 
-        aMock was never called
+        aMock wasNever called
       }
     }
 
@@ -284,12 +283,12 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     }
 
     "check a mock was not used (with setup)" in new SetupNeverUsed {
-      aMock was never called
+      aMock wasNever called
 
       a[NoInteractionsWanted] should be thrownBy {
         aMock.baz
 
-        aMock was never called
+        aMock wasNever called
       }
     }
 
@@ -319,15 +318,15 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       }
     }
 
-    "check a method was never called" in {
+    "check a method wasNever called" in {
       val aMock = mock[Foo]
 
-      aMock.doSomethingWithThisIntAndString(*, "test") was never called
+      aMock.doSomethingWithThisIntAndString(*, "test") wasNever called
 
       a[NeverWantedButInvoked] should be thrownBy {
         aMock.doSomethingWithThisIntAndString(1, "test")
 
-        aMock.doSomethingWithThisIntAndString(*, "test") was never called
+        aMock.doSomethingWithThisIntAndString(*, "test") wasNever called
       }
     }
 
@@ -390,12 +389,12 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       aMock.bar was called
 
-      aMock was never called again
+      aMock wasNever calledAgain
 
       a[NoInteractionsWanted] should be thrownBy {
         aMock.bar
 
-        aMock was never called again
+        aMock wasNever calledAgain
       }
     }
 

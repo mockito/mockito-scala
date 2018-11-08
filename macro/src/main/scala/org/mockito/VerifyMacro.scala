@@ -35,25 +35,25 @@ object VerifyMacro {
     r
   }
 
-  def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     val r = c.Expr[Unit] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$_]($_.this.$obj).was($_.never).called($_)" =>
+        case q"$_.StubbingOps[$_]($_.this.$obj).wasNever($_.called)($_)" =>
           q"org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
 
-        case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).was($_.never).called($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasNever($_.called)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
             q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs](...$newArgs)"
           } else
             q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs](...$args)"
 
-        case q"$_.StubbingOps[$_]($obj.$method[..$targs]).was($_.never).called($order)" =>
+        case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasNever($_.called)($order)" =>
           q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs]"
 
-        case q"$_.StubbingOps[$_]($obj).was($_.never).called($_)" =>
+        case q"$_.StubbingOps[$_]($obj).wasNever($_.called)($_)" =>
           q"org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")

@@ -2,20 +2,10 @@ package org.mockito
 package matchers
 
 import org.mockito.{ArgumentMatchers => JavaMatchers}
-import org.scalactic.Equality
 
 import scala.reflect.ClassTag
 
 private[mockito] trait EqMatchers {
-
-  /**
-   * Creates a matcher that delegates on {{org.scalactic.Equality}} so you can always customise how the values are compared
-   */
-  def eqTo[T](value: T)(implicit $eq: Equality[T]): T =
-    ThatMatchers.argThat(new ArgumentMatcher[T] {
-      override def matches(v: T): Boolean = $eq.areEqual(v, value)
-      override def toString: String = s"eqTo($value)"
-    })
 
   /**
    * Delegates to <code>ArgumentMatchers.same()</code>, it's only here so we expose all the `ArgumentMatchers`

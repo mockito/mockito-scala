@@ -40,12 +40,12 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
     val aMock = mock[Foo]
 
     aMock.valueClass(new ValueClass("meh"))
-    verify(aMock).valueClass(eqToVal(new ValueClass("meh")))
+    verify(aMock).valueClass(eqTo(new ValueClass("meh")))
 
     aMock.valueCaseClass(ValueCaseClass(100))
-    verify(aMock).valueCaseClass(eqToVal(ValueCaseClass(100)))
+    verify(aMock).valueCaseClass(eqTo(ValueCaseClass(100)))
     val expected = ValueCaseClass(100)
-    verify(aMock).valueCaseClass(eqToVal(expected))
+    verify(aMock).valueCaseClass(eqTo(expected))
   }
 
   "eqTo[T]" should "work with AnyRef" in {

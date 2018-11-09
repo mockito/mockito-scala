@@ -1,15 +1,17 @@
 package org.mockito.matchers
 
+import scala.language.experimental.macros
+
 trait MacroBasedMatchers {
 
   /**
-    * Wraps the standard 'ArgumentMatchers.eq()' matcher on the value class provided, this one requires the type to be explicit
-    */
-  def eqToVal[T](value: Any)(implicit valueClassMatchers: ValueClassMatchers[T]): T = valueClassMatchers.eqToVal(value)
+   * To be used instead of eqTo when the argument is a value class
+   */
+  def eqToVal[T](value: T): T = macro ValueClassMatchers.eqToValMatcher[T]
 
   /**
-    * Wraps the standard 'any' matcher on the value class provided, this one requires the type to be explicit
+    * To be used instead of any when the argument is a value class
     */
-  def anyVal[T](implicit valueClassMatchers: ValueClassMatchers[T]): T = valueClassMatchers.anyVal
+  def anyVal[T]: T = macro ValueClassMatchers.anyValMatcher[T]
 
 }

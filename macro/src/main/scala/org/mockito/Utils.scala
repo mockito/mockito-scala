@@ -7,7 +7,7 @@ object Utils {
 
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {
     import c.universe._
-    if (arg.toString().contains("org.mockito.matchers.ValueClassMatchers")) true
+    if (arg.toString().contains("org.mockito.matchers.MacroMatchers")) true
     else
       arg match {
         case q"$_.anyList[$_]"     => true

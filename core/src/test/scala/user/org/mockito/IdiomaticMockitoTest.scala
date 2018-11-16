@@ -448,6 +448,27 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     "eqToVal works with new syntax" in {
       val aMock = mock[Foo]
 
+      aMock.valueClass(1, eqToVal(new ValueClass("meh"))) shouldReturn "mocked!"
+      aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
+      aMock.valueClass(1, eqToVal(new ValueClass("meh"))) was called
+
+      aMock.valueCaseClass(2, eqToVal(ValueCaseClass(100))) shouldReturn "mocked!"
+      aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
+      aMock.valueCaseClass(2, eqToVal(ValueCaseClass(100))) was called
+
+      val caseClassValue = ValueCaseClass(100)
+      aMock.valueCaseClass(3, eqToVal(caseClassValue)) shouldReturn "mocked!"
+      aMock.valueCaseClass(3, ValueCaseClass(100)) shouldBe "mocked!"
+      aMock.valueCaseClass(3, eqToVal(caseClassValue)) was called
+
+      aMock.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
+      aMock.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
+      aMock.valueCaseClass(*, ValueCaseClass(200)) was called
+    }
+
+    "eqTo macro works with new syntax" in {
+      val aMock = mock[Foo]
+
       aMock.valueClass(1, eqTo(new ValueClass("meh"))) shouldReturn "mocked!"
       aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
       aMock.valueClass(1, eqTo(new ValueClass("meh"))) was called

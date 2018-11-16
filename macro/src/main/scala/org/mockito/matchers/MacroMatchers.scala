@@ -55,4 +55,21 @@ object MacroMatchers {
     if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
     r
   }
+
+  def eqToValMatcher[T: c.WeakTypeTag](c: blackbox.Context)(value: c.Expr[T]): c.Expr[T] = {
+    import c.universe._
+
+    val r = c.Expr[T] {
+      c.macroApplication match {
+        case q"$_.eqToVal[$_]($clazz($arg))" => q"$clazz(org.mockito.matchers.MacroMatchers.eqTo($arg))"
+        case q"$_.eqToVal[$_](new $clazz($arg))" => q"new $clazz(org.mockito.matchers.MacroMatchers.eqTo($arg))"
+        case q"$_.eqToVal[$tpe]($arg)" =>
+          val companion = q"$tpe".symbol.companion
+          q"$companion.apply(org.mockito.matchers.MacroMatchers.eqTo( $companion.unapply($arg).get ))"
+        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
+      }
+    }
+    if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
+    r
+  }
 }

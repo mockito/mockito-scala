@@ -54,7 +54,8 @@ aMock was never called again                                => aMock.bar wasNeve
 theRealMethod willBe called by aMock bar                    => theRealMethod willBe called by aMock.bar
 new IllegalArgumentException willBe thrown by aMock bar     => new IllegalArgumentException willBe thrown by aMock.bar
 ```
-* eqToVal matcher syntax was improved to look more natural [Value Class Matchers](#value-class-matchers)
+* eqToVal matcher syntax was improved to look more natural [Value Class Matchers](#value-class-matchers) 
+NOTE: `eqToVal` has been deprecated in v 1.0.2 as `eqTo` is now aware of value classes
 ```scala
 verify(myObj).myMethod(eqToVal[MyValueClass](456))    => verify(myObj).myMethod(eqToVal(MyValueClass(456)))
 myObj.myMethod(eqToVal[MyValueClass](456)) was called => myObj.myMethod(eqToVal(MyValueClass(456))) was called
@@ -97,14 +98,15 @@ Again, the companion object also extends the trait to allow the usage of the API
 
 ### Value Class Matchers
 
-The matchers for the value classes always require the type to be explicit, apart from that, they should be used as any other matcher, e.g.
+The anyVal matcher always requires the type to be explicit, apart from that, it should be used as any other matcher, e.g.
 ```scala
 when(myObj.myMethod(anyVal[MyValueClass]) thenReturn "something"
 
 myObj.myMethod(MyValueClass(456)) shouldBe "something"
 
-verify(myObj).myMethod(eqToVal(MyValueClass(456)))
+verify(myObj).myMethod(anyVal[MyValueClass])
 ```
+`eqTo` now supports value classes, no special syntax is needed for it
 
 ## Improved ArgumentCaptor
 

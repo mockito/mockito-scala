@@ -91,6 +91,18 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
     verify(aMock).valueCaseClass(anyVal[ValueCaseClass])
   }
 
+  "any" should "work with a value class" in {
+    val aMock = mock[Foo]
+
+    when(aMock.valueClass(any[ValueClass])) thenReturn "mocked!"
+    aMock.valueClass(new ValueClass("meh")) shouldBe "mocked!"
+    verify(aMock).valueClass(any[ValueClass])
+
+    when(aMock.valueCaseClass(any[ValueCaseClass])) thenReturn 100
+    aMock.valueCaseClass(ValueCaseClass(1)) shouldBe 100
+    verify(aMock).valueCaseClass(any[ValueCaseClass])
+  }
+
   "any" should "work with AnyVal" in {
     val aMock = mock[Foo]
 

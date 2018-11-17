@@ -498,5 +498,17 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
       aMock.valueCaseClass(2, anyVal[ValueCaseClass]) was called
     }
+
+    "any works with new syntax" in {
+      val aMock = mock[Foo]
+
+      aMock.valueClass(1, any[ValueClass]) shouldReturn "mocked!"
+      aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
+      aMock.valueClass(1, any[ValueClass]) was called
+
+      aMock.valueCaseClass(2, any[ValueCaseClass]) shouldReturn "mocked!"
+      aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
+      aMock.valueCaseClass(2, any[ValueCaseClass]) was called
+    }
   }
 }

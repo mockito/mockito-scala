@@ -1,6 +1,6 @@
 package org.mockito.matchers
 
-import org.mockito.{ArgumentMatchers => JavaMatchers}
+import org.mockito.{ ArgumentMatchers => JavaMatchers }
 
 private[mockito] trait AnyMatchers {
 
@@ -12,7 +12,7 @@ private[mockito] trait AnyMatchers {
    * when trying to do something like ArgumentMatchers.anyList[String]()
    *
    */
-  def anyList[T]: List[T] = any[List[T]]
+  def anyList[T]: List[T] = JavaMatchers.any[List[T]]()
 
   /** Seq matcher that use Scala Seq to avoid compile errors like
    * Error:(40, 60) type mismatch;
@@ -22,7 +22,7 @@ private[mockito] trait AnyMatchers {
    * when trying to do something like ArgumentMatchers.anyList[String]()
    *
    */
-  def anySeq[T]: Seq[T] = any[Seq[T]]
+  def anySeq[T]: Seq[T] = JavaMatchers.any[Seq[T]]()
 
   /** Iterable matcher that use Scala Iterable to avoid compile errors like
    * Error:(40, 60) type mismatch;
@@ -32,7 +32,7 @@ private[mockito] trait AnyMatchers {
    * when trying to do something like ArgumentMatchers.anyIterable[String]()
    *
    */
-  def anyIterable[T]: Iterable[T] = any[Iterable[T]]
+  def anyIterable[T]: Iterable[T] = JavaMatchers.any[Iterable[T]]()
 
   /** Set matcher that use Scala Set to avoid compile errors like
    * Error:(40, 60) type mismatch;
@@ -42,7 +42,7 @@ private[mockito] trait AnyMatchers {
    * when trying to do something like ArgumentMatchers.anySet[String]()
    *
    */
-  def anySet[T]: Set[T] = any[Set[T]]
+  def anySet[T]: Set[T] = JavaMatchers.any[Set[T]]()
 
   /** Map matcher that use Scala Map to avoid compile errors like
    * Error:(40, 60) type mismatch;
@@ -52,24 +52,7 @@ private[mockito] trait AnyMatchers {
    * when trying to do something like ArgumentMatchers.anyMap[String, String]()
    *
    */
-  def anyMap[K, V]: Map[K, V] = any[Map[K, V]]
-
-  /**
-   * Delegates to <code>ArgumentMatchers.any()</code>, it's main purpose is to remove the () out of
-   * the method call, if you try to do that directly on the test you get this error
-   *
-   * Error:(71, 46) polymorphic expression cannot be instantiated to expected type;
-   * found   : [T]()T
-   * required: String
-   * when you try to something like ArgumentMatchers.any
-   *
-   */
-  def any[T]: T = JavaMatchers.any[T]()
-
-  /**
-   * Alias for [[ org.mockito.matchers.AnyMatchers.any[T] ]]
-   */
-  def *[T]: T = any[T]
+  def anyMap[K, V]: Map[K, V] = JavaMatchers.any[Map[K, V]]()
 
   /**
    * Delegates to <code>ArgumentMatchers.anyByte()</code>, it's only here so we expose all the `ArgumentMatchers`

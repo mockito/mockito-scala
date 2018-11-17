@@ -89,24 +89,16 @@ For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/i
 
 This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it gives them a more Scala-like syntax, mainly
 *   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality, `eq` also supports value classes out of the box and relies on `org.scalactic.Equality[T]` (see [Scalactic integration](#scalactic-integration)) 
-*   `any` works even when the type can't be inferred, removing the need of using the likes of `anyString`, `anyInt`, etc (see [Notes](#dead-code-warning))
+*   `any[T]` works even when the type can't be inferred, removing the need of using the likes of `anyString`, `anyInt`, etc (see [Notes](#dead-code-warning))
+*   `any[T]` also supports value classes (in this case you MUST provide the type parameter)
 *   `isNull` and `isNotNull` are deprecated as using nulls in Scala is clear code smell
-*   Adds support for value classes via `anyVal[T]` and `eqToVal[T]()` NOTE: `eqToVal[T]()` has been deprecated in favour of `eqTo`
+*   Adds support for value classes via `anyVal[T]` and `eqToVal[T]()` **NOTE: both had been deprecated (use `any[T]` or `eqTo[T]` instead)**
 *   Adds `function0` to easily match for a function that returns a given value
 
 Again, the companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired
 
 ### Value Class Matchers
-
-The anyVal matcher always requires the type to be explicit, apart from that, it should be used as any other matcher, e.g.
-```scala
-when(myObj.myMethod(anyVal[MyValueClass]) thenReturn "something"
-
-myObj.myMethod(MyValueClass(456)) shouldBe "something"
-
-verify(myObj).myMethod(anyVal[MyValueClass])
-```
-NOTE: `eqTo` supports value classes since v1.0.2, so no special syntax is needed for it
+`eqTo` and `any[T]` support value classes since v1.0.2, so no special syntax is needed for them (but you MUST provide the type param for `any[T]` otherwise you'll get a NPE)
 
 ## Improved ArgumentCaptor
 
@@ -143,7 +135,7 @@ captor hasCaptured "it worked!"
 As you can see there is no need to call `capture()` nor `getValue` anymore (although they're still there if you need them)
 
 There is another constructor `ValCaptor[T]` that should be used to capture value classes
-NOTE: Since version 1.0.2 `ValCaptor[T]` has been deprecated as `ArgCaptor[T]` now support both, standard and value classes
+**NOTE: Since version 1.0.2 `ValCaptor[T]` has been deprecated as `ArgCaptor[T]` now support both, standard and value classes**
 
 Both `ArgCaptor[T]` and `ValCaptor[T]` return an instance of `Captor[T]` so the API is the same for both
 

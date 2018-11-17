@@ -1,10 +1,21 @@
 package org.mockito.matchers
 
-import org.mockito.ArgumentMatcher
+import org.mockito.matchers.MacroMatchers.anyValMatcher
+import org.mockito.{ArgumentMatcher, ArgumentMatchers => JavaMatchers}
 import org.scalactic.Equality
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
+
+trait AnyMatcher[T] {
+  def any: T
+}
+
+class AnyMatcherStandard[T] extends AnyMatcher[T] { override def any: T = JavaMatchers.any[T]() }
+
+object AnyMatcher {
+  implicit def default[T]: AnyMatcher[T] = macro anyValMatcher[T]
+}
 
 object MacroMatchers {
 
@@ -43,15 +54,21 @@ object MacroMatchers {
     r
   }
 
-  def anyValMatcher[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[T] = {
+  def anyValMatcher[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[AnyMatcher[T]] = {
     import c.universe._
+    val tpe = weakTypeOf[T]
 
-    val r = c.Expr[T] {
-      c.macroApplication match {
-        case q"$_.anyVal[$tpe]" => q"new $tpe(org.mockito.ArgumentMatchers.any())"
-        case o                  => throw new Exception(s"Couldn't recognize ${show(o)}")
+    val isValueClass = tpe.typeSymbol.asClass.isDerivedValueClass
+
+    val r = if (isValueClass) c.Expr[AnyMatcher[T]] {
+      q"""
+      new org.mockito.matchers.AnyMatcher[$tpe] {
+        override def any: $tpe = new $tpe(org.mockito.ArgumentMatchers.any())
       }
-    }
+    """
+    } else
+      c.Expr[AnyMatcher[T]](q"new org.mockito.matchers.AnyMatcherStandard[$tpe]")
+
     if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
     r
   }
@@ -61,7 +78,7 @@ object MacroMatchers {
 
     val r = c.Expr[T] {
       c.macroApplication match {
-        case q"$_.eqToVal[$_]($clazz($arg))" => q"$clazz(org.mockito.matchers.MacroMatchers.eqTo($arg))"
+        case q"$_.eqToVal[$_]($clazz($arg))"     => q"$clazz(org.mockito.matchers.MacroMatchers.eqTo($arg))"
         case q"$_.eqToVal[$_](new $clazz($arg))" => q"new $clazz(org.mockito.matchers.MacroMatchers.eqTo($arg))"
         case q"$_.eqToVal[$tpe]($arg)" =>
           val companion = q"$tpe".symbol.companion

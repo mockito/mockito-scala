@@ -15,8 +15,9 @@ object Utils {
         case q"$_.anyIterable[$_]" => true
         case q"$_.anySet[$_]"      => true
         case q"$_.anyMap[$_, $_]"  => true
-        case q"$_.any[$_]"         => true
-        case q"$_.*[$_]"           => true
+        case q"$_.any[$_]($_)"     => true
+        case q"$_.anyVal[$_]($_)"  => true
+        case q"$_.*[$_]($_)"       => true
         case q"$_.anyByte"         => true
         case q"$_.anyBoolean"      => true
         case q"$_.anyChar"         => true
@@ -62,8 +63,6 @@ object Utils {
         case q"(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_): $_)"         => true
         case q"($_(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_)): $_)"     => true
         case q"(new $_(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_)): $_)" => true
-        case q"($_(org.mockito.ArgumentMatchers.any[$_]()): $_)"                 => true
-        case q"(new $_(org.mockito.ArgumentMatchers.any[$_]()): $_)"             => true
 
         case _ => false
       }

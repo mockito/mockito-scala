@@ -1,9 +1,12 @@
 package org.mockito.captor
 
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
+import org.mockito.{ clazz, ArgumentCaptor }
 
+import scala.collection.JavaConverters._
 import scala.language.experimental.macros
 import scala.language.implicitConversions
+import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
 
 trait Captor[T] {
@@ -18,6 +21,17 @@ trait Captor[T] {
     if (expectation != value) throw new ArgumentsAreDifferent(s"Got [$value] instead of [$expectation]")
 }
 
+class WrapperCaptor[T: ClassTag] extends Captor[T] {
+
+  private val argumentCaptor: ArgumentCaptor[T] = ArgumentCaptor.forClass(clazz)
+
+  override def capture: T = argumentCaptor.capture()
+
+  override def value: T = argumentCaptor.getValue
+
+  override def values: List[T] = argumentCaptor.getAllValues.asScala.toList
+}
+
 object Captor {
 
   implicit def asCapture[T](c: Captor[T]): T = c.capture
@@ -28,18 +42,19 @@ object Captor {
     import c.universe._
     val tpe = weakTypeOf[T]
 
-    val param = tpe.decls
-      .collectFirst {
-        case m: MethodSymbol if m.isPrimaryConstructor ⇒ m
-      }
-      .get
-      .paramLists
-      .head
-      .head
+    val isValueClass = tpe.typeSymbol.asClass.isDerivedValueClass
 
-    val paramType = tpe.decl(param.name).typeSignature.finalResultType
+    val r = if (isValueClass) c.Expr[Captor[T]] {
+      val param = tpe.decls
+        .collectFirst {
+          case m: MethodSymbol if m.isPrimaryConstructor ⇒ m
+        }
+        .get
+        .paramLists
+        .head
+        .head
+      val paramType = tpe.decl(param.name).typeSignature.finalResultType
 
-    val r = c.Expr[Captor[T]] {
       q"""
       new org.mockito.captor.Captor[$tpe] {
 
@@ -54,7 +69,9 @@ object Captor {
         override def values: List[$tpe] = argumentCaptor.getAllValues.asScala.map(v => new $tpe(v)).toList
       }
     """
-    }
+    } else
+      c.Expr[Captor[T]](q"new org.mockito.captor.WrapperCaptor[$tpe]")
+
     if (c.settings.contains("mockito-print-captor")) println(show(r.tree))
     r
   }

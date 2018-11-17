@@ -84,12 +84,10 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
       captor.values should contain only ("it worked!", "it worked again!")
     }
-  }
 
-  "ValCaptor" should {
     "work with value case classes" in {
       val aMock  = mock[Foo]
-      val captor = ValCaptor[Name]
+      val captor = ArgCaptor[Name]
 
       aMock.valueCaseClass(Name("Batman"))
 
@@ -102,7 +100,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
     "work with value non-case classes" in {
       val aMock  = mock[Foo]
-      val captor = ValCaptor[Email]
+      val captor = ArgCaptor[Email]
 
       aMock.valueClass(new Email("batman@batcave.gotham"))
 
@@ -115,7 +113,7 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
 
     "work with mixture of value class & value param" in new IdiomaticMockito {
       val aMock  = mock[Foo]
-      val captor = ValCaptor[Email]
+      val captor = ArgCaptor[Email]
 
       aMock.valueClassAndValue(new Email("batman@batcave.gotham"), "42")
 

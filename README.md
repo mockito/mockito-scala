@@ -32,7 +32,7 @@ The library has independent developers, release cycle and versioning from core m
 * `DefaultAnswer` was moved from `org.mockito.DefaultAnswer` to `org.mockito.stubbing.DefaultAnswer`
 * The recommended way to use the pre-defined `DefaultAnswer`s is via the object `org.mockito.DefaultAnswers`
 * `*` matcher is now defined in `org.mockito.ArgumentMatchersSugar`, mixin (or use the companion object) this trait whenever you wanna use it
-* `argumentCaptor[String]` was removed, replace by either `ArgCaptor[T]` (`Captor[T]` was renamed to `ArgCaptor[T]` to add clarity) or `ValCaptor[T]` as needed, (see [Improved ArgumentCaptor](#improved-argumentcaptor)) 
+* `argumentCaptor[String]` was removed, replace by `ArgCaptor[T]` (`Captor[T]` was renamed to `ArgCaptor[T]` to add clarity), `ValCaptor[T]` was deprecated, (see [Improved ArgumentCaptor](#improved-argumentcaptor))
 * The usage of `org.mockito.Answer[T]` was removed from the API in favour of [Function Answers](#function-answers)
 * If you were using something like `doAnswer(_ => <something>).when ...` to lazily compute a return value when the method is actually called you should now write it like `doAnswer(<something>).when ...`, no need of passing a function as that argument is by-name
 * If you have chained return values like `when(myMock.foo) thenReturn "a" thenReturn "b" etc...` the syntax has changed a bit to `when(myMock.foo) thenReturn "a" andThen "b" etc...`
@@ -54,7 +54,8 @@ aMock was never called again                                => aMock.bar wasNeve
 theRealMethod willBe called by aMock bar                    => theRealMethod willBe called by aMock.bar
 new IllegalArgumentException willBe thrown by aMock bar     => new IllegalArgumentException willBe thrown by aMock.bar
 ```
-* eqToVal matcher syntax was improved to look more natural [Value Class Matchers](#value-class-matchers)
+* eqToVal matcher syntax was improved to look more natural [Value Class Matchers](#value-class-matchers) 
+NOTE: `eqToVal` has been deprecated in v 1.0.2 as `eqTo` is now aware of value classes
 ```scala
 verify(myObj).myMethod(eqToVal[MyValueClass](456))    => verify(myObj).myMethod(eqToVal(MyValueClass(456)))
 myObj.myMethod(eqToVal[MyValueClass](456)) was called => myObj.myMethod(eqToVal(MyValueClass(456))) was called
@@ -87,24 +88,17 @@ The companion object also extends the trait to allow the usage of the API withou
 For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-2-ba1a79cc4c53)
 
 This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it gives them a more Scala-like syntax, mainly
-*   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality
-*   `any` works even when the type can't be inferred, removing the need of using the likes of `anyString`, `anyInt`, etc (see [Notes](#dead-code-warning))
+*   `eq` was renamed to `eqTo` to avoid clashing with the Scala `eq` operator for identity equality, `eq` also supports value classes out of the box and relies on `org.scalactic.Equality[T]` (see [Scalactic integration](#scalactic-integration)) 
+*   `any[T]` works even when the type can't be inferred, removing the need of using the likes of `anyString`, `anyInt`, etc (see [Notes](#dead-code-warning))
+*   `any[T]` also supports value classes (in this case you MUST provide the type parameter)
 *   `isNull` and `isNotNull` are deprecated as using nulls in Scala is clear code smell
-*   Adds support for value classes via `anyVal[T]` and `eqToVal[T]()`
+*   Adds support for value classes via `anyVal[T]` and `eqToVal[T]()` **NOTE: both had been deprecated (use `any[T]` or `eqTo[T]` instead)**
 *   Adds `function0` to easily match for a function that returns a given value
 
 Again, the companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired
 
 ### Value Class Matchers
-
-The matchers for the value classes always require the type to be explicit, apart from that, they should be used as any other matcher, e.g.
-```scala
-when(myObj.myMethod(anyVal[MyValueClass]) thenReturn "something"
-
-myObj.myMethod(MyValueClass(456)) shouldBe "something"
-
-verify(myObj).myMethod(eqToVal(MyValueClass(456)))
-```
+`eqTo` and `any[T]` support value classes since v1.0.2, so no special syntax is needed for them (but you MUST provide the type param for `any[T]` otherwise you'll get a NPE)
 
 ## Improved ArgumentCaptor
 
@@ -113,7 +107,7 @@ For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/i
 A new set of classes were added to make it easier, cleaner and more elegant to work with ArgumentCaptors, they also add 
 support to capture value classes without any annoying syntax
 
-There is a new `trait org.mockito.captor.ArgCaptor[T]` that exposes a nicer API
+There is a new `object org.mockito.captor.ArgCaptor[T]` that exposes a nicer API
 
 Before:
 ```scala
@@ -141,6 +135,7 @@ captor hasCaptured "it worked!"
 As you can see there is no need to call `capture()` nor `getValue` anymore (although they're still there if you need them)
 
 There is another constructor `ValCaptor[T]` that should be used to capture value classes
+**NOTE: Since version 1.0.2 `ValCaptor[T]` has been deprecated as `ArgCaptor[T]` now support both, standard and value classes**
 
 Both `ArgCaptor[T]` and `ValCaptor[T]` return an instance of `Captor[T]` so the API is the same for both
 
@@ -274,7 +269,6 @@ val order = inOrder(mock1, mock2)                               <=> InOrder(mock
 order.verify(mock2).someMethod()                                <=>   mock2.someMethod() was called
 order.verify(mock1).anotherMethod()                             <=>   mock1.anotherMethod() was called
                                                                 <=> }
-
 ```
 
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`

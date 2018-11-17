@@ -7,7 +7,7 @@ object Utils {
 
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {
     import c.universe._
-    if (arg.toString().contains("org.mockito.matchers.ValueClassMatchers")) true
+    if (arg.toString().contains("org.mockito.matchers.MacroMatchers")) true
     else
       arg match {
         case q"$_.anyList[$_]"     => true
@@ -15,8 +15,9 @@ object Utils {
         case q"$_.anyIterable[$_]" => true
         case q"$_.anySet[$_]"      => true
         case q"$_.anyMap[$_, $_]"  => true
-        case q"$_.any[$_]"         => true
-        case q"$_.*[$_]"           => true
+        case q"$_.any[$_]($_)"     => true
+        case q"$_.anyVal[$_]($_)"  => true
+        case q"$_.*[$_]($_)"       => true
         case q"$_.anyByte"         => true
         case q"$_.anyBoolean"      => true
         case q"$_.anyChar"         => true
@@ -29,7 +30,7 @@ object Utils {
         case q"$_.isNull[$_]"    => true
         case q"$_.isNotNull[$_]" => true
 
-        case q"$_.eqTo[$_]($_)"      => true
+        case q"$_.eqTo[$_](...$_)"   => true
         case q"$_.same[$_]($_)"      => true
         case q"$_.isA[$_]($_)"       => true
         case q"$_.refEq[$_]($_, $_)" => true
@@ -59,10 +60,9 @@ object Utils {
 
         case q"$_.Captor.asCapture[$_]($_)" => true
 
-        case q"($_(org.mockito.ArgumentMatchersSugar.eqTo[$_]($_)($_)): $_)"     => true
-        case q"(new $_(org.mockito.ArgumentMatchersSugar.eqTo[$_]($_)($_)): $_)" => true
-        case q"($_(org.mockito.ArgumentMatchers.any[$_]()): $_)"                 => true
-        case q"(new $_(org.mockito.ArgumentMatchers.any[$_]()): $_)"             => true
+        case q"(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_): $_)"         => true
+        case q"($_(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_)): $_)"     => true
+        case q"(new $_(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_)): $_)" => true
 
         case _ => false
       }

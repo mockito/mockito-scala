@@ -60,19 +60,6 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.bar shouldBe "mocked again!"
     }
 
-    "create a mock where I can mix matchers, normal and implicit parameters" in {
-      val aMock                                 = mock[Foo]
-      implicit val implicitValue: Implicit[Int] = mock[Implicit[Int]]
-
-      aMock.iHaveTypeParamsAndImplicits[Int, String](*, "test") shouldReturn "mocked!"
-
-      aMock.iHaveTypeParamsAndImplicits(3, "test") shouldBe "mocked!"
-      aMock.iHaveTypeParamsAndImplicits(5, "test") shouldBe "mocked!"
-      aMock.iHaveTypeParamsAndImplicits(5, "est") shouldBe ""
-
-      aMock.iHaveTypeParamsAndImplicits[Int, String](*, "test") wasCalled twice
-    }
-
     "stub a real call" in {
       val aMock = mock[Foo]
 
@@ -434,6 +421,29 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     }
   }
 
+  "mix arguments and raw parameters" should {
+    "create a mock where I can mix matchers, normal and implicit parameters" in {
+      val aMock                                 = mock[Foo]
+      implicit val implicitValue: Implicit[Int] = mock[Implicit[Int]]
+
+      aMock.iHaveTypeParamsAndImplicits[Int, String](*, "test") shouldReturn "mocked!"
+
+      aMock.iHaveTypeParamsAndImplicits(3, "test") shouldBe "mocked!"
+      aMock.iHaveTypeParamsAndImplicits(5, "test") shouldBe "mocked!"
+      aMock.iHaveTypeParamsAndImplicits(5, "est") shouldBe ""
+
+      aMock.iHaveTypeParamsAndImplicits[Int, String](*, "test") wasCalled twice
+    }
+
+    "handle the eqTo properly" in {
+      val aMock = mock[Foo]
+
+      aMock.doSomethingWithThisIntAndString(eqTo(1), "meh") shouldReturn "mocked!"
+      aMock.doSomethingWithThisIntAndString(1, "meh") shouldBe "mocked!"
+      aMock.doSomethingWithThisIntAndString(1, eqTo("meh")) was called
+    }
+  }
+
   "value class matchers" should {
     "eqToVal works with new syntax" in {
       val aMock = mock[Foo]
@@ -446,10 +456,35 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
       aMock.valueCaseClass(2, eqToVal(ValueCaseClass(100))) was called
 
-      val value = ValueCaseClass(100)
-      aMock.valueCaseClass(3, eqToVal(value)) shouldReturn "mocked!"
+      val caseClassValue = ValueCaseClass(100)
+      aMock.valueCaseClass(3, eqToVal(caseClassValue)) shouldReturn "mocked!"
       aMock.valueCaseClass(3, ValueCaseClass(100)) shouldBe "mocked!"
-      aMock.valueCaseClass(3, eqToVal(value)) was called
+      aMock.valueCaseClass(3, eqToVal(caseClassValue)) was called
+
+      aMock.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
+      aMock.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
+      aMock.valueCaseClass(*, ValueCaseClass(200)) was called
+    }
+
+    "eqTo macro works with new syntax" in {
+      val aMock = mock[Foo]
+
+      aMock.valueClass(1, eqTo(new ValueClass("meh"))) shouldReturn "mocked!"
+      aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
+      aMock.valueClass(1, eqTo(new ValueClass("meh"))) was called
+
+      aMock.valueCaseClass(2, eqTo(ValueCaseClass(100))) shouldReturn "mocked!"
+      aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
+      aMock.valueCaseClass(2, eqTo(ValueCaseClass(100))) was called
+
+      val caseClassValue = ValueCaseClass(100)
+      aMock.valueCaseClass(3, eqTo(caseClassValue)) shouldReturn "mocked!"
+      aMock.valueCaseClass(3, ValueCaseClass(100)) shouldBe "mocked!"
+      aMock.valueCaseClass(3, eqTo(caseClassValue)) was called
+
+      aMock.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
+      aMock.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
+      aMock.valueCaseClass(*, ValueCaseClass(200)) was called
     }
 
     "anyVal works with new syntax" in {
@@ -462,6 +497,18 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.valueCaseClass(2, anyVal[ValueCaseClass]) shouldReturn "mocked!"
       aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
       aMock.valueCaseClass(2, anyVal[ValueCaseClass]) was called
+    }
+
+    "any works with new syntax" in {
+      val aMock = mock[Foo]
+
+      aMock.valueClass(1, any[ValueClass]) shouldReturn "mocked!"
+      aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
+      aMock.valueClass(1, any[ValueClass]) was called
+
+      aMock.valueCaseClass(2, any[ValueCaseClass]) shouldReturn "mocked!"
+      aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
+      aMock.valueCaseClass(2, any[ValueCaseClass]) was called
     }
   }
 }

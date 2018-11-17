@@ -41,7 +41,7 @@ trait MacroBasedMatchers {
   def any[T](implicit $m: AnyMatcher[T]): T = $m.any
 
   /**
-    * Alias for [[ org.mockito.matchers.MacroBasedMatchers.any[T] ]]
+    * Alias for [[org.mockito.matchers.MacroBasedMatchers.any]]
     */
   def *[T](implicit $m: AnyMatcher[T]): T = $m.any
 }

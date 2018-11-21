@@ -11,6 +11,7 @@
 
 package org.mockito
 
+import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.handler.ScalaMockHandler
@@ -18,8 +19,8 @@ import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
-import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
+import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaFirstStubbing, Stubber}
+import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -56,10 +57,10 @@ private[mockito] trait DoSomething {
    * match argument types (`Type`)}}}
    *
    */
-  def doReturn[T](toBeReturned: T, toBeReturnedNext: T*): Stubber =
+  def doReturn[T](toBeReturned: T, toBeReturnedNext: T*)(implicit $vce: ValueClassExtractor[T]): Stubber =
     Mockito.doReturn(
-      toBeReturned,
-      toBeReturnedNext.map(_.asInstanceOf[Object]): _*
+      $vce.extract(toBeReturned),
+      toBeReturnedNext.map($vce.extract).map(_.asInstanceOf[Object]): _*
     )
 
   /**

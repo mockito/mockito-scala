@@ -202,6 +202,14 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
   }
 
   "DoSomethingOps" should {
+    "stub a value class return value" in {
+      val aMock = mock[Foo]
+
+      ValueCaseClass(100) willBe returned by aMock.returnsValueCaseClass
+
+      aMock.returnsValueCaseClass shouldBe ValueCaseClass(100)
+    }
+
     "stub a spy that would fail if the real impl is called" in {
       val aSpy = spy(new Foo)
 

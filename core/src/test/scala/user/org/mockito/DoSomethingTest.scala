@@ -1,8 +1,9 @@
 package user.org.mockito
 
-import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.mockito.invocation.InvocationOnMock
-import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import org.scalatest.{WordSpec, Matchers => ScalaTestMatchers}
+import user.org.mockito.matchers.ValueCaseClass
 
 class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
@@ -28,6 +29,8 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
     def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = ???
 
     def doSomethingWithThisIntAndString(v: Int, v2: String): String = ???
+
+    def returnValueClass: ValueCaseClass = ???
   }
 
   "doCallRealMethod" should {
@@ -148,6 +151,10 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
       doReturn(false, true).when(aMock).returnBoolean
       aMock.returnBoolean shouldBe false
       aMock.returnBoolean shouldBe true
+
+      doReturn(ValueCaseClass(100), ValueCaseClass(200)).when(aMock).returnValueClass
+      aMock.returnValueClass shouldBe ValueCaseClass(100)
+      aMock.returnValueClass shouldBe ValueCaseClass(200)
     }
   }
 

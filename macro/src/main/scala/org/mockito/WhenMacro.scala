@@ -10,8 +10,8 @@ import scala.reflect.ClassTag
 
 object WhenMacro {
 
-  class ReturnActions[T](os: ScalaFirstStubbing[T]) {
-    def apply(value: T)(implicit $vce: ValueClassExtractor[T]): ScalaOngoingStubbing[T] = os thenReturn value
+  class ReturnActions[T: ValueClassExtractor](os: ScalaFirstStubbing[T]) {
+    def apply(value: T): ScalaOngoingStubbing[T] = os thenReturn value
   }
 
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ReturnActions[T]] = {

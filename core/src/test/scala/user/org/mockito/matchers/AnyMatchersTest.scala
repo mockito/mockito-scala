@@ -70,7 +70,7 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
   "any" should "work with AnyRef" in {
     val aMock = mock[Foo]
 
-    when(aMock.bar(any)) thenReturn "mocked!"
+    when(aMock.bar[String](any)) thenReturn "mocked!"
     aMock.bar("meh") shouldBe "mocked!"
     verify(aMock).bar("meh")
 
@@ -178,8 +178,8 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
   "*" should "be a valid alias of any" in {
     val aMock = mock[Foo]
 
-    when(aMock.bar(*)) thenReturn 42
+    when(aMock.barInt(*)) thenReturn 42
 
-    aMock.bar(-1) shouldBe 42
+    aMock.barInt(-1) shouldBe 42
   }
 }

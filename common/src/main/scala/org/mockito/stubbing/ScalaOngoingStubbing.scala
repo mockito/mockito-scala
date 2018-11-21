@@ -8,10 +8,10 @@ import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 object ScalaOngoingStubbing {
-  implicit def toScalaOngoingStubbing[T](v: OngoingStubbing[T]): ScalaOngoingStubbing[T] = ScalaOngoingStubbing(v)
+  implicit def toScalaOngoingStubbing[T: ValueClassExtractor](v: OngoingStubbing[T]): ScalaOngoingStubbing[T] = ScalaOngoingStubbing(v)
 }
 
-case class ScalaOngoingStubbing[T](delegate: OngoingStubbing[T]) {
+case class ScalaOngoingStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: ValueClassExtractor[T]) {
 
   /**
    * Sets consecutive return values to be returned when the method is called. E.g:
@@ -27,7 +27,7 @@ case class ScalaOngoingStubbing[T](delegate: OngoingStubbing[T]) {
    * @param values next return values
    * @return object that allows stubbing consecutive calls
    */
-  def andThen(value: T, values: T*)(implicit $vce: ValueClassExtractor[T]): ScalaOngoingStubbing[T] =
+  def andThen(value: T, values: T*): ScalaOngoingStubbing[T] =
     delegate.thenReturn($vce.extract(value).asInstanceOf[T], values.map($vce.extract).map(_.asInstanceOf[T]): _*)
 
   /**

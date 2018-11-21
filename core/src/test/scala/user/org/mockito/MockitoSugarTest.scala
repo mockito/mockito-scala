@@ -23,7 +23,7 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
 
     def returnBar: Bar = ???
 
-    def doSomethingWithThisIntAndString(v: Int, v2: String): String = ???
+    def doSomethingWithThisIntAndString(v: Int, v2: String): ValueCaseClass = ???
 
     def returnsValueCaseClass: ValueCaseClass = ???
 
@@ -35,7 +35,7 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
   }
 
   trait Baz {
-    def traitMethod(arg: Int): Int = ???
+    def traitMethod(arg: Int): ValueCaseClass = ???
   }
 
   class SomeClass extends Foo with Baz
@@ -61,25 +61,29 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
     "create a mock with nice answer API (single param)" in {
       val aMock = mock[Baz]
 
-      when(aMock.traitMethod(*)) thenAnswer ((i: Int) => i * 10 + 2)
+      when(aMock.traitMethod(*)) thenAnswer ((i: Int) => ValueCaseClass(i * 10 + 2)) andThenAnswer ((i: Int) => ValueCaseClass(i * 10 + 3))
 
-      aMock.traitMethod(4) shouldBe 42
+      aMock.traitMethod(4) shouldBe ValueCaseClass(42)
+      aMock.traitMethod(4) shouldBe ValueCaseClass(43)
     }
 
     "create a mock with nice answer API (invocation usage)" in {
       val aMock = mock[Baz]
 
-      when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2)
+      when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClass(i.getArgument[Int](0) * 10 + 2)) andThenAnswer (
+          (i: InvocationOnMock) => ValueCaseClass(i.getArgument[Int](0) * 10 + 3))
 
-      aMock.traitMethod(4) shouldBe 42
+      aMock.traitMethod(4) shouldBe ValueCaseClass(42)
+      aMock.traitMethod(4) shouldBe ValueCaseClass(43)
     }
 
     "create a mock with nice answer API (multiple params)" in {
       val aMock = mock[Foo]
 
-      when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
+      when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClass(i * 10 + s.toInt)) andThenAnswer ((i: Int, _: String) => ValueCaseClass(i))
 
-      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
+      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(42)
+      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(4)
     }
 
     "create a mock while stubbing another" in {
@@ -124,10 +128,10 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       val aMock = mock[Foo with Baz]
 
       when(aMock.bar) thenReturn "mocked!"
-      when(aMock.traitMethod(any)) thenReturn 69
+      when(aMock.traitMethod(any)) thenReturn ValueCaseClass(69)
 
       aMock.bar shouldBe "mocked!"
-      aMock.traitMethod(30) shouldBe 69
+      aMock.traitMethod(30) shouldBe ValueCaseClass(69)
 
       verify(aMock).traitMethod(30)
     }
@@ -136,10 +140,10 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       val aMock = mock[SomeClass]
 
       when(aMock.bar) thenReturn "mocked!"
-      when(aMock.traitMethod(any)) thenReturn 69
+      when(aMock.traitMethod(any)) thenReturn ValueCaseClass(69)
 
       aMock.bar shouldBe "mocked!"
-      aMock.traitMethod(30) shouldBe 69
+      aMock.traitMethod(30) shouldBe ValueCaseClass(69)
 
       verify(aMock).traitMethod(30)
     }

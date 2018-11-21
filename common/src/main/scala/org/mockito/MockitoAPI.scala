@@ -89,35 +89,36 @@ private[mockito] trait DoSomething {
   /**
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
-  def doAnswer[R](l: => R): Stubber =
+  def doAnswer[R: ValueClassExtractor](l: => R): Stubber =
     Mockito.doAnswer(invocationToAnswer(_ =>
       l match {
         case f: Function0[_] => f()
         case _               => l
     }))
-  def doAnswer[P0: ClassTag, R](f: P0 => R): Stubber = clazz[P0] match {
+  def doAnswer[P0: ClassTag, R: ValueClassExtractor](f: P0 => R): Stubber = clazz[P0] match {
     case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
     case _                                   => Mockito.doAnswer(functionToAnswer(f))
   }
-  def doAnswer[P0, P1, R](f: (P0, P1) => R): Stubber =
+  def doAnswer[P0, P1, R: ValueClassExtractor](f: (P0, P1) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, R](f: (P0, P1, P2) => R): Stubber =
+  def doAnswer[P0, P1, P2, R: ValueClassExtractor](f: (P0, P1, P2) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, R](f: (P0, P1, P2, P3) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, R: ValueClassExtractor](f: (P0, P1, P2, P3) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, R](f: (P0, P1, P2, P3, P4) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, R](f: (P0, P1, P2, P3, P4, P5) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, P5, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, R](f: (P0, P1, P2, P3, P4, P5, P6) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, R](f: (P0, P1, P2, P3, P4, P5, P6, P7) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R: ValueClassExtractor](
+      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
 }
 
@@ -330,7 +331,7 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
   /**
    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
    */
-  def when[T](methodCall: T): ScalaFirstStubbing[T] = Mockito.when(methodCall)
+  def when[T: ValueClassExtractor](methodCall: T): ScalaFirstStubbing[T] = Mockito.when(methodCall)
 
   /**
    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API

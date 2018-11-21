@@ -25,6 +25,7 @@ import org.mockito.matchers._
 trait ArgumentMatchersSugar
     extends AnyMatchers
     with EqMatchers
+    with EqMatchers_212
     with ThatMatchers
     with StringThatMatchers
     with NullMatchers

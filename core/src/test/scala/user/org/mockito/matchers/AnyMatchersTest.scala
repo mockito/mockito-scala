@@ -36,9 +36,9 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
 
     def barSet[T](v: Set[T]): Set[T] = v
 
-    def valueClass(v: ValueClass): String = v.v
+    def valueClass(v: ValueClass): String = ???
 
-    def valueCaseClass(v: ValueCaseClass): Int = v.v
+    def valueCaseClass(v: ValueCaseClass): Int = ???
   }
 
   "any[Collection]" should "work with Scala types" in {

@@ -21,7 +21,7 @@ object MacroMatchers {
 
   def eqTo[T](value: T)(implicit $eq: Equality[T]): T = {
     ThatMatchers.argThat(new ArgumentMatcher[T] {
-      override def matches(v: T): Boolean = $eq.areEqual(v, value)
+      override def matches(v: T): Boolean = $eq.areEqual(value, v)
       override def toString: String       = s"eqTo($value)"
     })
     value

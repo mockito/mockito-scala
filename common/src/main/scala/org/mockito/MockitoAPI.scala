@@ -19,8 +19,8 @@ import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaFirstStubbing, Stubber}
-import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
+import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
+import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -89,8 +89,12 @@ private[mockito] trait DoSomething {
   /**
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
-  def doAnswer[R](f: => R): Stubber =
-    Mockito.doAnswer(invocationToAnswer(_ => f))
+  def doAnswer[R](l: => R): Stubber =
+    Mockito.doAnswer(invocationToAnswer(_ =>
+      l match {
+        case f: Function0[_] => f()
+        case _               => l
+    }))
   def doAnswer[P0: ClassTag, R](f: P0 => R): Stubber = clazz[P0] match {
     case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
     case _                                   => Mockito.doAnswer(functionToAnswer(f))

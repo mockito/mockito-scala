@@ -5,6 +5,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer }
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.{ Matchers, WordSpec }
+import user.org.mockito.matchers.ValueCaseClass
 
 //noinspection RedundantDefaultArgument
 class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
@@ -23,6 +24,10 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
     def returnBar: Bar = ???
 
     def doSomethingWithThisIntAndString(v: Int, v2: String): String = ???
+
+    def returnsValueCaseClass: ValueCaseClass = ???
+
+    def returnsValueCaseClass(i: Int): ValueCaseClass = ???
   }
 
   class Bar {
@@ -42,6 +47,15 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       when(aMock.bar) thenReturn "mocked!"
 
       aMock.bar shouldBe "mocked!"
+    }
+
+    "stub a value class return value" in {
+      val aMock = mock[Foo]
+
+      when(aMock.returnsValueCaseClass) thenReturn ValueCaseClass(100) andThen ValueCaseClass(200)
+
+      aMock.returnsValueCaseClass shouldBe ValueCaseClass(100)
+      aMock.returnsValueCaseClass shouldBe ValueCaseClass(200)
     }
 
     "create a mock with nice answer API (single param)" in {

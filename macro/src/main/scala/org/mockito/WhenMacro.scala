@@ -1,7 +1,8 @@
 package org.mockito
 
-import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
+import org.mockito.stubbing.{ScalaFirstStubbing, ScalaOngoingStubbing}
 import org.mockito.Utils._
+import org.mockito.internal.ValueClassExtractor
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
@@ -10,7 +11,7 @@ import scala.reflect.ClassTag
 object WhenMacro {
 
   class ReturnActions[T](os: ScalaFirstStubbing[T]) {
-    def apply(value: T): ScalaOngoingStubbing[T] = os thenReturn value
+    def apply(value: T)(implicit $vce: ValueClassExtractor[T]): ScalaOngoingStubbing[T] = os thenReturn value
   }
 
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ReturnActions[T]] = {

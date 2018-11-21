@@ -1,6 +1,7 @@
 package org.mockito.stubbing
 
-import org.mockito.{clazz, functionToAnswer, invocationToAnswer}
+import org.mockito.internal.ValueClassExtractor
+import org.mockito.{ clazz, functionToAnswer, invocationToAnswer }
 import org.mockito.invocation.InvocationOnMock
 
 import scala.language.implicitConversions
@@ -29,7 +30,8 @@ case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T]) {
    * @param values next return values
    * @return object that allows stubbing consecutive calls
    */
-  def thenReturn(value: T, values: T*): ScalaOngoingStubbing[T] = delegate thenReturn (value, values: _*)
+  def thenReturn(value: T, values: T*)(implicit $vce: ValueClassExtractor[T]): ScalaOngoingStubbing[T] =
+    delegate.thenReturn($vce.extract(value).asInstanceOf[T], values.map($vce.extract).map(_.asInstanceOf[T]): _*)
 
   /**
    * Sets one or more Throwable objects to be thrown when the method is called. E.g:

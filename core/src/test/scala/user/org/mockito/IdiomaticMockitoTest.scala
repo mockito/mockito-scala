@@ -35,6 +35,8 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     def valueClass(n: Int, v: ValueClass): String = ???
 
     def valueCaseClass(n: Int, v: ValueCaseClass): String = ???
+
+    def returnsValueCaseClass: ValueCaseClass = ???
   }
 
   class Bar {
@@ -48,6 +50,15 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.bar shouldReturn "mocked!"
 
       aMock.bar shouldBe "mocked!"
+    }
+
+    "stub a value class return value" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsValueCaseClass shouldReturn ValueCaseClass(100) andThen ValueCaseClass(200)
+
+      aMock.returnsValueCaseClass shouldBe ValueCaseClass(100)
+      aMock.returnsValueCaseClass shouldBe ValueCaseClass(200)
     }
 
     "stub multiple return values" in {

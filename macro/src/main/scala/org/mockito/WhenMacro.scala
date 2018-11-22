@@ -2,6 +2,7 @@ package org.mockito
 
 import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
 import org.mockito.Utils._
+import org.mockito.internal.ValueClassExtractor
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
@@ -9,7 +10,7 @@ import scala.reflect.ClassTag
 
 object WhenMacro {
 
-  class ReturnActions[T](os: ScalaFirstStubbing[T]) {
+  class ReturnActions[T: ValueClassExtractor](os: ScalaFirstStubbing[T]) {
     def apply(value: T): ScalaOngoingStubbing[T] = os thenReturn value
   }
 
@@ -85,7 +86,7 @@ object WhenMacro {
     r
   }
 
-  class AnswerActions[T](os: ScalaFirstStubbing[T]) {
+  class AnswerActions[T: ValueClassExtractor](os: ScalaFirstStubbing[T]) {
     def apply(f: => T): ScalaOngoingStubbing[T]                  = os thenAnswer f
     def apply[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T] = os thenAnswer f
     def apply[P0, P1](f: (P0, P1) => T): ScalaOngoingStubbing[T] = os thenAnswer f

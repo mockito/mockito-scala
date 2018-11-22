@@ -31,9 +31,9 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
 
     def baz(v: Baz): Baz = v
 
-    def valueClass(v: ValueClass): String = v.v
+    def valueClass(v: ValueClass): String = ???
 
-    def valueCaseClass(v: ValueCaseClass): Int = v.v
+    def valueCaseClass(v: ValueCaseClass): Int = ???
   }
 
   "eqTo[T]" should "work with value classes" in {

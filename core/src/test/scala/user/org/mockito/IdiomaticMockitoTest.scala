@@ -3,10 +3,10 @@ package user.org.mockito
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
 import org.scalatest
 import org.scalatest.WordSpec
-import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
+import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
 
 class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 
@@ -35,6 +35,8 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     def valueClass(n: Int, v: ValueClass): String = ???
 
     def valueCaseClass(n: Int, v: ValueCaseClass): String = ???
+
+    def returnsValueCaseClass: ValueCaseClass = ???
   }
 
   class Bar {
@@ -48,6 +50,15 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
       aMock.bar shouldReturn "mocked!"
 
       aMock.bar shouldBe "mocked!"
+    }
+
+    "stub a value class return value" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsValueCaseClass shouldReturn ValueCaseClass(100) andThen ValueCaseClass(200)
+
+      aMock.returnsValueCaseClass shouldBe ValueCaseClass(100)
+      aMock.returnsValueCaseClass shouldBe ValueCaseClass(200)
     }
 
     "stub multiple return values" in {
@@ -191,6 +202,14 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
   }
 
   "DoSomethingOps" should {
+    "stub a value class return value" in {
+      val aMock = mock[Foo]
+
+      ValueCaseClass(100) willBe returned by aMock.returnsValueCaseClass
+
+      aMock.returnsValueCaseClass shouldBe ValueCaseClass(100)
+    }
+
     "stub a spy that would fail if the real impl is called" in {
       val aSpy = spy(new Foo)
 
@@ -479,7 +498,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
       val caseClassValue = ValueCaseClass(100)
       aMock.valueCaseClass(3, eqTo(caseClassValue)) shouldReturn "mocked!"
-      aMock.valueCaseClass(3, ValueCaseClass(100)) shouldBe "mocked!"
+      aMock.valueCaseClass(3, caseClassValue) shouldBe "mocked!"
       aMock.valueCaseClass(3, eqTo(caseClassValue)) was called
 
       aMock.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"

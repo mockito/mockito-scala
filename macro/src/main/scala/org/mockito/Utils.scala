@@ -30,10 +30,11 @@ object Utils {
         case q"$_.isNull[$_]"    => true
         case q"$_.isNotNull[$_]" => true
 
-        case q"$_.eqTo[$_](...$_)"   => true
-        case q"$_.same[$_]($_)"      => true
-        case q"$_.isA[$_]($_)"       => true
-        case q"$_.refEq[$_]($_, $_)" => true
+        case q"$_.eqTo[$_](...$_)"    => true
+        case q"$_.eqToVal[$_](...$_)" => true
+        case q"$_.same[$_]($_)"       => true
+        case q"$_.isA[$_]($_)"        => true
+        case q"$_.refEq[$_]($_, $_)"  => true
 
         case q"$_.function0[$_]($_)" => true
 
@@ -60,9 +61,9 @@ object Utils {
 
         case q"$_.Captor.asCapture[$_]($_)" => true
 
-        case q"(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_): $_)"         => true
-        case q"($_(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_)): $_)"     => true
-        case q"(new $_(org.mockito.matchers.MacroMatchers.eqTo[$_](...$_)): $_)" => true
+        case q"(org.mockito.matchers.MacroMatchers_211.eqTo[$_](...$_): $_)"         => true
+        case q"($_(org.mockito.matchers.MacroMatchers_211.eqTo[$_](...$_)): $_)"     => true
+        case q"(new $_(org.mockito.matchers.MacroMatchers_211.eqTo[$_](...$_)): $_)" => true
 
         case _ => false
       }

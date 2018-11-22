@@ -38,12 +38,12 @@ object DoSomethingMacro {
         case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[..$targs](...$newArgs)"
+            q"org.mockito.MockitoSugar.doAnswer($v).when($obj).$method[..$targs](...$newArgs)"
           } else
-            q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[..$targs](...$args)"
+            q"org.mockito.MockitoSugar.doAnswer($v).when($obj).$method[..$targs](...$args)"
 
         case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method[..$targs])" =>
-          q"org.mockito.Mockito.doAnswer(org.mockito.DoSomethingMacro.argumentToAnswer($v)).when($obj).$method[..$targs]"
+          q"org.mockito.MockitoSugar.doAnswer($v).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -94,20 +94,5 @@ object DoSomethingMacro {
     }
     if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
     r
-  }
-
-  def argumentToAnswer(v: Any): Answer[Any] = v match {
-    case f: Function0[_]                                => invocationToAnswer(_ => f())
-    case f: Function1[_, _]                             => functionToAnswer(f)
-    case f: Function2[_, _, _]                          => functionToAnswer(f)
-    case f: Function3[_, _, _, _]                       => functionToAnswer(f)
-    case f: Function4[_, _, _, _, _]                    => functionToAnswer(f)
-    case f: Function5[_, _, _, _, _, _]                 => functionToAnswer(f)
-    case f: Function6[_, _, _, _, _, _, _]              => functionToAnswer(f)
-    case f: Function7[_, _, _, _, _, _, _, _]           => functionToAnswer(f)
-    case f: Function8[_, _, _, _, _, _, _, _, _]        => functionToAnswer(f)
-    case f: Function9[_, _, _, _, _, _, _, _, _, _]     => functionToAnswer(f)
-    case f: Function10[_, _, _, _, _, _, _, _, _, _, _] => functionToAnswer(f)
-    case other                                          => invocationToAnswer(_ => other)
   }
 }

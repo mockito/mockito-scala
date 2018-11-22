@@ -26,7 +26,7 @@ lazy val commonSettings =
       "-Ypartial-unification",
       "-language:higherKinds",
       "-Xfatal-warnings",
-//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher"
+//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor"
     ),
   )
 
@@ -37,6 +37,7 @@ lazy val commonLibraries = Seq(
 )
 
 lazy val common = (project in file("common"))
+  .dependsOn(macroCommon)
   .settings(
     commonSettings,
     libraryDependencies ++= commonLibraries,
@@ -70,6 +71,14 @@ lazy val core = (project in file("core"))
     mappings in (Compile, packageSrc) ++= mappings
       .in(common, Compile, packageSrc)
       .value,
+    // include the common classes and resources in the main jar
+    mappings in (Compile, packageBin) ++= mappings
+      .in(macroCommon, Compile, packageBin)
+      .value,
+    // include the common sources in the main source jar
+    mappings in (Compile, packageSrc) ++= mappings
+      .in(macroCommon, Compile, packageSrc)
+      .value,
     licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
     homepage := Some(url("https://github.com/mockito/mockito-scala")),
     scmInfo := Some(
@@ -93,6 +102,15 @@ lazy val macroSub = (project in file("macro"))
   .settings(
     commonSettings,
     libraryDependencies ++= commonLibraries,
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    publish := {},
+    publishLocal := {},
+    publishArtifact := false
+  )
+
+lazy val macroCommon = (project in file("macro-common"))
+  .settings(
+    commonSettings,
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     publish := {},
     publishLocal := {},

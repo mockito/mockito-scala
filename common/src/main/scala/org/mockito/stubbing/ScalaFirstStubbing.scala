@@ -1,16 +1,17 @@
 package org.mockito.stubbing
 
-import org.mockito.{clazz, functionToAnswer, invocationToAnswer}
+import org.mockito.internal.ValueClassExtractor
+import org.mockito.{ clazz, functionToAnswer, invocationToAnswer }
 import org.mockito.invocation.InvocationOnMock
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 object ScalaFirstStubbing {
-  implicit def toScalaFirstStubbing[T](v: OngoingStubbing[T]): ScalaFirstStubbing[T] = ScalaFirstStubbing(v)
+  implicit def toScalaFirstStubbing[T: ValueClassExtractor](v: OngoingStubbing[T]): ScalaFirstStubbing[T] = ScalaFirstStubbing(v)
 }
 
-case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T]) {
+case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: ValueClassExtractor[T]) {
 
   /**
    * Sets consecutive return one or more values to be returned when the method is called. E.g:
@@ -29,7 +30,8 @@ case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T]) {
    * @param values next return values
    * @return object that allows stubbing consecutive calls
    */
-  def thenReturn(value: T, values: T*): ScalaOngoingStubbing[T] = delegate thenReturn (value, values: _*)
+  def thenReturn(value: T, values: T*): ScalaOngoingStubbing[T] =
+    delegate.thenReturn($vce.extract(value).asInstanceOf[T], values.map($vce.extract).map(_.asInstanceOf[T]): _*)
 
   /**
    * Sets one or more Throwable objects to be thrown when the method is called. E.g:
@@ -105,7 +107,7 @@ case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T]) {
    *
    * @return object that allows stubbing consecutive calls
    */
-  def thenCallRealMethod(): ScalaOngoingStubbing[T] = delegate thenCallRealMethod ()
+  def thenCallRealMethod(): ScalaOngoingStubbing[T] = delegate.thenCallRealMethod()
 
   def thenAnswer(f: => T): ScalaOngoingStubbing[T] = delegate thenAnswer invocationToAnswer(_ => f)
   def thenAnswer[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T] = clazz[P0] match {

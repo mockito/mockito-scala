@@ -56,11 +56,11 @@ object Captor {
       val paramType = tpe.decl(param.name).typeSignature.finalResultType
 
       q"""
-      new org.mockito.captor.Captor[$tpe] {
+      new _root_.org.mockito.captor.Captor[$tpe] {
 
-        import scala.collection.JavaConverters._
+        import _root_.scala.collection.JavaConverters._
 
-        private val argumentCaptor = org.mockito.ArgumentCaptor.forClass(classOf[$paramType])
+        private val argumentCaptor = _root_.org.mockito.ArgumentCaptor.forClass(classOf[$paramType])
 
         override def capture: $tpe = new $tpe(argumentCaptor.capture())
 
@@ -70,7 +70,7 @@ object Captor {
       }
     """
     } else
-      c.Expr[Captor[T]](q"new org.mockito.captor.WrapperCaptor[$tpe]")
+      c.Expr[Captor[T]](q"new _root_.org.mockito.captor.WrapperCaptor[$tpe]")
 
     if (c.settings.contains("mockito-print-captor")) println(show(r.tree))
     r

@@ -61,9 +61,9 @@ object Utils {
 
         case q"$_.Captor.asCapture[$_]($_)" => true
 
-        case q"(org.mockito.matchers.MacroMatchers_211.eqTo[$_](...$_): $_)"         => true
-        case q"($_(org.mockito.matchers.MacroMatchers_211.eqTo[$_](...$_)): $_)"     => true
-        case q"(new $_(org.mockito.matchers.MacroMatchers_211.eqTo[$_](...$_)): $_)" => true
+        case q"($_.MacroMatchers_211.eqTo[$_](...$_): $_)"         => true
+        case q"($_($_.MacroMatchers_211.eqTo[$_](...$_)): $_)"     => true
+        case q"(new $_($_.MacroMatchers_211.eqTo[$_](...$_)): $_)" => true
 
         case _ => false
       }
@@ -77,7 +77,7 @@ object Utils {
     if (isMatcher(c)(arg)) arg
     else
       arg match {
-        case q"$a" => q"org.mockito.ArgumentMatchersSugar.eqTo($a)"
+        case q"$a" => q"_root_.org.mockito.ArgumentMatchersSugar.eqTo($a)"
       }
   }
 }

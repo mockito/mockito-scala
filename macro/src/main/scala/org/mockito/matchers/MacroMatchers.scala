@@ -25,12 +25,12 @@ object MacroMatchers {
 
     val r = if (isValueClass) c.Expr[AnyMatcher[T]] {
       q"""
-      new org.mockito.matchers.AnyMatcher[$tpe] {
-        override def any: $tpe = new $tpe(org.mockito.ArgumentMatchers.any())
+      new _root_.org.mockito.matchers.AnyMatcher[$tpe] {
+        override def any: $tpe = new $tpe(_root_.org.mockito.ArgumentMatchers.any())
       }
     """
     } else
-      c.Expr[AnyMatcher[T]](q"new org.mockito.matchers.AnyMatcherStandard[$tpe]")
+      c.Expr[AnyMatcher[T]](q"new _root_.org.mockito.matchers.AnyMatcherStandard[$tpe]")
 
     if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
     r

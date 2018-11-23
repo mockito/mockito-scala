@@ -13,7 +13,7 @@ object Called {
 
 object VerifyMacro {
 
-  def wasMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     val r = c.Expr[Unit] {
@@ -35,26 +35,26 @@ object VerifyMacro {
     r
   }
 
-  def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($_.this.$obj).wasNever($_.called)($_)" =>
-          q"org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
+          q"_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasNever($_.called)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs](...$newArgs)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.never).$method[..$targs](...$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs](...$args)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.never).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasNever($_.called)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.never).$method[..$targs]"
+          q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.never).$method[..$targs]"
 
         case q"$_.StubbingOps[$_]($obj).wasNever($_.called)($_)" =>
-          q"org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
+          q"_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -65,7 +65,7 @@ object VerifyMacro {
 
   case class Times(times: Int)
 
-  def wasMacroTimes[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[Times])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasMacroTimes[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[Times])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     val r = c.Expr[Unit] {
@@ -73,12 +73,12 @@ object VerifyMacro {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method[..$targs](...$newArgs)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.times($times.times)).$method[..$targs](...$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method[..$targs](...$args)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.times($times.times)).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.times($times.times)).$method[..$targs]"
+          q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.times($times.times)).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -89,7 +89,7 @@ object VerifyMacro {
 
   case class AtLeast(times: Int)
 
-  def wasMacroAtLeast[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtLeast])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasMacroAtLeast[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtLeast])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     val r = c.Expr[Unit] {
@@ -97,12 +97,12 @@ object VerifyMacro {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method[..$targs](...$newArgs)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atLeast($times.times)).$method[..$targs](...$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method[..$targs](...$args)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atLeast($times.times)).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.atLeast($times.times)).$method[..$targs]"
+          q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atLeast($times.times)).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -113,7 +113,7 @@ object VerifyMacro {
 
   case class AtMost(times: Int)
 
-  def wasMacroAtMost[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtMost])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasMacroAtMost[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtMost])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     val r = c.Expr[Unit] {
@@ -121,12 +121,12 @@ object VerifyMacro {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method[..$targs](...$newArgs)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atMost($times.times)).$method[..$targs](...$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method[..$targs](...$args)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atMost($times.times)).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.atMost($times.times)).$method[..$targs]"
+          q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atMost($times.times)).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -137,7 +137,7 @@ object VerifyMacro {
 
   class OnlyOn
 
-  def wasMacroOnlyOn[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[OnlyOn])(order: c.Expr[org.mockito.VerifyOrder]): c.Expr[Unit] = {
+  def wasMacroOnlyOn[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[OnlyOn])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
     import c.universe._
 
     val r = c.Expr[Unit] {
@@ -145,12 +145,12 @@ object VerifyMacro {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($_)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method[..$targs](...$newArgs)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.only).$method[..$targs](...$newArgs)"
           } else
-            q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method[..$targs](...$args)"
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.only).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($_)($order)" =>
-          q"$order.verifyWithMode($obj, org.mockito.Mockito.only).$method[..$targs]"
+          q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.only).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

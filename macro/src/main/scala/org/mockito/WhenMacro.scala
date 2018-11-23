@@ -1,16 +1,15 @@
 package org.mockito
 
-import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
 import org.mockito.Utils._
-import org.mockito.internal.ValueClassExtractor
+import org.mockito.stubbing.{ScalaFirstStubbing, ScalaOngoingStubbing}
 
 import scala.language.experimental.macros
-import scala.reflect.macros.blackbox
 import scala.reflect.ClassTag
+import scala.reflect.macros.blackbox
 
 object WhenMacro {
 
-  class ReturnActions[T: ValueClassExtractor](os: ScalaFirstStubbing[T]) {
+  class ReturnActions[T](os: ScalaFirstStubbing[T]) {
     def apply(value: T): ScalaOngoingStubbing[T] = os thenReturn value
   }
 
@@ -22,12 +21,12 @@ object WhenMacro {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldReturn" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
+            q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
           } else
-            q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
+            q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldReturn" =>
-          q"new org.mockito.WhenMacro.ReturnActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
+          q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -46,12 +45,12 @@ object WhenMacro {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldCall($_.realMethod)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)).thenCallRealMethod())"
+            q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)).thenCallRealMethod())"
           } else
-            q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)).thenCallRealMethod())"
+            q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)).thenCallRealMethod())"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldCall($_.realMethod)" =>
-          q"new org.mockito.stubbing.ScalaOngoingStubbing(org.mockito.Mockito.when[$t]($obj.$method[..$targs]).thenCallRealMethod())"
+          q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]).thenCallRealMethod())"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -72,12 +71,12 @@ object WhenMacro {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldThrow" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
+            q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
           } else
-            q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
+            q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldThrow" =>
-          q"new org.mockito.WhenMacro.ThrowActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
+          q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -86,7 +85,7 @@ object WhenMacro {
     r
   }
 
-  class AnswerActions[T: ValueClassExtractor](os: ScalaFirstStubbing[T]) {
+  class AnswerActions[T](os: ScalaFirstStubbing[T]) {
     def apply(f: => T): ScalaOngoingStubbing[T]                  = os thenAnswer f
     def apply[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T] = os thenAnswer f
     def apply[P0, P1](f: (P0, P1) => T): ScalaOngoingStubbing[T] = os thenAnswer f
@@ -120,12 +119,12 @@ object WhenMacro {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldAnswer" =>
           if (args.exists(a => hasMatchers(c)(a))) {
             val newArgs = args.map(a => transformArgs(c)(a))
-            q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
+            q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
           } else
-            q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
+            q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldAnswer" =>
-          q"new org.mockito.WhenMacro.AnswerActions(org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
+          q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

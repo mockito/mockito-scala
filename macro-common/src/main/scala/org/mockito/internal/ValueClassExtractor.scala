@@ -38,19 +38,19 @@ object ValueClassExtractor {
     val r = if (isValueClass) {
 
       if (ScalaVersion.startsWith("2.12"))
-        c.Expr[ValueClassExtractor[VC]](q"new org.mockito.internal.ReflectionExtractor[$tpe]")
+        c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
       else if (ScalaVersion.startsWith("2.11"))
         c.Expr[ValueClassExtractor[VC]] {
           val companion = tpe.typeSymbol.companion
           q"""
-            new org.mockito.internal.ValueClassExtractor[$tpe] {
+            new _root_.org.mockito.internal.ValueClassExtractor[$tpe] {
               override def extract(vc: $tpe): Any = $companion.unapply(vc).get
             }
           """
         } else throw new Exception(s"Unsupported scala version $ScalaVersion")
 
     } else
-      c.Expr[ValueClassExtractor[VC]](q"new org.mockito.internal.NormalClassExtractor[$tpe]")
+      c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")
 
     if (c.settings.contains("mockito-print-extractor")) println(show(r.tree))
 

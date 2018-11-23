@@ -4,15 +4,14 @@ import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
-import org.scalatest
-import org.scalatest.WordSpec
+import org.scalatest.{Matchers, WordSpec}
 import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
 
-class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with ArgumentMatchersSugar {
+class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 
   class Implicit[T]
 
-  class Foo {
+  class Org {
     def bar = "not mocked"
     def baz = "not mocked"
 
@@ -45,136 +44,136 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
   "StubbingOps" should {
     "stub a return value" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar shouldReturn "mocked!"
+      org.bar shouldReturn "mocked!"
 
-      aMock.bar shouldBe "mocked!"
+      org.bar shouldBe "mocked!"
     }
 
     "stub a value class return value" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.returnsValueCaseClass shouldReturn ValueCaseClass(100) andThen ValueCaseClass(200)
+      org.returnsValueCaseClass shouldReturn ValueCaseClass(100) andThen ValueCaseClass(200)
 
-      aMock.returnsValueCaseClass shouldBe ValueCaseClass(100)
-      aMock.returnsValueCaseClass shouldBe ValueCaseClass(200)
+      org.returnsValueCaseClass shouldBe ValueCaseClass(100)
+      org.returnsValueCaseClass shouldBe ValueCaseClass(200)
     }
 
     "stub multiple return values" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar shouldReturn "mocked!" andThen "mocked again!"
+      org.bar shouldReturn "mocked!" andThen "mocked again!"
 
-      aMock.bar shouldBe "mocked!"
-      aMock.bar shouldBe "mocked again!"
-      aMock.bar shouldBe "mocked again!"
+      org.bar shouldBe "mocked!"
+      org.bar shouldBe "mocked again!"
+      org.bar shouldBe "mocked again!"
     }
 
     "stub a real call" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar shouldCall realMethod
+      org.bar shouldCall realMethod
 
-      aMock.bar shouldBe "not mocked"
+      org.bar shouldBe "not mocked"
     }
 
     "stub an exception instance to be thrown" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar shouldThrow new IllegalArgumentException
+      org.bar shouldThrow new IllegalArgumentException
 
-      an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
+      an[IllegalArgumentException] shouldBe thrownBy(org.bar)
     }
 
     "chain exception and value" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar shouldThrow new IllegalArgumentException andThen "mocked!"
+      org.bar shouldThrow new IllegalArgumentException andThen "mocked!"
 
-      an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
-      aMock.bar shouldBe "mocked!"
+      an[IllegalArgumentException] shouldBe thrownBy(org.bar)
+      org.bar shouldBe "mocked!"
     }
 
     "chain value and exception" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar shouldReturn "mocked!" andThenThrow new IllegalArgumentException
+      org.bar shouldReturn "mocked!" andThenThrow new IllegalArgumentException
 
-      aMock.bar shouldBe "mocked!"
-      an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
+      org.bar shouldBe "mocked!"
+      an[IllegalArgumentException] shouldBe thrownBy(org.bar)
     }
 
     //useful if we want to delay the evaluation of whatever we are returning until the method is called
     "simplify stubbing an answer where we don't care about any param" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar shouldAnswer "mocked!"
+      org.bar shouldAnswer "mocked!"
 
-      aMock.bar shouldBe "mocked!"
+      org.bar shouldBe "mocked!"
     }
 
     "simplify answer API" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2)
-      aMock.doSomethingWithThisIntAndString(*, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
-      aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
+      org.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2)
+      org.doSomethingWithThisIntAndString(*, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
+      org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
                                                                               s: String,
                                                                               boolean: Boolean) => (i * 10 + s.toInt).toString + boolean)
 
-      aMock.doSomethingWithThisInt(4) shouldBe 42
-      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
-      aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
+      org.doSomethingWithThisInt(4) shouldBe 42
+      org.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
+      org.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"
     }
 
     "create a mock where I can mix matchers and normal parameters (answer)" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisIntAndString(*, "test") shouldAnswer "mocked!"
+      org.doSomethingWithThisIntAndString(*, "test") shouldAnswer "mocked!"
 
-      aMock.doSomethingWithThisIntAndString(3, "test") shouldBe "mocked!"
-      aMock.doSomethingWithThisIntAndString(5, "test") shouldBe "mocked!"
-      aMock.doSomethingWithThisIntAndString(5, "est") shouldBe ""
+      org.doSomethingWithThisIntAndString(3, "test") shouldBe "mocked!"
+      org.doSomethingWithThisIntAndString(5, "test") shouldBe "mocked!"
+      org.doSomethingWithThisIntAndString(5, "est") shouldBe ""
     }
 
     "simplify answer API (invocation usage)" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2)
+      org.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2)
 
-      aMock.doSomethingWithThisInt(4) shouldBe 42
+      org.doSomethingWithThisInt(4) shouldBe 42
     }
 
     "chain answers" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2) andThenAnswer ((i: Int) => i * 15 + 9)
+      org.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2) andThenAnswer ((i: Int) => i * 15 + 9)
 
-      aMock.doSomethingWithThisInt(4) shouldBe 42
-      aMock.doSomethingWithThisInt(4) shouldBe 69
+      org.doSomethingWithThisInt(4) shouldBe 42
+      org.doSomethingWithThisInt(4) shouldBe 69
     }
 
     "chain answers (invocation usage)" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2) andThenAnswer (
+      org.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2) andThenAnswer (
           (i: InvocationOnMock) => i.getArgument[Int](0) * 15 + 9)
 
-      aMock.doSomethingWithThisInt(4) shouldBe 42
-      aMock.doSomethingWithThisInt(4) shouldBe 69
+      org.doSomethingWithThisInt(4) shouldBe 42
+      org.doSomethingWithThisInt(4) shouldBe 69
     }
 
     "allow using less params than method on answer stubbing" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
+      org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
 
-      aMock.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42"
+      org.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42"
     }
 
     "stub a mock inline that has default args" in {
-      val aMock = mock[Foo]
+      val aMock = mock[Org]
 
       aMock.returnBar shouldReturn mock[Bar] andThen mock[Bar]
 
@@ -183,35 +182,35 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     }
 
     "stub a high order function" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.highOrderFunction(*) shouldReturn "mocked!"
+      org.highOrderFunction(*) shouldReturn "mocked!"
 
-      aMock.highOrderFunction(_.toString) shouldBe "mocked!"
+      org.highOrderFunction(_.toString) shouldBe "mocked!"
     }
 
     "stub a method that returns a function" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2).toString) andThenCallRealMethod ()
+      org.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2).toString) andThenCallRealMethod ()
 
-      aMock.iReturnAFunction(0)(42) shouldBe "42"
-      aMock.iReturnAFunction(0)(42) shouldBe "84"
-      aMock.iReturnAFunction(3)(3) shouldBe "9"
+      org.iReturnAFunction(0)(42) shouldBe "42"
+      org.iReturnAFunction(0)(42) shouldBe "84"
+      org.iReturnAFunction(3)(3) shouldBe "9"
     }
   }
 
   "DoSomethingOps" should {
     "stub a value class return value" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      ValueCaseClass(100) willBe returned by aMock.returnsValueCaseClass
+      ValueCaseClass(100) willBe returned by org.returnsValueCaseClass
 
-      aMock.returnsValueCaseClass shouldBe ValueCaseClass(100)
+      org.returnsValueCaseClass shouldBe ValueCaseClass(100)
     }
 
     "stub a spy that would fail if the real impl is called" in {
-      val aSpy = spy(new Foo)
+      val aSpy = spy(new Org)
 
       an[IllegalArgumentException] should be thrownBy {
         aSpy.iBlowUp(*, *) shouldReturn "mocked!"
@@ -228,7 +227,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     }
 
     "stub a spy with an answer" in {
-      val aSpy = spy(new Foo)
+      val aSpy = spy(new Org)
 
       ((i: Int) => i * 10 + 2) willBe answered by aSpy.doSomethingWithThisInt(*)
       ((i: Int, s: String) => (i * 10 + s.toInt).toString) willBe answered by aSpy.doSomethingWithThisIntAndString(*, *)
@@ -246,171 +245,171 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     }
 
     "stub a real call" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      theRealMethod willBe called by aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
+      theRealMethod willBe called by org.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
 
-      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true) shouldBe "not mocked"
-      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false) shouldBe ""
+      org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true) shouldBe "not mocked"
+      org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false) shouldBe ""
     }
 
     "stub a failure" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      new IllegalArgumentException willBe thrown by aMock.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
+      new IllegalArgumentException willBe thrown by org.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
 
-      aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false)
+      org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false)
 
       an[IllegalArgumentException] should be thrownBy {
-        aMock.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true)
+        org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true)
       }
 
-      """"some value" willBe thrown by aMock bar""" shouldNot compile
+      """"some value" willBe thrown by org bar""" shouldNot compile
     }
   }
 
   "VerificationOps" should {
 
     "check a mock was not used" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock wasNever called
-      aMock wasNever called
+      org wasNever called
+      org wasNever called
 
       a[NoInteractionsWanted] should be thrownBy {
-        aMock.baz
+        org.baz
 
-        aMock wasNever called
+        org wasNever called
       }
     }
 
     trait SetupNeverUsed {
-      val aMock = mock[Foo]
+      val org = mock[Org]
     }
 
     "check a mock was not used (with setup)" in new SetupNeverUsed {
-      aMock wasNever called
+      org wasNever called
 
       a[NoInteractionsWanted] should be thrownBy {
-        aMock.baz
+        org.baz
 
-        aMock wasNever called
+        org wasNever called
       }
     }
 
     "check a method was called" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar
+      org.bar
 
-      aMock.bar was called
+      org.bar was called
 
       a[WantedButNotInvoked] should be thrownBy {
-        aMock.baz was called
+        org.baz was called
       }
     }
 
     "check a method was the only one called" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar
+      org.bar
 
-      aMock.bar wasCalled onlyHere
+      org.bar wasCalled onlyHere
 
       a[NoInteractionsWanted] should be thrownBy {
-        aMock.baz
+        org.baz
 
-        aMock.baz wasCalled onlyHere
+        org.baz wasCalled onlyHere
       }
     }
 
     "check a method wasNever called" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisIntAndString(*, "test") wasNever called
+      org.doSomethingWithThisIntAndString(*, "test") wasNever called
 
       a[NeverWantedButInvoked] should be thrownBy {
-        aMock.doSomethingWithThisIntAndString(1, "test")
+        org.doSomethingWithThisIntAndString(1, "test")
 
-        aMock.doSomethingWithThisIntAndString(*, "test") wasNever called
+        org.doSomethingWithThisIntAndString(*, "test") wasNever called
       }
     }
 
     "check a method was called twice" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisIntAndString(1, "test")
+      org.doSomethingWithThisIntAndString(1, "test")
 
       a[TooLittleActualInvocations] should be thrownBy {
-        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
       }
 
-      aMock.doSomethingWithThisIntAndString(2, "test")
+      org.doSomethingWithThisIntAndString(2, "test")
 
-      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
 
-      aMock.doSomethingWithThisIntAndString(3, "test")
+      org.doSomethingWithThisIntAndString(3, "test")
 
       a[TooManyActualInvocations] should be thrownBy {
-        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled twice
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
       }
     }
 
     "check a method was called at least twice" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisIntAndString(1, "test")
+      org.doSomethingWithThisIntAndString(1, "test")
 
       a[TooLittleActualInvocations] should be thrownBy {
-        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
       }
 
-      aMock.doSomethingWithThisIntAndString(2, "test")
+      org.doSomethingWithThisIntAndString(2, "test")
 
-      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
     }
 
     "check a method was called at most twice" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisIntAndString(1, "test")
+      org.doSomethingWithThisIntAndString(1, "test")
 
-      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
 
-      aMock.doSomethingWithThisIntAndString(2, "test")
+      org.doSomethingWithThisIntAndString(2, "test")
 
-      aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
 
-      aMock.doSomethingWithThisIntAndString(3, "test")
+      org.doSomethingWithThisIntAndString(3, "test")
 
       a[MoreThanAllowedActualInvocations] should be thrownBy {
-        aMock.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
       }
     }
 
     "check a mock was not called apart from the verified methods" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.bar
+      org.bar
 
-      aMock.bar was called
+      org.bar was called
 
-      aMock wasNever calledAgain
+      org wasNever calledAgain
 
       a[NoInteractionsWanted] should be thrownBy {
-        aMock.bar
+        org.bar
 
-        aMock wasNever calledAgain
+        org wasNever calledAgain
       }
     }
 
     "work with a captor" in {
-      val aMock     = mock[Foo]
+      val org     = mock[Org]
       val argCaptor = ArgCaptor[Int]
 
-      aMock.doSomethingWithThisIntAndString(42, "test")
+      org.doSomethingWithThisIntAndString(42, "test")
 
-      aMock.doSomethingWithThisIntAndString(argCaptor, "test") was called
+      org.doSomethingWithThisIntAndString(argCaptor, "test") was called
 
       argCaptor hasCaptured 42
 
@@ -420,7 +419,7 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
     }
 
     "check invocation order" in {
-      val mock1 = mock[Foo]
+      val mock1 = mock[Org]
       val mock2 = mock[Bar]
 
       mock1.bar
@@ -442,92 +441,92 @@ class IdiomaticMockitoTest extends WordSpec with scalatest.Matchers with Idiomat
 
   "mix arguments and raw parameters" should {
     "create a mock where I can mix matchers, normal and implicit parameters" in {
-      val aMock                                 = mock[Foo]
+      val org                                 = mock[Org]
       implicit val implicitValue: Implicit[Int] = mock[Implicit[Int]]
 
-      aMock.iHaveTypeParamsAndImplicits[Int, String](*, "test") shouldReturn "mocked!"
+      org.iHaveTypeParamsAndImplicits[Int, String](*, "test") shouldReturn "mocked!"
 
-      aMock.iHaveTypeParamsAndImplicits(3, "test") shouldBe "mocked!"
-      aMock.iHaveTypeParamsAndImplicits(5, "test") shouldBe "mocked!"
-      aMock.iHaveTypeParamsAndImplicits(5, "est") shouldBe ""
+      org.iHaveTypeParamsAndImplicits(3, "test") shouldBe "mocked!"
+      org.iHaveTypeParamsAndImplicits(5, "test") shouldBe "mocked!"
+      org.iHaveTypeParamsAndImplicits(5, "est") shouldBe ""
 
-      aMock.iHaveTypeParamsAndImplicits[Int, String](*, "test") wasCalled twice
+      org.iHaveTypeParamsAndImplicits[Int, String](*, "test") wasCalled twice
     }
 
     "handle the eqTo properly" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.doSomethingWithThisIntAndString(eqTo(1), "meh") shouldReturn "mocked!"
-      aMock.doSomethingWithThisIntAndString(1, "meh") shouldBe "mocked!"
-      aMock.doSomethingWithThisIntAndString(1, eqTo("meh")) was called
+      org.doSomethingWithThisIntAndString(eqTo(1), "meh") shouldReturn "mocked!"
+      org.doSomethingWithThisIntAndString(1, "meh") shouldBe "mocked!"
+      org.doSomethingWithThisIntAndString(1, eqTo("meh")) was called
     }
   }
 
   "value class matchers" should {
     "eqToVal works with new syntax" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.valueClass(1, eqToVal(new ValueClass("meh"))) shouldReturn "mocked!"
-      aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
-      aMock.valueClass(1, eqToVal(new ValueClass("meh"))) was called
+      org.valueClass(1, eqToVal(new ValueClass("meh"))) shouldReturn "mocked!"
+      org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
+      org.valueClass(1, eqToVal(new ValueClass("meh"))) was called
 
-      aMock.valueCaseClass(2, eqToVal(ValueCaseClass(100))) shouldReturn "mocked!"
-      aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
-      aMock.valueCaseClass(2, eqToVal(ValueCaseClass(100))) was called
+      org.valueCaseClass(2, eqToVal(ValueCaseClass(100))) shouldReturn "mocked!"
+      org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
+      org.valueCaseClass(2, eqToVal(ValueCaseClass(100))) was called
 
       val caseClassValue = ValueCaseClass(100)
-      aMock.valueCaseClass(3, eqToVal(caseClassValue)) shouldReturn "mocked!"
-      aMock.valueCaseClass(3, ValueCaseClass(100)) shouldBe "mocked!"
-      aMock.valueCaseClass(3, eqToVal(caseClassValue)) was called
+      org.valueCaseClass(3, eqToVal(caseClassValue)) shouldReturn "mocked!"
+      org.valueCaseClass(3, ValueCaseClass(100)) shouldBe "mocked!"
+      org.valueCaseClass(3, eqToVal(caseClassValue)) was called
 
-      aMock.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
-      aMock.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
-      aMock.valueCaseClass(*, ValueCaseClass(200)) was called
+      org.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
+      org.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
+      org.valueCaseClass(*, ValueCaseClass(200)) was called
     }
 
     "eqTo macro works with new syntax" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.valueClass(1, eqTo(new ValueClass("meh"))) shouldReturn "mocked!"
-      aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
-      aMock.valueClass(1, eqTo(new ValueClass("meh"))) was called
+      org.valueClass(1, eqTo(new ValueClass("meh"))) shouldReturn "mocked!"
+      org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
+      org.valueClass(1, eqTo(new ValueClass("meh"))) was called
 
-      aMock.valueCaseClass(2, eqTo(ValueCaseClass(100))) shouldReturn "mocked!"
-      aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
-      aMock.valueCaseClass(2, eqTo(ValueCaseClass(100))) was called
+      org.valueCaseClass(2, eqTo(ValueCaseClass(100))) shouldReturn "mocked!"
+      org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
+      org.valueCaseClass(2, eqTo(ValueCaseClass(100))) was called
 
       val caseClassValue = ValueCaseClass(100)
-      aMock.valueCaseClass(3, eqTo(caseClassValue)) shouldReturn "mocked!"
-      aMock.valueCaseClass(3, caseClassValue) shouldBe "mocked!"
-      aMock.valueCaseClass(3, eqTo(caseClassValue)) was called
+      org.valueCaseClass(3, eqTo(caseClassValue)) shouldReturn "mocked!"
+      org.valueCaseClass(3, caseClassValue) shouldBe "mocked!"
+      org.valueCaseClass(3, eqTo(caseClassValue)) was called
 
-      aMock.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
-      aMock.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
-      aMock.valueCaseClass(*, ValueCaseClass(200)) was called
+      org.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
+      org.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
+      org.valueCaseClass(*, ValueCaseClass(200)) was called
     }
 
     "anyVal works with new syntax" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.valueClass(1, anyVal[ValueClass]) shouldReturn "mocked!"
-      aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
-      aMock.valueClass(1, anyVal[ValueClass]) was called
+      org.valueClass(1, anyVal[ValueClass]) shouldReturn "mocked!"
+      org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
+      org.valueClass(1, anyVal[ValueClass]) was called
 
-      aMock.valueCaseClass(2, anyVal[ValueCaseClass]) shouldReturn "mocked!"
-      aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
-      aMock.valueCaseClass(2, anyVal[ValueCaseClass]) was called
+      org.valueCaseClass(2, anyVal[ValueCaseClass]) shouldReturn "mocked!"
+      org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
+      org.valueCaseClass(2, anyVal[ValueCaseClass]) was called
     }
 
     "any works with new syntax" in {
-      val aMock = mock[Foo]
+      val org = mock[Org]
 
-      aMock.valueClass(1, any[ValueClass]) shouldReturn "mocked!"
-      aMock.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
-      aMock.valueClass(1, any[ValueClass]) was called
+      org.valueClass(1, any[ValueClass]) shouldReturn "mocked!"
+      org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
+      org.valueClass(1, any[ValueClass]) was called
 
-      aMock.valueCaseClass(2, any[ValueCaseClass]) shouldReturn "mocked!"
-      aMock.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
-      aMock.valueCaseClass(2, any[ValueCaseClass]) was called
+      org.valueCaseClass(2, any[ValueCaseClass]) shouldReturn "mocked!"
+      org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
+      org.valueCaseClass(2, any[ValueCaseClass]) was called
     }
   }
 }

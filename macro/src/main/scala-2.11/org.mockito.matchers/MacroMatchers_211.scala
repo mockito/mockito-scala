@@ -24,17 +24,17 @@ object MacroMatchers_211 {
     val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.eqTo[$tpe]($clazz($arg))($_)" if isValueClass(tpe) =>
-          q"$clazz(org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
+          q"$clazz(_root_.org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
 
         case q"$_.eqTo[$tpe](new $clazz($arg))($_)" if isValueClass(tpe) =>
-          q"new $clazz(org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
+          q"new $clazz(_root_.org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
 
         case q"$_.eqTo[$tpe]($arg)($_)" if isValueClass(tpe) && tpe.symbol.asClass.isCaseClass =>
           val companion = tpe.symbol.companion
-          q"$companion.apply( org.mockito.matchers.MacroMatchers_211.eqTo( $companion.unapply($arg).get ))"
+          q"$companion.apply(_root_.org.mockito.matchers.MacroMatchers_211.eqTo( $companion.unapply($arg).get ))"
 
         case q"$_.eqTo[$tpe]($arg)($eq)" =>
-          q"org.mockito.matchers.MacroMatchers_211.eqTo[$tpe]($arg)($eq)"
+          q"_root_.org.mockito.matchers.MacroMatchers_211.eqTo[$tpe]($arg)($eq)"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -48,11 +48,11 @@ object MacroMatchers_211 {
 
     val r = c.Expr[T] {
       c.macroApplication match {
-        case q"$_.eqToVal[$_]($clazz($arg))"     => q"$clazz(org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
-        case q"$_.eqToVal[$_](new $clazz($arg))" => q"new $clazz(org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
+        case q"$_.eqToVal[$_]($clazz($arg))"     => q"$clazz(_root_.org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
+        case q"$_.eqToVal[$_](new $clazz($arg))" => q"new $clazz(_root_.org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
         case q"$_.eqToVal[$tpe]($arg)" =>
           val companion = q"$tpe".symbol.companion
-          q"$companion.apply(org.mockito.matchers.MacroMatchers_211.eqTo( $companion.unapply($arg).get ))"
+          q"$companion.apply(_root_.org.mockito.matchers.MacroMatchers_211.eqTo( $companion.unapply($arg).get ))"
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }

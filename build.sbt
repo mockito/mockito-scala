@@ -31,7 +31,7 @@ lazy val commonSettings =
   )
 
 lazy val commonLibraries = Seq(
-  "org.mockito"   % "mockito-core"      % "2.21.0",
+  "org.mockito"   % "mockito-core"      % "2.23.4",
   "org.scalactic" %% "scalactic"        % "3.0.5",
   "ru.vyarus"     % "generics-resolver" % "3.0.0",
   "org.scalatest" %% "scalatest"        % "3.0.5" % "provided",

@@ -94,6 +94,7 @@ This trait exposes all the existent `org.mockito.ArgumentMatchers` but again it 
 *   `isNull` and `isNotNull` are deprecated as using nulls in Scala is clear code smell
 *   Adds support for value classes via `anyVal[T]` and `eqToVal[T]()` **NOTE: both had been deprecated (use `any[T]` or `eqTo[T]` instead)**
 *   Adds `function0` to easily match for a function that returns a given value
+*   Adds `argMatching` that takes a partial function to match, i.e. `argMatching({ case Baz(_, "pepe") => })`
 
 Again, the companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired
 

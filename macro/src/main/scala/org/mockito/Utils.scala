@@ -52,6 +52,7 @@ object Utils {
         case q"$_.floatThat[$_]($_)"   => true
         case q"$_.shortThat[$_]($_)"   => true
         case q"$_.longThat[$_]($_)"    => true
+        case q"$_.argMatching[$_]($_)" => true
 
         case q"$_.n.>[$_]($_)($_)"  => true
         case q"$_.n.>=[$_]($_)($_)" => true

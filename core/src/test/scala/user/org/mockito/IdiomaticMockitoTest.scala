@@ -3,9 +3,9 @@ package user.org.mockito
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
-import org.scalatest.{Matchers, WordSpec}
-import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.scalatest.{ Matchers, WordSpec }
+import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
 
 class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 
@@ -36,11 +36,15 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
     def valueCaseClass(n: Int, v: ValueCaseClass): String = ???
 
     def returnsValueCaseClass: ValueCaseClass = ???
+
+    def baz(i: Int, b: Baz): String = ???
   }
 
   class Bar {
     def iHaveDefaultArgs(v: String = "default"): String = v
   }
+
+  case class Baz(param1: Int, param2: String)
 
   "StubbingOps" should {
     "stub a return value" in {
@@ -119,8 +123,8 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       org.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2)
       org.doSomethingWithThisIntAndString(*, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
       org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
-                                                                              s: String,
-                                                                              boolean: Boolean) => (i * 10 + s.toInt).toString + boolean)
+                                                                            s: String,
+                                                                            boolean: Boolean) => (i * 10 + s.toInt).toString + boolean)
 
       org.doSomethingWithThisInt(4) shouldBe 42
       org.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
@@ -404,7 +408,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
     }
 
     "work with a captor" in {
-      val org     = mock[Org]
+      val org       = mock[Org]
       val argCaptor = ArgCaptor[Int]
 
       org.doSomethingWithThisIntAndString(42, "test")
@@ -441,7 +445,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
   "mix arguments and raw parameters" should {
     "create a mock where I can mix matchers, normal and implicit parameters" in {
-      val org                                 = mock[Org]
+      val org                                   = mock[Org]
       implicit val implicitValue: Implicit[Int] = mock[Implicit[Int]]
 
       org.iHaveTypeParamsAndImplicits[Int, String](*, "test") shouldReturn "mocked!"
@@ -503,6 +507,18 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       org.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
       org.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
       org.valueCaseClass(*, ValueCaseClass(200)) was called
+    }
+
+    "argMatching works with new syntax" in {
+      val org = mock[Org]
+
+      org.baz(2, argMatching({ case Baz(n, _) if n > 90 => })) shouldReturn "mocked!"
+      org.baz(2, Baz(100, "pepe")) shouldBe "mocked!"
+      org.baz(2, argMatching({ case Baz(_, "pepe") => })) was called
+
+      an[WantedButNotInvoked] should be thrownBy {
+        org.baz(2, argMatching({ case Baz(99, "pepe") => })) was called
+      }
     }
 
     "anyVal works with new syntax" in {

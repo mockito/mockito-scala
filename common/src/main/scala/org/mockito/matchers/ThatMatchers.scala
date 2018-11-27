@@ -75,6 +75,11 @@ private[mockito] trait ThatMatchers {
    */
   def longThat(matcher: ArgumentMatcher[Long]): Long = argThat(matcher)
 
+  def argMatching[T](pf: PartialFunction[Any, Unit]) =
+    argThat[T](new ArgumentMatcher[T] {
+      override def matches(argument: T): Boolean = pf.isDefinedAt(argument)
+      override def toString: String = "argMatching(...)"
+    })
 }
 
 private[mockito] object ThatMatchers extends ThatMatchers

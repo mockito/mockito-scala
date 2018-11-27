@@ -1,10 +1,10 @@
 package user.org.mockito.matchers
 
-import org.mockito.{ArgumentMatcher, ArgumentMatchersSugar, MockitoSugar}
-import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
+import org.mockito.exceptions.verification.WantedButNotInvoked
+import org.mockito.{ ArgumentMatcher, ArgumentMatchersSugar, MockitoSugar }
+import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
 
-class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
-
+object ThatMatchersTest {
   class EqTo[T](value: T) extends ArgumentMatcher[T] {
     override def matches(argument: T): Boolean = argument == value
   }
@@ -33,6 +33,34 @@ class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers
     def barLong(v: Long): Long = v
 
     def baz(v: Baz): Baz = v
+  }
+}
+
+class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
+
+  import ThatMatchersTest._
+
+  "argMatching[T]" should "work in various scenarios" in {
+    val aMock = mock[Foo]
+
+    aMock.bar("meh")
+    verify(aMock).bar(argMatching({ case "meh" => }))
+
+    aMock.barTyped("meh")
+    verify(aMock).barTyped(argMatching({ case "meh" => }))
+
+    aMock.bar(List("meh"))
+    verify(aMock).bar(argMatching({ case "meh" :: Nil => }))
+
+    aMock.baz(Baz("Hello", "World"))
+    verify(aMock).baz(argMatching({ case Baz("Hello", "World") => }))
+    verify(aMock).baz(argMatching({ case Baz(_, "World")       => }))
+    verify(aMock).baz(argMatching({ case Baz("Hello", _)       => }))
+    verify(aMock).baz(argMatching({ case Baz(_, _)             => }))
+
+    an[WantedButNotInvoked] should be thrownBy {
+      verify(aMock).baz(argMatching({ case Baz("", _) => }))
+    }
   }
 
   "argThat[T]" should "work with AnyRef" in {

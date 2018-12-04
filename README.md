@@ -25,8 +25,9 @@ The library has independent developers, release cycle and versioning from core m
 *   Latest version - see [release notes](/docs/release-notes.md)
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
+### Please ensure `mockito-scala` is your only mockito dependency
 
-## Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
+### Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
 
 ## Migration Notes for version 1.0.0
 * `DefaultAnswer` was moved from `org.mockito.DefaultAnswer` to `org.mockito.stubbing.DefaultAnswer`

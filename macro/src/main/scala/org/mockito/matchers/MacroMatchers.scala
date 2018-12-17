@@ -19,9 +19,9 @@ object AnyMatcher {
 object MacroMatchers {
   def anyValMatcher[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[AnyMatcher[T]] = {
     import c.universe._
-    val tpe = weakTypeOf[T]
-
-    val isValueClass = tpe.typeSymbol.asClass.isDerivedValueClass
+    val tpe          = weakTypeOf[T]
+    val typeSymbol   = tpe.typeSymbol
+    val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
 
     val r = if (isValueClass) c.Expr[AnyMatcher[T]] {
       q"""

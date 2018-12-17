@@ -19,7 +19,7 @@ object MacroMatchers_211 {
   def eqToMatcher[T: c.WeakTypeTag](c: blackbox.Context)(value: c.Expr[T])(eq: c.Tree): c.Expr[T] = {
     import c.universe._
 
-    def isValueClass(tpe: Tree) = tpe.symbol.asClass.isDerivedValueClass
+    def isValueClass(tpe: Tree) = tpe.symbol.isClass && tpe.symbol.asClass.isDerivedValueClass
 
     val r = c.Expr[T] {
       c.macroApplication match {

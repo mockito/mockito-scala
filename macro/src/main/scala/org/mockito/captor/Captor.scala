@@ -40,9 +40,9 @@ object Captor {
 
   def materializeValueClassCaptorMacro[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[Captor[T]] = {
     import c.universe._
-    val tpe = weakTypeOf[T]
-
-    val isValueClass = tpe.typeSymbol.asClass.isDerivedValueClass
+    val tpe          = weakTypeOf[T]
+    val typeSymbol   = tpe.typeSymbol
+    val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
 
     val r = if (isValueClass) c.Expr[Captor[T]] {
       val param = tpe.decls

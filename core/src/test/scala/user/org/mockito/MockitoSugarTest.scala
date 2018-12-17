@@ -2,13 +2,13 @@ package user.org.mockito
 
 import org.mockito.captor.ArgCaptor
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer }
+import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ScalaFirstStubbing, ScalaOngoingStubbing }
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 import user.org.mockito.matchers.ValueCaseClass
 
 //noinspection RedundantDefaultArgument
-class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
+class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with EitherValues with OptionValues {
 
   class Foo {
     def bar = "not mocked"
@@ -36,6 +36,10 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
 
   trait Baz {
     def traitMethod(arg: Int): ValueCaseClass = ???
+  }
+
+  class HigherKinded[F[_]] {
+    def method: F[Either[String, String]] = ???
   }
 
   class SomeClass extends Foo with Baz
@@ -80,7 +84,9 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
     "create a mock with nice answer API (multiple params)" in {
       val aMock = mock[Foo]
 
-      when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClass(i * 10 + s.toInt)) andThenAnswer ((i: Int, _: String) => ValueCaseClass(i))
+      when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClass(i * 10 + s.toInt)) andThenAnswer (
+          (i: Int,
+           _: String) => ValueCaseClass(i))
 
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(42)
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(4)
@@ -108,6 +114,17 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       val aMock = mock[Foo](CallsRealMethods)
 
       aMock.bar shouldBe "not mocked"
+    }
+
+    "work with higher kinded types and auxiliary methods" in {
+      def whenGetById[F[_]](algebra: HigherKinded[F]): ScalaFirstStubbing[F[Either[String, String]]] =
+        when(algebra.method)
+
+      val aMock = mock[HigherKinded[Option]]
+
+      whenGetById(aMock) thenReturn Some(Right("Mocked!"))
+
+      aMock.method.value.right.value shouldBe "Mocked!"
     }
 
     "create a mock with default answer from implicit scope" in {

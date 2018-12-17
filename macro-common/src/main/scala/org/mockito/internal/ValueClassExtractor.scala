@@ -31,9 +31,9 @@ object ValueClassExtractor {
 
   def materialise[VC: c.WeakTypeTag](c: blackbox.Context): c.Expr[ValueClassExtractor[VC]] = {
     import c.universe._
-    val tpe = weakTypeOf[VC]
-
-    val isValueClass = tpe.typeSymbol.asClass.isDerivedValueClass
+    val tpe          = weakTypeOf[VC]
+    val typeSymbol   = tpe.typeSymbol
+    val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
 
     val r = if (isValueClass) {
 
@@ -41,7 +41,7 @@ object ValueClassExtractor {
         c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
       else if (ScalaVersion.startsWith("2.11"))
         c.Expr[ValueClassExtractor[VC]] {
-          val companion = tpe.typeSymbol.companion
+          val companion = typeSymbol.companion
           q"""
             new _root_.org.mockito.internal.ValueClassExtractor[$tpe] {
               override def extract(vc: $tpe): Any = $companion.unapply(vc).get

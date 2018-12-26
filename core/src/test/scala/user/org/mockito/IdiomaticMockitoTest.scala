@@ -346,16 +346,19 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
       a[TooLittleActualInvocations] should be thrownBy {
         org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled 2.times
       }
 
       org.doSomethingWithThisIntAndString(2, "test")
 
       org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled 2.times
 
       org.doSomethingWithThisIntAndString(3, "test")
 
       a[TooManyActualInvocations] should be thrownBy {
         org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled 2.times
       }
     }
 
@@ -366,11 +369,15 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
       a[TooLittleActualInvocations] should be thrownBy {
         org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeast(twice)
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeast(2.times)
       }
 
       org.doSomethingWithThisIntAndString(2, "test")
 
       org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeast(twice)
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeast(2.times)
     }
 
     "check a method was called at most twice" in {
@@ -379,15 +386,21 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       org.doSomethingWithThisIntAndString(1, "test")
 
       org.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atMost(twice)
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atMost(2.times)
 
       org.doSomethingWithThisIntAndString(2, "test")
 
       org.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atMost(twice)
+      org.doSomethingWithThisIntAndString(*, "test") wasCalled atMost(2.times)
 
       org.doSomethingWithThisIntAndString(3, "test")
 
       a[MoreThanAllowedActualInvocations] should be thrownBy {
         org.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled atMost(twice)
+        org.doSomethingWithThisIntAndString(*, "test") wasCalled atMost(2.times)
       }
     }
 

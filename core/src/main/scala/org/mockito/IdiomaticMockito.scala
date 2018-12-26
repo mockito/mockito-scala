@@ -133,6 +133,13 @@ trait IdiomaticMockito extends MockCreator {
   object InOrder {
     def apply(mocks: AnyRef*)(verifications: VerifyInOrder => Unit): Unit = verifications(VerifyInOrder(mocks))
   }
+
+  def atLeast(t: Times): AtLeast = AtLeast(t.times)
+  def atMost(t: Times): AtMost   = AtMost(t.times)
+
+  implicit class IntOps(i: Int) {
+    def times: Times = Times(i)
+  }
 }
 
 /**

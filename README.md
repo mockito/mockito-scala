@@ -261,10 +261,24 @@ doThrow(new IllegalArgumentException).when(aMock).bar           <=> new IllegalA
 verifyZeroInteractions(aMock)                                   <=> aMock wasNever called
 verify(aMock).bar                                               <=> aMock.bar was called
 verify(aMock).bar(any)                                          <=> aMock.bar(*) was called
+
 verify(aMock, only).bar                                         <=> aMock.bar wasCalled onlyHere
 verify(aMock, never).bar                                        <=> aMock.bar wasNever called
+
 verify(aMock, times(2)).bar                                     <=> aMock.bar wasCalled twice
+verify(aMock, times(2)).bar                                     <=> aMock.bar wasCalled 2.times
+
 verify(aMock, times(6)).bar                                     <=> aMock.bar wasCalled sixTimes
+verify(aMock, times(6)).bar                                     <=> aMock.bar wasCalled 6.times
+
+verify(aMock, atLeast(6)).bar                                   <=> aMock.bar wasCalled atLeastSixTimes
+verify(aMock, atLeast(6)).bar                                   <=> aMock.bar wasCalled atLeast(sixTimes)
+verify(aMock, atLeast(6)).bar                                   <=> aMock.bar wasCalled atLeast(6.times)
+
+verify(aMock, atMost(6)).bar                                    <=> aMock.bar wasCalled atMostSixTimes
+verify(aMock, atMost(6)).bar                                    <=> aMock.bar wasCalled atMost(sixTimes)
+verify(aMock, atMost(6)).bar                                    <=> aMock.bar wasCalled atMost(6.times)
+
 verifyNoMoreInteractions(aMock)                                 <=> aMock wasNever calledAgain
 
 val order = inOrder(mock1, mock2)                               <=> InOrder(mock1, mock2) { implicit order =>

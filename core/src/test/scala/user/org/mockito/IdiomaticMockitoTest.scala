@@ -454,6 +454,26 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         mock2.iHaveDefaultArgs() was called
       }
     }
+
+    "work with varargs" in {
+      val foo = mock[FooWithVarArg]
+
+      foo.bar("cow", "blue")
+      foo.bar("cow", "blue") was called
+
+      foo.bar("cow")
+      foo.bar("cow") was called
+    }
+
+    "work with varargs (value class)" in {
+      val foo = mock[ValueClassWithVarArg]
+
+      foo.bar(Bread("Baguette"), Bread("Arepa"))
+      foo.bar(Bread("Baguette"), Bread("Arepa")) was called
+
+      foo.bar(Bread("Baguette"))
+      foo.bar(Bread("Baguette")) was called
+    }
   }
 
   "mix arguments and raw parameters" should {
@@ -476,6 +496,59 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       org.doSomethingWithThisIntAndString(eqTo(1), "meh") shouldReturn "mocked!"
       org.doSomethingWithThisIntAndString(1, "meh") shouldBe "mocked!"
       org.doSomethingWithThisIntAndString(1, eqTo("meh")) was called
+    }
+
+    "work with multiple param list" in {
+      val foo = mock[FooWithSecondParameterList]
+      val cheese = Cheese("Gouda")
+
+      foo.bar("cow")(cheese)
+
+      foo.bar("cow")(cheese) was called
+      foo.bar("cow")(*) was called
+    }
+
+    "work with varargs and multiple param lists" in {
+      val foo = mock[FooWithVarArgAndSecondParameterList]
+      val cheese = Cheese("Gouda")
+
+      foo.bar("cow")(cheese)
+      foo.bar("cow")(cheese) was called
+      foo.bar("cow")(*) was called
+
+      foo.bar(endsWith("w"))(*) was called
+      foo.bar(startsWith("c"))(*) was called
+      foo.bar(contains("ow"))(*) was called
+      foo.bar(argMatching({ case "cow" => }))(*) was called
+      foo.bar(argThat((v: String) => v == "cow", "some desc"))(*) was called
+
+      foo.bar("cow", "blue")(cheese)
+      foo.bar("cow", "blue")(cheese) was called
+      foo.bar(eqTo("cow", "blue"))(*) was called
+      foo.bar(*)(*) wasCalled twice
+    }
+
+    "work with multiple param list (value class)" in {
+      val foo = mock[ValueClassWithSecondParameterList]
+      val cheese = Cheese("Gouda")
+
+      foo.bar(Bread("Baguette"))(cheese)
+
+      foo.bar(Bread("Baguette"))(cheese) was called
+      foo.bar(Bread("Baguette"))(*) was called
+    }
+
+    "work with varargs and multiple param lists (value class)" in {
+      val foo = mock[ValueClassWithVarArgAndSecondParameterList]
+      val cheese = Cheese("Gouda")
+
+      foo.bar(Bread("Baguette"))(cheese)
+      foo.bar(Bread("Baguette"))(cheese) was called
+      foo.bar(Bread("Baguette"))(*) was called
+
+      foo.bar(Bread("Baguette"), Bread("Arepa"))(cheese)
+      foo.bar(Bread("Baguette"), Bread("Arepa"))(cheese) was called
+      foo.bar(eqTo(Bread("Baguette"), Bread("Arepa")))(*) was called
     }
   }
 

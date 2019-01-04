@@ -9,7 +9,17 @@ private[mockito] trait ThatMatchers {
    * on a single place
    *
    */
-  def argThat[T](matcher: ArgumentMatcher[T]): T = JavaMatchers.argThat(matcher)
+  def argThat[T](matcher: ArgumentMatcher[T]): T = argThat(matcher.matches, matcher.toString)
+
+  /*
+   * Overloaded version to avoid having to instantiate a matcher without using SAM to keep it compatible with 2.11,
+   * It also adds support for varargs out of the box
+   */
+  def argThat[T](f: T => Boolean, desc: => String = "argThat(<condition>)"): T =
+    JavaMatchers.argThat(new VarargAwareArgumentMatcher[T] {
+      override def doesMatch(argument: T): Boolean = f(argument)
+      override def toString: String                = desc
+    })
 
   /**
    * Delegates the call to <code>argThat</code> but using the Scala "primitives", this
@@ -75,11 +85,14 @@ private[mockito] trait ThatMatchers {
    */
   def longThat(matcher: ArgumentMatcher[Long]): Long = argThat(matcher)
 
-  def argMatching[T](pf: PartialFunction[Any, Unit]) =
-    argThat[T](new ArgumentMatcher[T] {
-      override def matches(argument: T): Boolean = pf.isDefinedAt(argument)
-      override def toString: String = "argMatching(...)"
-    })
+  /**
+    * Creates a matcher that delegates on a partial function to enable syntax like
+    *
+    *       foo.bar(argMatching({ case Baz(n, _) if n > 90 => })) shouldReturn "mocked!"
+    *       foo.bar(argMatching({ case Baz(_, "pepe") => })) was called
+    *
+    */
+  def argMatching[T](pf: PartialFunction[Any, Unit]) = argThat[T](pf.isDefinedAt(_), "argMatching(...)")
 }
 
 private[mockito] object ThatMatchers extends ThatMatchers

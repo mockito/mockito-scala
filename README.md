@@ -412,6 +412,19 @@ aMock.method(n < 5.1) was called
 aMock.method(n <= 5) was called
 ```  
 
+## Varargs
+
+Most matchers that makes sense to, work with varargs out of the box, the only thing to notice is that if you are passing more than one value 
+and want to use `eqTo` then you should pass all of them to the same instance of `eqTo` e.g.
+
+```scala
+trait FooWithVarArgAndSecondParameterList {
+  def bar(bells: String*)(cheese: String): String
+}
+
+foo.bar(eqTo("cow", "blue"))(*) was called //RIGHT
+foo.bar(eqTo("cow"), eqTo("blue"))(*) was called //WRONG - it will complain it was expecting 2 matchers but got 3
+```
 
 ## Scalactic integration
 

@@ -464,6 +464,16 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       foo.bar("cow")
       foo.bar("cow") was called
     }
+
+    "work with varargs (value class)" in {
+      val foo = mock[ValueClassWithVarArg]
+
+      foo.bar(Bread("Baguette"), Bread("Arepa"))
+      foo.bar(Bread("Baguette"), Bread("Arepa")) was called
+
+      foo.bar(Bread("Baguette"))
+      foo.bar(Bread("Baguette")) was called
+    }
   }
 
   "mix arguments and raw parameters" should {
@@ -509,6 +519,29 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       foo.bar("cow", "blue")(cheese)
       foo.bar("cow", "blue")(cheese) was called
       foo.bar(eqTo("cow", "blue"))(*) was called
+    }
+
+    "work with multiple param list (value class)" in {
+      val foo = mock[ValueClassWithSecondParameterList]
+      val cheese = Cheese("Gouda")
+
+      foo.bar(Bread("Baguette"))(cheese)
+
+      foo.bar(Bread("Baguette"))(cheese) was called
+      foo.bar(Bread("Baguette"))(*) was called
+    }
+
+    "work with varargs and multiple param lists (value class)" in {
+      val foo = mock[ValueClassWithVarArgAndSecondParameterList]
+      val cheese = Cheese("Gouda")
+
+      foo.bar(Bread("Baguette"))(cheese)
+      foo.bar(Bread("Baguette"))(cheese) was called
+      foo.bar(Bread("Baguette"))(*) was called
+
+      foo.bar(Bread("Baguette"), Bread("Arepa"))(cheese)
+      foo.bar(Bread("Baguette"), Bread("Arepa"))(cheese) was called
+      foo.bar(eqTo(Bread("Baguette"), Bread("Arepa")))(*) was called
     }
   }
 

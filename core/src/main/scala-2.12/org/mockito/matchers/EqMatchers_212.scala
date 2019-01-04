@@ -17,7 +17,7 @@ trait EqMatchers_212 {
     ThatMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(v: T): Boolean = v match {
         case a: mutable.WrappedArray[_] if rawValues.length == a.length =>
-          (rawValues.map($vce.extract) zip a) forall {
+          (rawValues zip a) forall {
             case (expected, got) => $eq.areEqual(expected.asInstanceOf[T], got)
           }
         case other =>

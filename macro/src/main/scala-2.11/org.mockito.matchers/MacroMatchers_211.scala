@@ -2,24 +2,33 @@ package org.mockito.matchers
 
 import org.scalactic.Equality
 import org.mockito.ArgumentMatcher
+import org.mockito.internal.ValueClassExtractor
 
+import scala.collection.mutable
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
-import scala.collection.mutable
-
 object MacroMatchers_211 {
 
-  def eqTo[T](value: T, others: T*)(implicit $eq: Equality[T]): T = {
+  def eqTo[T](value: T)(implicit $eq: Equality[T]): T = {
+    ThatMatchers.argThat(new ArgumentMatcher[T] {
+      override def matches(v: T): Boolean = $eq.areEqual(value, v)
+      override def toString: String       = s"eqTo($value)"
+    })
+    value
+  }
+
+  //TODO try to remove this duplicated method
+  def eqToWithExtractor[T](value: T, others: T*)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T = {
     val rawValues: Seq[T] = Seq(value) ++ others
     ThatMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(v: T): Boolean = v match {
         case a: mutable.WrappedArray[_] if rawValues.length == a.length =>
           (rawValues zip a) forall {
-            case (expected, got) => $eq.areEqual(expected, got)
+            case (expected, got) => $eq.areEqual(expected.asInstanceOf[T], got)
           }
         case other =>
-          $eq.areEqual(value, other)
+          $eq.areEqual($vce.extract(value).asInstanceOf[T], other)
       }
       override def toString: String = s"eqTo(${rawValues.mkString(", ")})"
     })
@@ -33,18 +42,11 @@ object MacroMatchers_211 {
 
     val r = c.Expr[T] {
       c.macroApplication match {
-        case q"$_.eqTo[$tpe]($clazz($arg))($_)" if isValueClass(tpe) =>
-          q"$clazz(_root_.org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
-
         case q"$_.eqTo[$tpe](new $clazz($arg))($_)" if isValueClass(tpe) =>
           q"new $clazz(_root_.org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
 
-        case q"$_.eqTo[$tpe]($arg)($_)" if isValueClass(tpe) && tpe.symbol.asClass.isCaseClass =>
-          val companion = tpe.symbol.companion
-          q"$companion.apply(_root_.org.mockito.matchers.MacroMatchers_211.eqTo( $companion.unapply($arg).get ))"
-
-        case q"$_.eqTo[$tpe](..$arg)($eq)" =>
-          q"_root_.org.mockito.matchers.MacroMatchers_211.eqTo[$tpe](..$arg)($eq)"
+        case q"$_.eqTo[$tpe](..$arg)($_)" =>
+          q"_root_.org.mockito.matchers.MacroMatchers_211.eqToWithExtractor[$tpe](..$arg)"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

@@ -6,17 +6,27 @@ import org.mockito.ArgumentMatcher
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
+import scala.collection.mutable
+
 object MacroMatchers_211 {
 
-  def eqTo[T](value: T)(implicit $eq: Equality[T]): T = {
+  def eqTo[T](value: T, others: T*)(implicit $eq: Equality[T]): T = {
+    val rawValues: Seq[T] = Seq(value) ++ others
     ThatMatchers.argThat(new ArgumentMatcher[T] {
-      override def matches(v: T): Boolean = $eq.areEqual(value, v)
-      override def toString: String       = s"eqTo($value)"
+      override def matches(v: T): Boolean = v match {
+        case a: mutable.WrappedArray[_] if rawValues.length == a.length =>
+          (rawValues zip a) forall {
+            case (expected, got) => $eq.areEqual(expected, got)
+          }
+        case other =>
+          $eq.areEqual(value, other)
+      }
+      override def toString: String = s"eqTo(${rawValues.mkString(", ")})"
     })
     value
   }
 
-  def eqToMatcher[T: c.WeakTypeTag](c: blackbox.Context)(value: c.Expr[T])(eq: c.Tree): c.Expr[T] = {
+  def eqToMatcher[T: c.WeakTypeTag](c: blackbox.Context)(value: c.Expr[T], others: c.Expr[T]*)(eq: c.Tree): c.Expr[T] = {
     import c.universe._
 
     def isValueClass(tpe: Tree) = tpe.symbol.isClass && tpe.symbol.asClass.isDerivedValueClass
@@ -33,8 +43,8 @@ object MacroMatchers_211 {
           val companion = tpe.symbol.companion
           q"$companion.apply(_root_.org.mockito.matchers.MacroMatchers_211.eqTo( $companion.unapply($arg).get ))"
 
-        case q"$_.eqTo[$tpe]($arg)($eq)" =>
-          q"_root_.org.mockito.matchers.MacroMatchers_211.eqTo[$tpe]($arg)($eq)"
+        case q"$_.eqTo[$tpe](..$arg)($eq)" =>
+          q"_root_.org.mockito.matchers.MacroMatchers_211.eqTo[$tpe](..$arg)($eq)"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

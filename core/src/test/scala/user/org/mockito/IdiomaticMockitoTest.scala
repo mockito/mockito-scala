@@ -454,6 +454,16 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         mock2.iHaveDefaultArgs() was called
       }
     }
+
+    "work with varargs" in {
+      val foo = mock[FooWithVarArg]
+
+      foo.bar("cow", "blue")
+      foo.bar("cow", "blue") was called
+
+      foo.bar("cow")
+      foo.bar("cow") was called
+    }
   }
 
   "mix arguments and raw parameters" should {
@@ -476,6 +486,29 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       org.doSomethingWithThisIntAndString(eqTo(1), "meh") shouldReturn "mocked!"
       org.doSomethingWithThisIntAndString(1, "meh") shouldBe "mocked!"
       org.doSomethingWithThisIntAndString(1, eqTo("meh")) was called
+    }
+
+    "work with multiple param list" in {
+      val foo = mock[FooWithSecondParameterList]
+      val cheese = Cheese("Gouda")
+
+      foo.bar("cow")(cheese)
+
+      foo.bar("cow")(cheese) was called
+      foo.bar("cow")(*) was called
+    }
+
+    "work with varargs and multiple param lists" in {
+      val foo = mock[FooWithVarArgAndSecondParameterList]
+      val cheese = Cheese("Gouda")
+
+      foo.bar("cow")(cheese)
+      foo.bar("cow")(cheese) was called
+      foo.bar("cow")(*) was called
+
+      foo.bar("cow", "blue")(cheese)
+      foo.bar("cow", "blue")(cheese) was called
+      foo.bar(eqTo("cow", "blue"))(*) was called
     }
   }
 

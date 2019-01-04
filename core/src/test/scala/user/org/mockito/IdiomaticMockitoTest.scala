@@ -516,9 +516,16 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       foo.bar("cow")(cheese) was called
       foo.bar("cow")(*) was called
 
+      foo.bar(endsWith("w"))(*) was called
+      foo.bar(startsWith("c"))(*) was called
+      foo.bar(contains("ow"))(*) was called
+      foo.bar(argMatching({ case "cow" => }))(*) was called
+      foo.bar(argThat((v: String) => v == "cow", "some desc"))(*) was called
+
       foo.bar("cow", "blue")(cheese)
       foo.bar("cow", "blue")(cheese) was called
       foo.bar(eqTo("cow", "blue"))(*) was called
+      foo.bar(*)(*) wasCalled twice
     }
 
     "work with multiple param list (value class)" in {

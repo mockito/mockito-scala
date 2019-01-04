@@ -3,6 +3,7 @@ package org.mockito.matchers
 import org.scalactic.Equality
 import org.mockito.ArgumentMatcher
 import org.mockito.internal.ValueClassExtractor
+import org.mockito.{ArgumentMatcher, ArgumentMatchers => JavaMatchers}
 
 import scala.collection.mutable
 import scala.language.experimental.macros
@@ -21,7 +22,7 @@ object MacroMatchers_211 {
   //TODO try to remove this duplicated method
   def eqToWithExtractor[T](value: T, others: T*)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T = {
     val rawValues: Seq[T] = Seq(value) ++ others
-    ThatMatchers.argThat(new ArgumentMatcher[T] {
+    JavaMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(v: T): Boolean = v match {
         case a: mutable.WrappedArray[_] if rawValues.length == a.length =>
           (rawValues zip a) forall {

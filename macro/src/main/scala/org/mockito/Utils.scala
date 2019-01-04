@@ -38,12 +38,12 @@ object Utils {
 
         case q"$_.function0[$_]($_)" => true
 
-        case q"$_.matches[$_]($_)"    => true
-        case q"$_.startsWith[$_]($_)" => true
-        case q"$_.contains[$_]($_)"   => true
-        case q"$_.endsWith[$_]($_)"   => true
+        case q"$_.matches($_)"    => true
+        case q"$_.startsWith($_)" => true
+        case q"$_.contains($_)"   => true
+        case q"$_.endsWith($_)"   => true
 
-        case q"$_.argThat[$_]($_)"     => true
+        case q"$_.argThat[$_](..$_)"   => true
         case q"$_.byteThat[$_]($_)"    => true
         case q"$_.booleanThat[$_]($_)" => true
         case q"$_.charThat[$_]($_)"    => true

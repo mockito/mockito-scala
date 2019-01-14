@@ -44,7 +44,25 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
 
   class SomeClass extends Foo with Baz
 
+  class ConcreteHigherKinded extends HigherKinded[Option]
+
   "mock[T]" should {
+    "work with parametrised return types" in {
+      val aMock = mock[HigherKinded[Option]]
+
+      when(aMock.method) thenReturn Some(Right("Mocked!"))
+
+      aMock.method.value.right.value shouldBe "Mocked!"
+    }
+
+    "work with parametrised return types declared in parents" in {
+      val aMock = mock[ConcreteHigherKinded]
+
+      when(aMock.method) thenReturn Some(Right("Mocked!"))
+
+      aMock.method.value.right.value shouldBe "Mocked!"
+    }
+
     "create a valid mock" in {
       val aMock = mock[Foo]
 

@@ -29,7 +29,6 @@ class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {
 object ReturnsDefaults   extends DecoratedAnswer(RETURNS_DEFAULTS)
 object ReturnsDeepStubs  extends DecoratedAnswer(RETURNS_DEEP_STUBS)
 object CallsRealMethods  extends DecoratedAnswer(CALLS_REAL_METHODS)
-object ReturnsSmartNulls extends DecoratedAnswer(RETURNS_SMART_NULLS)
 object ReturnsEmptyValues extends DefaultAnswer {
   private val javaEmptyValuesAndPrimitives = new ReturnsMoreEmptyValues
 

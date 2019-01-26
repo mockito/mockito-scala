@@ -24,14 +24,14 @@ import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
-import scala.reflect.runtime.universe.TypeTag
+import scala.reflect.runtime.universe.WeakTypeTag
 
 private[mockito] trait MockCreator {
-  def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: Answer[_]): T = mock[T](DefaultAnswer(defaultAnswer))
-  def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T
-  def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[_]): T = mock[T](DefaultAnswer(defaultAnswer))
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer): T
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
 
   def spy[T](realObj: T): T
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
@@ -138,7 +138,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T = mock(withSettings)
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T = mock(withSettings)
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
@@ -154,7 +154,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer): T =
     mock(withSettings(defaultAnswer))
 
   /**
@@ -171,7 +171,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = {
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T = {
     val interfaces = ReflectionUtils.interfaces
 
     mockSettings match {
@@ -219,7 +219,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
     mock(withSettings.name(name))
 
   /**

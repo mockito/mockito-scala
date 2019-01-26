@@ -7,19 +7,19 @@ import org.mockito.WhenMacro._
 
 import scala.language.experimental.macros
 import scala.reflect.ClassTag
-import scala.reflect.runtime.universe.TypeTag
+import scala.reflect.runtime.universe.WeakTypeTag
 
 trait IdiomaticMockito extends MockCreator {
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
     MockitoSugar.mock[T](name)
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag](mockSettings: MockSettings): T = MockitoSugar.mock[T](mockSettings)
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T = MockitoSugar.mock[T](mockSettings)
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag](defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer): T =
     MockitoSugar.mock[T](defaultAnswer)
 
-  override def mock[T <: AnyRef: ClassTag: TypeTag](implicit defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T =
     MockitoSugar.mock[T]
 
   override def spy[T](realObj: T): T = MockitoSugar.spy(realObj)

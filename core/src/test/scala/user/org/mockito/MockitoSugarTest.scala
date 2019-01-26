@@ -2,9 +2,9 @@ package user.org.mockito
 
 import org.mockito.captor.ArgCaptor
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ScalaFirstStubbing, ScalaOngoingStubbing }
-import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
-import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
+import org.mockito.stubbing.{CallsRealMethods, DefaultAnswer, ScalaFirstStubbing, ScalaOngoingStubbing}
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
 import user.org.mockito.matchers.ValueCaseClass
 
 //noinspection RedundantDefaultArgument
@@ -47,6 +47,16 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
   class ConcreteHigherKinded extends HigherKinded[Option]
 
   "mock[T]" should {
+    "work with type aliases" in {
+      type MyType = String
+
+      val aMock = mock[MyType => String]
+
+      when(aMock("Hola")) thenReturn "Chau"
+
+      aMock("Hola") shouldBe "Chau"
+    }
+
     "work with parametrised return types" in {
       val aMock = mock[HigherKinded[Option]]
 

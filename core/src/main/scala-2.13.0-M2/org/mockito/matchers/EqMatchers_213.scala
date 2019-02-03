@@ -1,8 +1,10 @@
 package org.mockito.matchers
 
-import org.mockito.ArgumentMatcher
 import org.mockito.internal.ValueClassExtractor
+import org.mockito.{ArgumentMatcher, ArgumentMatchers => JavaMatchers}
 import org.scalactic.Equality
+
+import scala.collection.mutable
 
 trait EqMatchers_213 {
 
@@ -10,11 +12,18 @@ trait EqMatchers_213 {
     * Creates a matcher that delegates on {{org.scalactic.Equality}} so you can always customise how the values are compared
     * Also works with value classes
     */
-  def eqTo[T](value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T = {
-    val extractedValue = $vce.extract(value)
-    ThatMatchers.argThat(new ArgumentMatcher[T] {
-      override def matches(v: T): Boolean = $eq.areEqual(extractedValue.asInstanceOf[T], v)
-      override def toString: String       = s"eqTo($value)"
+  def eqTo[T](value: T, others: T*)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T = {
+    val rawValues: Seq[T] = Seq(value) ++ others
+    JavaMatchers.argThat(new ArgumentMatcher[T] {
+      override def matches(v: T): Boolean = v match {
+        case a: mutable.WrappedArray[_] if rawValues.length == a.length =>
+          (rawValues zip a) forall {
+            case (expected, got) => $eq.areEqual(expected.asInstanceOf[T], got)
+          }
+        case other =>
+          $eq.areEqual($vce.extract(value).asInstanceOf[T], other)
+      }
+      override def toString: String = s"eqTo(${rawValues.mkString(", ")})"
     })
     value
   }

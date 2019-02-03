@@ -60,11 +60,6 @@ object MockitoScalaSession {
             logger: MockitoSessionLogger = MockitoScalaLogger): MockitoScalaSession =
     new MockitoScalaSession(name, strictness, logger)
 
-  object SyntheticLocation extends Location
-  object SyntheticMethodInvocation extends DescribedInvocation {
-    override def getLocation: Location = SyntheticLocation
-  }
-
   trait Reporter {
     def report(): Unit
   }

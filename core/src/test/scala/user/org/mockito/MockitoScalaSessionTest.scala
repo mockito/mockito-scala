@@ -46,7 +46,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
     }
 
     "check incorrect stubs" in {
-      an[PotentialStubbingProblem] should be thrownBy {
+      an[UnnecessaryStubbingException] should be thrownBy {
         MockitoScalaSession().run {
           val foo = mock[Foo]
 
@@ -120,7 +120,7 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with scalat
     }
 
     "check incorrect stubs with default arguments" in {
-      an[PotentialStubbingProblem] should be thrownBy {
+      an[UnnecessaryStubbingException] should be thrownBy {
         MockitoScalaSession().run {
           val foo = mock[Foo]
 

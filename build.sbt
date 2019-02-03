@@ -17,7 +17,7 @@ lazy val commonSettings =
       source.close
       version.get
     },
-    crossScalaVersions := Seq("2.11.12", "2.12.6"),
+    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-M2"),
     scalacOptions ++= Seq(
       "-unchecked",
       "-feature",
@@ -31,7 +31,7 @@ lazy val commonSettings =
   )
 
 lazy val commonLibraries = Seq(
-  "org.mockito"   % "mockito-core"      % "2.21.0",
+  "org.mockito"   % "mockito-core"      % "2.24.0",
   "org.scalactic" %% "scalactic"        % "3.0.5",
   "ru.vyarus"     % "generics-resolver" % "3.0.0",
   "org.scalatest" %% "scalatest"        % "3.0.5" % "provided",

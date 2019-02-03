@@ -37,7 +37,7 @@ object ValueClassExtractor {
 
     val r = if (isValueClass) {
 
-      if (ScalaVersion.startsWith("2.12"))
+      if (ScalaVersion.startsWith("2.12") || ScalaVersion.startsWith("2.13"))
         c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
       else if (ScalaVersion.startsWith("2.11"))
         c.Expr[ValueClassExtractor[VC]] {

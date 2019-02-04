@@ -33,7 +33,7 @@ private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
 
-  def spy[T](realObj: T): T
+  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T): T
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
 
   /**
@@ -222,6 +222,9 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
     mock(withSettings.name(name))
 
+  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T): T =
+    mock[T](withSettings(DefaultAnswers.CallsRealMethods).spiedInstance(realObj))
+
   /**
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that
    * deal with default argument values
@@ -316,11 +319,6 @@ private[mockito] trait Verifications {
  * @author Bruno Bonanno
  */
 private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifications {
-
-  /**
-   * Delegates to <code>Mockito.spy()</code>, it's only here to expose the full Mockito API
-   */
-  def spy[T](realObj: T): T = Mockito.spy(realObj)
 
   /**
    * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as

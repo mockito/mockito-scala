@@ -32,7 +32,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T]) extends MockHan
 
 object ScalaMockHandler {
   def apply[T](mockSettings: MockCreationSettings[T]): MockHandler[T] =
-    new InvocationNotifierHandler[T](new NullResultGuardian[T](new ScalaMockHandler(mockSettings)), mockSettings)
+    new InvocationNotifierHandler[T](new ScalaNullResultGuardian[T](new ScalaMockHandler(mockSettings)), mockSettings)
 
   private def readField[T](invocation: InterceptedInvocation, field: String): T = {
     val f = classOf[InterceptedInvocation].getDeclaredField(field)

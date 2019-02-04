@@ -28,6 +28,7 @@ lazy val commonSettings =
       "-Ypartial-unification",
       "-language:higherKinds",
       "-Xfatal-warnings",
+      "-language:reflectiveCalls",
 //      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor"
     ),
   )

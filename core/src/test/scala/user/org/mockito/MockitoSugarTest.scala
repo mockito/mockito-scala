@@ -19,18 +19,42 @@ class MockitoSugarTest
     with TableDrivenPropertyChecks {
 
   val scenarios = Table(
-    ("testDouble", "foo", "higherKinded", "concreteHigherKinded", "fooWithBaz", "baz"),
-    ("mock", () => mock[Foo], () => mock[HigherKinded[Option]], () => mock[ConcreteHigherKinded], () => mock[FooWithBaz], () => mock[Baz]),
+    ("testDouble", "foo", "higherKinded", "concreteHigherKinded", "fooWithBaz", "baz", "parametrisedTraitInt"),
+    ("mock",
+     () => mock[Foo],
+     () => mock[HigherKinded[Option]],
+     () => mock[ConcreteHigherKinded],
+     () => mock[FooWithBaz],
+     () => mock[Baz],
+     () => mock[ParametrisedTraitInt]),
     ("spy",
      () => spy(new Foo),
      () => spy(new HigherKinded[Option]),
      () => spy(new ConcreteHigherKinded),
      () => spy(new FooWithBaz),
-     () => spy(new ConcreteBaz))
+     () => spy(new ConcreteBaz),
+     () => spy(new ParametrisedTraitInt))
   )
 
-  forAll(scenarios) { (testDouble, foo, higherKinded, concreteHigherKinded, fooWithBaz, baz) =>
+  forAll(scenarios) { (testDouble, foo, higherKinded, concreteHigherKinded, fooWithBaz, baz, parametrisedTraitInt) =>
     testDouble should {
+      "deal with stubbing value type parameters" in {
+        val aMock = parametrisedTraitInt()
+
+        when(aMock.m()) thenReturn 100
+
+        aMock.m() shouldBe 100
+
+        verify(aMock).m()
+      }
+
+      "deal with verifying value type parameters" in {
+        val aMock = parametrisedTraitInt()
+        //this has to be done separately as the verification in the other test would return the stubbed value so the
+        // null problem on the primitive would not happen
+        verify(aMock, never).m()
+      }
+
       "create a valid mock" in {
         val aMock = foo()
 
@@ -161,6 +185,7 @@ class MockitoSugarTest
         when(aMock.method) thenReturn Some(Right("Mocked!"))
 
         aMock.method.value.right.value shouldBe "Mocked!"
+        aMock.method2
       }
 
       "work with parametrised return types declared in parents" in {
@@ -169,6 +194,7 @@ class MockitoSugarTest
         when(aMock.method) thenReturn Some(Right("Mocked!"))
 
         aMock.method.value.right.value shouldBe "Mocked!"
+        aMock.method2
       }
 
       "work with higher kinded types and auxiliary methods" in {

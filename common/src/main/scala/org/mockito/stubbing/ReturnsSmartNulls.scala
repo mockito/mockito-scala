@@ -2,22 +2,21 @@ package org.mockito.stubbing
 import java.lang.reflect.Modifier.isFinal
 
 import org.mockito.Mockito.mock
+import org.mockito.ReflectionUtils._
 import org.mockito.internal.debugging.LocationImpl
 import org.mockito.internal.exceptions.Reporter.smartNullPointerException
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 import org.mockito.internal.util.ObjectMethodsGuru.isToStringMethod
 import org.mockito.invocation.{ InvocationOnMock, Location }
-import ru.vyarus.java.generics.resolver.GenericsResolver.resolve
 
 object ReturnsSmartNulls extends DefaultAnswer {
 
   val delegate = new ReturnsMoreEmptyValues
 
   override def apply(invocation: InvocationOnMock): Option[Any] = Option(delegate.answer(invocation)).orElse {
-    val method     = invocation.getMethod
-    val context    = resolve(invocation.getMock.getClass).`type`(method.getDeclaringClass)
-    val returnType = context.method(method).resolveReturnClass()
-    if (!returnType.isPrimitive && !isFinal(returnType.getModifiers))
+    val returnType = invocation.returnType
+
+    if (!returnType.isPrimitive && !isFinal(returnType.getModifiers) && classOf[Object] != returnType)
       Some(mock(returnType, ThrowsSmartNullPointer(invocation)))
     else
       None

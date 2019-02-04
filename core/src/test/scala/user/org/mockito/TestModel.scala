@@ -34,6 +34,7 @@ class ConcreteBaz extends Baz
 
 class HigherKinded[F[_]] {
   def method: F[Either[String, String]] = null.asInstanceOf[F[Either[String, String]]]
+  def method2: F[Either[String, String]] = null.asInstanceOf[F[Either[String, String]]]
 }
 
 class FooWithBaz extends Foo with Baz
@@ -79,3 +80,6 @@ class Org {
 }
 
 case class Baz2(param1: Int, param2: String)
+
+trait ParametrisedTrait[+E] { def m(): E }
+class ParametrisedTraitInt extends ParametrisedTrait[Int] { def m() = -1 }

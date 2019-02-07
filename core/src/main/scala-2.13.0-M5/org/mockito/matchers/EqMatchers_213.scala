@@ -4,7 +4,7 @@ import org.mockito.internal.ValueClassExtractor
 import org.mockito.{ArgumentMatcher, ArgumentMatchers => JavaMatchers}
 import org.scalactic.Equality
 
-import scala.collection.mutable
+import scala.collection.immutable.ArraySeq
 
 trait EqMatchers_213 {
 
@@ -16,7 +16,7 @@ trait EqMatchers_213 {
     val rawValues: Seq[T] = Seq(value) ++ others
     JavaMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(v: T): Boolean = v match {
-        case a: mutable.WrappedArray[_] if rawValues.length == a.length =>
+        case a: ArraySeq[_] if rawValues.length == a.length =>
           (rawValues zip a) forall {
             case (expected, got) => $eq.areEqual(expected.asInstanceOf[T], got)
           }

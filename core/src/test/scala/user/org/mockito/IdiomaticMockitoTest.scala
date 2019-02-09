@@ -555,6 +555,16 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
     }
   }
 
+  "spy" should {
+    "interact correctly with the real object" in {
+      val it = spy(Iterator.continually("hello"))
+      val result = it.map(_.length)
+      it.next() wasNever called
+      result.next() shouldBe 5
+      it.next() wasCalled once
+    }
+  }
+
   "doStub" should {
     "stub a spy that would fail if the real impl is called" in {
       val aSpy = spy(new Org)

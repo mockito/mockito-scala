@@ -19,8 +19,8 @@ import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
-import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
+import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaFirstStubbing, Stubber}
+import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -174,17 +174,18 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T = {
     val interfaces = ReflectionUtils.interfaces
 
-    mockSettings match {
-      case m: MockSettingsImpl[_] =>
-        require(m.getExtraInterfaces.isEmpty, "If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
-      case _ =>
+    val realClass: Class[T] = mockSettings match {
+      case m: MockSettingsImpl[_] if !m.getExtraInterfaces.isEmpty =>
+        throw new IllegalArgumentException("If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
+      case m: MockSettingsImpl[_] if m.getSpiedInstance != null => m.getSpiedInstance.getClass.asInstanceOf[Class[T]]
+      case _                                                    => clazz
     }
 
     val settings =
       if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
       else mockSettings
 
-    ReflectionUtils.markMethodsWithLazyArgs(clazz)
+    ReflectionUtils.markMethodsWithLazyArgs(realClass)
 
     def createMock(settings: MockCreationSettings[T]): T = {
       val mock          = getMockMaker.createMock(settings, ScalaMockHandler(settings))
@@ -195,7 +196,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 
     settings match {
       case s: MockSettingsImpl[_] =>
-        val creationSettings = s.build[T](clazz)
+        val creationSettings = s.build[T](realClass)
         val mock             = createMock(creationSettings)
         mockingProgress.mockingStarted(mock, creationSettings)
         mock

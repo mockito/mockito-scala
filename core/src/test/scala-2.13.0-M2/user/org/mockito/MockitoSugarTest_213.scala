@@ -5,7 +5,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ Matchers, WordSpec }
 
 //noinspection RedundantDefaultArgument
-class MockitoSugarTest_212 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with TableDrivenPropertyChecks {
+class MockitoSugarTest_213 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with TableDrivenPropertyChecks {
 
   val scenarios = Table(
     ("testDouble", "foo", "baz"),

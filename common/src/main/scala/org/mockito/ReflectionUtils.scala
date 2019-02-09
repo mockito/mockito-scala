@@ -18,8 +18,8 @@ private[mockito] object ReflectionUtils {
 
   implicit class InvocationOnMockOps(invocation: InvocationOnMock) {
     def returnType: Class[_] = {
-      val method = invocation.getMethod
-      val clazz  = method.getDeclaringClass
+      val method         = invocation.getMethod
+      val clazz          = method.getDeclaringClass
       val javaReturnType = invocation.getMethod.getReturnType
 
       if (javaReturnType == classOf[Object])
@@ -32,9 +32,15 @@ private[mockito] object ReflectionUtils {
           .map(_.asMethod)
           .filter(_.returnType.typeSymbol.isClass)
           .map(methodSymbol => mirror.runtimeClass(methodSymbol.returnType.typeSymbol.asClass))
-          .getOrElse(GenericsResolver.resolve(invocation.getMock.getClass).`type`(clazz).method(method).resolveReturnClass())
+          .orElse(resolveGenerics)
+          .getOrElse(javaReturnType)
       else javaReturnType
     }
+
+    private def resolveGenerics: Option[Class[_]] =
+      scala.util.Try {
+        GenericsResolver.resolve(invocation.getMock.getClass).`type`(clazz).method(invocation.getMethod).resolveReturnClass()
+      }.toOption
   }
 
   def interfaces[T](implicit tag: WeakTypeTag[T]): List[Class[_]] =

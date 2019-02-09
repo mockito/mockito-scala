@@ -1,8 +1,10 @@
 package user.org.mockito
-import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
+import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
 
 class Foo {
   def bar = "not mocked"
+
+  def iHaveByNameArgs(normal: String, byName: => String, byName2: => String): String = "not mocked"
 
   def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = "not mocked"
 
@@ -11,6 +13,8 @@ class Foo {
   def iHavePrimitiveByNameArgs(byName: => Int, normal: String): String = "not mocked"
 
   def iHaveFunction0Args(normal: String, f0: () => String): String = "not mocked"
+
+  def iHaveByNameAndFunction0Args(normal: String, f0: () => String, byName: => String): String = "not mocked"
 
   def returnBar: Bar = new Bar
 
@@ -28,6 +32,7 @@ class Bar {
 
 trait Baz {
   def traitMethod(arg: Int): ValueCaseClass = ValueCaseClass(arg)
+  def traitMethodWithDefaultArgs(defaultArg: Int = 30, anotherDefault: String = "hola"): Int = -1
 }
 
 class ConcreteBaz extends Baz

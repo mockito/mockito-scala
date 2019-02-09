@@ -22,6 +22,7 @@ The library has independent developers, release cycle and versioning from core m
 
 *   Artifact identifier: "org.mockito:mockito-scala_2.11:VERSION"
 *   Artifact identifier: "org.mockito:mockito-scala_2.12:VERSION"
+*   Artifact identifier: "org.mockito:mockito-scala_2.13.0-M2:VERSION"
 *   Latest version - see [release notes](/docs/release-notes.md)
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 

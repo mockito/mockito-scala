@@ -19,13 +19,12 @@ lazy val commonSettings =
       source.close
       version.get
     },
-    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-M2"),
+    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-M5"),
     scalacOptions ++= Seq(
       "-unchecked",
       "-feature",
       "-deprecation:false",
       "-encoding", "UTF-8",
-      "-Ypartial-unification",
       "-language:higherKinds",
       "-Xfatal-warnings",
       "-language:reflectiveCalls",
@@ -35,9 +34,9 @@ lazy val commonSettings =
 
 lazy val commonLibraries = Seq(
   "org.mockito"   % "mockito-core"      % "2.24.0",
-  "org.scalactic" %% "scalactic"        % "3.0.5",
+  "org.scalactic" %% "scalactic"        % "3.0.6-SNAP6",
   "ru.vyarus"     % "generics-resolver" % "3.0.0",
-  "org.scalatest" %% "scalatest"        % "3.0.5" % "provided",
+  "org.scalatest" %% "scalatest"        % "3.0.6-SNAP6" % "provided",
 )
 
 lazy val common = (project in file("common"))

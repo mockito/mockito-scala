@@ -22,7 +22,7 @@ trait IdiomaticMockito extends MockCreator {
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T =
     MockitoSugar.mock[T]
 
-  override def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T): T = MockitoSugar.spy(realObj)
+  override def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false): T = MockitoSugar.spy(realObj, lenient)
 
   override def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = MockitoSugar.spyLambda(realObj)
 

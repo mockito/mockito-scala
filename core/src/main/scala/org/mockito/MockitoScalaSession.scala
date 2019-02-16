@@ -1,5 +1,7 @@
 package org.mockito
 
+import java.lang.reflect.Method
+
 import org.mockito.MockitoScalaSession.{ MockitoScalaSessionListener, UnexpectedInvocations }
 import org.mockito.exceptions.misusing.{ UnexpectedInvocationException, UnnecessaryStubbingException }
 import org.mockito.internal.stubbing.StubbedInvocationMatcher
@@ -7,8 +9,9 @@ import org.mockito.invocation.{ DescribedInvocation, Invocation, Location }
 import org.mockito.listeners.MockCreationListener
 import org.mockito.mock.MockCreationSettings
 import org.mockito.quality.Strictness
-import org.mockito.quality.Strictness.STRICT_STUBS
+import org.mockito.quality.Strictness.{ LENIENT, STRICT_STUBS }
 import org.mockito.session.MockitoSessionLogger
+import org.scalactic.Equality
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -19,7 +22,8 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
 
   Mockito.framework().addListener(listener)
 
-  def finishMocking(t: Option[Throwable] = None): Unit =
+  def finishMocking(t: Option[Throwable] = None): Unit = {
+    listener.cleanLenientStubs()
     try {
       t.fold {
         mockitoSession.finishMocking()
@@ -41,6 +45,7 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
     } finally {
       Mockito.framework().removeListener(listener)
     }
+  }
 
   def run[T](block: => T): T =
     try {
@@ -106,23 +111,26 @@ object MockitoScalaSession {
   }
 
   class MockitoScalaSessionListener(strictness: Strictness) extends MockCreationListener {
-    def reportIssues(): Seq[Reporter] = {
-      val mockDetails = mocks.toSet.map(MockitoSugar.mockingDetails)
+    lazy val mockDetails: Set[MockingDetails] = mocks.toSet.map(MockitoSugar.mockingDetails)
 
-      val stubbings = mockDetails
+    lazy val stubbings: Set[StubbedInvocationMatcher] =
+      mockDetails
         .flatMap(_.getStubbings.asScala)
         .collect {
           case s: StubbedInvocationMatcher => s
         }
 
-      val invocations = mockDetails.flatMap(_.getInvocations.asScala)
+    lazy val invocations: Set[Invocation] = mockDetails.flatMap(_.getInvocations.asScala)
 
-      val unexpectedInvocations = invocations
+    def reportIssues(): Seq[Reporter] = {
+      val unexpectedInvocations: Set[Invocation] = invocations
         .filterNot(_.isVerified)
         .filterNot(_.getMethod.getName.contains("$default$"))
         .filterNot(i => stubbings.exists(_.matches(i)))
 
-      val unusedStubbings = stubbings.filterNot(sm => invocations.exists(sm.matches)).filter(!_.wasUsed())
+      val unusedStubbings: Set[StubbedInvocationMatcher] = stubbings
+        .filterNot(sm => invocations.exists(sm.matches))
+        .filterNot(_.wasUsed())
 
       Seq(
         UnexpectedInvocations(unexpectedInvocations),
@@ -130,10 +138,23 @@ object MockitoScalaSession {
       )
     }
 
+    def cleanLenientStubs()(implicit $meq: Equality[Method]): Unit = {
+      val lenientStubbings = stubbings.filter(_.getStrictness == LENIENT)
+      stubbings
+        .filterNot(_.wasUsed())
+        .flatMap(s => lenientStubbings.find(l => $meq.areEqual(l.getMethod, s.getMethod)).map(s -> _))
+        .foreach {
+          case (stubbing, lenient) =>
+            stubbing.markStubUsed(new DescribedInvocation {
+              override def getLocation: Location = lenient.getLocation
+            })
+        }
+    }
+
     private val mocks = mutable.Set.empty[AnyRef]
 
     override def onMockCreated(mock: AnyRef, settings: MockCreationSettings[_]): Unit =
-      if (!settings.isLenient && strictness != Strictness.LENIENT) mocks += mock
+      if (!settings.isLenient && strictness != LENIENT) mocks += mock
   }
 }
 

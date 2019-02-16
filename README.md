@@ -22,7 +22,7 @@ The library has independent developers, release cycle and versioning from core m
 
 *   Artifact identifier: "org.mockito:mockito-scala_2.11:VERSION"
 *   Artifact identifier: "org.mockito:mockito-scala_2.12:VERSION"
-*   Artifact identifier: "org.mockito:mockito-scala_2.13.0-M2:VERSION"
+*   Artifact identifier: "org.mockito:mockito-scala_2.13.0-M5:VERSION"
 *   Latest version - see [release notes](/docs/release-notes.md)
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
@@ -144,6 +144,8 @@ Both `ArgCaptor[T]` and `ValCaptor[T]` return an instance of `Captor[T]` so the 
 
 ## `org.mockito.MockitoScalaSession`
 
+### Basic usage
+
 This is a wrapper around `org.mockito.MockitoSession`, it's main purpose (on top of having a Scala API) 
 is to improve the search of mis-used mocks and unexpected invocations to reduce debugging effort when something doesn't work
 
@@ -157,6 +159,23 @@ MockitoScalaSession().run {
 ``` 
 That's it! that block of code will execute within a session which will take care of checking the use of the framework and,
 if the test fails, it will try to find out if the failure could be related to a mock being used incorrectly
+
+### Leniency
+
+If for some reason we want that a mock created within the scope of a session does not report failures for some or all methods we can specify leniency for it.
+
+For the whole mock or spy to be ignored by the session, so basically a mock/spy that behaves as if the session didn't exist at all, we can make it lenient, e.g.
+```scala
+val aMock = mock[Foo](withSettings.lenient())
+val aSpy = spy(new Bar, lenient = true)
+```
+
+Now, if we just want to make one or more methods to be ignored by the session checks, we can make the method call lenient, this works as any other stubbing, so what it matters what matchers you define
+```scala
+aMock.myMethod(*) isLenient()
+//or
+when(aMock.myMethod(*)).isLenient()
+``` 
 
 ## MockitoFixture
 

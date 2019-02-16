@@ -11,6 +11,7 @@
 
 package org.mockito
 
+import org.mockito.Answers.CALLS_REAL_METHODS
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
@@ -33,7 +34,7 @@ private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
 
-  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T): T
+  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean): T
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
 
   /**
@@ -223,8 +224,11 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
     mock(withSettings.name(name))
 
-  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T): T =
-    mock[T](withSettings(DefaultAnswers.CallsRealMethods).spiedInstance(realObj))
+  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false): T = {
+    def mockSettings: MockSettings = Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS).spiedInstance(realObj)
+    val settings = if(lenient) mockSettings.lenient() else mockSettings
+    mock[T](settings)
+  }
 
   /**
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that

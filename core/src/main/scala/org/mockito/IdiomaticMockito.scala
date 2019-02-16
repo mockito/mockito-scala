@@ -1,9 +1,9 @@
 package org.mockito
 
-import org.mockito.stubbing.{ DefaultAnswer, ScalaOngoingStubbing }
 import org.mockito.MockitoSugar._
 import org.mockito.VerifyMacro._
 import org.mockito.WhenMacro._
+import org.mockito.stubbing.{ DefaultAnswer, ScalaOngoingStubbing }
 
 import scala.language.experimental.macros
 import scala.reflect.ClassTag
@@ -22,7 +22,7 @@ trait IdiomaticMockito extends MockCreator {
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T =
     MockitoSugar.mock[T]
 
-  override def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T): T = MockitoSugar.spy(realObj)
+  override def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false): T = MockitoSugar.spy(realObj, lenient)
 
   override def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = MockitoSugar.spyLambda(realObj)
 
@@ -50,6 +50,8 @@ trait IdiomaticMockito extends MockCreator {
 
     def wasCalled(t: OnlyOn)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroOnlyOn[T]
 
+    //noinspection AccessorLikeMethodIsUnit
+    def isLenient(): Unit = macro WhenMacro.isLenient[T]
   }
 
   class Returned

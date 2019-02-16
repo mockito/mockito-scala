@@ -1,10 +1,14 @@
 package org.mockito
 
+import java.lang.reflect.Method
 import java.util.function
 
-import org.mockito.internal.handler.ScalaMockHandler.{ ArgumentExtractor, Extractors }
+import org.mockito.internal.handler.ScalaMockHandler.{ArgumentExtractor, Extractors}
 import org.mockito.invocation.InvocationOnMock
 import ru.vyarus.java.generics.resolver.GenericsResolver
+import org.scalactic.TripleEquals._
+
+import scala.reflect.internal.Symbols
 
 private[mockito] object ReflectionUtils {
 
@@ -13,7 +17,7 @@ private[mockito] object ReflectionUtils {
 
   private val mirror = runtimeMirror(getClass.getClassLoader)
   private val customMirror = mirror.asInstanceOf[{
-    def methodToJava(sym: scala.reflect.internal.Symbols#MethodSymbol): java.lang.reflect.Method
+    def methodToJava(sym: Symbols#MethodSymbol): Method
   }]
 
   implicit class InvocationOnMockOps(invocation: InvocationOnMock) {
@@ -28,7 +32,7 @@ private[mockito] object ReflectionUtils {
           .info
           .decls
           .filter(d => d.isMethod && !d.isConstructor)
-          .find(d => customMirror.methodToJava(d.asInstanceOf[scala.reflect.internal.Symbols#MethodSymbol]) == method)
+          .find(d => customMirror.methodToJava(d.asInstanceOf[Symbols#MethodSymbol]) === method)
           .map(_.asMethod)
           .filter(_.returnType.typeSymbol.isClass)
           .map(methodSymbol => mirror.runtimeClass(methodSymbol.returnType.typeSymbol.asClass))

@@ -1,12 +1,12 @@
 package org
 
 import java.lang.reflect.Method
-import java.util.Objects
 
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalactic.Equality
+import org.scalactic.TripleEquals._
 
 import scala.reflect.ClassTag
 
@@ -114,11 +114,10 @@ package object mockito {
       ))
 
   //Look at org.mockito.internal.invocation.InvocationMatcher#hasSameMethod
-  implicit def JavaMethodEquality(implicit $arrEq: Equality[Array[_]]): Equality[Method] = new Equality[Method] {
+  implicit val JavaMethodEquality: Equality[Method] = new Equality[Method] {
     override def areEqual(m1: Method, b: Any): Boolean = b match {
       case m2: Method =>
-        //m1.name could be null
-        Objects.equals(m1.getName, m2.getName) && $arrEq.areEqual(m1.getParameterTypes, m2.getParameterTypes)
+        m1.getName === m2.getName && m1.getParameterTypes === m2.getParameterTypes
       case _ => false
     }
   }

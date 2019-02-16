@@ -1,7 +1,5 @@
 package org.mockito
 
-import java.lang.reflect.Method
-
 import org.mockito.MockitoScalaSession.{ MockitoScalaSessionListener, UnexpectedInvocations }
 import org.mockito.exceptions.misusing.{ UnexpectedInvocationException, UnnecessaryStubbingException }
 import org.mockito.internal.stubbing.StubbedInvocationMatcher
@@ -11,7 +9,7 @@ import org.mockito.mock.MockCreationSettings
 import org.mockito.quality.Strictness
 import org.mockito.quality.Strictness.{ LENIENT, STRICT_STUBS }
 import org.mockito.session.MockitoSessionLogger
-import org.scalactic.Equality
+import org.scalactic.TripleEquals._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -138,11 +136,11 @@ object MockitoScalaSession {
       )
     }
 
-    def cleanLenientStubs()(implicit $meq: Equality[Method]): Unit = {
+    def cleanLenientStubs(): Unit = {
       val lenientStubbings = stubbings.filter(_.getStrictness == LENIENT)
       stubbings
         .filterNot(_.wasUsed())
-        .flatMap(s => lenientStubbings.find(l => $meq.areEqual(l.getMethod, s.getMethod)).map(s -> _))
+        .flatMap(s => lenientStubbings.find(_.getMethod === s.getMethod).map(s -> _))
         .foreach {
           case (stubbing, lenient) =>
             stubbing.markStubUsed(new DescribedInvocation {

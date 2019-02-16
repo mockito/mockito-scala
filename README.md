@@ -162,7 +162,7 @@ if the test fails, it will try to find out if the failure could be related to a 
 
 ### Leniency
 
-If for some reason we want that a mock created within the scope of a session does not report failures for some or all methods we can specify leniency for it
+If for some reason we want that a mock created within the scope of a session does not report failures for some or all methods we can specify leniency for it.
 
 For the whole mock or spy to be ignored by the session, so basically a mock/spy that behaves as if the session didn't exist at all, we can make it lenient, e.g.
 ```scala

@@ -1,9 +1,9 @@
 package org.mockito
 
-import org.mockito.stubbing.{ DefaultAnswer, ScalaOngoingStubbing }
 import org.mockito.MockitoSugar._
 import org.mockito.VerifyMacro._
 import org.mockito.WhenMacro._
+import org.mockito.stubbing.{ DefaultAnswer, ScalaOngoingStubbing }
 
 import scala.language.experimental.macros
 import scala.reflect.ClassTag
@@ -50,6 +50,8 @@ trait IdiomaticMockito extends MockCreator {
 
     def wasCalled(t: OnlyOn)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroOnlyOn[T]
 
+    //noinspection AccessorLikeMethodIsUnit
+    def isLenient(): Unit = macro WhenMacro.isLenient[T]
   }
 
   class Returned

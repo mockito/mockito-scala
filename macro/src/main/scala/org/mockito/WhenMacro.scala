@@ -35,6 +35,28 @@ object WhenMacro {
     r
   }
 
+  def isLenient[T: c.WeakTypeTag](c: blackbox.Context)(): c.Expr[Unit] = {
+    import c.universe._
+
+    val r = c.Expr[Unit] {
+      c.macroApplication match {
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).isLenient()" =>
+          if (args.exists(a => hasMatchers(c)(a))) {
+            val newArgs = args.map(a => transformArgs(c)(a))
+            q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs))).isLenient()"
+          } else
+            q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args))).isLenient()"
+
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).isLenient()" =>
+          q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs])).isLenient()"
+
+        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
+      }
+    }
+    if (c.settings.contains("mockito-print-lenient")) println(show(r.tree))
+    r
+  }
+
   class RealMethod
 
   def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod]): c.Expr[ScalaOngoingStubbing[T]] = {

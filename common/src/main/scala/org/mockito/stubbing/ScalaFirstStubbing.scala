@@ -1,8 +1,11 @@
 package org.mockito.stubbing
 
 import org.mockito.internal.ValueClassExtractor
-import org.mockito.{ clazz, functionToAnswer, invocationToAnswer }
+import org.mockito.internal.stubbing.OngoingStubbingImpl
+import org.mockito.internal.util.MockUtil.getMockSettings
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.quality.Strictness.LENIENT
+import org.mockito.{clazz, functionToAnswer, invocationToAnswer}
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
@@ -12,6 +15,14 @@ object ScalaFirstStubbing {
 }
 
 case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: ValueClassExtractor[T]) {
+
+  //noinspection AccessorLikeMethodIsUnit
+  def isLenient(): Unit = {
+    delegate.asInstanceOf[OngoingStubbingImpl[T]].setStrictness(LENIENT)
+    delegate.thenAnswer(new Answer[T] {
+      override def answer(i: InvocationOnMock): T = getMockSettings(delegate.getMock).getDefaultAnswer.answer(i).asInstanceOf[T]
+    })
+  }
 
   /**
    * Sets consecutive return one or more values to be returned when the method is called. E.g:

@@ -18,9 +18,9 @@ class MockitoScalaSessionTest
     with TableDrivenPropertyChecks {
 
   val scenarios = Table(
-    ("testDouble", "foo", "parametrisedFoo"),
-    ("mock", ()  => mock[Foo], (mockSettings: MockSettings) => mock[Foo](mockSettings)),
-    ("spy", () => spy(new Foo), (mockSettings: MockSettings) => spy(new Foo, mockSettings.asInstanceOf[CreationSettings[_]].isLenient))
+    ("testDouble", "foo", "parametrisedFoo", "fooBar"),
+    ("mock", () => mock[Foo], (mockSettings: MockSettings) => mock[Foo](mockSettings), ""),
+    ("spy", () => spy(new Foo), (mockSettings: MockSettings) => spy(new Foo, mockSettings.asInstanceOf[CreationSettings[_]].isLenient), "bar")
   )
 
   class Foo {
@@ -47,8 +47,48 @@ class MockitoScalaSessionTest
     def callMeMaybe: Option[Boolean] = None
   }
 
-  forAll(scenarios) { (testDouble, foo, parametrisedFoo) =>
+  forAll(scenarios) { (testDouble, foo, parametrisedFoo, fooBar) =>
     s"MockitoScalaSession - $testDouble" should {
+
+      "don't check unexpected calls for lenient methods (set at the beginning)" in {
+        MockitoScalaSession().run {
+          val aFoo = foo()
+
+          aFoo.bar(*) isLenient()
+
+          aFoo.bar("paco") shouldBe fooBar
+        }
+      }
+
+      "don't check unexpected calls for lenient methods (set at the end)" in {
+        MockitoScalaSession().run {
+          val aFoo = foo()
+
+          aFoo.bar("paco") shouldBe fooBar
+
+          aFoo.bar(*) isLenient()
+        }
+      }
+
+      "don't check unused stubs for lenient methods (set at the beginning)" in {
+        MockitoScalaSession().run {
+          val aFoo = foo()
+
+          aFoo.bar(*) isLenient()
+
+          aFoo.bar("pepe") shouldReturn "mocked"
+        }
+      }
+
+      "don't check unused stubs for lenient methods (set at the end)" in {
+        MockitoScalaSession().run {
+          val aFoo = foo()
+
+          aFoo.bar("pepe") shouldReturn "mocked"
+
+          aFoo.bar(*) isLenient()
+        }
+      }
 
       "check unused stubs" in {
         an[UnnecessaryStubbingException] should be thrownBy {
@@ -152,7 +192,7 @@ class MockitoScalaSessionTest
         }
       }
 
-      "don't check unexpected stubs for lenient mocks" in {
+      "don't check unexpected calls for lenient mocks" in {
         MockitoScalaSession().run {
           val aFoo = parametrisedFoo(withSettings.lenient())
 
@@ -163,7 +203,8 @@ class MockitoScalaSessionTest
           aFoo.bar("paco")
         }
       }
-      "check unexpected stubs for lenient mocks" in {
+
+      "check unexpected invocations for normal mocks" in {
         intercept[UnexpectedInvocationException] {
           MockitoScalaSession().run {
             val aFoo = foo()
@@ -177,7 +218,7 @@ class MockitoScalaSessionTest
         }
       }
 
-      "don't check unexpected stubs in lenient setting" in {
+      "don't check unexpected invocations in lenient setting" in {
         MockitoScalaSession(strictness = Strictness.LENIENT).run {
           val aFoo = foo()
 
@@ -188,21 +229,8 @@ class MockitoScalaSessionTest
           aFoo.bar("paco")
         }
       }
-      "check unexpected stubs in lenient setting" in {
-        intercept[UnexpectedInvocationException] {
-          MockitoScalaSession().run {
-            val aFoo = foo()
 
-            aFoo.bar("pepe") shouldReturn "mocked"
-
-            aFoo.bar("pepe")
-
-            aFoo.bar("paco")
-          }
-        }
-      }
-
-      "don't check unused stubs for lenient mocks" in {
+      "don't check unused stubs for lenient" in {
         MockitoScalaSession().run {
           val aFoo = parametrisedFoo(withSettings.lenient())
 

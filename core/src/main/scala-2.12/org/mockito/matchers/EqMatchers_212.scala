@@ -3,6 +3,7 @@ package org.mockito.matchers
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.{ArgumentMatcher, ArgumentMatchers => JavaMatchers}
 import org.scalactic.Equality
+import org.scalactic.TripleEquals._
 
 import scala.collection.mutable
 
@@ -13,15 +14,15 @@ trait EqMatchers_212 {
    * Also works with value classes
    */
   def eqTo[T](value: T, others: T*)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T = {
-    val rawValues: Seq[T] = Seq(value) ++ others
+    lazy val rawValues: Seq[T] = Seq(value) ++ others
     JavaMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(v: T): Boolean = v match {
         case a: mutable.WrappedArray[_] if rawValues.length == a.length =>
           (rawValues zip a) forall {
-            case (expected, got) => $eq.areEqual(expected.asInstanceOf[T], got)
+            case (expected, got) => expected.asInstanceOf[T] === got
           }
         case other =>
-          $eq.areEqual($vce.extract(value).asInstanceOf[T], other)
+          $vce.extract(value).asInstanceOf[T] === other
       }
       override def toString: String = s"eqTo(${rawValues.mkString(", ")})"
     })

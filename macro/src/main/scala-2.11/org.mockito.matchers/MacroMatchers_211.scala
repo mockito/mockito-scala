@@ -4,6 +4,7 @@ import org.scalactic.Equality
 import org.mockito.ArgumentMatcher
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.{ArgumentMatcher, ArgumentMatchers => JavaMatchers}
+import org.scalactic.TripleEquals._
 
 import scala.collection.mutable
 import scala.language.experimental.macros
@@ -13,7 +14,7 @@ object MacroMatchers_211 {
 
   def eqTo[T](value: T)(implicit $eq: Equality[T]): T = {
     ThatMatchers.argThat(new ArgumentMatcher[T] {
-      override def matches(v: T): Boolean = $eq.areEqual(value, v)
+      override def matches(v: T): Boolean = value === v
       override def toString: String       = s"eqTo($value)"
     })
     value

@@ -1,12 +1,15 @@
-package org.mockito.internal.handler
+package org.mockito
+package internal.handler
 
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier.isAbstract
 import java.util.concurrent.ConcurrentHashMap
 
 import org.mockito.internal.handler.ScalaMockHandler._
-import org.mockito.internal.invocation.{InterceptedInvocation, MockitoMethod}
-import org.mockito.invocation.{Invocation, MockHandler}
+import org.mockito.internal.invocation.{ InterceptedInvocation, MockitoMethod }
+import org.mockito.invocation.{ Invocation, MockHandler }
 import org.mockito.mock.MockCreationSettings
+import org.scalactic.TripleEquals._
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T]) extends MockHandlerImpl[T](mockSettings) {
   override def handle(invocation: Invocation): AnyRef =
@@ -40,19 +43,18 @@ object ScalaMockHandler {
     f.get(invocation).asInstanceOf[T]
   }
 
-  private def unwrapByNameArgs(method: MockitoMethod, args: Array[Any]): Array[Any] = {
-    val declaringClass = method.getJavaMethod.getDeclaringClass
-    if (Extractors.containsKey(declaringClass)) Extractors.get(declaringClass).transformArgs(method.getName, args)
-    else args
-  }
+  private def unwrapByNameArgs(method: MockitoMethod, args: Array[Any]): Array[Any] =
+    Extractors
+      .getOrDefault(method.getJavaMethod.getDeclaringClass, ArgumentExtractor.Empty)
+      .transformArgs(method.getJavaMethod, args)
 
   val Extractors = new ConcurrentHashMap[Class[_], ArgumentExtractor]
 
-  case class ArgumentExtractor(toTransform: Map[String, Set[Int]]) {
-
-    def transformArgs(methodName: String, args: Array[Any]): Array[Any] =
+  case class ArgumentExtractor(toTransform: Seq[(Method, Set[Int])]) {
+    def transformArgs(method: Method, args: Array[Any]): Array[Any] =
       toTransform
-        .get(methodName)
+        .find(_._1 === method)
+        .map(_._2)
         .map { transformIndices =>
           args.zipWithIndex.map {
             case (arg: Function0[_], idx) if transformIndices.contains(idx) => arg()
@@ -60,5 +62,9 @@ object ScalaMockHandler {
           }
         }
         .getOrElse(args)
+  }
+
+  object ArgumentExtractor {
+    val Empty = ArgumentExtractor(Seq.empty)
   }
 }

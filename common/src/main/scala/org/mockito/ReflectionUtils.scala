@@ -99,4 +99,12 @@ private[mockito] object ReflectionUtils {
             .getOrElse(ArgumentExtractor.Empty)
       }
     )
+
+  def readDeclaredField[T](o: AnyRef, field: String): Option[T] =
+    scala.util.Try {
+      val f = o.getClass.getDeclaredField(field)
+      f.setAccessible(true)
+      f.get(o).asInstanceOf[T]
+    }.toOption
+
 }

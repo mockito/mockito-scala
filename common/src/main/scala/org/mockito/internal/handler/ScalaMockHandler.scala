@@ -1,12 +1,17 @@
-package org.mockito.internal.handler
+package org.mockito
+package internal.handler
 
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier.isAbstract
 import java.util.concurrent.ConcurrentHashMap
 
+import org.mockito.ReflectionUtils.readDeclaredField
 import org.mockito.internal.handler.ScalaMockHandler._
-import org.mockito.internal.invocation.{InterceptedInvocation, MockitoMethod}
-import org.mockito.invocation.{Invocation, MockHandler}
+import org.mockito.internal.invocation.mockref.MockReference
+import org.mockito.internal.invocation.{ InterceptedInvocation, MockitoMethod, RealMethod }
+import org.mockito.invocation.{ Invocation, MockHandler }
 import org.mockito.mock.MockCreationSettings
+import org.scalactic.TripleEquals._
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T]) extends MockHandlerImpl[T](mockSettings) {
   override def handle(invocation: Invocation): AnyRef =
@@ -15,15 +20,13 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T]) extends MockHan
     else {
       val scalaInvocation = invocation match {
         case i: InterceptedInvocation =>
-          val mockitoMethod: MockitoMethod = readField(i, "mockitoMethod")
-          new InterceptedInvocation(
-            readField(i, "mockRef"),
-            mockitoMethod,
-            unwrapByNameArgs(mockitoMethod, i.getRawArguments.asInstanceOf[Array[Any]]).asInstanceOf[Array[Object]],
-            readField(i, "realMethod"),
-            i.getLocation,
-            i.getSequenceNumber
-          )
+          val byNameAwareInvocation = for {
+            mockitoMethod <- i.mockitoMethod
+            mockRef       <- i.mockRef
+            realMethod    <- i.realMethod
+            byNameArgs = unwrapByNameArgs(mockitoMethod, i.getRawArguments)
+          } yield new InterceptedInvocation(mockRef, mockitoMethod, byNameArgs, realMethod, i.getLocation, i.getSequenceNumber)
+          byNameAwareInvocation.getOrElse(invocation)
         case other => other
       }
       super.handle(scalaInvocation)
@@ -34,25 +37,25 @@ object ScalaMockHandler {
   def apply[T](mockSettings: MockCreationSettings[T]): MockHandler[T] =
     new InvocationNotifierHandler[T](new ScalaNullResultGuardian[T](new ScalaMockHandler(mockSettings)), mockSettings)
 
-  private def readField[T](invocation: InterceptedInvocation, field: String): T = {
-    val f = classOf[InterceptedInvocation].getDeclaredField(field)
-    f.setAccessible(true)
-    f.get(invocation).asInstanceOf[T]
+  implicit class InterceptedInvocationOps(i: InterceptedInvocation) {
+    def mockitoMethod: Option[MockitoMethod]   = readDeclaredField(i, "mockitoMethod")
+    def mockRef: Option[MockReference[Object]] = readDeclaredField(i, "mockRef")
+    def realMethod: Option[RealMethod]         = readDeclaredField(i, "realMethod")
   }
 
-  private def unwrapByNameArgs(method: MockitoMethod, args: Array[Any]): Array[Any] = {
-    val declaringClass = method.getJavaMethod.getDeclaringClass
-    if (Extractors.containsKey(declaringClass)) Extractors.get(declaringClass).transformArgs(method.getName, args)
-    else args
-  }
+  private def unwrapByNameArgs(method: MockitoMethod, args: Array[AnyRef]): Array[Object] =
+    Extractors
+      .getOrDefault(method.getJavaMethod.getDeclaringClass, ArgumentExtractor.Empty)
+      .transformArgs(method.getJavaMethod, args.asInstanceOf[Array[Any]])
+      .asInstanceOf[Array[Object]]
 
   val Extractors = new ConcurrentHashMap[Class[_], ArgumentExtractor]
 
-  case class ArgumentExtractor(toTransform: Map[String, Set[Int]]) {
-
-    def transformArgs(methodName: String, args: Array[Any]): Array[Any] =
+  case class ArgumentExtractor(toTransform: Seq[(Method, Set[Int])]) {
+    def transformArgs(method: Method, args: Array[Any]): Array[Any] =
       toTransform
-        .get(methodName)
+        .find(_._1 === method)
+        .map(_._2)
         .map { transformIndices =>
           args.zipWithIndex.map {
             case (arg: Function0[_], idx) if transformIndices.contains(idx) => arg()
@@ -60,5 +63,9 @@ object ScalaMockHandler {
           }
         }
         .getOrElse(args)
+  }
+
+  object ArgumentExtractor {
+    val Empty = ArgumentExtractor(Seq.empty)
   }
 }

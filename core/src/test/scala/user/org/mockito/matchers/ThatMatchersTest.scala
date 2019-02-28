@@ -1,14 +1,11 @@
 package user.org.mockito.matchers
 
 import org.mockito.exceptions.verification.WantedButNotInvoked
-import org.mockito.{ ArgumentMatcher, ArgumentMatchersSugar, MockitoSugar }
-import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
+import org.mockito.matchers.EqTo
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
 
 object ThatMatchersTest {
-  class EqTo[T](value: T) extends ArgumentMatcher[T] {
-    override def matches(argument: T): Boolean = argument == value
-  }
-
   case class Baz(param1: String, param2: String)
 
   class Foo {
@@ -67,71 +64,71 @@ class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers
     val aMock = mock[Foo]
 
     aMock.bar("meh")
-    verify(aMock).bar(argThat(new EqTo("meh")))
+    verify(aMock).bar(argThat(EqTo("meh")))
 
     aMock.barTyped("meh")
-    verify(aMock).barTyped(argThat(new EqTo("meh")))
+    verify(aMock).barTyped(argThat(EqTo("meh")))
 
     aMock.bar(Seq("meh"))
-    verify(aMock).bar(argThat(new EqTo(Seq("meh"))))
+    verify(aMock).bar(argThat(EqTo(Seq("meh"))))
 
     aMock.baz(Baz("Hello", "World"))
-    verify(aMock).baz(argThat(new EqTo(Baz("Hello", "World"))))
+    verify(aMock).baz(argThat(EqTo(Baz("Hello", "World"))))
   }
 
   "argThat[T]" should "work with AnyVal" in {
     val aMock = mock[Foo]
 
     aMock.barByte(1)
-    verify(aMock).barByte(argThat(new EqTo(1.toByte)))
+    verify(aMock).barByte(argThat(EqTo(1.toByte)))
 
     aMock.barBoolean(false)
-    verify(aMock).barBoolean(argThat(new EqTo(false)))
+    verify(aMock).barBoolean(argThat(EqTo(false)))
 
     aMock.barChar('a')
-    verify(aMock).barChar(argThat(new EqTo('a')))
+    verify(aMock).barChar(argThat(EqTo('a')))
 
     aMock.barDouble(1d)
-    verify(aMock).barDouble(argThat(new EqTo(1d)))
+    verify(aMock).barDouble(argThat(EqTo(1d)))
 
     aMock.barInt(1)
-    verify(aMock).barInt(argThat(new EqTo(1)))
+    verify(aMock).barInt(argThat(EqTo(1)))
 
     aMock.barFloat(1)
-    verify(aMock).barFloat(argThat(new EqTo(1)))
+    verify(aMock).barFloat(argThat(EqTo(1)))
 
     aMock.barShort(1)
-    verify(aMock).barShort(argThat(new EqTo(1.toShort)))
+    verify(aMock).barShort(argThat(EqTo(1.toShort)))
 
     aMock.barLong(1)
-    verify(aMock).barLong(argThat(new EqTo(1l)))
+    verify(aMock).barLong(argThat(EqTo(1l)))
   }
 
   "primitiveThat[T]" should "work with AnyVal" in {
     val aMock = mock[Foo]
 
     aMock.barByte(1)
-    verify(aMock).barByte(byteThat(new EqTo(1.toByte)))
+    verify(aMock).barByte(byteThat(EqTo(1.toByte)))
 
     aMock.barBoolean(false)
-    verify(aMock).barBoolean(booleanThat(new EqTo(false)))
+    verify(aMock).barBoolean(booleanThat(EqTo(false)))
 
     aMock.barChar('a')
-    verify(aMock).barChar(charThat(new EqTo('a')))
+    verify(aMock).barChar(charThat(EqTo('a')))
 
     aMock.barDouble(1d)
-    verify(aMock).barDouble(doubleThat(new EqTo(1d)))
+    verify(aMock).barDouble(doubleThat(EqTo(1d)))
 
     aMock.barInt(1)
-    verify(aMock).barInt(intThat(new EqTo(1)))
+    verify(aMock).barInt(intThat(EqTo(1)))
 
     aMock.barFloat(1)
-    verify(aMock).barFloat(floatThat(new EqTo(1)))
+    verify(aMock).barFloat(floatThat(EqTo(1)))
 
     aMock.barShort(1)
-    verify(aMock).barShort(shortThat(new EqTo(1.toShort)))
+    verify(aMock).barShort(shortThat(EqTo(1.toShort)))
 
     aMock.barLong(1)
-    verify(aMock).barLong(longThat(new EqTo(1l)))
+    verify(aMock).barLong(longThat(EqTo(1l)))
   }
 }

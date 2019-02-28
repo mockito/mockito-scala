@@ -14,19 +14,24 @@ import org.mockito.mock.MockCreationSettings
 import org.scalactic.TripleEquals._
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T]) extends MockHandlerImpl[T](mockSettings) {
+
   override def handle(invocation: Invocation): AnyRef =
     if (invocation.getMethod.getName.contains("$default$") && !isAbstract(invocation.getMethod.getModifiers))
       invocation.callRealMethod()
     else {
       val scalaInvocation = invocation match {
         case i: InterceptedInvocation =>
-          val byNameAwareInvocation = for {
+          val scalaInvocation = for {
             mockitoMethod <- i.mockitoMethod
             mockRef       <- i.mockRef
             realMethod    <- i.realMethod
-            byNameArgs = unwrapByNameArgs(mockitoMethod, i.getRawArguments)
-          } yield new InterceptedInvocation(mockRef, mockitoMethod, byNameArgs, realMethod, i.getLocation, i.getSequenceNumber)
-          byNameAwareInvocation.getOrElse(invocation)
+            rawArguments = i.getRawArguments
+            arguments = if (rawArguments != null && rawArguments.nonEmpty)
+              unwrapVarargs(mockitoMethod, unwrapByNameArgs(mockitoMethod, rawArguments.asInstanceOf[Array[Any]]))
+                .asInstanceOf[Array[AnyRef]]
+            else rawArguments
+          } yield new ScalaInvocation(mockRef, mockitoMethod, arguments, rawArguments, realMethod, i.getLocation, i.getSequenceNumber)
+          scalaInvocation.getOrElse(invocation)
         case other => other
       }
       super.handle(scalaInvocation)
@@ -43,11 +48,10 @@ object ScalaMockHandler {
     def realMethod: Option[RealMethod]         = readDeclaredField(i, "realMethod")
   }
 
-  private def unwrapByNameArgs(method: MockitoMethod, args: Array[AnyRef]): Array[Object] =
+  private def unwrapByNameArgs(method: MockitoMethod, args: Array[Any]): Array[Any] =
     Extractors
       .getOrDefault(method.getJavaMethod.getDeclaringClass, ArgumentExtractor.Empty)
       .transformArgs(method.getJavaMethod, args.asInstanceOf[Array[Any]])
-      .asInstanceOf[Array[Object]]
 
   val Extractors = new ConcurrentHashMap[Class[_], ArgumentExtractor]
 

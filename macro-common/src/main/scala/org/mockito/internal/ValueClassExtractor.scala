@@ -6,6 +6,7 @@ import scala.util.Properties
 
 trait ValueClassExtractor[VC] {
   def extract(vc: VC): Any
+  def extractAs[T](vc: VC): T = extract(vc).asInstanceOf[T]
 }
 
 class NormalClassExtractor[T] extends ValueClassExtractor[T] {
@@ -42,11 +43,15 @@ object ValueClassExtractor {
       else if (ScalaVersion.startsWith("2.11"))
         c.Expr[ValueClassExtractor[VC]] {
           val companion = typeSymbol.companion
-          q"""
+
+          if (companion.info.decls.exists(_.name.toString == "unapply"))
+            q"""
             new _root_.org.mockito.internal.ValueClassExtractor[$tpe] {
               override def extract(vc: $tpe): Any = $companion.unapply(vc).get
             }
-          """
+           """
+          else
+            q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]"
         } else throw new Exception(s"Unsupported scala version $ScalaVersion")
 
     } else

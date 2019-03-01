@@ -1,7 +1,9 @@
 package org.mockito.captor
 
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
-import org.mockito.{ clazz, ArgumentCaptor }
+import org.mockito.{ArgumentCaptor, clazz}
+import org.scalactic.Equality
+import org.scalactic.TripleEquals._
 
 import scala.collection.JavaConverters._
 import scala.language.experimental.macros
@@ -17,8 +19,8 @@ trait Captor[T] {
 
   def values: List[T]
 
-  def hasCaptured(expectation: T): Unit =
-    if (expectation != value) throw new ArgumentsAreDifferent(s"Got [$value] instead of [$expectation]")
+  def hasCaptured(expectation: T)(implicit $eq: Equality[T]): Unit =
+    if (expectation !== value) throw new ArgumentsAreDifferent(s"Got [$value] instead of [$expectation]")
 }
 
 class WrapperCaptor[T: ClassTag] extends Captor[T] {

@@ -42,7 +42,7 @@ case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: Va
    * @return object that allows stubbing consecutive calls
    */
   def thenReturn(value: T, values: T*): ScalaOngoingStubbing[T] =
-    delegate.thenReturn($vce.extract(value).asInstanceOf[T], values.map($vce.extract).map(_.asInstanceOf[T]): _*)
+    delegate.thenReturn($vce.extractAs[T](value), values.map($vce.extractAs[T]): _*)
 
   /**
    * Sets one or more Throwable objects to be thrown when the method is called. E.g:

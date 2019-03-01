@@ -7,25 +7,14 @@ import org.scalactic.TripleEquals._
 
 import scala.collection.mutable
 
-trait EqMatchers_212 {
+trait EqMatchers_VersionSpecific {
 
   /**
    * Creates a matcher that delegates on {{org.scalactic.Equality}} so you can always customise how the values are compared
    * Also works with value classes
    */
-  def eqTo[T](value: T, others: T*)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T = {
-    lazy val rawValues: Seq[T] = Seq(value) ++ others
-    JavaMatchers.argThat(new ArgumentMatcher[T] {
-      override def matches(v: T): Boolean = v match {
-        case a: mutable.WrappedArray[_] if rawValues.length == a.length =>
-          (rawValues zip a) forall {
-            case (expected, got) => expected.asInstanceOf[T] === got
-          }
-        case other =>
-          $vce.extract(value).asInstanceOf[T] === other
-      }
-      override def toString: String = s"eqTo(${rawValues.mkString(", ")})"
-    })
+  def eqTo[T](value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T = {
+    JavaMatchers.argThat(new EqTo[T](value))
     value
   }
 

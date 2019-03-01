@@ -77,8 +77,10 @@ class Org {
   def baz(i: Int, b: Baz2): String = "not mocked"
 
   def fooWithVarArg(bells: String*): Unit                                              = ()
+  def fooWithActualArray(bells: Array[String]): Unit                                              = ()
   def fooWithSecondParameterList(bell: String)(cheese: Cheese): Unit                   = ()
   def fooWithVarArgAndSecondParameterList(bells: String*)(cheese: Cheese): Unit        = ()
+  def fooWithActualArrayAndSecondParameterList(bells: Array[String])(cheese: Cheese): Unit        = ()
   def valueClassWithVarArg(bread: Bread*): Unit                                        = ()
   def valueClassWithSecondParameterList(bread: Bread)(cheese: Cheese): Unit            = ()
   def valueClassWithVarArgAndSecondParameterList(breads: Bread*)(cheese: Cheese): Unit = ()

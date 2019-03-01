@@ -61,7 +61,7 @@ private[mockito] trait DoSomething {
   def doReturn[T](toBeReturned: T, toBeReturnedNext: T*)(implicit $vce: ValueClassExtractor[T]): Stubber =
     Mockito.doReturn(
       $vce.extract(toBeReturned),
-      toBeReturnedNext.map($vce.extract).map(_.asInstanceOf[Object]): _*
+      toBeReturnedNext.map($vce.extractAs[Object]): _*
     )
 
   /**

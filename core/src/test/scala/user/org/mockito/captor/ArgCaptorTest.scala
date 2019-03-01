@@ -2,6 +2,7 @@ package user.org.mockito.captor
 
 import org.mockito.captor.{ArgCaptor, ValCaptor}
 import org.mockito.{IdiomaticMockito, MockitoSugar}
+import org.scalactic.{Equality, StringNormalizations}
 import org.scalatest.{Matchers, WordSpec}
 import user.org.mockito.captor.ArgCaptorTest._
 
@@ -34,6 +35,20 @@ class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
       val captor = ArgCaptor[String]
 
       aMock.stringArgument("it worked!")
+
+      verify(aMock).stringArgument(captor)
+
+      captor hasCaptured "it worked!"
+    }
+
+    "works with Equality" in {
+      val aMock  = mock[Foo]
+      val captor = ArgCaptor[String]
+      import StringNormalizations._
+
+      implicit val eq: Equality[String] = decided by defaultEquality[String] afterBeing lowerCased
+
+      aMock.stringArgument("It Worked!")
 
       verify(aMock).stringArgument(captor)
 

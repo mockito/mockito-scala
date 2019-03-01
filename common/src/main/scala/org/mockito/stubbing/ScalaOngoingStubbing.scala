@@ -28,7 +28,7 @@ case class ScalaOngoingStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: 
    * @return object that allows stubbing consecutive calls
    */
   def andThen(value: T, values: T*): ScalaOngoingStubbing[T] =
-    delegate.thenReturn($vce.extract(value).asInstanceOf[T], values.map($vce.extract).map(_.asInstanceOf[T]): _*)
+    delegate.thenReturn($vce.extractAs[T](value), values.map($vce.extractAs[T]): _*)
 
   /**
    * Sets Throwable objects to be thrown when the method is called. E.g:

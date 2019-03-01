@@ -381,6 +381,16 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         foo.fooWithVarArg("cow") was called
       }
 
+      "work with real arrays" in {
+        val foo = orgDouble()
+
+        foo.fooWithActualArray(Array("cow", "blue"))
+        foo.fooWithActualArray(Array("cow", "blue")) was called
+
+        foo.fooWithActualArray(Array("cow"))
+        foo.fooWithActualArray(Array("cow")) was called
+      }
+
       "work with varargs (value class)" in {
         val foo = orgDouble()
 
@@ -438,8 +448,20 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
         org.fooWithVarArgAndSecondParameterList("cow", "blue")(cheese)
         org.fooWithVarArgAndSecondParameterList("cow", "blue")(cheese) was called
-        org.fooWithVarArgAndSecondParameterList(eqTo("cow", "blue"))(*) was called
         org.fooWithVarArgAndSecondParameterList(*)(*) wasCalled twice
+      }
+
+      "work with actual arrays and multiple param lists" in {
+        val org    = orgDouble()
+        val cheese = Cheese("Gouda")
+
+        org.fooWithActualArrayAndSecondParameterList(Array("cow"))(cheese)
+        org.fooWithActualArrayAndSecondParameterList(Array("cow"))(cheese) was called
+        org.fooWithActualArrayAndSecondParameterList(Array("cow"))(*) was called
+
+        org.fooWithActualArrayAndSecondParameterList(Array("cow", "blue"))(cheese)
+        org.fooWithActualArrayAndSecondParameterList(Array("cow", "blue"))(cheese) was called
+        org.fooWithActualArrayAndSecondParameterList(*)(*) wasCalled twice
       }
 
       "work with multiple param list (value class)" in {
@@ -462,7 +484,6 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
         org.valueClassWithVarArgAndSecondParameterList(Bread("Baguette"), Bread("Arepa"))(cheese)
         org.valueClassWithVarArgAndSecondParameterList(Bread("Baguette"), Bread("Arepa"))(cheese) was called
-        org.valueClassWithVarArgAndSecondParameterList(eqTo(Bread("Baguette"), Bread("Arepa")))(*) was called
       }
 
       "eqToVal works with new syntax" in {
@@ -557,7 +578,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
   "spy" should {
     "interact correctly with the real object" in {
-      val it = spy(Iterator.continually("hello"))
+      val it     = spy(Iterator.continually("hello"))
       val result = it.map(_.length)
       it.next() wasNever called
       result.next() shouldBe 5

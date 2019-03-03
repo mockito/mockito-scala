@@ -3,7 +3,7 @@ package org.mockito
 import java.lang.reflect.Method
 import java.util.function
 
-import org.mockito.internal.handler.ScalaMockHandler.{ArgumentExtractor, Extractors}
+import org.mockito.internal.handler.ScalaMockHandler.{ ArgumentExtractor, Extractors }
 import org.mockito.invocation.InvocationOnMock
 import org.scalactic.TripleEquals._
 import ru.vyarus.java.generics.resolver.GenericsResolver
@@ -84,15 +84,18 @@ private[mockito] object ReflectionUtils {
                 mirror
                   .classSymbol(clazz)
                   .info
-                  .decls
+                  .members
                   .collect {
                     case s if isNonConstructorMethod(s) =>
-                      (customMirror.methodToJava(s), s.typeSignature.paramLists.flatten.zipWithIndex.collect {
+                      (s, s.typeSignature.paramLists.flatten.zipWithIndex.collect {
                         case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
                       }.toSet)
                   }
                   .toSeq
                   .filter(_._2.nonEmpty)
+                  .map {
+                    case (s, indices) => customMirror.methodToJava(s) -> indices
+                  }
               }
             }
             .toOption

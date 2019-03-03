@@ -175,7 +175,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * as the value for the second parameter would have been null...
    */
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T = {
-    val interfaces = ReflectionUtils.interfaces
+    val interfaces = ReflectionUtils.extraInterfaces
 
     val realClass: Class[T] = mockSettings match {
       case m: MockSettingsImpl[_] if !m.getExtraInterfaces.isEmpty =>

@@ -303,7 +303,7 @@ class MockitoSugarTest
     }
 
     "work with inline mixins" in {
-      val aMock = mock[Foo with Baz]
+      val aMock: FooTrait with Baz = mock[FooTrait with Baz]
 
       when(aMock.bar) thenReturn "mocked!"
       when(aMock.traitMethod(any)) thenReturn ValueCaseClass(69)

@@ -3,7 +3,7 @@ import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
 
 import scala.annotation.varargs
 
-class Foo {
+class FooTrait {
   def bar = "not mocked"
 
   def iHaveByNameArgs(normal: String, byName: => String, byName2: => String): String = "not mocked"
@@ -28,6 +28,8 @@ class Foo {
 
   def baz(i: Int, b: Baz2): String = "not mocked"
 }
+
+class Foo extends FooTrait
 
 class Bar {
   def iAlsoHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = "not mocked"

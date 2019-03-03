@@ -1,11 +1,10 @@
 package user.org.mockito
 
 import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
-import org.scalatest
-import org.scalatest.WordSpec
+import org.scalatest.{Matchers, WordSpec}
 import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
 
-class IdiomaticMockitoTest_212 extends WordSpec with scalatest.Matchers with IdiomaticMockito with ArgumentMatchersSugar {
+class IdiomaticMockitoTest_212 extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 
   class Foo {
     def valueClass(n: Int, v: ValueClass): String = ???

@@ -1,9 +1,7 @@
-package org.mockito.integrations.scalatest
-
-import org.mockito._
+package org.mockito.scalatest
+import org.mockito.MockitoScalaSession
 import org.scalatest.{Outcome, Suite, TestSuite}
 
-@deprecated("Please use org.mockito.scalatest.MockitoSessionFixture from the mockito-scala-scalatest module", "1.3.0")
 private[mockito] trait MockitoSessionFixture extends TestSuite { this: Suite =>
 
   abstract override def withFixture(test: NoArgTest): Outcome = {

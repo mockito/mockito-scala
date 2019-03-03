@@ -33,17 +33,47 @@ lazy val commonSettings =
     Test / scalacOptions ++= Seq("-Ywarn-value-discard")
   )
 
+lazy val publishSettings = Seq(
+  licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
+  homepage := Some(url("https://github.com/mockito/mockito-scala")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/mockito/mockito-scala"),
+      "git@github.com:mockito/mockito-scala.git"
+    )
+  ),
+  developers := List(
+    Developer(
+      "bbonanno",
+      "Bruno Bonanno",
+      "bbonanno@gmail.com",
+      url("https://github.com/bbonanno")
+    )
+  )
+)
+
 lazy val commonLibraries = Seq(
   "org.mockito"   % "mockito-core"      % "2.26.0",
   "org.scalactic" %% "scalactic"        % "3.0.8-RC2",
   "ru.vyarus"     % "generics-resolver" % "3.0.0",
-  "org.scalatest" %% "scalatest"        % "3.0.8-RC2" % "provided",
 )
+
+lazy val scalatest = (project in file("scalatest"))
+  .dependsOn(core)
+  .dependsOn(common % "compile-internal, test-internal")
+  .dependsOn(macroSub % "compile-internal, test-internal")
+  .settings(
+    name := "mockito-scala-scalatest",
+    commonSettings,
+    publishSettings,
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "provided",
+  )
 
 lazy val common = (project in file("common"))
   .dependsOn(macroCommon)
   .settings(
     commonSettings,
+    publishSettings,
     libraryDependencies ++= commonLibraries,
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     publish := {},
@@ -59,6 +89,8 @@ lazy val core = (project in file("core"))
     name := "mockito-scala",
     libraryDependencies ++= commonLibraries,
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    //TODO remove when we remove the deprecated classes in org.mockito.integrations.scalatest
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "provided",
     // include the macro classes and resources in the main jar
     mappings in (Compile, packageBin) ++= mappings
       .in(macroSub, Compile, packageBin)
@@ -82,23 +114,7 @@ lazy val core = (project in file("core"))
     // include the common sources in the main source jar
     mappings in (Compile, packageSrc) ++= mappings
       .in(macroCommon, Compile, packageSrc)
-      .value,
-    licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
-    homepage := Some(url("https://github.com/mockito/mockito-scala")),
-    scmInfo := Some(
-      ScmInfo(
-        url("https://github.com/mockito/mockito-scala"),
-        "git@github.com:mockito/mockito-scala.git"
-      )
-    ),
-    developers := List(
-      Developer(
-        "bbonanno",
-        "Bruno Bonanno",
-        "bbonanno@gmail.com",
-        url("https://github.com/bbonanno")
-      )
-    )
+      .value
   )
 
 lazy val macroSub = (project in file("macro"))
@@ -125,4 +141,4 @@ lazy val root = (project in file("."))
   .settings(
     publish := {},
     publishLocal := {}
-  ) aggregate core
+  ) aggregate (core, scalatest)

@@ -1,6 +1,7 @@
 package user.org.mockito
 
 import org.mockito.captor.ArgCaptor
+import org.mockito.exceptions.misusing.WrongTypeOfReturnValue
 import org.mockito.exceptions.verification.{ArgumentsAreDifferent, WantedButNotInvoked}
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.{CallsRealMethods, DefaultAnswer, ScalaFirstStubbing}
@@ -279,9 +280,12 @@ class MockitoSugarTest
     }
 
     "create a mock with default answer" in {
-      val aMock = mock[Foo](CallsRealMethods)
+      val aMock = mock[Foo](DefaultAnswer("hola"))
 
-      aMock.bar shouldBe "not mocked"
+      aMock.bar shouldBe "hola"
+
+      val ex = the[WrongTypeOfReturnValue] thrownBy (aMock.returnBar shouldBe "hola")
+      ex.getMessage should include("Default answer returned a result with the wrong type")
     }
 
     "create a mock with default answer from implicit scope" in {

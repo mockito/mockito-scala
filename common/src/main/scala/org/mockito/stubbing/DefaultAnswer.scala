@@ -6,7 +6,7 @@ import org.mockito.Answers._
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 
 import scala.concurrent.Future
-import scala.util.{Failure, Try}
+import scala.util.{ Failure, Try }
 
 trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[Any]] { self =>
   override def answer(invocation: InvocationOnMock): Any = apply(invocation).orNull
@@ -20,15 +20,18 @@ object DefaultAnswer {
   implicit val defaultAnswer: DefaultAnswer = ReturnsSmartNulls
 
   def apply(from: Answer[_]): DefaultAnswer = new DecoratedAnswer(from)
+  def apply(value: Any): DefaultAnswer = new DefaultAnswer {
+    override def apply(i: InvocationOnMock): Option[Any] = Some(value)
+  }
 }
 
 class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {
   override def apply(invocation: InvocationOnMock): Option[Any] = Option(from.answer(invocation))
 }
 
-object ReturnsDefaults   extends DecoratedAnswer(RETURNS_DEFAULTS)
-object ReturnsDeepStubs  extends DecoratedAnswer(RETURNS_DEEP_STUBS)
-object CallsRealMethods  extends DecoratedAnswer(CALLS_REAL_METHODS)
+object ReturnsDefaults  extends DecoratedAnswer(RETURNS_DEFAULTS)
+object ReturnsDeepStubs extends DecoratedAnswer(RETURNS_DEEP_STUBS)
+object CallsRealMethods extends DecoratedAnswer(CALLS_REAL_METHODS)
 object ReturnsEmptyValues extends DefaultAnswer {
   private val javaEmptyValuesAndPrimitives = new ReturnsMoreEmptyValues
 

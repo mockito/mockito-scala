@@ -20,6 +20,12 @@ object DefaultAnswer {
   implicit val defaultAnswer: DefaultAnswer = ReturnsSmartNulls
 
   def apply(from: Answer[_]): DefaultAnswer = new DecoratedAnswer(from)
+
+  def apply(a: InvocationOnMock => Any): DefaultAnswer =
+    DefaultAnswer(new Answer[Any] {
+      override def answer(invocation: InvocationOnMock): Any = a(invocation)
+    })
+
   def apply(value: Any): DefaultAnswer = new DefaultAnswer {
     override def apply(i: InvocationOnMock): Option[Any] = Some(value)
   }

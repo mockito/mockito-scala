@@ -1,9 +1,9 @@
 package user.org.mockito.scalatest
 
-import org.mockito.scalatest.IdiomaticMockitoFixture
+import org.mockito.scalatest.ScalatestMockito
 import org.scalatest.{Matchers, WordSpec}
 
-class IdiomaticMockitoFixtureTest extends WordSpec with IdiomaticMockitoFixture with Matchers {
+class ScalatestMockitoTest extends WordSpec with ScalatestMockito with Matchers {
 
   class Foo {
     def bar(a: String) = "bar"
@@ -13,7 +13,7 @@ class IdiomaticMockitoFixtureTest extends WordSpec with IdiomaticMockitoFixture 
     val foo: Foo = mock[Foo]
   }
 
-  "MockitoFixture" should {
+  "ScalatestMockito" should {
     "check the mocks were called with the right arguments" in {
       val foo = mock[Foo]
 

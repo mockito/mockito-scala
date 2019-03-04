@@ -6,9 +6,9 @@ import org.mockito.internal.stubbing.StubbedInvocationMatcher
 import org.mockito.invocation.{DescribedInvocation, Invocation, Location}
 import org.mockito.listeners.MockCreationListener
 import org.mockito.mock.MockCreationSettings
-import org.mockito.quality.Strictness
-import org.mockito.quality.Strictness.{LENIENT, STRICT_STUBS}
+import org.mockito.quality.{ Strictness => JavaStrictness}
 import org.mockito.session.MockitoSessionLogger
+import org.scalactic.Equality
 import org.scalactic.TripleEquals._
 
 import scala.collection.JavaConverters._
@@ -59,7 +59,7 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
 
 object MockitoScalaSession {
   def apply(name: String = "<Unnamed Session>",
-            strictness: Strictness = STRICT_STUBS,
+            strictness: Strictness = Strictness.StrictStubs,
             logger: MockitoSessionLogger = MockitoScalaLogger): MockitoScalaSession =
     new MockitoScalaSession(name, strictness, logger)
 
@@ -137,7 +137,7 @@ object MockitoScalaSession {
     }
 
     def cleanLenientStubs(): Unit = {
-      val lenientStubbings = stubbings.filter(_.getStrictness == LENIENT)
+      val lenientStubbings = stubbings.filter(Strictness.Lenient === _.getStrictness)
       stubbings
         .filterNot(_.wasUsed())
         .flatMap(s => lenientStubbings.find(_.getMethod === s.getMethod).map(s -> _))
@@ -152,10 +152,41 @@ object MockitoScalaSession {
     private val mocks = mutable.Set.empty[AnyRef]
 
     override def onMockCreated(mock: AnyRef, settings: MockCreationSettings[_]): Unit =
-      if (!settings.isLenient && strictness != LENIENT) mocks += mock
+      if (!settings.isLenient && (strictness !== Strictness.Lenient)) mocks += mock
   }
 }
 
 object MockitoScalaLogger extends MockitoSessionLogger {
   override def log(hint: String): Unit = println(hint)
+}
+
+sealed trait Strictness {
+  def toJava: JavaStrictness
+}
+object Strictness {
+  case object Lenient extends Strictness {
+    override val toJava: JavaStrictness = JavaStrictness.LENIENT
+  }
+  case object Warn extends Strictness {
+    override val toJava: JavaStrictness = JavaStrictness.WARN
+  }
+  case object StrictStubs extends Strictness {
+    override val toJava: JavaStrictness = JavaStrictness.STRICT_STUBS
+  }
+
+  //implicit conversions for backward compatibility
+  implicit def scalaToJava(s: Strictness): JavaStrictness = s.toJava
+  implicit def javaToScala(s: JavaStrictness): Strictness = s match {
+    case JavaStrictness.LENIENT      => Lenient
+    case JavaStrictness.WARN         => Warn
+    case JavaStrictness.STRICT_STUBS => StrictStubs
+  }
+
+  implicit def StrictnessEquality[S <: Strictness]: Equality[S] = new Equality[S] {
+    override def areEqual(a: S, b: Any): Boolean = b match {
+      case s: Strictness => a == s
+      case s: JavaStrictness => a.toJava == s
+      case _ => false
+    }
+  }
 }

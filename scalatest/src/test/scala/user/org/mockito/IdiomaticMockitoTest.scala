@@ -1,13 +1,13 @@
 package user.org.mockito
 
-import scala.language.postfixOps
-
+import org.mockito.Strictness
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.scalatest.ScalatestMockito
 import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar}
 import org.scalactic.Prettifier
+import org.mockito.scalatest.ScalatestAsyncMockito
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{AsyncWordSpec, FixtureContext, Matchers}
 import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
@@ -15,13 +15,17 @@ import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
 case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
 
-class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestMockito with TableDrivenPropertyChecks {
+class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsyncMockito with TableDrivenPropertyChecks {
+
+  override val strictness: Strictness = Strictness.Lenient
+
   implicit val prettifier: Prettifier = new Prettifier {
     override def apply(o: Any): String = o match {
       case Baz2(_, s) => s"PrettifiedBaz($s)"
       case other => Prettifier.default(other)
     }
   }
+
   val scenarios = Table(
     ("testDouble", "orgDouble", "foo"),
     ("mock", () => mock[Org], () => mock[Foo]),

@@ -57,9 +57,11 @@ object WhenMacro {
     r
   }
 
-  class RealMethod
+  object RealMethod {
+    def willBe(called: Called.type): Called.type = called
+  }
 
-  def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod]): c.Expr[ScalaOngoingStubbing[T]] = {
+  def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod.type]): c.Expr[ScalaOngoingStubbing[T]] = {
     import c.universe._
 
     val r = c.Expr[ScalaOngoingStubbing[T]] {

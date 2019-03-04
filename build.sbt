@@ -27,7 +27,7 @@ lazy val commonSettings =
       "-encoding", "UTF-8",
       "-language:higherKinds",
       "-Xfatal-warnings",
-      "-language:reflectiveCalls",
+      "-language:reflectiveCalls,implicitConversions,experimental.macros",
 //      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor"
     ),
     Test / scalacOptions ++= Seq("-Ywarn-value-discard")

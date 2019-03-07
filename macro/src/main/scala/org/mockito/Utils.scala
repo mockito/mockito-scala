@@ -48,25 +48,31 @@ object Utils {
     "$greater$eq", // >=
     "$less", // <
     "$less$eq", // <=
-    "$eq$tilde" // =~
+    "$eq$tilde", // =~
+    "Captor.asCapture",
+    "capture"
   )
+
+  private def isSpecs2Matcher(methodName: String): Boolean =
+    methodName.startsWith("toFunctionCall") || methodName.startsWith("matcherToFunctionCall")
 
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {
     import c.universe._
     if (arg.toString().contains("org.mockito.matchers.MacroMatchers")) true
-    else
-      arg match {
-        case q"$_.Captor.asCapture[$_]($_)" => true
-        case q"$_.capture" => true
+    else {
+      val methodName = arg match {
+        case q"$_.Captor.asCapture[$_]($_)" => Some("Captor.asCapture")
+        case q"$_.n.$methodName[$_](...$_)" => Some(methodName.toString)
+        case q"$_.$methodName"              => Some(methodName.toString)
+        case q"$_.$methodName[..$_]"        => Some(methodName.toString)
+        case q"$_.$methodName(...$_)"       => Some(methodName.toString)
+        case q"$_.$methodName[..$_](...$_)" => Some(methodName.toString)
 
-        case q"$_.n.$methodName[$_](...$_)" => MockitoMatchers.contains(methodName.toString)
-        case q"$_.$methodName"              => MockitoMatchers.contains(methodName.toString)
-        case q"$_.$methodName[..$_]"        => MockitoMatchers.contains(methodName.toString)
-        case q"$_.$methodName(...$_)"       => MockitoMatchers.contains(methodName.toString)
-        case q"$_.$methodName[..$_](...$_)" => MockitoMatchers.contains(methodName.toString)
-
-        case _ => false
+        case _ => None
       }
+      methodName.exists(mn => MockitoMatchers.contains(mn) || isSpecs2Matcher(mn))
+    }
+
   }
 
   private[mockito] def transformArgs(c: blackbox.Context)(args: List[c.Tree]): List[c.Tree] =

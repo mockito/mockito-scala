@@ -23,7 +23,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T])(implicit $pt: P
           val mockitoMethod = i.getMockitoMethod
           val rawArguments  = i.getRawArguments
           val arguments =
-            if (rawArguments != null && rawArguments.nonEmpty)
+            if (rawArguments != null && rawArguments.nonEmpty && !isCallRealMethod)
               unwrapVarargs(unwrapByNameArgs(mockitoMethod.getJavaMethod, rawArguments))
                 .asInstanceOf[Array[AnyRef]]
             else rawArguments
@@ -39,6 +39,12 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T])(implicit $pt: P
 object ScalaMockHandler {
   def apply[T](mockSettings: MockCreationSettings[T])(implicit $pt: Prettifier): MockHandler[T] =
     new InvocationNotifierHandler[T](new ScalaNullResultGuardian[T](new ScalaMockHandler(mockSettings)), mockSettings)
+
+  private def isCallRealMethod: Boolean =
+    (new Exception).getStackTrace.toList.exists { t =>
+      t.getClassName == "org.mockito.internal.handler.ScalaInvocation" &&
+      t.getMethodName == "callRealMethod"
+    }
 
   private def unwrapByNameArgs(method: Method, args: Array[AnyRef]): Array[Any] =
     Extractors

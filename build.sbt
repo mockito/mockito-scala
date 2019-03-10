@@ -28,7 +28,7 @@ lazy val commonSettings =
       "-language:higherKinds",
       "-Xfatal-warnings",
       "-language:reflectiveCalls,implicitConversions,experimental.macros",
-//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor"
+//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-lenient"
     ),
     Test / scalacOptions ++= Seq("-Ywarn-value-discard")
   )
@@ -59,15 +59,15 @@ lazy val commonLibraries = Seq(
 )
 
 lazy val scalatest = (project in file("scalatest"))
-  .dependsOn(core)
-  .dependsOn(common % "compile-internal, test-internal")
-  .dependsOn(macroSub % "compile-internal, test-internal")
-  .settings(
-    name := "mockito-scala-scalatest",
-    commonSettings,
-    publishSettings,
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "provided",
-  )
+    .dependsOn(core)
+    .dependsOn(common % "compile-internal, test-internal")
+    .dependsOn(macroSub % "compile-internal, test-internal")
+    .settings(
+      name := "mockito-scala-scalatest",
+      commonSettings,
+      publishSettings,
+      libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "provided",
+    )
 
 lazy val common = (project in file("common"))
   .dependsOn(macroCommon)

@@ -1,5 +1,5 @@
 package user.org.mockito
-import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
+import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
 
 import scala.annotation.varargs
 
@@ -40,14 +40,14 @@ trait Baz {
   def varargMethod(arg: Int*): Int = -1
   @varargs def javaVarargMethod(arg: Int*): Int = -1
   def byNameMethod(arg: => Int): Int = -1
-  def traitMethod(arg: Int): ValueCaseClass = ValueCaseClass(arg)
+  def traitMethod(arg: Int): ValueCaseClass                                                  = ValueCaseClass(arg)
   def traitMethodWithDefaultArgs(defaultArg: Int = 30, anotherDefault: String = "hola"): Int = -1
 }
 
 class ConcreteBaz extends Baz
 
 class HigherKinded[F[_]] {
-  def method: F[Either[String, String]] = null.asInstanceOf[F[Either[String, String]]]
+  def method: F[Either[String, String]]  = null.asInstanceOf[F[Either[String, String]]]
   def method2: F[Either[String, String]] = null.asInstanceOf[F[Either[String, String]]]
 }
 
@@ -85,17 +85,22 @@ class Org {
 
   def baz(i: Int, b: Baz2): String = "not mocked"
 
-  def fooWithVarArg(bells: String*): Unit                                              = ()
-  def fooWithActualArray(bells: Array[String]): Unit                                              = ()
-  def fooWithSecondParameterList(bell: String)(cheese: Cheese): Unit                   = ()
-  def fooWithVarArgAndSecondParameterList(bells: String*)(cheese: Cheese): Unit        = ()
-  def fooWithActualArrayAndSecondParameterList(bells: Array[String])(cheese: Cheese): Unit        = ()
-  def valueClassWithVarArg(bread: Bread*): Unit                                        = ()
-  def valueClassWithSecondParameterList(bread: Bread)(cheese: Cheese): Unit            = ()
-  def valueClassWithVarArgAndSecondParameterList(breads: Bread*)(cheese: Cheese): Unit = ()
+  def fooWithVarArg(bells: String*): Unit                                                  = ()
+  def fooWithActualArray(bells: Array[String]): Unit                                       = ()
+  def fooWithSecondParameterList(bell: String)(cheese: Cheese): Unit                       = ()
+  def fooWithVarArgAndSecondParameterList(bells: String*)(cheese: Cheese): Unit            = ()
+  def fooWithActualArrayAndSecondParameterList(bells: Array[String])(cheese: Cheese): Unit = ()
+  def valueClassWithVarArg(bread: Bread*): Unit                                            = ()
+  def valueClassWithSecondParameterList(bread: Bread)(cheese: Cheese): Unit                = ()
+  def valueClassWithVarArgAndSecondParameterList(breads: Bread*)(cheese: Cheese): Unit     = ()
 }
 
 case class Baz2(param1: Int, param2: String)
 
 trait ParametrisedTrait[+E] { def m(): E }
 class ParametrisedTraitInt extends ParametrisedTrait[Int] { def m() = -1 }
+
+class TestController(org: Org) {
+  def async(f: => Int): Int = f
+  def test(id: Int)         = async { org.doSomethingWithThisInt(id) }
+}

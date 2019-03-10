@@ -710,6 +710,17 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
       result.next() shouldBe 5
       it.next() wasCalled once
     }
+
+    "spies must not be checked for matchers when called for real" in {
+      val org        = mock[Org]
+      val controller = spy(new TestController(org))
+
+      org.doSomethingWithThisInt(1) shouldReturn 1
+      // controller is a spy. Calling 'test' for real must not re-evaluate
+      // the arguments, hence make a mock call, to register matchers
+      controller.test(1)
+      org.doSomethingWithThisInt(1) wasCalled once
+    }
   }
 
   "doStub" should {

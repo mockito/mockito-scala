@@ -146,7 +146,7 @@ trait IdiomaticMockitoBase extends MockitoEnhancer {
   val atMostNineTimes: AtMost    = AtMost(9)
   val atMostTenTimes: AtMost     = AtMost(10)
 
-  def InOrder(mocks: AnyRef*)(verifications: VerifyInOrder => Unit): Verification = verification(verifications(VerifyInOrder(mocks)))
+  def InOrder(mocks: AnyRef*)(verifications: VerifyInOrder => Verification): Verification = verifications(VerifyInOrder(mocks))
 
   def atLeast(t: Times): AtLeast = AtLeast(t.times)
   def atMost(t: Times): AtMost   = AtMost(t.times)

@@ -277,6 +277,8 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
 
         a[TooLittleActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
+        }
+        a[TooLittleActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled 2.times
         }
 
@@ -289,6 +291,8 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
 
         a[TooManyActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
+        }
+        a[TooManyActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled 2.times
         }
       }
@@ -300,7 +304,11 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
 
         a[TooLittleActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
+        }
+        a[TooLittleActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeast(twice)
+        }
+        a[TooLittleActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeast(2.times)
         }
 
@@ -330,7 +338,11 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
 
         a[MoreThanAllowedActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atMostTwice
+        }
+        a[MoreThanAllowedActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atMost(twice)
+        }
+        a[MoreThanAllowedActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atMost(2.times)
         }
       }

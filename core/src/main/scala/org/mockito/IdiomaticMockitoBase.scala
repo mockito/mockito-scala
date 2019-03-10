@@ -24,7 +24,12 @@ object IdiomaticMockitoBase {
 
   object On
   object Never
-  object CalledAgain
+  sealed trait CalledAgain
+  object IgnoringStubs
+  case object CalledAgain extends CalledAgain {
+    def apply(i: IgnoringStubs.type): CalledAgain = LenientCalledAgain
+  }
+  case object LenientCalledAgain extends CalledAgain
 
   case class Times(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.times(times)
@@ -74,8 +79,10 @@ trait IdiomaticMockitoBase extends MockitoEnhancer {
 
     def wasNever(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasNotMacro[T, Verification]
 
-    def wasNever(called: CalledAgain.type)(implicit $ev: T <:< AnyRef): Verification =
-      verification(verifyNoMoreInteractions(stubbing.asInstanceOf[AnyRef]))
+    def wasNever(called: CalledAgain)(implicit $ev: T <:< AnyRef): Verification = called match {
+      case CalledAgain        => verification(verifyNoMoreInteractions(stubbing.asInstanceOf[AnyRef]))
+      case LenientCalledAgain => verification(verifyNoMoreInteractions(ignoreStubs(stubbing.asInstanceOf[AnyRef]): _*))
+    }
 
     def wasCalled(t: ScalaVerificationMode)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasCalledMacro[T, Verification]
 
@@ -98,7 +105,8 @@ trait IdiomaticMockitoBase extends MockitoEnhancer {
     def willBe(thrown: Thrown.type): ThrownBy.type = ThrownBy
   }
 
-  val calledAgain: CalledAgain.type = CalledAgain
+  val calledAgain: CalledAgain.type     = CalledAgain
+  val ignoringStubs: IgnoringStubs.type = IgnoringStubs
 
   val realMethod: RealMethod.type = RealMethod
 

@@ -272,6 +272,11 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   }
 
   /**
+    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
+    */
+  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
+
+  /**
     * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
     * they are created as final classes by the compiler
     */
@@ -337,11 +342,6 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
    */
   def when[T: ValueClassExtractor](methodCall: T): ScalaFirstStubbing[T] = Mockito.when(methodCall)
-
-  /**
-   * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
-   */
-  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
 
   /**
    * Delegates to <code>Mockito.validateMockitoUsage()</code>, it's only here to expose the full Mockito API

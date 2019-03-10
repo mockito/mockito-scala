@@ -699,7 +699,7 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
         a[WantedButNotInvoked] should be thrownBy {
           org.doSomethingWithThisInt(10) wasCalled (once within 10.millis)
         }
-        org.doSomethingWithThisInt(10) wasCalled (once within 300.millis)
+        org.doSomethingWithThisInt(10) wasCalled (once within 1.second)
       }
     }
   }

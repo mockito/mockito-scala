@@ -25,9 +25,8 @@ lazy val commonSettings =
       "-feature",
       "-deprecation:false",
       "-encoding", "UTF-8",
-      "-language:higherKinds",
       "-Xfatal-warnings",
-      "-language:reflectiveCalls,implicitConversions,experimental.macros",
+      "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds",
 //      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-lenient"
     ),
     Test / scalacOptions ++= Seq("-Ywarn-value-discard")
@@ -67,6 +66,18 @@ lazy val scalatest = (project in file("scalatest"))
       commonSettings,
       publishSettings,
       libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "provided",
+    )
+
+lazy val specs2 = (project in file("specs2"))
+    .dependsOn(core)
+    .dependsOn(common % "compile-internal, test-internal")
+    .dependsOn(macroSub % "compile-internal, test-internal")
+    .settings(
+      name := "mockito-scala-specs2",
+      commonSettings,
+      publishSettings,
+      libraryDependencies += "org.specs2" %% "specs2-core" % "4.4.1" % "provided",
+      libraryDependencies += "org.hamcrest" % "hamcrest-core" % "1.3" % "provided",
     )
 
 lazy val common = (project in file("common"))
@@ -141,4 +152,4 @@ lazy val root = (project in file("."))
   .settings(
     publish := {},
     publishLocal := {}
-  ) aggregate (core, scalatest)
+  ) aggregate (core, scalatest, specs2)

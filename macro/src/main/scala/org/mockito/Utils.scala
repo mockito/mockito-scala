@@ -1,5 +1,6 @@
 package org.mockito
 import scala.reflect.macros.blackbox
+import scala.util.matching.Regex
 
 object Utils {
   private[mockito] def hasMatchers(c: blackbox.Context)(args: List[c.Tree]): Boolean =
@@ -53,8 +54,8 @@ object Utils {
     "capture"
   )
 
-  private def isSpecs2Matcher(methodName: String): Boolean =
-    methodName.startsWith("toFunctionCall") || methodName.startsWith("matcherToFunctionCall")
+  private val specs2implicits: Regex = "(matcher)?[t,T]o(Partial)?FunctionCall(\\d*)".r
+  private def isSpecs2Matcher(methodName: String): Boolean = specs2implicits.pattern.matcher(methodName).matches
 
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {
     import c.universe._

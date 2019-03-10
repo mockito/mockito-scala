@@ -1,8 +1,10 @@
 package org.mockito
 
-import org.mockito.VerifyMacro._
 import org.mockito.WhenMacro._
 import org.mockito.stubbing.ScalaOngoingStubbing
+import org.mockito.verification.VerificationMode
+
+import scala.concurrent.duration.Duration
 
 object IdiomaticMockitoBase {
   object Returned
@@ -23,6 +25,31 @@ object IdiomaticMockitoBase {
   object On
   object Never
   object CalledAgain
+
+  case class Times(times: Int) extends ScalaVerificationMode {
+    override def verificationMode: VerificationMode = Mockito.times(times)
+    def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
+      override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).times(times)
+    }
+  }
+
+  case class AtLeast(times: Int) extends ScalaVerificationMode {
+    override def verificationMode: VerificationMode = Mockito.atLeast(times)
+    def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
+      override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).atLeast(times)
+    }
+  }
+
+  case class AtMost(times: Int) extends ScalaVerificationMode {
+    override def verificationMode: VerificationMode = Mockito.atMost(times)
+  }
+
+  object OnlyOn extends ScalaVerificationMode {
+    override def verificationMode: VerificationMode = Mockito.only
+    def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
+      override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).only
+    }
+  }
 }
 
 trait IdiomaticMockitoBase extends MockitoEnhancer {
@@ -50,13 +77,7 @@ trait IdiomaticMockitoBase extends MockitoEnhancer {
     def wasNever(called: CalledAgain.type)(implicit $ev: T <:< AnyRef): Verification =
       verification(verifyNoMoreInteractions(stubbing.asInstanceOf[AnyRef]))
 
-    def wasCalled(t: Times)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacroTimes[T, Verification]
-
-    def wasCalled(t: AtLeast)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacroAtLeast[T, Verification]
-
-    def wasCalled(t: AtMost)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacroAtMost[T, Verification]
-
-    def wasCalled(t: OnlyOn.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacroOnlyOn[T, Verification]
+    def wasCalled(t: ScalaVerificationMode)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasCalledMacro[T, Verification]
 
     //noinspection AccessorLikeMethodIsUnit
     def isLenient(): Unit = macro WhenMacro.isLenient[T]

@@ -9,8 +9,9 @@ import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar}
 import org.scalactic.Prettifier
 import org.mockito.scalatest.ScalatestAsyncMockito
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{AsyncWordSpec, FixtureContext, Matchers}
-import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
+import org.scalatest.{ AsyncWordSpec, FixtureContext, Matchers }
+import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
+import scala.concurrent.duration._
 
 case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
@@ -675,6 +676,19 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
         aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
       }
 
+
+      "verify things allowing a timeout" in {
+        val org = orgDouble()
+        scala.concurrent.Future {
+          Thread.sleep(200)
+          org.doSomethingWithThisInt(10)
+        }(scala.concurrent.ExecutionContext.Implicits.global)
+
+        a[WantedButNotInvoked] should be thrownBy {
+          org.doSomethingWithThisInt(10) wasCalled (once within 10.millis)
+        }
+        org.doSomethingWithThisInt(10) wasCalled (once within 300.millis)
+      }
     }
   }
 

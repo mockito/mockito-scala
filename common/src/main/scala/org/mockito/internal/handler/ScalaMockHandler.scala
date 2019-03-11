@@ -59,14 +59,16 @@ object ScalaMockHandler {
         .find(_._1 === method)
         .map(_._2)
         .map { transformIndices =>
-          args.zipWithIndex.flatMap {
-            case (arg: Function0[_], idx) if transformIndices.contains(idx)   => List(arg())
-            case (arg: Traversable[_], idx) if transformIndices.contains(idx) => arg
-            case (arg, _)                                                     => List(arg)
+          val a: Array[Any] = args.zipWithIndex.flatMap {
+            case (arg: Function0[_], idx) if transformIndices.contains(idx) => List(arg())
+            case (arg: Iterable[_], idx) if transformIndices.contains(idx)  => arg
+            case (arg, _)                                                   => List(arg)
           }
+          a
         }
         .getOrElse(args)
 
+      //Due to some scala compiler bug, sometimes the vararg may not be found, so we try the hard way just in case
       unwrapVarargs(transformed)
     }
   }

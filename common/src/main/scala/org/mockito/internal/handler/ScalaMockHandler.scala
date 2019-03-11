@@ -24,9 +24,8 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T])(implicit $pt: P
           val rawArguments  = i.getRawArguments
           val arguments =
             if (rawArguments != null && rawArguments.nonEmpty && !isCallRealMethod)
-              unwrapVarargs(unwrapByNameArgs(mockitoMethod.getJavaMethod, rawArguments))
-                .asInstanceOf[Array[AnyRef]]
-            else rawArguments
+              unwrapArgs(mockitoMethod, rawArguments.asInstanceOf[Array[Any]])
+          else rawArguments
 
           new ScalaInvocation(i.getMockRef, mockitoMethod, arguments, rawArguments, i.getRealMethod, i.getLocation, i.getSequenceNumber)
 
@@ -46,25 +45,30 @@ object ScalaMockHandler {
       t.getMethodName == "callRealMethod"
     }
 
-  private def unwrapByNameArgs(method: Method, args: Array[AnyRef]): Array[Any] =
+  private def unwrapArgs(method: Method, args: Array[AnyRef]): Array[Object] =
     Extractors
       .getOrDefault(method.getDeclaringClass, ArgumentExtractor.Empty)
       .transformArgs(method, args.asInstanceOf[Array[Any]])
+      .asInstanceOf[Array[Object]]
 
   val Extractors = new ConcurrentHashMap[Class[_], ArgumentExtractor]
 
   case class ArgumentExtractor(toTransform: Seq[(Method, Set[Int])]) {
-    def transformArgs(method: Method, args: Array[Any]): Array[Any] =
-      toTransform
+    def transformArgs(method: Method, args: Array[Any]): Array[Any] = {
+      val transformed = toTransform
         .find(_._1 === method)
         .map(_._2)
         .map { transformIndices =>
-          args.zipWithIndex.map {
-            case (arg: Function0[_], idx) if transformIndices.contains(idx) => arg()
-            case (arg, _)                                                   => arg
+          args.zipWithIndex.flatMap {
+            case (arg: Function0[_], idx) if transformIndices.contains(idx)   => List(arg())
+            case (arg: Traversable[_], idx) if transformIndices.contains(idx) => arg
+            case (arg, _)                                                     => List(arg)
           }
         }
         .getOrElse(args)
+
+      unwrapVarargs(transformed)
+    }
   }
 
   object ArgumentExtractor {

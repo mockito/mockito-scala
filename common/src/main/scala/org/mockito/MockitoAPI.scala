@@ -188,7 +188,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
       else mockSettings
 
-    ReflectionUtils.markMethodsWithLazyArgs(realClass)
+    ReflectionUtils.markMethodsWithLazyArgsOrVarArgs(realClass)
 
     def createMock(settings: MockCreationSettings[T]): T = {
       val mock          = getMockMaker.createMock(settings, ScalaMockHandler(settings))

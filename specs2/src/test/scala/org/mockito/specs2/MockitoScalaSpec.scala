@@ -541,6 +541,7 @@ ${step(env)}                                                                    
       def Map[K, V](a: Map[K, V]): Unit
 
       def varargs[T](ts: T*): Unit
+      def array[T](ts: Array[T]): Unit
 
       def method(a1: A, b: Boolean): Int
     }
@@ -563,6 +564,7 @@ ${step(env)}                                                                    
       m.Map(Map[Int, String]())
 
       m.varargs(1, 2)
+      m.array(Array(1, 2))
 
       m.javaList(*) was called
 
@@ -581,6 +583,7 @@ ${step(env)}                                                                    
       m.Map(*) was called
 
       m.varargs(*, *) was called
+      m.array(*) was called
     }
 
     eg := {

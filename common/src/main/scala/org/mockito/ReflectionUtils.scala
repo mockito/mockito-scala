@@ -73,7 +73,7 @@ private[mockito] object ReflectionUtils {
       .toOption
       .getOrElse(List.empty)
 
-  def markMethodsWithLazyArgs(clazz: Class[_]): Unit =
+  def markMethodsWithLazyArgsOrVarArgs(clazz: Class[_]): Unit =
     Extractors.computeIfAbsent(
       clazz,
       new function.Function[Class[_], ArgumentExtractor] {
@@ -89,6 +89,7 @@ private[mockito] object ReflectionUtils {
                     case s if isNonConstructorMethod(s) =>
                       (s, s.typeSignature.paramLists.flatten.zipWithIndex.collect {
                         case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
+                        case (p, idx) if p.typeSignature.toString.endsWith("*")    => idx
                       }.toSet)
                   }
                   .toSeq

@@ -11,6 +11,7 @@ import org.mockito.scalatest.ScalatestAsyncMockito
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ AsyncWordSpec, FixtureContext, Matchers }
 import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
+
 import scala.concurrent.duration._
 
 case class Bread(name: String) extends AnyVal
@@ -418,9 +419,19 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
 
         foo.fooWithVarArg("cow", "blue")
         foo.fooWithVarArg("cow", "blue") was called
+        foo.fooWithVarArg(*, *) was called
 
-        foo.fooWithVarArg("cow")
-        foo.fooWithVarArg("cow") was called
+
+        foo.fooWithVarArg("cat")
+        foo.fooWithVarArg("cat") was called
+
+        val s = List("horse", "red")
+
+        foo.fooWithVarArg(s: _*)
+        foo.fooWithVarArg("horse", "red") was called
+
+        foo.fooWithVarArg(*, *) wasCalled twice
+        foo.fooWithVarArg(*, *, *) wasNever called
       }
 
       "work with real arrays" in {
@@ -441,6 +452,11 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
 
         foo.valueClassWithVarArg(Bread("Baguette"))
         foo.valueClassWithVarArg(Bread("Baguette")) was called
+
+        val b = Seq(Bread("Chipa"), Bread("Tortilla"))
+
+        foo.valueClassWithVarArg(b: _*)
+        foo.valueClassWithVarArg(Bread("Chipa"), Bread("Tortilla")) was called
       }
 
       "create a mock where I can mix matchers, normal and implicit parameters" in {
@@ -491,6 +507,11 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
         org.fooWithVarArgAndSecondParameterList("cow", "blue")(cheese)
         org.fooWithVarArgAndSecondParameterList("cow", "blue")(cheese) was called
         org.fooWithVarArgAndSecondParameterList(*)(*) wasCalled twice
+
+        val s = List("horse", "red", "meh")
+        org.fooWithVarArgAndSecondParameterList(s: _*)(cheese)
+        org.fooWithVarArgAndSecondParameterList("horse", "red", "meh")(cheese) was called
+        org.fooWithVarArgAndSecondParameterList(*)(*) wasCalled thrice
       }
 
       "work with actual arrays and multiple param lists" in {
@@ -526,6 +547,11 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsy
 
         org.valueClassWithVarArgAndSecondParameterList(Bread("Baguette"), Bread("Arepa"))(cheese)
         org.valueClassWithVarArgAndSecondParameterList(Bread("Baguette"), Bread("Arepa"))(cheese) was called
+
+        val b = Seq(Bread("Chipa"), Bread("Tortilla"))
+
+        org.valueClassWithVarArgAndSecondParameterList(b: _*)(cheese)
+        org.valueClassWithVarArgAndSecondParameterList(Bread("Chipa"), Bread("Tortilla"))(cheese) was called
       }
 
       "eqToVal works with new syntax" in {

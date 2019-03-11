@@ -326,6 +326,12 @@ As you can see the new syntax reads a bit more natural, also notice you can use 
 
 Check the [tests](/core/src/test/scala/org/mockito/IdiomaticMockitoTest.scala) for more examples
 
+NOTE: When using the willBe syntax for stubbing, you can only stub one value to be returned, this is due to a limitation of the 
+type inference. If for some reason you have to do that (ideally all functions should be referentially transparent, so you wouldn't have to), you can 
+use the traditional syntax via the MockitoSugar companion object `MockitoSugar.doReturn("meh").when(myMock).foo` or you
+can use an answer that can decide what to return given whatever condition you need to simulate 
+`{ (args) => if(<condition>) something else somethingElse } willBe answered by myMock.foo`
+
 ## Default Answers
 We defined a new type `org.mockito.stubbing.DefaultAnswer` which is used to configure the default behaviour of a mock when a non-stubbed invocation
 is made on it.

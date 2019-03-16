@@ -4,6 +4,7 @@ import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar}
+import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{Matchers, WordSpec}
 import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
@@ -12,6 +13,13 @@ case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
 
 class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with TableDrivenPropertyChecks {
+  implicit val prettifier: Prettifier = new Prettifier {
+    override def apply(o: Any): String = o match {
+      case Baz2(_, s) => s"PrettifiedBaz($s)"
+      case other => Prettifier.default(other)
+    }
+  }
+
   val scenarios = Table(
     ("testDouble", "orgDouble", "foo"),
     ("mock", () => mock[Org], () => mock[Foo]),
@@ -579,6 +587,21 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.valueCaseClass(2, any[ValueCaseClass]) was called
       }
 
+
+      "use Prettifier for the arguments" in {
+        val aMock = orgDouble()
+
+        aMock.baz(42, Baz2(69, "hola"))
+
+        val e = the[ArgumentsAreDifferent] thrownBy {
+          aMock.baz(42, Baz2(69, "chau")) was called
+        }
+
+        e.getMessage should include("Argument(s) are different! Wanted:")
+        e.getMessage should include("org.baz(42, PrettifiedBaz(hola));")
+        e.getMessage should include("Actual invocation has different arguments:")
+        e.getMessage should include("org.baz(42, PrettifiedBaz(chau));")
+      }
 
       "default answer should deal with default arguments" in {
         val aMock = foo()

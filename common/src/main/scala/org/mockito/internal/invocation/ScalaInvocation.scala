@@ -1,11 +1,15 @@
-package org.mockito.internal.handler
-import java.lang.reflect.Method
+package org.mockito.internal.invocation
 
+import java.lang.reflect.Method
+import java.util
+
+import org.mockito.ArgumentMatcher
 import org.mockito.internal.exceptions.Reporter.cannotCallAbstractRealMethod
 import org.mockito.internal.exceptions.VerificationAwareInvocation
-import org.mockito.internal.invocation.{MockitoMethod, RealMethod}
 import org.mockito.internal.invocation.mockref.MockReference
-import org.mockito.invocation.{Invocation, Location, StubInfo}
+import org.mockito.internal.reporting.PrintSettings
+import org.mockito.invocation.{ Invocation, Location, StubInfo }
+import org.scalactic.Prettifier
 
 class ScalaInvocation(val mockRef: MockReference[AnyRef],
                       val mockitoMethod: MockitoMethod,
@@ -13,8 +17,8 @@ class ScalaInvocation(val mockRef: MockReference[AnyRef],
                       rawArguments: Array[AnyRef],
                       realMethod: RealMethod,
                       location: Location,
-                      sequenceNumber: Int)
-  extends Invocation
+                      sequenceNumber: Int)(implicit $pt: Prettifier)
+    extends Invocation
     with VerificationAwareInvocation {
 
   private var verified: Boolean                  = false
@@ -42,13 +46,15 @@ class ScalaInvocation(val mockRef: MockReference[AnyRef],
   override def equals(other: Any): Boolean = other match {
     case that: ScalaInvocation =>
       super.equals(that) &&
-        getMock == that.getMock &&
-        mockitoMethod == that.mockitoMethod &&
-        (arguments sameElements that.arguments)
+      getMock == that.getMock &&
+      mockitoMethod == that.mockitoMethod &&
+      (arguments sameElements that.arguments)
     case _ => false
   }
   override def hashCode(): Int = {
     val state = Seq(super.hashCode(), mockRef.get, mockitoMethod, arguments)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
+  override def toString: String                                      = new PrintSettings().print(getArgumentsAsMatchers, this)
+  override def getArgumentsAsMatchers: util.List[ArgumentMatcher[_]] = argumentsToMatchers(arguments)
 }

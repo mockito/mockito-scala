@@ -1,6 +1,7 @@
 package user.org.mockito
 
 import org.mockito.captor.ArgCaptor
+import org.mockito.exceptions.verification.WantedButNotInvoked
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ScalaFirstStubbing }
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
@@ -278,11 +279,15 @@ class MockitoSugarTest
 
       when(aMock.bar) thenReturn "mocked!"
       when(aMock.traitMethod(any)) thenReturn ValueCaseClass(69)
+      when(aMock.varargMethod(1, 2, 3)) thenReturn 42
 
       aMock.bar shouldBe "mocked!"
       aMock.traitMethod(30) shouldBe ValueCaseClass(69)
+      aMock.varargMethod(1, 2, 3) shouldBe 42
 
       verify(aMock).traitMethod(30)
+      verify(aMock).varargMethod(1, 2, 3)
+      a[WantedButNotInvoked] should be thrownBy verify(aMock).varargMethod(1, 2)
     }
 
     "should stop the user passing traits in the settings" in {

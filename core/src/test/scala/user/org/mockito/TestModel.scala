@@ -32,6 +32,7 @@ class Bar {
 
 trait Baz {
   def varargMethod(arg: Int*): Int = -1
+  def byNameMethod(arg: => Int): Int = -1
   def traitMethod(arg: Int): ValueCaseClass = ValueCaseClass(arg)
   def traitMethodWithDefaultArgs(defaultArg: Int = 30, anotherDefault: String = "hola"): Int = -1
 }

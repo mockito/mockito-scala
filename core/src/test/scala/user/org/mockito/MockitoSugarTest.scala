@@ -280,14 +280,18 @@ class MockitoSugarTest
       when(aMock.bar) thenReturn "mocked!"
       when(aMock.traitMethod(any)) thenReturn ValueCaseClass(69)
       when(aMock.varargMethod(1, 2, 3)) thenReturn 42
+      when(aMock.byNameMethod(69)) thenReturn 42
 
       aMock.bar shouldBe "mocked!"
       aMock.traitMethod(30) shouldBe ValueCaseClass(69)
       aMock.varargMethod(1, 2, 3) shouldBe 42
+      aMock.byNameMethod(69) shouldBe 42
 
       verify(aMock).traitMethod(30)
       verify(aMock).varargMethod(1, 2, 3)
+      verify(aMock).byNameMethod(69)
       a[WantedButNotInvoked] should be thrownBy verify(aMock).varargMethod(1, 2)
+      a[WantedButNotInvoked] should be thrownBy verify(aMock).byNameMethod(71)
     }
 
     "should stop the user passing traits in the settings" in {

@@ -1,6 +1,8 @@
 package user.org.mockito
 import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
 
+import scala.annotation.varargs
+
 class Foo {
   def bar = "not mocked"
 
@@ -32,6 +34,7 @@ class Bar {
 
 trait Baz {
   def varargMethod(arg: Int*): Int = -1
+  @varargs def javaVarargMethod(arg: Int*): Int = -1
   def byNameMethod(arg: => Int): Int = -1
   def traitMethod(arg: Int): ValueCaseClass = ValueCaseClass(arg)
   def traitMethodWithDefaultArgs(defaultArg: Int = 30, anotherDefault: String = "hola"): Int = -1

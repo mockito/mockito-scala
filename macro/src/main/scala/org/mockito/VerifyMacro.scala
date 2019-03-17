@@ -19,8 +19,11 @@ object VerifyMacro {
     val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).was($_.called)($order)" =>
+          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"$order.verify($obj).$method[..$targs](...$newArgs)"
+          } else
+            q"$order.verify($obj).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).was($_.called)($order)" =>
           q"$order.verify($obj).$method[..$targs]"
@@ -41,8 +44,11 @@ object VerifyMacro {
           q"_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasNever($_.called)($order)" =>
+          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.never).$method[..$targs](...$newArgs)"
+          } else
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.never).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasNever($_.called)($order)" =>
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.never).$method[..$targs]"
@@ -65,8 +71,11 @@ object VerifyMacro {
     val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
+          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.times($times.times)).$method[..$targs](...$newArgs)"
+          } else
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.times($times.times)).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.times($times.times)).$method[..$targs]"
@@ -86,8 +95,11 @@ object VerifyMacro {
     val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
+          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atLeast($times.times)).$method[..$targs](...$newArgs)"
+          } else
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atLeast($times.times)).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atLeast($times.times)).$method[..$targs]"
@@ -107,8 +119,11 @@ object VerifyMacro {
     val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
+          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atMost($times.times)).$method[..$targs](...$newArgs)"
+          } else
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atMost($times.times)).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($times)($order)" =>
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.atMost($times.times)).$method[..$targs]"
@@ -128,8 +143,11 @@ object VerifyMacro {
     val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($_)($order)" =>
+          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.only).$method[..$targs](...$newArgs)"
+          } else
+            q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.only).$method[..$targs](...$args)"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs]).wasCalled($_)($order)" =>
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.only).$method[..$targs]"

@@ -2,6 +2,8 @@ package org.mockito
 import scala.reflect.macros.blackbox
 
 object Utils {
+  private[mockito] def hasMatchers(c: blackbox.Context)(args: List[c.Tree]): Boolean =
+    args.exists(arg => isMatcher(c)(arg))
 
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {
     import c.universe._

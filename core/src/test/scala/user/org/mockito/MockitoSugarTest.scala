@@ -3,11 +3,12 @@ package user.org.mockito
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification.WantedButNotInvoked
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ScalaFirstStubbing }
-import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.mockito.stubbing.{CallsRealMethods, DefaultAnswer, ScalaFirstStubbing}
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
+import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
 import user.org.mockito.matchers.ValueCaseClass
+import user.org.mockito.model.JavaFoo
 
 //noinspection RedundantDefaultArgument
 class MockitoSugarTest
@@ -296,6 +297,17 @@ class MockitoSugarTest
       a[WantedButNotInvoked] should be thrownBy verify(aMock).varargMethod(1, 2)
       a[WantedButNotInvoked] should be thrownBy verify(aMock).javaVarargMethod(1, 2)
       a[WantedButNotInvoked] should be thrownBy verify(aMock).byNameMethod(71)
+    }
+
+    "work with java varargs" in {
+      val aMock = mock[JavaFoo]
+
+      when(aMock.varargMethod(1, 2, 3)) thenReturn 42
+
+      aMock.varargMethod(1, 2, 3) shouldBe 42
+
+      verify(aMock).varargMethod(1, 2, 3)
+      a[WantedButNotInvoked] should be thrownBy verify(aMock).varargMethod(1, 2)
     }
 
     "should stop the user passing traits in the settings" in {

@@ -3,22 +3,22 @@ package user.org.mockito
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar}
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{ Matchers, WordSpec }
-import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
+import org.scalatest.{Matchers, WordSpec}
+import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
 
 case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
 
 class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with TableDrivenPropertyChecks {
   val scenarios = Table(
-    ("testDouble", "orgDouble"),
-    ("mock", () => mock[Org]),
-    ("spy", () => spy(new Org))
+    ("testDouble", "orgDouble", "foo"),
+    ("mock", () => mock[Org], () => mock[Foo]),
+    ("spy", () => spy(new Org), () => spy(new Foo))
   )
 
-  forAll(scenarios) { (testDouble, orgDouble) =>
+  forAll(scenarios) { (testDouble, orgDouble, foo) =>
     testDouble should {
       "stub a return value" in {
         val org = orgDouble()
@@ -563,6 +563,74 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
         org.valueCaseClass(2, any[ValueCaseClass]) was called
       }
+
+
+      "default answer should deal with default arguments" in {
+        val aMock = foo()
+
+        aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument")
+        aMock.iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument")
+
+        aMock.iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value") was called
+        aMock.iHaveSomeDefaultArguments("I'm gonna pass the second argument", "second argument") was called
+      }
+
+      "work with by-name arguments (argument order doesn't matter when not using matchers)" in {
+        val aMock = foo()
+
+        aMock.iStartWithByNameArgs("arg1", "arg2") shouldReturn "mocked!"
+
+        aMock.iStartWithByNameArgs("arg1", "arg2") shouldBe "mocked!"
+        aMock.iStartWithByNameArgs("arg111", "arg2") should not be "mocked!"
+
+        aMock.iStartWithByNameArgs("arg1", "arg2") was called
+        aMock.iStartWithByNameArgs("arg111", "arg2") was called
+      }
+
+      "work with primitive by-name arguments" in {
+        val aMock = foo()
+
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldReturn "mocked!"
+
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
+        aMock.iHavePrimitiveByNameArgs(2, "arg2") should not be "mocked!"
+
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") was called
+        aMock.iHavePrimitiveByNameArgs(2, "arg2") was called
+      }
+
+      "work with Function0 arguments" in {
+        val aMock = foo()
+
+        aMock.iHaveFunction0Args(eqTo("arg1"), function0("arg2")) shouldReturn "mocked!"
+
+        aMock.iHaveFunction0Args("arg1", () => "arg2") shouldBe "mocked!"
+        aMock.iHaveFunction0Args("arg1", () => "arg3") should not be "mocked!"
+
+        aMock.iHaveFunction0Args(eqTo("arg1"), function0("arg2")) was called
+        aMock.iHaveFunction0Args(eqTo("arg1"), function0("arg3")) was called
+      }
+
+      "reset" in {
+        val aMock = foo()
+
+        aMock.bar shouldReturn "mocked!"
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldReturn "mocked!"
+
+        aMock.bar shouldBe "mocked!"
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
+
+        MockitoSugar.reset(aMock)
+
+        aMock.bar should not be "mocked!"
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") should not be "mocked!"
+
+        //to verify the reset mock handler still handles by-name params
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldReturn "mocked!"
+
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
+      }
+
     }
   }
 

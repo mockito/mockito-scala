@@ -19,11 +19,8 @@ object WhenMacro {
     val r = c.Expr[ReturnActions[T]] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldReturn" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
-          } else
-            q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldReturn" =>
           q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
@@ -41,11 +38,8 @@ object WhenMacro {
     val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).isLenient()" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs))).isLenient()"
-          } else
-            q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args))).isLenient()"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).isLenient()" =>
           q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs])).isLenient()"
@@ -67,11 +61,8 @@ object WhenMacro {
     val r = c.Expr[ScalaOngoingStubbing[T]] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldCall($_.realMethod)" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)).thenCallRealMethod())"
-          } else
-            q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)).thenCallRealMethod())"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldCall($_.realMethod)" =>
           q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]).thenCallRealMethod())"
@@ -93,11 +84,8 @@ object WhenMacro {
     val r = c.Expr[ThrowActions[T]] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldThrow" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
-          } else
-            q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldThrow" =>
           q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
@@ -141,11 +129,8 @@ object WhenMacro {
     val r = c.Expr[AnswerActions[T]] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldAnswer" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
-          } else
-            q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldAnswer" =>
           q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"

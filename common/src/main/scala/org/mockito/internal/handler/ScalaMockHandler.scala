@@ -6,11 +6,15 @@ import java.lang.reflect.Modifier.isAbstract
 import java.util.concurrent.ConcurrentHashMap
 
 import org.mockito.internal.handler.ScalaMockHandler._
+import org.mockito.internal.invocation.mockref.MockReference
+import org.mockito.internal.invocation.{ InterceptedInvocation, MockitoMethod, RealMethod }
+import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.invocation._
 import org.mockito.invocation.{ Invocation, MockHandler }
 import org.mockito.mock.MockCreationSettings
 import org.scalactic.Prettifier
 import org.scalactic.TripleEquals._
+import collection.JavaConverters._
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T])(implicit $pt: Prettifier) extends MockHandlerImpl[T](mockSettings) {
 
@@ -24,11 +28,10 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T])(implicit $pt: P
           val rawArguments  = i.getRawArguments
           val arguments =
             if (rawArguments != null && rawArguments.nonEmpty && !isCallRealMethod)
-              unwrapArgs(mockitoMethod, rawArguments.asInstanceOf[Array[Any]])
+              unwrapArgs(mockitoMethod.getJavaMethod, rawArguments.asInstanceOf[Array[Any]])
           else rawArguments
 
           new ScalaInvocation(i.getMockRef, mockitoMethod, arguments, rawArguments, i.getRealMethod, i.getLocation, i.getSequenceNumber)
-
         case other => other
       }
       super.handle(scalaInvocation)
@@ -45,35 +48,30 @@ object ScalaMockHandler {
       t.getMethodName == "callRealMethod"
     }
 
-  private def unwrapArgs(method: Method, args: Array[AnyRef]): Array[Object] =
-    Extractors
-      .getOrDefault(method.getDeclaringClass, ArgumentExtractor.Empty)
-      .transformArgs(method, args.asInstanceOf[Array[Any]])
-      .asInstanceOf[Array[Object]]
-
-  val Extractors = new ConcurrentHashMap[Class[_], ArgumentExtractor]
-
-  case class ArgumentExtractor(toTransform: Seq[(Method, Set[Int])]) {
-    def transformArgs(method: Method, args: Array[Any]): Array[Any] = {
-      val transformed = toTransform
-        .find(_._1 === method)
-        .map(_._2)
-        .map { transformIndices =>
-          val a: Array[Any] = args.zipWithIndex.flatMap {
-            case (arg: Function0[_], idx) if transformIndices.contains(idx) => List(arg())
-            case (arg: Iterable[_], idx) if transformIndices.contains(idx)  => arg
-            case (arg, _)                                                   => List(arg)
-          }
-          a
+  private def unwrapArgs(method: Method, args: Array[Any]): Array[Object] = {
+    val transformed = Extractors.asScala.values.flatten
+      .find {
+        case (cls, mtd, _) => method.getDeclaringClass.isAssignableFrom(cls) && method === mtd
+      }
+      .map(_._3)
+      .map { transformIndices =>
+        val matchers = mockingProgress().getArgumentMatcherStorage.pullLocalizedMatchers().asScala.toIterator
+        val a: Array[Any] = args.zipWithIndex.flatMap {
+          case (arg: Function0[_], idx) if transformIndices.contains(idx) =>
+            List(arg())
+          case (arg: Iterable[_], idx) if transformIndices.contains(idx) =>
+            arg.foreach(_ => if (matchers.nonEmpty) mockingProgress().getArgumentMatcherStorage.reportMatcher(matchers.next().getMatcher))
+            arg
+          case (arg, _) =>
+            if (matchers.nonEmpty) mockingProgress().getArgumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
+            List(arg)
         }
-        .getOrElse(args)
+        a
+      }
+      .getOrElse(args)
 
-      //Due to some scala compiler bug, sometimes the vararg may not be found, so we try the hard way just in case
-      unwrapVarargs(transformed)
-    }
+    unwrapVarargs(transformed).asInstanceOf[Array[Object]]
   }
 
-  object ArgumentExtractor {
-    val Empty = ArgumentExtractor(Seq.empty)
-  }
+  val Extractors = new ConcurrentHashMap[Class[_], Seq[(Class[_], Method, Set[Int])]]
 }

@@ -85,7 +85,7 @@ This trait wraps the API available on `org.mockito.Mockito` from the Java versio
 *   Eliminates parenthesis when possible to make the test code more readable
 *   Adds `spyLambda[T]` to allow spying lambdas (they don't work with the standard spy as they are created as final classes by the compiler)
 *   Supports mocking inline mixins like `mock[MyClass with MyTrait]`
-*   Supports by-name arguments in some scenarios
+*   Supports by-name arguments in some scenarios **NOTE: since v1.3.0 there is full support for by-name arguments**
     *   Full support when all arguments in a method are by-name
     *   Full support when only some arguments in a method are by-name, but we use the `any[T]` matcher for every argument
     *   Full support when only some arguments in a method are by-name, but we use NO matchers at all

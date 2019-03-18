@@ -3,7 +3,7 @@ package org.mockito
 import java.lang.reflect.Method
 import java.util.function
 
-import org.mockito.internal.handler.ScalaMockHandler.{ ArgumentExtractor, Extractors }
+import org.mockito.internal.handler.ScalaMockHandler.Extractors
 import org.mockito.invocation.InvocationOnMock
 import org.scalactic.TripleEquals._
 import ru.vyarus.java.generics.resolver.GenericsResolver
@@ -76,31 +76,29 @@ private[mockito] object ReflectionUtils {
   def markMethodsWithLazyArgsOrVarArgs(clazz: Class[_]): Unit =
     Extractors.computeIfAbsent(
       clazz,
-      new function.Function[Class[_], ArgumentExtractor] {
-        override def apply(t: Class[_]): ArgumentExtractor =
+      new function.Function[Class[_], Seq[(Class[_], Method, Set[Int])]] {
+        override def apply(t: Class[_]): Seq[(Class[_], Method, Set[Int])] =
           scala.util
             .Try {
-              ArgumentExtractor {
-                mirror
-                  .classSymbol(clazz)
-                  .info
-                  .members
-                  .collect {
-                    case s if isNonConstructorMethod(s) =>
-                      (s, s.typeSignature.paramLists.flatten.zipWithIndex.collect {
-                        case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
-                        case (p, idx) if p.typeSignature.toString.endsWith("*")    => idx
-                      }.toSet)
-                  }
-                  .toSeq
-                  .filter(_._2.nonEmpty)
-                  .map {
-                    case (s, indices) => customMirror.methodToJava(s) -> indices
-                  }
-              }
+              mirror
+                .classSymbol(clazz)
+                .info
+                .members
+                .collect {
+                  case s if isNonConstructorMethod(s) =>
+                    (s, s.typeSignature.paramLists.flatten.zipWithIndex.collect {
+                      case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
+                      case (p, idx) if p.typeSignature.toString.endsWith("*")    => idx
+                    }.toSet)
+                }
+                .toSeq
+                .filter(_._2.nonEmpty)
+                .map {
+                  case (s, indices) => (clazz, customMirror.methodToJava(s), indices)
+                }
             }
             .toOption
-            .getOrElse(ArgumentExtractor.Empty)
+            .getOrElse(Seq.empty)
       }
     )
 }

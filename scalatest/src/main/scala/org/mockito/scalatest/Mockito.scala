@@ -6,7 +6,7 @@ import org.scalatest.compatible.Assertion
 
 import scala.concurrent.Future
 
-trait ScalatestMockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSessionFixture {
+trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSessionFixture {
   override type Verification = Assertion
   override def verification(v: => Any): Verification = {
     v
@@ -14,7 +14,7 @@ trait ScalatestMockito extends IdiomaticMockitoBase with ArgumentMatchersSugar w
   }
 }
 
-trait ScalatestAsyncMockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSessionAsyncFixture {
+trait AsyncMockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSessionAsyncFixture {
   override type Verification = Future[Assertion]
   override def verification(v: => Any): Verification = {
     v

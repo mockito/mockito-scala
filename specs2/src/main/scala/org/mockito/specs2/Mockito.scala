@@ -9,7 +9,7 @@ import org.specs2.control.Exceptions.catchAll
 import org.specs2.control.Throwablex._
 import org.specs2.matcher.{Expectable, MatchFailure, MatchResult, MatchSuccess, Matcher}
 
-trait Specs2Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSpecs2Support {
+trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSpecs2Support {
 
   def checkCalls[Any] = new Matcher[Any] {
     def apply[S <: Any](s: Expectable[S]) =

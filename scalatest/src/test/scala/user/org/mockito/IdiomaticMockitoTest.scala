@@ -7,7 +7,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.scalatest.ScalatestMockito
 import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar}
 import org.scalactic.Prettifier
-import org.mockito.scalatest.ScalatestAsyncMockito
+import org.mockito.scalatest.AsyncMockito
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ AsyncWordSpec, FixtureContext, Matchers }
 import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
@@ -17,7 +17,7 @@ import scala.concurrent.duration._
 case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
 
-class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with ScalatestAsyncMockito with TableDrivenPropertyChecks {
+class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncMockito with TableDrivenPropertyChecks {
 
   override val strictness: Strictness = Strictness.Lenient
 

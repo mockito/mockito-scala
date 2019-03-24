@@ -16,7 +16,7 @@ import org.specs2.specification.core.Env
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-class MockitoScalaSpec extends script.Spec with Specs2Mockito with Groups {
+class MockitoScalaSpec extends script.Spec with Mockito with Groups {
   def is =
     s2"""
 
@@ -528,7 +528,7 @@ ${step(env)}                                                                    
 //    }
 //  }
 
-  "mockito matchers" - new group with Specs2Mockito with ThrownExpectations {
+  "mockito matchers" - new group with Mockito with ThrownExpectations {
     trait M {
       def javaList[T](a: java.util.List[T]): Unit
       def javaSet[T](a: java.util.Set[T]): Unit

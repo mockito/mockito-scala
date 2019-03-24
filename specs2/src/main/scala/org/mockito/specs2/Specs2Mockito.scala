@@ -6,12 +6,12 @@ import org.mockito.matchers.DefaultMatcher
 import org.mockito.{ArgumentMatchersSugar, IdiomaticMockitoBase}
 import org.scalactic.Equality
 import org.specs2.control.Exceptions.catchAll
-import org.specs2.control.Throwablex
+import org.specs2.control.Throwablex._
 import org.specs2.matcher.{Expectable, MatchFailure, MatchResult, MatchSuccess, Matcher}
 
 trait Specs2Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSpecs2Support {
 
-  def checkCalls[Any] = new Matcher[Any] with Throwablex {
+  def checkCalls[Any] = new Matcher[Any] {
     def apply[S <: Any](s: Expectable[S]) =
       catchAll { s.value } { identity } match {
         case Right(v) =>

@@ -23,7 +23,7 @@ class MockitoScalaSpec extends script.Spec with Specs2Mockito with Groups {
  Mockito is a Java library for mocking.
 
  The following samples are taken from the main documentation which can be found here:
- http://mockito.googlecode.com/svn/tags/latest/javadoc/org/mockito/Mockito.html
+ https://static.javadoc.io/org.mockito/mockito-core/2.25.1/org/mockito/Mockito.html
 
  CREATION
  ========
@@ -636,7 +636,7 @@ trait WithFunctionNothing { def call(f: Int => Nothing) = 1 }
 trait WithFunctionAny     { def call(f: () => Any)      = 1 }
 trait WithFunctionInt     { def call(f: Int => Any)     = 1 }
 
-// this example comes from #428
+// this example comes from https://github.com/etorreborre/specs2/issues/428
 class FooComponent {
   def getBar(id: Int): Int = id
 }

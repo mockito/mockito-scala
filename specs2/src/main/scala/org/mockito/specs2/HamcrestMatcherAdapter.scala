@@ -24,11 +24,11 @@ case class HamcrestMatcherAdapter[T](m: Matcher[T]) extends BaseMatcher[T] {
         case f: MatchFailure[_] => message = f.koMessage; false
         case _ => true
       }
-      // a class cast exception can happen if we tried: vet.treat(dog); there must be one(vet).treat(bird) (see issue #222)
+      // a class cast exception can happen if we tried: vet.treat(dog); there must be one(vet).treat(bird) (see issue https://github.com/etorreborre/specs2/issues/222)
     } catch {
-      case c: ClassCastException => false
+      case _: ClassCastException => false
       case e: Throwable =>
-        // this is a stop-gap solution for #584
+        // this is a stop-gap solution for https://github.com/etorreborre/specs2/issues/584
         // it seems that Mockito can pass null values in some cases
         if (item == null) false
         else throw e

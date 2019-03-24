@@ -279,7 +279,7 @@ ${step(env)}                                                                    
       val foo        = mock[FooComponent]
       val controller = spy(new TestController(foo))
 
-      foo.getBar(1) shouldReturn 1
+      foo.getBar(1) returns 1
       // controller is a spy. Calling 'test' for real must not re-evaluate
       // the arguments, hence make a mock call, to register matchers
       controller.test(1)
@@ -289,20 +289,20 @@ ${step(env)}                                                                    
 
   "stubs" - new group with list {
     eg := {
-      list.add("one") shouldReturn true
+      list.add("one") mustReturn true
       list.add("one") must_== true
     }
     eg := {
-      list.add("one") shouldReturn true andThen false andThen true
+      list.add("one") returns true andThen false andThen true
       (list.add("one"), list.add("one"), list.add("one")) must_== ((true, false, true))
     }
 
     eg := {
-      list.contains(new IsNull[String]) shouldReturn true
+      list.contains(new IsNull[String]) mustReturn true
       list.contains(null) must_== true
     }
     eg := {
-      list.contains(beMatching(".*o")) shouldReturn true
+      list.contains(beMatching(".*o")) returns true
       list.contains("o") must_== true
     }
     eg := {
@@ -318,28 +318,28 @@ ${step(env)}                                                                    
       vet.treat(isDog) must not(throwA[ClassCastException])
     }
     eg := {
-      list.contains(Set(1)) shouldReturn true
+      list.contains(Set(1)) returns true
       list.contains(Set(1)) must_== true
       list.contains(Set(2)) must_== false
     }
     eg := {
-      list.contains(List(1)) shouldReturn true
+      list.contains(List(1)) returns true
       list.contains(List(1)) must_== true
       list.contains(List(2)) must_== false
     }
     eg := {
-      list.clear() shouldThrow new RuntimeException
+      list.clear() throws new RuntimeException
       list.clear()
     } must throwA[RuntimeException]
 
     eg := {
-      list.clear() shouldThrow new RuntimeException andThenThrow new IllegalArgumentException
+      list.clear() throws new RuntimeException andThenThrow new IllegalArgumentException
       tryo(list.clear())
       list.clear()
     } must throwAn[IllegalArgumentException]
     eg := {
       val mocked: java.util.List[String] = mock[java.util.List[String]]
-      mocked.contains("o") shouldReturn true
+      mocked.contains("o") returns true
       mocked.contains("o") must beTrue
     }
   }
@@ -372,8 +372,8 @@ ${step(env)}                                                                    
     eg := {
       val list3 = mock[java.util.List[String]]
       val list4 = mock[java.util.List[String]]
-      list3.contains("3") shouldReturn false
-      list4.contains("4") shouldReturn false
+      list3.contains("3") returns false
+      list4.contains("4") returns false
 
       list3.add("one")
       list4.add("one"); list4.add("one")
@@ -402,7 +402,7 @@ ${step(env)}                                                                    
     }
 
     eg := {
-      list1.get(1) shouldReturn "1"
+      list1.get(1) returns "1"
 
       // there is an out of order call but to a stubbed method
       list1.get(1)
@@ -464,14 +464,14 @@ ${step(env)}                                                                    
     val list = mock[java.util.List[String]]("list")
 
     eg := {
-      list.get(*) shouldAnswer { i: Int =>
+      list.get(*) answers { i: Int =>
         "The parameter is " + i.toString
       }
       list.get(2) must_== "The parameter is 2"
     }
 
     eg := {
-      list.get(*) shouldAnswer { i: Int =>
+      list.get(*) answers { i: Int =>
         (i + 1).toString
       }
       list.get(1) must_== "2"
@@ -479,7 +479,7 @@ ${step(env)}                                                                    
     }
 
     eg := {
-      list.set(*, *) shouldAnswer { (i: Int, s: String) =>
+      list.set(*, *) answers { (i: Int, s: String) =>
         s"The parameters are ($i,$s)"
       }
       list.set(1, "foo") must_== "The parameters are (1,foo)"
@@ -587,7 +587,7 @@ ${step(env)}                                                                    
     }
 
     eg := {
-      m.method(*, *) shouldReturn 1
+      m.method(*, *) returns 1
 
       m.method(new B, b = true)
       m.method(*, *) was called

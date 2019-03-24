@@ -65,15 +65,23 @@ trait IdiomaticMockitoBase extends MockitoEnhancer {
 
   def verification(v: => Any): Verification
 
-  implicit class StubbingOps[T](stubbing: => T) {
+  implicit class StubbingOps[T](stubbing: T) {
 
     def shouldReturn: ReturnActions[T] = macro WhenMacro.shouldReturn[T]
+    def mustReturn: ReturnActions[T] = macro WhenMacro.shouldReturn[T]
+    def returns: ReturnActions[T] = macro WhenMacro.shouldReturn[T]
 
     def shouldCall(crm: RealMethod.type): ScalaOngoingStubbing[T] = macro WhenMacro.shouldCallRealMethod[T]
+    def mustCall(crm: RealMethod.type): ScalaOngoingStubbing[T] = macro WhenMacro.shouldCallRealMethod[T]
+    def calls(crm: RealMethod.type): ScalaOngoingStubbing[T] = macro WhenMacro.shouldCallRealMethod[T]
 
     def shouldThrow: ThrowActions[T] = macro WhenMacro.shouldThrow[T]
+    def mustThrow: ThrowActions[T] = macro WhenMacro.shouldThrow[T]
+    def throws: ThrowActions[T] = macro WhenMacro.shouldThrow[T]
 
     def shouldAnswer: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
+    def mustAnswer: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
+    def answers: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
 
     def was(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]
 

@@ -26,10 +26,17 @@ lazy val commonSettings =
       "-deprecation:false",
       "-encoding", "UTF-8",
       "-Xfatal-warnings",
-      "-Ypartial-unification",
       "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds",
 //      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-lenient"
     ),
+    scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, v)) if v <= 12 =>
+          Seq("-Ypartial-unification")
+        case _ =>
+          Nil
+      }
+    },
     Test / scalacOptions ++= Seq("-Ywarn-value-discard")
   )
 

@@ -3,11 +3,11 @@ package org.mockito.specs2
 import org.mockito.hamcrest.MockitoHamcrest
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.matchers.DefaultMatcher
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockitoBase, Specs2VerifyMacro, VerifyOrder}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockitoBase, Specs2VerifyMacro, VerifyInOrder, VerifyOrder }
 import org.scalactic.Equality
 import org.specs2.control.Exceptions.catchAll
 import org.specs2.control.Throwablex._
-import org.specs2.matcher.{Expectable, MatchFailure, MatchResult, MatchSuccess, Matcher}
+import org.specs2.matcher.{ Expectable, MatchFailure, MatchResult, MatchSuccess, Matcher }
 
 trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSpecs2Support {
 
@@ -74,19 +74,25 @@ trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with Mocki
 
   /** at least 1 call made to the mock */
   def atLeastOne[T <: AnyRef](mock: T): T = mock
+
   /** at least 2 calls made to the mock */
   def atLeastTwo[T <: AnyRef](mock: T): T = mock
+
   /** at least 3 calls made to the mock */
   def atLeastThree[T <: AnyRef](mock: T): T = mock
+
   /** at most n calls made to the mock */
   def atMost[T <: AnyRef](i: Int)(mock: T): T = mock
 
   /** at most 1 call made to the mock */
   def atMostOne[T <: AnyRef](mock: T): T = mock
+
   /** at most 2 calls made to the mock */
   def atMostTwo[T <: AnyRef](mock: T): T = mock
+
   /** at most 3 calls made to the mock */
   def atMostThree[T <: AnyRef](mock: T): T = mock
+
   /** no more calls made to the mock */
   def noMoreCallsTo[T <: AnyRef](mocks: T*): Unit = ()
 
@@ -97,4 +103,10 @@ trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with Mocki
   implicit class MatchResultOps[T](m: MatchResult[T]) {
     def andThen[O](calls: => O)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[O, Verification]
   }
+
+  def inOrder(mocks: AnyRef*) =
+    VerifyInOrder(mocks.toList.flatMap {
+      case i: Array[_] => i.asInstanceOf[Array[AnyRef]]
+      case m           => List(m)
+    })
 }

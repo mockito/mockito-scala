@@ -13,7 +13,7 @@ import org.specs2.fp.syntax._
 import org.specs2.matcher.ActionMatchers._
 import org.specs2.matcher.MatchersImplicits._
 import org.specs2.matcher._
-import org.specs2.specification.core.{Env, _}
+import org.specs2.specification.core.{ Env, _ }
 import org.specs2.specification.process._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -341,7 +341,7 @@ The Mockito trait is reusable in other contexts
 
     scala.concurrent.Future { Thread.sleep(200); takesSometime.call(10) }
     ((takesSometime.call(10) wasCalled (once within 10.millis)).message must contain("Wanted but not invoked")) and
-      (takesSometime.call(10) wasCalled (once within 300.millis))
+    (takesSometime.call(10) wasCalled (once within 300.millis))
   }
 
   def verification26 = {
@@ -522,9 +522,9 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list2.get(0)
 
-    InOrder(list1, list2) { implicit order =>
-      there was one(list1).get(0) andThen one(list2).get(0)
-    }.message must_== "The mock was called as expected"
+    implicit val order = inOrder(list1, list2)
+    (there was one(list1).get(0) andThen
+    one(list2).get(0)).message must_== "The mock was called as expected"
   }
 
   def order2 = {
@@ -538,9 +538,9 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list2.get(0)
 
-    InOrder(ignoreStubs(list1, list2): _*) { implicit order =>
-      there was one(list1).get(0) andThen one(list2).get(0)
-    }.message must_== "The mock was called as expected"
+    implicit val order = inOrder(ignoreStubs(list1, list2))
+    (there was one(list1).get(0) andThen
+    one(list2).get(0)).message must_== "The mock was called as expected"
   }
 
   def order3 = {
@@ -549,9 +549,12 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list1.get(1)
 
-    InOrder(list1) { implicit order =>
-      there was one(list1).get(1) andThen one(list1).get(0)
-    }.message must startWith("The mock was not called as expected")
+    implicit val order = inOrder(list1)
+
+    val result = there was one(list1).get(1) andThen
+    one(list1).get(0)
+
+    result.message must startWith("The mock was not called as expected")
   }
 
   def order4 = {
@@ -560,12 +563,12 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list1.get(1)
 
+    implicit val order = inOrder(list1)
+
     var result: Result = success
 
     new ThrownExpectations {
-      result = InOrder(list1) { implicit order =>
-        there was one(list1).get(1) andThen one(list1).get(0)
-      }
+      result = there was one(list1).get(1) andThen one(list1).get(0)
     }
 
     result.message must startWith("The mock was not called as expected")
@@ -578,9 +581,9 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list2.get(0)
 
-    InOrder(list1, list2) { implicit order =>
-      there was one(list2).get(0) andThen one(list1).get(0)
-    }.message must startWith("The mock was not called as expected")
+    implicit val order = inOrder(list1, list2)
+    (there was one(list2).get(0) andThen
+      one(list1).get(0)).message must startWith("The mock was not called as expected")
   }
 
   def order6 = {
@@ -588,12 +591,13 @@ The Mockito trait is reusable in other contexts
 
     list1.get(0); list1.size; list1.get(0); list1.size
 
-    InOrder(list1) { implicit order =>
-      there was one(list1).get(0) andThen
-        one(list1).size() andThen
-        no(list1) .get(0) andThen
-        one(list1).size()
-    }.message must startWith("The mock was not called as expected")
+    implicit val order = inOrder(list1)
+    val result = there was one(list1).get(0) andThen
+      one(list1).size() andThen
+      no(list1) .get(0) andThen
+      one(list1).size()
+
+    result.message must startWith("The mock was not called as expected")
   }
 
   /* CALLBACKS */
@@ -659,9 +663,8 @@ The Mockito trait is reusable in other contexts
       "ex1" in new org.specs2.specification.Scope {
         val (list1, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
         list1.add("two"); list2.add("one")
-        InOrder(list1, list2) { implicit order =>
-          there was one(list2).add("two") andThen one(list1).add("one")
-        }
+        implicit val order = inOrder(list1, list2)
+        there was one(list2).add("two") andThen one(list1).add("one")
       }
     }
     DefaultExecutor.runSpec(s.is, env).filter(Fragment.isExample).traverse(_.executionResult.map(_.isSuccess)) must

@@ -15,6 +15,8 @@ import org.mockito.Answers.CALLS_REAL_METHODS
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
+import org.mockito.internal.exceptions.Reporter
+import org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions
 import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.MockUtil
@@ -273,7 +275,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
         ignoreDefaultArguments(m)
         Mockito.verifyNoMoreInteractions(m)
       case t: Iterable[_] => verifyNoMoreInteractions(t)
-      case _ =>
+      case _              => notAMockPassedToVerifyNoMoreInteractions
     }
   }
 

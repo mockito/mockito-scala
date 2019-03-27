@@ -6,23 +6,21 @@ import org.hamcrest.core.IsNull
 import org.mockito.captor.ArgCaptor
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.DefaultAnswer
+import org.specs2._
 import org.specs2.control.Exceptions._
 import org.specs2.execute._
+import org.specs2.fp.syntax._
+import org.specs2.matcher.ActionMatchers._
 import org.specs2.matcher.MatchersImplicits._
 import org.specs2.matcher._
-import ActionMatchers._
-import org.specs2._
-import org.specs2.fp._
-import org.specs2.fp.syntax._
-import org.specs2.specification._
-import org.specs2.specification.core._
-import org.specs2.specification.core.Env
+import org.specs2.specification.core.{Env, _}
 import org.specs2.specification.process._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-
-class MockitoScalaSpec extends Spec with Mockito { def is = s2"""
+class MockitoScalaSpec extends Spec with Mockito {
+  def is       = s2"""
 
  Mockito is a Java library for mocking.
 
@@ -150,7 +148,7 @@ The Mockito trait is reusable in other contexts
   /* CREATION */
   def creation1 = {
     val list = mock[java.util.List[String]]("list1")
-    (list.add("one") was called).message must contain("list1.add(\"one\")")
+    (there was one(list).add("one")).message must contain("list1.add(\"one\")")
   }
 
   def creation2 = {
@@ -161,7 +159,7 @@ The Mockito trait is reusable in other contexts
   def creation3 = {
     val list = mock[java.util.List[String] with Cloneable with Serializable](withSettings(DefaultAnswer(10)).name("list1"))
     (list.size must_== 10) and
-      ((list.add("one") was called).message must contain("list1.add(\"one\")"))
+    ((there was one(list).add("one")).message must contain("list1.add(\"one\")"))
   }
 
   def creation4 = {
@@ -171,7 +169,7 @@ The Mockito trait is reusable in other contexts
 
   def creation5 = {
     val list = mock[java.util.List[String]](withSettings.name("list1"))
-    (list.add("one") was called).message must contain("list1.add(\"one\")")
+    (there was one(list).add("one")).message must contain("list1.add(\"one\")")
   }
 
   /* VERIFICATION */
@@ -184,158 +182,158 @@ The Mockito trait is reusable in other contexts
   def verification2 = {
     val list = mock[java.util.List[String]]
     list.add("one")
-    list.add("one") was called
+    there was one(list).add("one")
   }
 
   def verification3 = {
     val list = mock[java.util.List[String]]
-    (list.add("one") was called).message must startWith("The mock was not called as expected")
+    (there was one(list).add("one")).message must startWith("The mock was not called as expected")
   }
 
   def verification4 = {
     val list = mock[java.util.List[String]]
-    list wasNever called
+    there were noCallsTo(list)
   }
 
   def verification5 = {
     val list = mock[java.util.List[String]]
     list.add(3, null: String)
-    list.add(be_>(0), beNull[String]) was called
+    there was one(list).add(be_>(0), beNull[String])
   }
 
   def verification6 = {
     object list extends list; import list._
 
     byname.call(10)
-    byname.call(10) was called
+    there was one(byname).call(10)
   }
 
   def verification7 = {
     object list extends list; import list._
 
     byname.add(1, 2)
-    byname.add(1, 2) was called
+    there was one(byname).add(1, 2)
   }
 
   def verification8 = {
     object list extends list; import list._
 
     byname.mult(1)(2)
-    byname.mult(1)(2) was called
+    there was one(byname).mult(1)(2)
   }
 
   def verification9 = {
     object list extends list; import list._
 
     byname.call(10)
-    byname.call(be_>(5)) was called
+    there was one(byname).call(be_>(5))
   }
 
   def verification10 = {
     object list extends list; import list._
 
     byname.add(1, 2)
-    byname.add(anyInt, anyInt) was called
+    there was one(byname).add(anyInt, anyInt)
   }
 
   def verification11 = {
     object list extends list; import list._
 
     byname.min(2, 1)
-    byname.min(anyInt, anyInt) was called
+    there was one(byname).min(anyInt, anyInt)
   }
 
   def verification12 = {
     object list extends list; import list._
 
     byname.mult(1)(2)
-    byname.mult(anyInt)(anyInt) was called
+    there was one(byname).mult(anyInt)(anyInt)
   }
 
   def verification13 = {
     object list extends list; import list._
 
     function1.call((_: Int).toString)
-    function1.call(1 -> "1") was called
+    there was one(function1).call(1 -> "1")
   }
 
   def verification14 = {
     object list extends list; import list._
 
     function1.call((_: Int).toString)
-    (function1.call(1 -> startWith("1")) was called) and
-      ((function1.call(1 -> startWith("2")) was called).message must contain("1 doesn't start with '2'"))
+    (there was one(function1).call(1 -> startWith("1"))) and
+    ((there was one(function1).call(1 -> startWith("2"))).message must contain("1 doesn't start with '2'"))
   }
 
   def verification15 = {
     object list extends list; import list._
 
     function2.call((i: Int, d: Double) => (i + d).toString)
-    function2.call((1, 3.0) -> "4.0") was called
+    there was one(function2).call((1, 3.0) -> "4.0")
   }
 
   def verification16 = {
     object list extends list; import list._
 
     function2.call((i: Int, d: Double) => (i + d).toString)
-    function2.call((1, 3.0) -> haveSize[String](3)) was called
+    there was one(function2).call((1, 3.0) -> haveSize[String](3))
   }
 
   def verification17 = {
     object list extends list; import list._
 
     function2.call((i: Int, d: Double) => (i + d).toString)
-    function2.call(*) was called
+    there was one(function2).call(*)
   }
 
   def verification18 = {
     object list extends list; import list._
 
     functionNothing.call((_: Int) => throw new Exception)
-    functionNothing.call(*) was called
+    there was one(functionNothing).call(*)
   }
 
   def verification19 = {
     object list extends list; import list._
 
     functionAny.call(() => throw new Exception)
-    functionAny.call(*) was called
+    there was one(functionAny).call(any[() => Any])
   }
 
   def verification20 = {
     object list extends list; import list._
 
     partial.call { case (i: Int, d: Double) => (i + d).toString }
-    partial.call((1, 3.0) -> "4.0") was called
+    there was one(partial).call((1, 3.0) -> "4.0")
   }
 
   def verification21 = {
     object list extends list; import list._
 
     partial.call { case (i: Int, d: Double) => (i + d).toString }
-    partial.call((1, 3.0) -> haveSize[String](3)) was called
+    there was one(partial).call((1, 3.0) -> haveSize[String](3))
   }
 
   def verification22 = {
     object list extends list; import list._
 
     partial.call { case (i: Int, d: Double) => (i + d).toString }
-    partial.call(*) was called
+    there was one(partial).call(*)
   }
 
   def verification23 = {
     object list extends list; import list._
 
     partial.call { case (i: Int, d: Double) if i > 10 => (i + d).toString }
-    (partial.call((1, 3.0) -> "4.0") was called).message must contain("a PartialFunction defined for (1,3.0)")
+    (there was one(partial).call((1, 3.0) -> "4.0")).message must contain("a PartialFunction defined for (1,3.0)")
   }
 
   def verification24 = {
     object list extends list; import list._
 
     repeated.call(1, 2, 3)
-    (repeated.call(1, 2, 3) was called) and
-      ((repeated.call(1, 2) was called).message must contain("withRepeatedParams.call(1, 2)"))
+    (there was one(repeated).call(1, 2, 3)) and
+    ((there was one(repeated).call(1, 2)).message must contain("withRepeatedParams.call(1, 2)"))
   }
 
   def verification25 = {
@@ -350,11 +348,11 @@ The Mockito trait is reusable in other contexts
     object list extends list; import list._
 
     functionInt.call((i: Int) => i + 2)
-    (functionInt.call(Map(1 -> 2)) was called).message must contain("Argument(s) are different")
+    (there was one(functionInt).call(Map(1 -> 2))).message must contain("Argument(s) are different")
   }
 
   def verification27 = {
-    object list extends list; import list._
+    object list extends list
 
     val foo        = mock[FooComponent]
     val controller = spy(new TestController(foo))
@@ -363,7 +361,7 @@ The Mockito trait is reusable in other contexts
     // controller is a spy. Calling 'test' for real must not re-evaluate
     // the arguments, hence make a mock call, to register matchers
     controller.test(1)
-    foo.getBar(1) wasCalled once
+    there were 1.times(foo).getBar(1)
   }
 
   /* STUBS */
@@ -400,7 +398,7 @@ The Mockito trait is reusable in other contexts
     vet.treat(Cat())
     def isDog: Matcher[Dog] = (_: Dog) => (true, "ok", "ko")
 
-    vet.treat(isDog) must not(throwA[ClassCastException])
+    (there was one(vet).treat(isDog)) must not(throwA[ClassCastException])
   }
 
   def stubs6 = {
@@ -440,44 +438,46 @@ The Mockito trait is reusable in other contexts
 
   def makeCalls(list: java.util.List[String], list2: java.util.List[String]) = {
     list.add("one")
-    1 to 2 foreach { _ => list.add("two") }
+    1 to 2 foreach { _ =>
+      list.add("two")
+    }
     list2.add("one")
   }
 
   def calls1 = {
     val (list, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
     makeCalls(list, list2)
-    list.add("one") wasCalled once // equivalent to 'list.add("one") was called'
+    there was one(list).add("one")
   }
 
   def calls2 = {
     val (list, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
     makeCalls(list, list2)
-    list.add("two") wasCalled twice
+    there were two(list).add("two")
   }
 
   def calls3 = {
     val (list, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
     makeCalls(list, list2)
-    list.add("two") wasCalled atLeastOnce
+    there was atLeast(1)(list).add("two")
   }
 
   def calls4 = {
     val (list, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
     makeCalls(list, list2)
-    list.add("two") wasCalled twice
+    there was exactly(2)(list).add("two")
   }
 
   def calls5 = {
     val (list, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
     makeCalls(list, list2)
-    list.add("two") wasCalled atMostTwice
+    there were atMost(2)(list).add("two")
   }
 
   def calls6 = {
     val (list, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
     makeCalls(list, list2)
-    list.add("four") wasNever called
+    there was no(list).add("four")
   }
 
   def calls7 = {
@@ -486,15 +486,15 @@ The Mockito trait is reusable in other contexts
 
     val cause = new Exception("cause")
     val e     = new Exception("error", cause)
-    (list.add(be_=== { throw e; "four" }) wasNever called) must throwAn[Exception]
+    (there was no(list).add(be_=== { throw e; "four" })) must throwAn[Exception]
   }
 
   def calls8 = {
     val (list, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
     makeCalls(list, list2)
-    list.add("one") was called
-    list.add("two") wasCalled twice
-    list wasNever calledAgain
+    there was one(list).add("one")
+    there were two(list).add("two")
+    there were noMoreCallsTo(list)
   }
 
   def calls9 = {
@@ -508,11 +508,10 @@ The Mockito trait is reusable in other contexts
     list3.contains("3")
     list4.contains("4")
 
-    list3.add("one") was called
-    list4.add("one") wasCalled twice
+    there was one(list3).add("one")
+    there were two(list4).add("one")
 
-    list3 wasNever calledAgain(ignoringStubs)
-    list4 wasNever calledAgain(ignoringStubs)
+    there were noMoreCallsTo(ignoreStubs(list3, list4))
   }
 
   /* ORDER */
@@ -524,7 +523,7 @@ The Mockito trait is reusable in other contexts
     list2.get(0)
 
     InOrder(list1, list2) { implicit order =>
-      (list1.get(0) was called) and (list2.get(0) was called)
+      there was one(list1).get(0) andThen one(list2).get(0)
     }.message must_== "The mock was called as expected"
   }
 
@@ -540,7 +539,7 @@ The Mockito trait is reusable in other contexts
     list2.get(0)
 
     InOrder(ignoreStubs(list1, list2): _*) { implicit order =>
-      (list1.get(0) was called) and (list2.get(0) was called)
+      there was one(list1).get(0) andThen one(list2).get(0)
     }.message must_== "The mock was called as expected"
   }
 
@@ -551,7 +550,7 @@ The Mockito trait is reusable in other contexts
     list1.get(1)
 
     InOrder(list1) { implicit order =>
-      (list1.get(1) was called) and (list1.get(0) was called)
+      there was one(list1).get(1) andThen one(list1).get(0)
     }.message must startWith("The mock was not called as expected")
   }
 
@@ -565,7 +564,7 @@ The Mockito trait is reusable in other contexts
 
     new ThrownExpectations {
       result = InOrder(list1) { implicit order =>
-        (list1.get(1) was called) and (list1.get(0) was called)
+        there was one(list1).get(1) andThen one(list1).get(0)
       }
     }
 
@@ -580,7 +579,7 @@ The Mockito trait is reusable in other contexts
     list2.get(0)
 
     InOrder(list1, list2) { implicit order =>
-      (list2.get(1) was called) and (list1.get(0) was called)
+      there was one(list2).get(0) andThen one(list1).get(0)
     }.message must startWith("The mock was not called as expected")
   }
 
@@ -590,10 +589,10 @@ The Mockito trait is reusable in other contexts
     list1.get(0); list1.size; list1.get(0); list1.size
 
     InOrder(list1) { implicit order =>
-      (list1.get(0) was called) and
-        (list1.size() was called) and
-        (list1.get(0) wasNever called) and
-        (list1.size() was called)
+      there was one(list1).get(0) andThen
+        one(list1).size() andThen
+        no(list1) .get(0) andThen
+        one(list1).size()
     }.message must startWith("The mock was not called as expected")
   }
 
@@ -628,7 +627,7 @@ The Mockito trait is reusable in other contexts
     val list = mock[java.util.List[String]]("list")
     list.get(1)
     val c = ArgCaptor[Int]
-    list.get(c) was called
+    there was one(list).get(c)
     c.value must_== 1
   }
 
@@ -637,7 +636,7 @@ The Mockito trait is reusable in other contexts
     list.get(1)
     list.get(2)
     val c = ArgCaptor[Int]
-    list.get(c) wasCalled twice
+    there was two(list).get(c)
     c.values.toString === "[1, 2]"
   }
 
@@ -647,12 +646,12 @@ The Mockito trait is reusable in other contexts
       val list = mock[java.util.List[String]]
       "ex1" in {
         list.add("one")
-        list.add("two") was called
+        there was one(list).add("two")
         1 must_== 1 // to check if the previous expectation really fails
       }
     }
     DefaultExecutor.runSpec(s.is, env).filter(Fragment.isExample).traverse(_.executionResult.map(_.isSuccess)) must
-      beOk((list: List[Boolean]) => list must contain(false))
+    beOk((list: List[Boolean]) => list must contain(false))
   }
 
   def contexts2 = {
@@ -661,12 +660,12 @@ The Mockito trait is reusable in other contexts
         val (list1, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
         list1.add("two"); list2.add("one")
         InOrder(list1, list2) { implicit order =>
-          (list2.add("two") was called) and (list1.add("one") was called)
+          there was one(list2).add("two") andThen one(list1).add("one")
         }
       }
     }
     DefaultExecutor.runSpec(s.is, env).filter(Fragment.isExample).traverse(_.executionResult.map(_.isSuccess)) must
-      beOk((list: List[Boolean]) => list must contain(false))
+    beOk((list: List[Boolean]) => list must contain(false))
   }
 
   /* MOCKITO MATCHERS */
@@ -706,29 +705,30 @@ The Mockito trait is reusable in other contexts
     m.varargs(1, 2)
     m.array(Array(1, 2))
 
-    (m.javaList(*) was called) and
-      (m.javaSet(*) was called) and
-      (m.javaCollection(*) was called) and
-      (m.javaMap(*) was called) and
-      (m.List(*) was called) and
-      (m.Set(*) was called) and
-      (m.Traversable(*) was called) and
-      (m.Map(*) was called) and
-      (m.varargs(*, *) was called) and
-      (m.array(*) was called)
+    (there was one(m).javaList(*)) andThen
+    one(m).javaSet(*) andThen
+    one(m).javaCollection(*) andThen
+    one(m).javaMap(*) andThen
+    one(m).List(*) andThen
+    one(m).Set(*) andThen
+    one(m).Traversable(*) andThen
+    one(m).Map(*) andThen
+    one(m).varargs(*, *) andThen
+    one(m).array(*)
   }
 
   def mockitoMatchers2 = {
-    val m = mock[M]
+    val m         = mock[M]
     val returnsOk = m.method(*, *) returns 1
 
     m.method(new B, b = true)
-    m.method(*, *) was called
+    there was one(m).method(any[B], any[Boolean])
+    there was one(m).method(*, *)
   }
 
   /**
-    * HELPERS
-    */
+   * HELPERS
+   */
   trait list {
     val list  = mock[java.util.List[String]]
     val queue = mock[scala.collection.immutable.Queue[String]]

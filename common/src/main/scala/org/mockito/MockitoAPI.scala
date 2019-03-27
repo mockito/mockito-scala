@@ -17,6 +17,7 @@ import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
+import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
@@ -262,24 +263,29 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    */
   def verifyNoMoreInteractions(mocks: AnyRef*): Unit = {
 
-    mocks.foreach { m =>
+    def ignoreDefaultArguments(m: AnyRef) =
       mockingDetails(m).getInvocations.asScala
         .filter(_.getMethod.getName.contains("$default$"))
         .foreach(_.ignoreForVerification())
-    }
 
-    Mockito.verifyNoMoreInteractions(mocks: _*)
+    mocks.foreach {
+      case m: AnyRef if MockUtil.isMock(m) =>
+        ignoreDefaultArguments(m)
+        Mockito.verifyNoMoreInteractions(m)
+      case t: Iterable[_] => verifyNoMoreInteractions(t)
+      case _ =>
+    }
   }
 
   /**
-    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
-    */
+   * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
+   */
   def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
 
   /**
-    * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
-    * they are created as final classes by the compiler
-    */
+   * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
+   * they are created as final classes by the compiler
+   */
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
 }
 

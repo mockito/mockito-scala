@@ -3,7 +3,7 @@ package org.mockito.specs2
 import org.mockito.hamcrest.MockitoHamcrest
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.matchers.DefaultMatcher
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockitoBase}
+import org.mockito.{ArgumentMatchersSugar, IdiomaticMockitoBase, Specs2VerifyMacro, VerifyOrder}
 import org.scalactic.Equality
 import org.specs2.control.Exceptions.catchAll
 import org.specs2.control.Throwablex._
@@ -38,5 +38,63 @@ trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with Mocki
         case m: org.specs2.matcher.Matcher[_] => argThat(m)
         case _                                => eqTo(value)
       }
+  }
+
+  /** create an object supporting 'was' and 'were' methods */
+  def there = new Calls
+
+  /**
+   * class supporting 'was' and 'were' methods to forward mockito calls to the CallsMatcher matcher
+   */
+  class Calls {
+    def were[T](calls: => T)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[T, Verification]
+    def was[T](calls: T)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[T, Verification]
+  }
+
+  /** no calls made to the mock */
+  def noCallsTo[T <: AnyRef](mocks: T*): Unit = ()
+
+  /** no call made to the mock */
+  def no[T <: AnyRef](mock: T): T = mock
+
+  /** one call only made to the mock */
+  def one[T <: AnyRef](mock: T): T = mock
+
+  /** two calls only made to the mock */
+  def two[T <: AnyRef](mock: T): T = mock
+
+  /** three calls only made to the mock */
+  def three[T <: AnyRef](mock: T): T = mock
+
+  /** exactly n calls only made to the mock */
+  def exactly[T <: AnyRef](n: Int)(mock: T): T = mock
+
+  /** at least n calls made to the mock */
+  def atLeast[T <: AnyRef](i: Int)(mock: T): T = mock
+
+  /** at least 1 call made to the mock */
+  def atLeastOne[T <: AnyRef](mock: T): T = mock
+  /** at least 2 calls made to the mock */
+  def atLeastTwo[T <: AnyRef](mock: T): T = mock
+  /** at least 3 calls made to the mock */
+  def atLeastThree[T <: AnyRef](mock: T): T = mock
+  /** at most n calls made to the mock */
+  def atMost[T <: AnyRef](i: Int)(mock: T): T = mock
+
+  /** at most 1 call made to the mock */
+  def atMostOne[T <: AnyRef](mock: T): T = mock
+  /** at most 2 calls made to the mock */
+  def atMostTwo[T <: AnyRef](mock: T): T = mock
+  /** at most 3 calls made to the mock */
+  def atMostThree[T <: AnyRef](mock: T): T = mock
+  /** no more calls made to the mock */
+  def noMoreCallsTo[T <: AnyRef](mocks: T*): Unit = ()
+
+  implicit class Specs2IntOps(i: Int) {
+    def times[T](obj: T): T = obj
+  }
+
+  implicit class MatchResultOps[T](m: MatchResult[T]) {
+    def andThen[O](calls: => O)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[O, Verification]
   }
 }

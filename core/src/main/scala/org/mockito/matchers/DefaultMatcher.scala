@@ -9,7 +9,7 @@ trait DefaultMatcher[T] {
 }
 
 object DefaultMatcher {
-  implicit def default[T] = new DefaultMatcher[T] {
+  implicit def default[T]: DefaultMatcher[T] = new DefaultMatcher[T] {
     override def registerDefaultMatcher(value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T =
       ArgumentMatchersSugar.eqTo(value)
   }

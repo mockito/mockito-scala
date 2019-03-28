@@ -14,8 +14,8 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
     def qux(a: String) = "qux"
   }
 
-  val foo = mock[Foo]
-  val baz = mock[Baz]
+  val foo: Foo = mock[Foo]
+  val baz: Baz = mock[Baz]
 
   "ResetMocksAfterEachTest" should {
 
@@ -26,7 +26,6 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
       when(foo.bar("pepe")) thenReturn "mocked"
 
       foo.bar("pepe") shouldBe "mocked"
-
     }
 
     "have clean state for test 2" in {
@@ -36,7 +35,6 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
       when(foo.bar("pepe")) thenReturn "mocked2"
 
       foo.bar("pepe") shouldBe "mocked2"
-
     }
 
     "have clean state for all mocks test 1" in {
@@ -48,7 +46,6 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
 
       foo.bar("pepe") shouldBe "mocked3"
       baz.qux("epep") shouldBe "mocked4"
-
     }
 
     "have clean state for all mocks test 2" in {
@@ -60,7 +57,6 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
 
       foo.bar("pepe") shouldBe "mocked5"
       baz.qux("epep") shouldBe "mocked6"
-
     }
 
   }

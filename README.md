@@ -315,6 +315,8 @@ verify(aMock, atMost(6)).bar                                    <=> aMock.bar wa
 verify(aMock, atMost(6)).bar                                    <=> aMock.bar wasCalled atMost(sixTimes)
 verify(aMock, atMost(6)).bar                                    <=> aMock.bar wasCalled atMost(6.times)
 
+verify(aMock, timeout(2000).atLeast(6)).bar                     <=> aMock.bar wasCalled (atLeastSixTimes within 2.seconds)
+
 verifyNoMoreInteractions(aMock)                                 <=> aMock wasNever calledAgain
 
 val order = inOrder(mock1, mock2)                               <=> InOrder(mock1, mock2) { implicit order =>

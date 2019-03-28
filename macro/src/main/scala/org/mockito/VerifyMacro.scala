@@ -13,10 +13,10 @@ object Called {
 
 object VerifyMacro {
 
-  def wasMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
+  def wasMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[VerifyOrder]): c.Expr[T] = {
     import c.universe._
 
-    val r = c.Expr[Unit] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).was($_.called)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -65,10 +65,10 @@ object VerifyMacro {
 
   case class Times(times: Int)
 
-  def wasMacroTimes[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[Times])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
+  def wasMacroTimes[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[Times])(order: c.Expr[VerifyOrder]): c.Expr[T] = {
     import c.universe._
 
-    val r = c.Expr[Unit] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -89,10 +89,10 @@ object VerifyMacro {
 
   case class AtLeast(times: Int)
 
-  def wasMacroAtLeast[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtLeast])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
+  def wasMacroAtLeast[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtLeast])(order: c.Expr[VerifyOrder]): c.Expr[T] = {
     import c.universe._
 
-    val r = c.Expr[Unit] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -113,10 +113,10 @@ object VerifyMacro {
 
   case class AtMost(times: Int)
 
-  def wasMacroAtMost[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtMost])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
+  def wasMacroAtMost[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[AtMost])(order: c.Expr[VerifyOrder]): c.Expr[T] = {
     import c.universe._
 
-    val r = c.Expr[Unit] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($times)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -137,10 +137,10 @@ object VerifyMacro {
 
   class OnlyOn
 
-  def wasMacroOnlyOn[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[OnlyOn])(order: c.Expr[VerifyOrder]): c.Expr[Unit] = {
+  def wasMacroOnlyOn[T: c.WeakTypeTag](c: blackbox.Context)(t: c.Expr[OnlyOn])(order: c.Expr[VerifyOrder]): c.Expr[T] = {
     import c.universe._
 
-    val r = c.Expr[Unit] {
+    val r = c.Expr[T] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasCalled($_)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {

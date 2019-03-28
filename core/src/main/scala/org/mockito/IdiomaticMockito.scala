@@ -36,19 +36,19 @@ trait IdiomaticMockito extends MockCreator {
 
     def shouldAnswer: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
 
-    def was(called: Called.type)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacro[T]
+    def was(called: Called.type)(implicit order: VerifyOrder): T = macro VerifyMacro.wasMacro[T]
 
     def wasNever(called: Called.type)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasNotMacro[T]
 
     def wasNever(called: CalledAgain)(implicit $ev: T <:< AnyRef): Unit = verifyNoMoreInteractions(stubbing.asInstanceOf[AnyRef])
 
-    def wasCalled(t: Times)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroTimes[T]
+    def wasCalled(t: Times)(implicit order: VerifyOrder): T = macro VerifyMacro.wasMacroTimes[T]
 
-    def wasCalled(t: AtLeast)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroAtLeast[T]
+    def wasCalled(t: AtLeast)(implicit order: VerifyOrder): T = macro VerifyMacro.wasMacroAtLeast[T]
 
-    def wasCalled(t: AtMost)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroAtMost[T]
+    def wasCalled(t: AtMost)(implicit order: VerifyOrder): T = macro VerifyMacro.wasMacroAtMost[T]
 
-    def wasCalled(t: OnlyOn)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasMacroOnlyOn[T]
+    def wasCalled(t: OnlyOn)(implicit order: VerifyOrder): T = macro VerifyMacro.wasMacroOnlyOn[T]
 
     //noinspection AccessorLikeMethodIsUnit
     def isLenient(): Unit = macro WhenMacro.isLenient[T]

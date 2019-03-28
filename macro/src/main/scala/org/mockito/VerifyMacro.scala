@@ -35,10 +35,10 @@ object VerifyMacro {
     r
   }
 
-  def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[VerifyOrder]): c.Expr[T] = {
+  def wasNotMacro[T: c.WeakTypeTag](c: blackbox.Context)(called: c.Expr[Called.type])(order: c.Expr[VerifyOrder]): c.Expr[AnyRef] = {
     import c.universe._
 
-    val r = c.Expr[T] {
+    val r = c.Expr[AnyRef] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($_.this.$obj).wasNever($_.called)($_)" =>
           q"_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj)"

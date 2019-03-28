@@ -349,15 +349,7 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
   /**
    * Delegates to <code>Mockito.verifyZeroInteractions()</code>, it's only here to expose the full Mockito API
    */
-  def verifyZeroInteractions[T](mock: T): T = {
-    Mockito.verifyZeroInteractions(mock.asInstanceOf[AnyRef])
-    mock
-  }
-
-  def verifyZeroInteractions(firstMock: AnyRef, secondMock: AnyRef, restOfMocks: AnyRef*): Unit = {
-    val mocks = Seq(firstMock, secondMock) ++ restOfMocks
-    Mockito.verifyZeroInteractions(mocks: _*)
-  }
+  def verifyZeroInteractions(mocks: AnyRef*): AnyRef = Mockito.verifyZeroInteractions(mocks: _*).asInstanceOf[AnyRef]
 
   /**
    * Delegates to <code>Mockito.inOrder()</code>, it's only here to expose the full Mockito API

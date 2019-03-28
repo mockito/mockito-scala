@@ -38,7 +38,7 @@ trait IdiomaticMockito extends MockCreator {
 
     def was(called: Called.type)(implicit order: VerifyOrder): T = macro VerifyMacro.wasMacro[T]
 
-    def wasNever(called: Called.type)(implicit order: VerifyOrder): T = macro VerifyMacro.wasNotMacro[T]
+    def wasNever(called: Called.type)(implicit order: VerifyOrder): AnyRef = macro VerifyMacro.wasNotMacro[AnyRef]
 
     def wasNever(called: CalledAgain)(implicit $ev: T <:< AnyRef): Unit = verifyNoMoreInteractions(stubbing.asInstanceOf[AnyRef])
 

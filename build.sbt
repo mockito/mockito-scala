@@ -6,19 +6,21 @@ import scala.util.Try
 
 ThisBuild / scalaVersion := "2.12.8"
 
+lazy val baseVersion = {
+  val pattern = """^version=(.+)$""".r
+  val source  = Source.fromFile("version.properties")
+  val version = Try(source.getLines.collectFirst {
+    case pattern(v) => v
+  }.get)
+  source.close
+  version.get
+}
+
 lazy val commonSettings =
   Seq(
     organization := "org.mockito",
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
-    version := {
-      val pattern = """^version=(.+)$""".r
-      val source  = Source.fromFile("version.properties")
-      val version = Try(source.getLines.collectFirst {
-        case pattern(v) => v
-      }.get)
-      source.close
-      version.get
-    },
+    version := baseVersion,
     crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC1"),
     scalacOptions ++= Seq(
       "-unchecked",
@@ -77,16 +79,17 @@ lazy val scalatest = (project in file("scalatest"))
     )
 
 lazy val specs2 = (project in file("specs2"))
-    .dependsOn(core)
-    .dependsOn(common % "compile-internal, test-internal")
-    .dependsOn(macroSub % "compile-internal, test-internal")
-    .settings(
-      name := "mockito-scala-specs2",
-      commonSettings,
-      publishSettings,
-      libraryDependencies += "org.specs2" %% "specs2-core" % "4.4.1" % "provided",
-      libraryDependencies += "org.hamcrest" % "hamcrest-core" % "1.3" % "provided",
-    )
+  .dependsOn(core)
+  .dependsOn(common % "compile-internal, test-internal")
+  .dependsOn(macroSub % "compile-internal, test-internal")
+  .settings(
+    name := "mockito-scala-specs2",
+    commonSettings,
+    publishSettings,
+    libraryDependencies += "org.specs2"   %% "specs2-core"  % "4.4.1" % "provided",
+    libraryDependencies += "org.hamcrest" % "hamcrest-core" % "1.3"   % "provided",
+    version := baseVersion + "-beta.1"
+  )
 
 lazy val common = (project in file("common"))
   .dependsOn(macroCommon)

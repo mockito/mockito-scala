@@ -41,7 +41,7 @@ object VerifyMacro {
     val r = c.Expr[AnyRef] {
       c.macroApplication match {
         case q"$_.StubbingOps[$_]($_.this.$obj).wasNever($_.called)($_)" =>
-          q"_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
+          q"_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj); null;"
 
         case q"$_.StubbingOps[$_]($obj.$method[..$targs](...$args)).wasNever($_.called)($order)" =>
           if (args.exists(a => hasMatchers(c)(a))) {
@@ -54,7 +54,7 @@ object VerifyMacro {
           q"$order.verifyWithMode($obj, _root_.org.mockito.Mockito.never).$method[..$targs]"
 
         case q"$_.StubbingOps[$_]($obj).wasNever($_.called)($_)" =>
-          q"_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj)"
+          q"_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj); null;"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

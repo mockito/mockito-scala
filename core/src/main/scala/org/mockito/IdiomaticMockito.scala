@@ -38,7 +38,7 @@ trait IdiomaticMockito extends MockCreator {
 
     def was(called: Called.type)(implicit order: VerifyOrder): T = macro VerifyMacro.wasMacro[T]
 
-    def wasNever(called: Called.type)(implicit order: VerifyOrder): Unit = macro VerifyMacro.wasNotMacro[T]
+    def wasNever(called: Called.type)(implicit order: VerifyOrder): T = macro VerifyMacro.wasNotMacro[T]
 
     def wasNever(called: CalledAgain)(implicit $ev: T <:< AnyRef): Unit = verifyNoMoreInteractions(stubbing.asInstanceOf[AnyRef])
 
@@ -133,7 +133,7 @@ trait IdiomaticMockito extends MockCreator {
   val atMostTenTimes    = AtMost(10)
 
   object InOrder {
-    def apply(mocks: AnyRef*)(verifications: VerifyInOrder => Unit): Unit = verifications(VerifyInOrder(mocks))
+    def apply(mocks: AnyRef*)(verifications: VerifyInOrder => AnyRef): AnyRef = verifications(VerifyInOrder(mocks))
   }
 
   def atLeast(t: Times): AtLeast = AtLeast(t.times)

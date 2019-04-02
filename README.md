@@ -31,11 +31,7 @@ The library has independent developers, release cycle and versioning from core m
 ### Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
 
 ## Note for v1.2.0
-When using idiomatic syntax, you'll get any raw parameter automatically wrapped in an `eqTo`, this means you shouldn't have to 
-manually use it anymore. This provides a consistent behaviour when a custom `scalactic.Equality` has been defined for
-that type
-
-If you were using `eqTo` with varargs, i.e. 
+As now the varargs support works consistently across the whole lib, no no special syntax is needed, so if you were using `eqTo` with varargs, i.e. 
 ```scala
 verify(myObj).myMethod(eqTo("arg1", "arg2"))
 ```
@@ -43,7 +39,6 @@ You must change it now to
 ```scala
 verify(myObj).myMethod(eqTo("arg1"), eqTo("arg2"))
 ```
-As now the varargs support works consistently across the whole lib, no no special syntax is needed
 
 ## Migration Notes for version 1.0.0
 * `DefaultAnswer` was moved from `org.mockito.DefaultAnswer` to `org.mockito.stubbing.DefaultAnswer`

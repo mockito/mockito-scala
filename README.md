@@ -30,6 +30,21 @@ The library has independent developers, release cycle and versioning from core m
 
 ### Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
 
+## Notes for v1.3.0
+As Specs2 support was added, now the library has been split in 3 different artifacts
+- **mockito-scala** being the core
+- **mockito-scala-scalatest** having specific classes that provide extra support for Scalatest
+- **mockito-scala-specs2** having specific classes that provide extra support for Specs2
+
+From now on, when using the idiomatic syntax, you'll get any non-matcher parameter automatically wrapped in an `eqTo`, 
+this means you shouldn't need to use it manually anymore. This is to provide a consistent behaviour when a custom `scalactic.Equality` has been defined for
+a type.
+
+The traits that provide the specifics for each test framework are `org.mockito.scalatest.Mockito` and `org.mockito.specs2.Mockito`.
+For Scalatest we have now an extra one (`org.mockito.scalatest.AsyncMockito`) to be used with async tests.
+
+This version also includes a lot of under-the-hood fixes and improvements that should provide an even better experience.
+
 ## Note for v1.2.0
 As now the varargs support works consistently across the whole lib, no no special syntax is needed, so if you were using `eqTo` with varargs, i.e. 
 ```scala

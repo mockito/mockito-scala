@@ -16,7 +16,7 @@ The most popular mocking framework for Java, now in Scala!!!
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/mockito-scala/)
 ## Why separate project?
 
-The library has independent developers, release cycle and versioning from core mockito library (https://github.com/mockito/mockito). This is intentional because core Mockito developers don't use Scala and cannot confidently review PRs, and set the vision for the Scala library.
+The library has independent developers, release cycle and versioning from core mockito library (<https://github.com/mockito/mockito>). This is intentional because core Mockito developers don't use Scala and cannot confidently review PRs, and set the vision for the Scala library.
 
 ## Dependency
 
@@ -145,7 +145,13 @@ verify(aMock).stringArgument(captor)
 captor hasCaptured "it worked!"
 ```
 
-As you can see there is no need to call `capture()` nor `getValue` anymore (although they're still there if you need them)
+As you can see there is no need to call `capture()` nor `getValue` anymore (although they're still there if you need them as `capture` and `value` respectively)
+
+The only scenario where you still have to call `capture` by hand is where the argument you want to capture is `Any` on the method signature, in that case the `implicit` conversion that automatically does the capture
+```scala
+implicit def asCapture[T](c: Captor[T]): T = c.capture
+```
+is not called as the compiler finds no need to convert `Captor[Any]` into `Any`, as it is already an instance of `Any`, given that `Any` is the parent of every type in Scala. Because of that, the type does not need any transformation to be passed in.
 
 There is another constructor `ValCaptor[T]` that should be used to capture value classes
 **NOTE: Since version 1.0.2 `ValCaptor[T]` has been deprecated as `ArgCaptor[T]` now support both, standard and value classes**

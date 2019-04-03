@@ -351,6 +351,21 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         }
       }
 
+      "work with a captor when calling capture explicitly" in {
+        val org       = orgDouble()
+        val argCaptor = ArgCaptor[Int]
+
+        org.doSomethingWithThisIntAndString(42, "test")
+
+        org.doSomethingWithThisIntAndString(argCaptor.capture, "test") was called
+
+        argCaptor hasCaptured 42
+
+        an[ArgumentsAreDifferent] should be thrownBy {
+          argCaptor hasCaptured 43
+        }
+      }
+
       "check invocation order" in {
         val mock1 = orgDouble()
         val mock2 = mock[Bar]

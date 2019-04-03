@@ -61,6 +61,7 @@ object Utils {
         case q"$_.n.=~[$_]($_)"     => true
 
         case q"$_.Captor.asCapture[$_]($_)" => true
+        case q"$_.capture" => true
 
         case q"($_.MacroMatchers_211.eqTo[$_](...$_): $_)"         => true
         case q"($_($_.MacroMatchers_211.eqTo[$_](...$_)): $_)"     => true

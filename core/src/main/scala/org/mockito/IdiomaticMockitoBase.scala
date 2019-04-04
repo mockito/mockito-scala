@@ -40,12 +40,12 @@ object IdiomaticMockitoBase {
 
   //Helper methods for the specs2 macro
   def Exactly(times: Int): Times = Times(times)
-  def AtLeastOne: AtLeast = AtLeast(1)
-  def AtLeastTwo: AtLeast = AtLeast(2)
-  def AtLeastThree: AtLeast = AtLeast(3)
-  def AtMostOne: AtMost = AtMost(1)
-  def AtMostTwo: AtMost = AtMost(2)
-  def AtMostThree: AtMost = AtMost(3)
+  def AtLeastOne: AtLeast        = AtLeast(1)
+  def AtLeastTwo: AtLeast        = AtLeast(2)
+  def AtLeastThree: AtLeast      = AtLeast(3)
+  def AtMostOne: AtMost          = AtMost(1)
+  def AtMostTwo: AtMost          = AtMost(2)
+  def AtMostThree: AtMost        = AtMost(3)
 
   case class AtLeast(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.atLeast(times)

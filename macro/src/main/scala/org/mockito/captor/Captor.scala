@@ -1,7 +1,7 @@
 package org.mockito.captor
 
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
-import org.mockito.{ArgumentCaptor, clazz}
+import org.mockito.{ clazz, ArgumentCaptor }
 import org.scalactic.Equality
 import org.scalactic.TripleEquals._
 

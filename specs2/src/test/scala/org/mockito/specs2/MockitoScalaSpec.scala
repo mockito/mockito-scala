@@ -583,7 +583,7 @@ The Mockito trait is reusable in other contexts
 
     implicit val order = inOrder(list1, list2)
     (there was one(list2).get(0) andThen
-      one(list1).get(0)).message must startWith("The mock was not called as expected")
+    one(list1).get(0)).message must startWith("The mock was not called as expected")
   }
 
   def order6 = {
@@ -593,9 +593,9 @@ The Mockito trait is reusable in other contexts
 
     implicit val order = inOrder(list1)
     val result = there was one(list1).get(0) andThen
-      one(list1).size() andThen
-      no(list1) .get(0) andThen
-      one(list1).size()
+    one(list1).size() andThen
+    no(list1).get(0) andThen
+    one(list1).size()
 
     result.message must startWith("The mock was not called as expected")
   }

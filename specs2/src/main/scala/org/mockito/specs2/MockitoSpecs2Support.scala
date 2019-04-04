@@ -1,7 +1,7 @@
 package org.mockito.specs2
 
 import org.specs2.matcher.MatchersImplicits._
-import org.specs2.matcher.{BeEqualTo, Expectations, MatchFailure, Matcher}
+import org.specs2.matcher.{ BeEqualTo, Expectations, MatchFailure, Matcher }
 
 trait ArgThat {
   implicit def argThat[T](m: org.specs2.matcher.Matcher[T]): T = org.mockito.hamcrest.MockitoHamcrest.argThat(HamcrestMatcherAdapter(m))

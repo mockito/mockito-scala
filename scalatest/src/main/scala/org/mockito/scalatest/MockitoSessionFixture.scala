@@ -1,5 +1,5 @@
 package org.mockito.scalatest
-import org.mockito.{MockitoScalaSession, Strictness}
+import org.mockito.{ MockitoScalaSession, Strictness }
 import org.scalatest._
 
 import scala.util.control.NonFatal

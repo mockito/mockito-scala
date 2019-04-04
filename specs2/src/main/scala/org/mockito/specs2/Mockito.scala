@@ -4,7 +4,7 @@ import org.mockito.hamcrest.MockitoHamcrest
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.matchers.DefaultMatcher
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockitoBase, Specs2VerifyMacro, VerifyInOrder, VerifyOrder }
-import org.scalactic.Equality
+import org.scalactic.{ Equality, Prettifier }
 import org.specs2.control.Exceptions.catchAll
 import org.specs2.control.Throwablex._
 import org.specs2.matcher.{ Expectable, MatchFailure, MatchResult, MatchSuccess, Matcher }
@@ -31,8 +31,8 @@ trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with Mocki
   override type Verification = MatchResult[Any]
   override def verification(v: => Any): Verification = createExpectable(v).applyMatcher(checkCalls)
 
-  implicit def defaultMatcher[T] = new DefaultMatcher[T] {
-    override def registerDefaultMatcher(value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T =
+  implicit def defaultMatcher[T]: DefaultMatcher[T] = new DefaultMatcher[T] {
+    override def registerDefaultMatcher(value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T], $pt: Prettifier): T =
       value match {
         case m: org.hamcrest.Matcher[_]       => MockitoHamcrest.argThat[T](m.asInstanceOf[org.hamcrest.Matcher[T]])
         case m: org.specs2.matcher.Matcher[_] => argThat(m)

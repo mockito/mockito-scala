@@ -1,12 +1,13 @@
 package org.mockito.specs2
 
-import org.hamcrest.{BaseMatcher, Description}
-import org.specs2.matcher.{Expectations, MatchFailure, Matcher}
+import org.hamcrest.{ BaseMatcher, Description }
+import org.specs2.matcher.{ Expectations, MatchFailure, Matcher }
 
 /**
-  * Adapter class to use specs2 matchers as Hamcrest matchers
-  */
+ * Adapter class to use specs2 matchers as Hamcrest matchers
+ */
 case class HamcrestMatcherAdapter[T](m: Matcher[T]) extends BaseMatcher[T] {
+
   /** this variable is necessary to store the result of a match */
   private var message = ""
 
@@ -22,12 +23,12 @@ case class HamcrestMatcherAdapter[T](m: Matcher[T]) extends BaseMatcher[T] {
     try {
       matcher.apply(Expectations.createExpectable(i)) match {
         case f: MatchFailure[_] => message = f.koMessage; false
-        case _ => true
+        case _                  => true
       }
       // a class cast exception can happen if we tried: vet.treat(dog); there must be one(vet).treat(bird) (see issue https://github.com/etorreborre/specs2/issues/222)
     } catch {
       case _: ClassCastException => false
-      case e: Throwable =>
+      case e: Throwable          =>
         // this is a stop-gap solution for https://github.com/etorreborre/specs2/issues/584
         // it seems that Mockito can pass null values in some cases
         if (item == null) false
@@ -40,5 +41,3 @@ case class HamcrestMatcherAdapter[T](m: Matcher[T]) extends BaseMatcher[T] {
     ()
   }
 }
-
-

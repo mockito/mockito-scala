@@ -1,12 +1,12 @@
 package org.mockito
 
-import org.mockito.MockitoScalaSession.{MockitoScalaSessionListener, UnexpectedInvocations}
-import org.mockito.exceptions.misusing.{UnexpectedInvocationException, UnnecessaryStubbingException}
+import org.mockito.MockitoScalaSession.{ MockitoScalaSessionListener, UnexpectedInvocations }
+import org.mockito.exceptions.misusing.{ UnexpectedInvocationException, UnnecessaryStubbingException }
 import org.mockito.internal.stubbing.StubbedInvocationMatcher
-import org.mockito.invocation.{DescribedInvocation, Invocation, Location}
+import org.mockito.invocation.{ DescribedInvocation, Invocation, Location }
 import org.mockito.listeners.MockCreationListener
 import org.mockito.mock.MockCreationSettings
-import org.mockito.quality.{ Strictness => JavaStrictness}
+import org.mockito.quality.{ Strictness => JavaStrictness }
 import org.mockito.session.MockitoSessionLogger
 import org.scalactic.Equality
 import org.scalactic.TripleEquals._
@@ -184,9 +184,9 @@ object Strictness {
 
   implicit def StrictnessEquality[S <: Strictness]: Equality[S] = new Equality[S] {
     override def areEqual(a: S, b: Any): Boolean = b match {
-      case s: Strictness => a == s
+      case s: Strictness     => a == s
       case s: JavaStrictness => a.toJava == s
-      case _ => false
+      case _                 => false
     }
   }
 }

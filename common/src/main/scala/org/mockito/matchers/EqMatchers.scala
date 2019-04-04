@@ -1,7 +1,7 @@
 package org.mockito
 package matchers
 
-import org.mockito.{ArgumentMatchers => JavaMatchers}
+import org.mockito.{ ArgumentMatchers => JavaMatchers }
 
 import scala.reflect.ClassTag
 

@@ -3,8 +3,9 @@ package org.mockito.scalatest
 import java.util.concurrent.ConcurrentHashMap
 
 import org.mockito.stubbing.DefaultAnswer
-import org.mockito.{MockCreator, MockSettings, MockitoSugar}
-import org.scalatest.{Outcome, TestSuite}
+import org.mockito.{ MockCreator, MockSettings, MockitoSugar }
+import org.scalactic.Prettifier
+import org.scalatest.{ Outcome, TestSuite }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -34,15 +35,15 @@ trait ResetMocksAfterEachTest extends TestSuite with MockCreator { self: MockCre
     mock
   }
 
-  abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T =
+  abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     addMock(super.mock[T])
 
-  abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer): T =
+  abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T =
     addMock(super.mock[T](defaultAnswer))
 
-  abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T =
+  abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T =
     addMock(super.mock[T](mockSettings))
 
-  abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
+  abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     addMock(super.mock[T](name))
 }

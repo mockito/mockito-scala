@@ -15,8 +15,8 @@ object DoSomethingMacro {
       c.macroApplication match {
         case q"$_.DoSomethingOps[$r]($v).willBe($_.returned).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
-          val newArgs = args.map(a => transformArgs(c)(a))
-          q"_root_.org.mockito.MockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](...$newArgs)"
+            val newArgs = args.map(a => transformArgs(c)(a))
+            q"_root_.org.mockito.MockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](...$newArgs)"
           } else
             q"_root_.org.mockito.MockitoSugar.doReturn[$r]($v).when($obj).$method[..$targs](...$args)"
 
@@ -37,8 +37,8 @@ object DoSomethingMacro {
       c.macroApplication match {
         case q"$_.DoSomethingOps[$r]($v).willBe($_.answered).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
-          val newArgs = args.map(a => transformArgs(c)(a))
-          q"_root_.org.mockito.MockitoSugar.doAnswer($v).when($obj).$method[..$targs](...$newArgs)"
+            val newArgs = args.map(a => transformArgs(c)(a))
+            q"_root_.org.mockito.MockitoSugar.doAnswer($v).when($obj).$method[..$targs](...$newArgs)"
           } else
             q"_root_.org.mockito.MockitoSugar.doAnswer($v).when($obj).$method[..$targs](...$args)"
 
@@ -59,8 +59,8 @@ object DoSomethingMacro {
       c.macroApplication match {
         case q"$_.ThrowSomethingOps[$_]($v).willBe($_.thrown).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
-          val newArgs = args.map(a => transformArgs(c)(a))
-          q"_root_.org.mockito.MockitoSugar.doThrow($v).when($obj).$method[..$targs](...$newArgs)"
+            val newArgs = args.map(a => transformArgs(c)(a))
+            q"_root_.org.mockito.MockitoSugar.doThrow($v).when($obj).$method[..$targs](...$newArgs)"
           } else
             q"_root_.org.mockito.MockitoSugar.doThrow($v).when($obj).$method[..$targs](...$args)"
 
@@ -81,8 +81,8 @@ object DoSomethingMacro {
       c.macroApplication match {
         case q"$_.theRealMethod.willBe($_.called).by[$_]($obj.$method[..$targs](...$args))" =>
           if (args.exists(a => hasMatchers(c)(a))) {
-          val newArgs = args.map(a => transformArgs(c)(a))
-          q"_root_.org.mockito.MockitoSugar.doCallRealMethod.when($obj).$method[..$targs](...$newArgs)"
+            val newArgs = args.map(a => transformArgs(c)(a))
+            q"_root_.org.mockito.MockitoSugar.doCallRealMethod.when($obj).$method[..$targs](...$newArgs)"
           } else
             q"_root_.org.mockito.MockitoSugar.doCallRealMethod.when($obj).$method[..$targs](...$args)"
 

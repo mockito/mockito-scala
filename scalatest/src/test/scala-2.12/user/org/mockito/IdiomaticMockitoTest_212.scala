@@ -1,8 +1,8 @@
 package user.org.mockito
 
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
-import org.scalatest.{Matchers, WordSpec}
-import user.org.mockito.matchers.{ValueCaseClass, ValueClass}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.scalatest.{ Matchers, WordSpec }
+import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
 
 class IdiomaticMockitoTest_212 extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar {
 

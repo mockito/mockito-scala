@@ -2,13 +2,13 @@ package user.org.mockito
 
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.misusing.WrongTypeOfReturnValue
-import org.mockito.exceptions.verification.{ArgumentsAreDifferent, WantedButNotInvoked}
+import org.mockito.exceptions.verification.{ ArgumentsAreDifferent, WantedButNotInvoked }
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.{CallsRealMethods, DefaultAnswer, ScalaFirstStubbing}
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ScalaFirstStubbing }
+import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
+import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 import user.org.mockito.matchers.ValueCaseClass
 import user.org.mockito.model.JavaFoo
 

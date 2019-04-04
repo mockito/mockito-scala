@@ -6,15 +6,14 @@ import java.lang.reflect.Modifier.isAbstract
 import java.util.concurrent.ConcurrentHashMap
 
 import org.mockito.internal.handler.ScalaMockHandler._
-import org.mockito.internal.invocation.mockref.MockReference
-import org.mockito.internal.invocation.{ InterceptedInvocation, MockitoMethod, RealMethod }
+import org.mockito.internal.invocation.{ InterceptedInvocation, _ }
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
-import org.mockito.internal.invocation._
 import org.mockito.invocation.{ Invocation, MockHandler }
 import org.mockito.mock.MockCreationSettings
 import org.scalactic.Prettifier
 import org.scalactic.TripleEquals._
-import collection.JavaConverters._
+
+import scala.collection.JavaConverters._
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T])(implicit $pt: Prettifier) extends MockHandlerImpl[T](mockSettings) {
 
@@ -29,7 +28,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T])(implicit $pt: P
           val arguments =
             if (rawArguments != null && rawArguments.nonEmpty && !isCallRealMethod)
               unwrapArgs(mockitoMethod.getJavaMethod, rawArguments.asInstanceOf[Array[Any]])
-          else rawArguments
+            else rawArguments
 
           new ScalaInvocation(i.getMockRef, mockitoMethod, arguments, rawArguments, i.getRealMethod, i.getLocation, i.getSequenceNumber)
         case other => other
@@ -44,7 +43,7 @@ object ScalaMockHandler {
 
   private def isCallRealMethod: Boolean =
     (new Exception).getStackTrace.toList.exists { t =>
-      t.getClassName == "org.mockito.internal.handler.ScalaInvocation" &&
+      t.getClassName == classOf[ScalaInvocation].getName &&
       t.getMethodName == "callRealMethod"
     }
 

@@ -22,6 +22,7 @@ lazy val commonSettings =
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
     version := baseVersion,
     crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC1"),
+    scalafmtOnCompile := true,
     scalacOptions ++= Seq(
       "-unchecked",
       "-feature",

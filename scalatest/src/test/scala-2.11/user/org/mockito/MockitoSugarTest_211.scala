@@ -1,7 +1,7 @@
 package user.org.mockito
 
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
-import org.scalatest.{Matchers, WordSpec}
+import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.scalatest.{ Matchers, WordSpec }
 
 class MockitoSugarTest_211 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
 

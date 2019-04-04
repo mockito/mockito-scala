@@ -2,8 +2,8 @@ package user.org.mockito.matchers
 
 import org.mockito.exceptions.verification.WantedButNotInvoked
 import org.mockito.matchers.EqTo
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
-import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
+import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
 
 object ThatMatchersTest {
   case class Baz(param1: String, param2: String)

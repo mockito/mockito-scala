@@ -8,5 +8,6 @@ import org.mockito._
  * Just mix-in after your favourite suite, i.e. {{{class MyTest extends WordSpec with MockitoFixture}}}
  *
  */
-@deprecated("Please migrate to org.mockito.scalatest.Mockito or org.mockito.scalatest.AsyncMockito from the mockito-scala-scalatest module", "1.3.0")
+@deprecated("Please migrate to org.mockito.scalatest.Mockito or org.mockito.scalatest.AsyncMockito from the mockito-scala-scalatest module",
+            "1.3.0")
 trait MockitoFixture extends MockitoSessionFixture with MockitoSugar with ArgumentMatchersSugar

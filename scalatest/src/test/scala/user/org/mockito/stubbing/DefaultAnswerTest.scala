@@ -3,14 +3,14 @@ package user.org.mockito.stubbing
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.stubbing.DefaultAnswer
-import org.mockito.{DefaultAnswers, IdiomaticMockito}
+import org.mockito.{ DefaultAnswers, IdiomaticMockito }
 import org.scalatest
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{OptionValues, TryValues, WordSpec}
+import org.scalatest.{ OptionValues, TryValues, WordSpec }
 import user.org.mockito.stubbing.DefaultAnswerTest._
 
 import scala.concurrent.Future
-import scala.util.{Success, Try}
+import scala.util.{ Success, Try }
 
 object DefaultAnswerTest {
   class Foo {
@@ -63,7 +63,7 @@ object DefaultAnswerTest {
 }
 
 class DefaultAnswerTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with TryValues with OptionValues with ScalaFutures {
-  
+
   "DefaultAnswer.defaultAnswer" should {
     val aMock: Foo = mock[Foo](DefaultAnswer.defaultAnswer)
 

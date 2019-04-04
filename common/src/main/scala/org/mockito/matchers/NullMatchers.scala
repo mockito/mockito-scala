@@ -1,6 +1,6 @@
 package org.mockito.matchers
 
-import org.mockito.{ArgumentMatchers => JavaMatchers}
+import org.mockito.{ ArgumentMatchers => JavaMatchers }
 
 private[mockito] trait NullMatchers {
 

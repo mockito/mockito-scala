@@ -1,12 +1,12 @@
 package user.org.mockito
 
 import org.mockito._
-import org.mockito.exceptions.misusing.{UnexpectedInvocationException, UnnecessaryStubbingException}
+import org.mockito.exceptions.misusing.{ UnexpectedInvocationException, UnnecessaryStubbingException }
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.internal.creation.settings.CreationSettings
 import org.mockito.quality.Strictness
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{Matchers, OptionValues, WordSpec}
+import org.scalatest.{ Matchers, OptionValues, WordSpec }
 
 //noinspection RedundantDefaultArgument
 class MockitoScalaSessionTest
@@ -20,7 +20,10 @@ class MockitoScalaSessionTest
   val scenarios = Table(
     ("testDouble", "foo", "parametrisedFoo", "fooBar"),
     ("mock", () => mock[Foo], (mockSettings: MockSettings) => mock[Foo](mockSettings), ""),
-    ("spy", () => spy(new Foo), (mockSettings: MockSettings) => spy(new Foo, mockSettings.asInstanceOf[CreationSettings[_]].isLenient), "bar")
+    ("spy",
+     () => spy(new Foo),
+     (mockSettings: MockSettings) => spy(new Foo, mockSettings.asInstanceOf[CreationSettings[_]].isLenient),
+     "bar")
   )
 
   class Foo {
@@ -54,7 +57,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = foo()
 
-          aFoo.bar(*).isLenient()
+          aFoo.bar(*).isLenient ()
 
           aFoo.bar("paco") shouldBe fooBar
         }
@@ -66,7 +69,7 @@ class MockitoScalaSessionTest
 
           aFoo.bar("paco") shouldBe fooBar
 
-          aFoo.bar(*).isLenient()
+          aFoo.bar(*).isLenient ()
         }
       }
 
@@ -74,7 +77,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = foo()
 
-          aFoo.bar(*).isLenient()
+          aFoo.bar(*).isLenient ()
 
           aFoo.bar("pepe") shouldReturn "mocked"
         }
@@ -86,7 +89,7 @@ class MockitoScalaSessionTest
 
           aFoo.bar("pepe") shouldReturn "mocked"
 
-          aFoo.bar(*).isLenient()
+          aFoo.bar(*).isLenient ()
         }
       }
 

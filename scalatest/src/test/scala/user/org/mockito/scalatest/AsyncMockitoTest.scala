@@ -1,7 +1,7 @@
 package user.org.mockito.scalatest
 
 import org.mockito.scalatest.AsyncMockito
-import org.scalatest.{AsyncWordSpec, FixtureContext, Matchers}
+import org.scalatest.{ AsyncWordSpec, FixtureContext, Matchers }
 
 class AsyncMockitoTest extends AsyncWordSpec with Matchers with AsyncMockito {
 

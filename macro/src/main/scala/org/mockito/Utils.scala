@@ -54,7 +54,7 @@ object Utils {
     "capture"
   )
 
-  private val specs2implicits: Regex = "(matcher)?[t,T]o(Partial)?FunctionCall(\\d*)".r
+  private val specs2implicits: Regex                       = "(matcher)?[t,T]o(Partial)?FunctionCall(\\d*)".r
   private def isSpecs2Matcher(methodName: String): Boolean = specs2implicits.pattern.matcher(methodName).matches
 
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {

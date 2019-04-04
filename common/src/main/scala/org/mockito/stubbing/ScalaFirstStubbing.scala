@@ -5,7 +5,7 @@ import org.mockito.internal.stubbing.OngoingStubbingImpl
 import org.mockito.internal.util.MockUtil.getMockSettings
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.quality.Strictness.LENIENT
-import org.mockito.{clazz, functionToAnswer, invocationToAnswer}
+import org.mockito.{ clazz, functionToAnswer, invocationToAnswer }
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag

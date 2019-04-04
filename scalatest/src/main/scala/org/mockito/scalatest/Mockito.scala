@@ -1,6 +1,6 @@
 package org.mockito.scalatest
 
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockitoBase}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockitoBase }
 import org.scalatest.Succeeded
 import org.scalatest.compatible.Assertion
 

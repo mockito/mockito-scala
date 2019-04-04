@@ -1,8 +1,8 @@
 package user.org.mockito
 
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
-import org.scalatest.{WordSpec, Matchers => ScalaTestMatchers}
+import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
 import user.org.mockito.matchers.ValueCaseClass
 
 class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {

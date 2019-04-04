@@ -1,8 +1,8 @@
 package user.org.mockito.matchers
 
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
-import org.scalactic.{Equality, StringNormalizations}
-import org.scalatest.{FlatSpec, Matchers => ScalaTestMatchers}
+import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.scalactic.{ Equality, StringNormalizations }
+import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
 
 class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 

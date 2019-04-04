@@ -4,8 +4,7 @@ import org.mockito.{ MockitoSugar, Strictness }
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.scalatest.ScalatestMockito
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar }
 import org.scalactic.Prettifier
 import org.mockito.scalatest.AsyncMockito
 import org.scalatest.prop.TableDrivenPropertyChecks
@@ -24,7 +23,7 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncMockito
   implicit val prettifier: Prettifier = new Prettifier {
     override def apply(o: Any): String = o match {
       case Baz2(_, s) => s"PrettifiedBaz($s)"
-      case other => Prettifier.default(other)
+      case other      => Prettifier.default(other)
     }
   }
 
@@ -630,7 +629,6 @@ class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncMockito
         org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
         org.valueCaseClass(2, any[ValueCaseClass]) was called
       }
-
 
       "use Prettifier for the arguments" in {
         val aMock = orgDouble()

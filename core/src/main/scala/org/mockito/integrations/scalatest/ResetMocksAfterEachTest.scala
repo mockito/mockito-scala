@@ -2,10 +2,10 @@ package org.mockito.integrations.scalatest
 
 import java.util.concurrent.ConcurrentHashMap
 
-import org.mockito.{MockCreator, MockSettings, MockitoSugar}
+import org.mockito.{ MockCreator, MockSettings, MockitoSugar }
 import org.mockito.stubbing.DefaultAnswer
 import org.scalactic.Prettifier
-import org.scalatest.{Outcome, TestSuite}
+import org.scalatest.{ Outcome, TestSuite }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag

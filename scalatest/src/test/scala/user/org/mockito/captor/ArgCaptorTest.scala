@@ -1,9 +1,9 @@
 package user.org.mockito.captor
 
-import org.mockito.captor.{ArgCaptor, ValCaptor}
-import org.mockito.{IdiomaticMockito, MockitoSugar}
-import org.scalactic.{Equality, StringNormalizations}
-import org.scalatest.{Matchers, WordSpec}
+import org.mockito.captor.{ ArgCaptor, ValCaptor }
+import org.mockito.{ IdiomaticMockito, MockitoSugar }
+import org.scalactic.{ Equality, StringNormalizations }
+import org.scalatest.{ Matchers, WordSpec }
 import user.org.mockito.captor.ArgCaptorTest._
 
 object ArgCaptorTest {

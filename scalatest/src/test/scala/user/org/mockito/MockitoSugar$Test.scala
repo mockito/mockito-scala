@@ -1,8 +1,8 @@
 package user.org.mockito
 
 import org.mockito.MockitoSugar
-import org.mockito.stubbing.{CallsRealMethods, DefaultAnswer, ReturnsDefaults}
-import org.scalatest.{WordSpec, Matchers => ScalatestMatchers}
+import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ReturnsDefaults }
+import org.scalatest.{ WordSpec, Matchers => ScalatestMatchers }
 
 //noinspection RedundantDefaultArgument
 class MockitoSugar$Test extends WordSpec with ScalatestMatchers {

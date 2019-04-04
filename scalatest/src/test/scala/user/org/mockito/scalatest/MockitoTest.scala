@@ -1,7 +1,7 @@
 package user.org.mockito.scalatest
 
 import org.mockito.scalatest.Mockito
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{ Matchers, WordSpec }
 
 class MockitoTest extends WordSpec with Mockito with Matchers {
 

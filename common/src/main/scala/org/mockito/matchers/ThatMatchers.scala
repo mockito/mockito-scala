@@ -18,7 +18,7 @@ private[mockito] trait ThatMatchers {
   def argThat[T](f: T => Boolean, desc: => String = "argThat(<condition>)"): T =
     JavaMatchers.argThat(new ArgumentMatcher[T] {
       override def matches(argument: T): Boolean = f(argument)
-      override def toString: String                = desc
+      override def toString: String              = desc
     })
 
   /**
@@ -86,12 +86,12 @@ private[mockito] trait ThatMatchers {
   def longThat(matcher: ArgumentMatcher[Long]): Long = argThat(matcher)
 
   /**
-    * Creates a matcher that delegates on a partial function to enable syntax like
-    *
-    *       foo.bar(argMatching({ case Baz(n, _) if n > 90 => })) shouldReturn "mocked!"
-    *       foo.bar(argMatching({ case Baz(_, "pepe") => })) was called
-    *
-    */
+   * Creates a matcher that delegates on a partial function to enable syntax like
+   *
+   *       foo.bar(argMatching({ case Baz(n, _) if n > 90 => })) shouldReturn "mocked!"
+   *       foo.bar(argMatching({ case Baz(_, "pepe") => })) was called
+   *
+   */
   def argMatching[T](pf: PartialFunction[Any, Unit]) = argThat[T](pf.isDefinedAt(_), "argMatching(...)")
 }
 

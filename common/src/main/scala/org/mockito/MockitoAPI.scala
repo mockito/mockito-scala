@@ -20,21 +20,23 @@ import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaFirstStubbing, Stubber}
-import org.mockito.verification.{VerificationMode, VerificationWithTimeout}
+import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
+import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
+import org.scalactic.Prettifier
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
 
 private[mockito] trait MockCreator {
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[_]): T = mock[T](DefaultAnswer(defaultAnswer))
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer): T
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[_])(implicit $pt: Prettifier): T =
+    mock[T](DefaultAnswer(defaultAnswer))
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T
 
-  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean): T
+  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean)(implicit $pt: Prettifier): T
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
 
   /**
@@ -139,7 +141,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T = mock(withSettings)
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T = mock(withSettings)
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
@@ -155,7 +157,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T =
     mock(withSettings(defaultAnswer))
 
   /**
@@ -172,7 +174,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T = {
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T = {
     val interfaces = ReflectionUtils.interfaces
 
     val realClass: Class[T] = mockSettings match {
@@ -221,12 +223,12 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     mock(withSettings.name(name))
 
-  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false): T = {
+  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false)(implicit $pt: Prettifier): T = {
     def mockSettings: MockSettings = Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS).spiedInstance(realObj)
-    val settings = if(lenient) mockSettings.lenient() else mockSettings
+    val settings                   = if (lenient) mockSettings.lenient() else mockSettings
     mock[T](settings)
   }
 
@@ -234,7 +236,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that
    * deal with default argument values
    */
-  def reset(mocks: AnyRef*): Unit = {
+  def reset(mocks: AnyRef*)(implicit $pt: Prettifier): Unit = {
     val mp = mockingProgress()
     mp.validateState()
     mp.reset()

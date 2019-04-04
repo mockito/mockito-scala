@@ -4,6 +4,7 @@ import org.mockito.MockitoSugar._
 import org.mockito.VerifyMacro._
 import org.mockito.WhenMacro._
 import org.mockito.stubbing.{ DefaultAnswer, ScalaOngoingStubbing }
+import org.scalactic.Prettifier
 
 import scala.language.experimental.macros
 import scala.reflect.ClassTag
@@ -11,18 +12,20 @@ import scala.reflect.runtime.universe.WeakTypeTag
 
 trait IdiomaticMockito extends MockCreator {
 
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     MockitoSugar.mock[T](name)
 
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings): T = MockitoSugar.mock[T](mockSettings)
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T =
+    MockitoSugar.mock[T](mockSettings)
 
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T =
     MockitoSugar.mock[T](defaultAnswer)
 
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer): T =
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     MockitoSugar.mock[T]
 
-  override def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false): T = MockitoSugar.spy(realObj, lenient)
+  override def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false)(implicit $pt: Prettifier): T =
+    MockitoSugar.spy(realObj, lenient)
 
   override def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = MockitoSugar.spyLambda(realObj)
 

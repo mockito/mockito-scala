@@ -1,13 +1,13 @@
 package org.mockito
 
-import org.mockito.MockitoScalaSession.{ MockitoScalaSessionListener, UnexpectedInvocations }
-import org.mockito.exceptions.misusing.{ UnexpectedInvocationException, UnnecessaryStubbingException }
+import org.mockito.MockitoScalaSession.{MockitoScalaSessionListener, UnexpectedInvocations}
+import org.mockito.exceptions.misusing.{UnexpectedInvocationException, UnnecessaryStubbingException}
 import org.mockito.internal.stubbing.StubbedInvocationMatcher
-import org.mockito.invocation.{ DescribedInvocation, Invocation, Location }
+import org.mockito.invocation.{DescribedInvocation, Invocation, Location}
 import org.mockito.listeners.MockCreationListener
 import org.mockito.mock.MockCreationSettings
 import org.mockito.quality.Strictness
-import org.mockito.quality.Strictness.{ LENIENT, STRICT_STUBS }
+import org.mockito.quality.Strictness.{LENIENT, STRICT_STUBS}
 import org.mockito.session.MockitoSessionLogger
 import org.scalactic.TripleEquals._
 

@@ -2,29 +2,29 @@ package org.mockito.matchers
 
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.{ArgumentMatchers => JavaMatchers}
-import org.scalactic.Equality
+import org.scalactic.{Equality, Prettifier}
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
 object MacroMatchers_211 {
 
-  def eqTo[T](value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T]): T = {
+  def eqTo[T](value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T], $pt: Prettifier): T = {
     JavaMatchers.argThat(new EqTo[T](value))
     value
   }
 
-  def eqToMatcher[T: c.WeakTypeTag](c: blackbox.Context)(value: c.Expr[T])(eq: c.Tree): c.Expr[T] = {
+  def eqToMatcher[T: c.WeakTypeTag](c: blackbox.Context)(value: c.Expr[T]): c.Expr[T] = {
     import c.universe._
 
     def isValueClass(tpe: Tree) = tpe.symbol.isClass && tpe.symbol.asClass.isDerivedValueClass
 
     val r = c.Expr[T] {
       c.macroApplication match {
-        case q"$_.eqTo[$tpe](new $clazz($arg))($_)" if isValueClass(tpe) =>
+        case q"$_.eqTo[$tpe](new $clazz($arg))" if isValueClass(tpe) =>
           q"new $clazz(_root_.org.mockito.matchers.MacroMatchers_211.eqTo($arg))"
 
-        case q"$_.eqTo[$tpe](..$arg)($_)" =>
+        case q"$_.eqTo[$tpe](..$arg)" =>
           q"_root_.org.mockito.matchers.MacroMatchers_211.eqTo[$tpe](..$arg)"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")

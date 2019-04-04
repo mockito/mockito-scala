@@ -25,20 +25,21 @@ class ScalaInvocation(val mockRef: MockReference[AnyRef],
   private var _isIgnoredForVerification: Boolean = false
   private var _stubInfo: StubInfo                = _
 
-  override def getArguments: Array[AnyRef]           = arguments
-  override def getArgument[T](index: Int): T         = arguments(index).asInstanceOf[T]
-  override def getSequenceNumber: Int                = sequenceNumber
-  override def getLocation: Location                 = location
-  override def getRawArguments: Array[AnyRef]        = rawArguments
-  override def getRawReturnType: Class[_]            = mockitoMethod.getReturnType
-  override def markVerified(): Unit                  = verified = true
-  override def stubInfo(): StubInfo                  = _stubInfo
-  override def markStubbed(stubInfo: StubInfo): Unit = _stubInfo = stubInfo
-  override def isIgnoredForVerification: Boolean     = _isIgnoredForVerification
-  override def ignoreForVerification(): Unit         = _isIgnoredForVerification = true
-  override def isVerified: Boolean                   = verified || isIgnoredForVerification
-  override def getMock: AnyRef                       = mockRef.get
-  override def getMethod: Method                     = mockitoMethod.getJavaMethod
+  override def getArguments: Array[AnyRef]                    = arguments
+  override def getArgument[T](index: Int): T                  = arguments(index).asInstanceOf[T]
+  override def getArgument[T](index: Int, clazz: Class[T]): T = clazz.cast(arguments(index))
+  override def getSequenceNumber: Int                         = sequenceNumber
+  override def getLocation: Location                          = location
+  override def getRawArguments: Array[AnyRef]                 = rawArguments
+  override def getRawReturnType: Class[_]                     = mockitoMethod.getReturnType
+  override def markVerified(): Unit                           = verified = true
+  override def stubInfo(): StubInfo                           = _stubInfo
+  override def markStubbed(stubInfo: StubInfo): Unit          = _stubInfo = stubInfo
+  override def isIgnoredForVerification: Boolean              = _isIgnoredForVerification
+  override def ignoreForVerification(): Unit                  = _isIgnoredForVerification = true
+  override def isVerified: Boolean                            = verified || isIgnoredForVerification
+  override def getMock: AnyRef                                = mockRef.get
+  override def getMethod: Method                              = mockitoMethod.getJavaMethod
   override def callRealMethod(): AnyRef =
     if (realMethod.isInvokable) realMethod.invoke
     else throw cannotCallAbstractRealMethod

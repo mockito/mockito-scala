@@ -1,14 +1,12 @@
 package user.org.mockito
 
-import org.mockito.{ MockitoSugar, Strictness }
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar }
 import org.scalactic.Prettifier
-import org.mockito.scalatest.AsyncMockito
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{ AsyncWordSpec, FixtureContext, Matchers }
+import org.scalatest.{ FixtureContext, Matchers, WordSpec }
 import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
 
 import scala.concurrent.duration._
@@ -16,9 +14,7 @@ import scala.concurrent.duration._
 case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
 
-class IdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncMockito with TableDrivenPropertyChecks {
-
-  override val strictness: Strictness = Strictness.Lenient
+class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with TableDrivenPropertyChecks {
 
   implicit val prettifier: Prettifier = new Prettifier {
     override def apply(o: Any): String = o match {

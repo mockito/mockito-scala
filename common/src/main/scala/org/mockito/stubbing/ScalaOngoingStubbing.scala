@@ -9,6 +9,7 @@ import scala.reflect.ClassTag
 
 object ScalaOngoingStubbing {
   implicit def toScalaOngoingStubbing[T: ValueClassExtractor](v: OngoingStubbing[T]): ScalaOngoingStubbing[T] = ScalaOngoingStubbing(v)
+  implicit def toMock[T](s: ScalaOngoingStubbing[_]): T                                                       = s.getMock[T]
 }
 
 case class ScalaOngoingStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: ValueClassExtractor[T]) {

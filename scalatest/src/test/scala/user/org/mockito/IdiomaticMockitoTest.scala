@@ -740,10 +740,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
   "mock" should {
     "stub a real call" in {
-      val org = mock[Org]
-
-      org.bar shouldCall realMethod
-
+      val org: Org = mock[Org].bar shouldCall realMethod
       org.bar shouldBe "not mocked"
     }
   }

@@ -12,6 +12,7 @@ import scala.reflect.ClassTag
 
 object ScalaFirstStubbing {
   implicit def toScalaFirstStubbing[T: ValueClassExtractor](v: OngoingStubbing[T]): ScalaFirstStubbing[T] = ScalaFirstStubbing(v)
+  implicit def toMock[T](s: ScalaFirstStubbing[_]): T                                                     = s.getMock[T]
 }
 
 case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: ValueClassExtractor[T]) {

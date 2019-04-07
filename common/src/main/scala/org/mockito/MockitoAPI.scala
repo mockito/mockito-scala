@@ -96,10 +96,13 @@ private[mockito] trait DoSomething {
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
   def doAnswer[R: ValueClassExtractor](l: => R): Stubber =
-    Mockito.doAnswer(invocationToAnswer(_ =>
-      l match {
+    Mockito.doAnswer(invocationToAnswer(_ => {
+      // Store the param so we don't evaluate the by-name twice
+      val _l = l
+      _l match {
         case f: Function0[_] => f()
-        case _               => l
+        case _               => _l
+      }
     }))
   def doAnswer[P0: ClassTag, R: ValueClassExtractor](f: P0 => R): Stubber = clazz[P0] match {
     case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))

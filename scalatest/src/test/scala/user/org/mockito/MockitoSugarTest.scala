@@ -1,5 +1,7 @@
 package user.org.mockito
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.misusing.WrongTypeOfReturnValue
 import org.mockito.exceptions.verification.{ ArgumentsAreDifferent, WantedButNotInvoked }
@@ -92,6 +94,19 @@ class MockitoSugarTest
 
         aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(42)
         aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(4)
+      }
+
+      //useful if we want to delay the evaluation of whatever we are returning until the method is called
+      "simplify stubbing an answer where we don't care about any param" in {
+        val org = foo()
+
+        val counter = new AtomicInteger(1)
+        when(org.bar) thenAnswer counter.getAndIncrement().toString
+
+        counter.get shouldBe 1
+        org.bar shouldBe "1"
+        counter.get shouldBe 2
+        org.bar shouldBe "2"
       }
 
       "create a mock while stubbing another" in {

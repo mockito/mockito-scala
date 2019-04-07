@@ -1,5 +1,7 @@
 package user.org.mockito
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
@@ -88,9 +90,13 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "simplify stubbing an answer where we don't care about any param" in {
         val org = orgDouble()
 
-        org.bar shouldAnswer "mocked!"
+        val counter = new AtomicInteger(1)
+        org.bar shouldAnswer counter.getAndIncrement().toString
 
-        org.bar shouldBe "mocked!"
+        counter.get shouldBe 1
+        org.bar shouldBe "1"
+        counter.get shouldBe 2
+        org.bar shouldBe "2"
       }
 
       "simplify answer API" in {
@@ -791,11 +797,16 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       ((i: Int, s: String) => (i * 10 + s.toInt).toString) willBe answered by aSpy.doSomethingWithThisIntAndString(*, *)
       ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt).toString + boolean) willBe answered by aSpy
         .doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
-      (() => "mocked!") willBe answered by aSpy.bar
-      "mocked!" willBe answered by aSpy.baz
+      val counter = new AtomicInteger(1)
+      (() => counter.getAndIncrement().toString) willBe answered by aSpy.bar
+      counter.getAndIncrement().toString willBe answered by aSpy.baz
 
-      aSpy.bar shouldBe "mocked!"
-      aSpy.baz shouldBe "mocked!"
+      counter.get shouldBe 1
+      aSpy.bar shouldBe "1"
+      counter.get shouldBe 2
+      aSpy.baz shouldBe "2"
+      counter.get shouldBe 3
+
       aSpy.doSomethingWithThisInt(4) shouldBe 42
       aSpy.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
       aSpy.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42true"

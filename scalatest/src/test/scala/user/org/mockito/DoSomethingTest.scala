@@ -1,5 +1,7 @@
 package user.org.mockito
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
@@ -47,9 +49,25 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
     "work as normal" in {
       val aMock = mock[Foo]
 
-      doAnswer("mocked!").when(aMock).bar
+      val counter = new AtomicInteger(1)
+      doAnswer(counter.getAndIncrement().toString).when(aMock).bar
 
-      aMock.bar shouldBe "mocked!"
+      counter.get shouldBe 1
+      aMock.bar shouldBe "1"
+      counter.get shouldBe 2
+      aMock.bar shouldBe "2"
+    }
+
+    "work with a no arg function" in {
+      val aMock = mock[Foo]
+
+      val counter = new AtomicInteger(1)
+      doAnswer(() => counter.getAndIncrement().toString).when(aMock).bar
+
+      counter.get shouldBe 1
+      aMock.bar shouldBe "1"
+      counter.get shouldBe 2
+      aMock.bar shouldBe "2"
     }
 
     "simplify answer API" in {

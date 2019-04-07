@@ -57,7 +57,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = foo()
 
-          aFoo.bar(*).isLenient ()
+          aFoo.bar(*).isLenient()
 
           aFoo.bar("paco") shouldBe fooBar
         }
@@ -69,7 +69,7 @@ class MockitoScalaSessionTest
 
           aFoo.bar("paco") shouldBe fooBar
 
-          aFoo.bar(*).isLenient ()
+          aFoo.bar(*).isLenient()
         }
       }
 
@@ -77,7 +77,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = foo()
 
-          aFoo.bar(*).isLenient ()
+          aFoo.bar(*).isLenient()
 
           aFoo.bar("pepe") shouldReturn "mocked"
         }
@@ -89,7 +89,7 @@ class MockitoScalaSessionTest
 
           aFoo.bar("pepe") shouldReturn "mocked"
 
-          aFoo.bar(*).isLenient ()
+          aFoo.bar(*).isLenient()
         }
       }
 

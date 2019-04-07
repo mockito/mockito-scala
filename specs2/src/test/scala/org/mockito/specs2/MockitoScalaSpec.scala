@@ -339,9 +339,9 @@ The Mockito trait is reusable in other contexts
   def verification25 = {
     object list extends list; import list._
 
-    scala.concurrent.Future { Thread.sleep(200); takesSometime.call(10) }
+    scala.concurrent.Future { Thread.sleep(1000); takesSometime.call(10) }
     ((takesSometime.call(10) wasCalled (once within 10.millis)).message must contain("Wanted but not invoked")) and
-    (takesSometime.call(10) wasCalled (once within 300.millis))
+    (takesSometime.call(10) wasCalled (once within 10.seconds))
   }
 
   def verification26 = {

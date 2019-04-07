@@ -40,10 +40,13 @@ From now on, when using the idiomatic syntax, you'll get any non-matcher paramet
 this means you shouldn't need to use it manually anymore. This is to provide a consistent behaviour when a custom `scalactic.Equality` has been defined for
 a type.
 
-The traits that provide the specifics for each test framework are `org.mockito.scalatest.Mockito` and `org.mockito.specs2.Mockito`.
-For Scalatest we have now an extra one (`org.mockito.scalatest.AsyncMockito`) to be used with async tests.
+The traits that provide the specifics for each test framework are 
+- Scalatest: 
+    - `org.mockito.scalatest.MockitoSugar` and `org.mockito.scalatest.IdiomaticMockito` for standard specs
+    - `org.mockito.scalatest.AsyncMockitoSugar`, `org.mockito.scalatest.AsyncIdiomaticMockito` for async specs
+- Specs2: `org.mockito.specs2.Mockito`
 
-This version also includes a lot of under-the-hood fixes and improvements that should provide an even better experience.
+This version also includes a lot of under-the-hood fixes and improvements that provide an even better experience.
 
 ## Note for v1.2.0
 As now the varargs support works consistently across the whole lib, no no special syntax is needed, so if you were using `eqTo` with varargs, i.e. 
@@ -100,12 +103,7 @@ This trait wraps the API available on `org.mockito.Mockito` from the Java versio
 *   Eliminates parenthesis when possible to make the test code more readable
 *   Adds `spyLambda[T]` to allow spying lambdas (they don't work with the standard spy as they are created as final classes by the compiler)
 *   Supports mocking inline mixins like `mock[MyClass with MyTrait]`
-*   Supports by-name arguments in some scenarios **NOTE: since v1.3.0 there is full support for by-name arguments**
-    *   Full support when all arguments in a method are by-name
-    *   Full support when only some arguments in a method are by-name, but we use the `any[T]` matcher for every argument
-    *   Full support when only some arguments in a method are by-name, but we use NO matchers at all
-    *   Partial support when only some arguments in a method are by-name and we use specific matchers, 
-    in this scenario the stubbing will only work if the by-name arguments are the last ones in the method signature
+*   Full support for by-name arguments (the full support was added in **1.4.0**, before it was partial).
 *   Adds support for working with default arguments
 
 The companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired

@@ -103,7 +103,7 @@ case class ScalaOngoingStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: 
    *
    * @return object that allows stubbing consecutive calls
    */
-  def andThenCallRealMethod(): ScalaOngoingStubbing[T] = delegate thenCallRealMethod ()
+  def andThenCallRealMethod(): ScalaOngoingStubbing[T] = delegate.thenCallRealMethod()
 
   /**
    * Sets a generic Answer for the method. E.g:

@@ -1,11 +1,11 @@
 package user.org.mockito.scalatest
 
-import org.mockito.scalatest.AsyncMockito
+import org.mockito.scalatest.AsyncIdiomaticMockito
 import org.scalatest.{ AsyncWordSpec, FixtureContext, Matchers }
 
 import scala.concurrent.Future
 
-class AsyncMockitoTest extends AsyncWordSpec with Matchers with AsyncMockito {
+class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncIdiomaticMockito {
 
   class Foo {
     def bar(a: String) = "bar"

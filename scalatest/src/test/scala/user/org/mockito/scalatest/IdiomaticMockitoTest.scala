@@ -1,9 +1,9 @@
 package user.org.mockito.scalatest
 
-import org.mockito.scalatest.Mockito
+import org.mockito.scalatest.IdiomaticMockito
 import org.scalatest.{ Matchers, WordSpec }
 
-class MockitoTest extends WordSpec with Mockito with Matchers {
+class IdiomaticMockitoTest extends WordSpec with IdiomaticMockito with Matchers {
 
   class Foo {
     def bar(a: String) = "bar"

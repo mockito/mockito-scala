@@ -3,7 +3,7 @@ package org.mockito.scalatest
 import java.util.concurrent.ConcurrentHashMap
 
 import org.mockito.stubbing.DefaultAnswer
-import org.mockito.{ MockCreator, MockSettings, MockitoSugar }
+import org.mockito.{ MockCreator, MockSettings }
 import org.scalactic.Prettifier
 import org.scalatest.{ Outcome, TestSuite }
 
@@ -22,7 +22,7 @@ trait ResetMocksAfterEachTest extends TestSuite with MockCreator { self: MockCre
 
   private val mocksToReset = ConcurrentHashMap.newKeySet[AnyRef]().asScala
 
-  private def resetAll(): Unit = mocksToReset.foreach(MockitoSugar.reset(_))
+  private def resetAll(): Unit = mocksToReset.foreach(org.mockito.MockitoSugar.reset(_))
 
   override protected def withFixture(test: NoArgTest): Outcome = {
     val outcome = super.withFixture(test)

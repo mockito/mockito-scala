@@ -1,5 +1,7 @@
 package user.org.mockito
 
+import scala.language.postfixOps
+
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
@@ -169,7 +171,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "stub a method that returns a function" in {
         val org = orgDouble()
 
-        org.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2).toString) andThenCallRealMethod ()
+        org.iReturnAFunction(*) shouldReturn (_.toString) andThen (i => (i * 2).toString) andThenCallRealMethod
 
         org.iReturnAFunction(0)(42) shouldBe "42"
         org.iReturnAFunction(0)(42) shouldBe "84"

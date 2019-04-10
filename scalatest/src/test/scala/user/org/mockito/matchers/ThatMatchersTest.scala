@@ -5,37 +5,7 @@ import org.mockito.matchers.EqTo
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
 
-object ThatMatchersTest {
-  case class Baz(param1: String, param2: String)
-
-  class Foo {
-    def bar[T](v: T): T = v
-
-    def barTyped(v: String): String = v
-
-    def barByte(v: Byte): Byte = v
-
-    def barBoolean(v: Boolean): Boolean = v
-
-    def barChar(v: Char): Char = v
-
-    def barDouble(v: Double): Double = v
-
-    def barInt(v: Int): Int = v
-
-    def barFloat(v: Float): Float = v
-
-    def barShort(v: Short): Short = v
-
-    def barLong(v: Long): Long = v
-
-    def baz(v: Baz): Baz = v
-  }
-}
-
 class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
-
-  import ThatMatchersTest._
 
   "argMatching[T]" should "work in various scenarios" in {
     val aMock = mock[Foo]
@@ -95,7 +65,7 @@ class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers
     verify(aMock).barInt(argThat(EqTo(1)))
 
     aMock.barFloat(1)
-    verify(aMock).barFloat(argThat(EqTo(1)))
+    verify(aMock).barFloat(argThat(EqTo(1f)))
 
     aMock.barShort(1)
     verify(aMock).barShort(argThat(EqTo(1.toShort)))

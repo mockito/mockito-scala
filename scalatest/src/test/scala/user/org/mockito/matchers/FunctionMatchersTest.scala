@@ -6,10 +6,6 @@ import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
 
 class FunctionMatchersTest extends WordSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
-  class Foo {
-    def iHaveFunction0[T](v: () => T): T = v()
-  }
-
   "function0[T]" should {
 
     "pass if return value matches" in {

@@ -6,36 +6,6 @@ import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
 
 class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
-  case class Baz(param1: String, param2: String)
-
-  class Foo {
-    def bar[T](v: T): T = v
-
-    def barTyped(v: String): String = v
-
-    def barByte(v: Byte): Byte = v
-
-    def barBoolean(v: Boolean): Boolean = v
-
-    def barChar(v: Char): Char = v
-
-    def barDouble(v: Double): Double = v
-
-    def barInt(v: Int): Int = v
-
-    def barFloat(v: Float): Float = v
-
-    def barShort(v: Short): Short = v
-
-    def barLong(v: Long): Long = v
-
-    def baz(v: Baz): Baz = v
-
-    def valueClass(v: ValueClass): String = ???
-
-    def valueCaseClass(v: ValueCaseClass): Int = ???
-  }
-
   "eqTo[T]" should "work with value classes" in {
     val aMock = mock[Foo]
 

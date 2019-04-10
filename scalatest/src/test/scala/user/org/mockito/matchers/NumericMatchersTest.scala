@@ -3,13 +3,6 @@ package user.org.mockito.matchers
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.mockito.exceptions.verification.WantedButNotInvoked
 import org.scalatest.{ FlatSpec, Matchers }
-import user.org.mockito.matchers.NumericMatchersTest.Foo
-
-object NumericMatchersTest {
-  class Foo {
-    def pepe[N](n: N, v: String = "meh"): N = ???
-  }
-}
 
 class NumericMatchersTest extends FlatSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar {
 

@@ -63,7 +63,7 @@ lazy val publishSettings = Seq(
 )
 
 lazy val commonLibraries = Seq(
-  "org.mockito"   % "mockito-core"      % "2.26.0",
+  "org.mockito"   % "mockito-core"      % "2.27.0",
   "org.scalactic" %% "scalactic"        % "3.0.8-RC2",
   "ru.vyarus"     % "generics-resolver" % "3.0.0",
 )

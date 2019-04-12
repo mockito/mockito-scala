@@ -1,74 +1,79 @@
 package org.mockito
 import scala.reflect.macros.blackbox
+import scala.util.matching.Regex
 
 object Utils {
   private[mockito] def hasMatchers(c: blackbox.Context)(args: List[c.Tree]): Boolean =
     args.exists(arg => isMatcher(c)(arg))
 
+  private val MockitoMatchers = Set(
+    "anyByte",
+    "anyBoolean",
+    "anyChar",
+    "anyDouble",
+    "anyInt",
+    "anyFloat",
+    "anyShort",
+    "anyLong",
+    "anyList",
+    "anySeq",
+    "anyIterable",
+    "anySet",
+    "anyMap",
+    "any",
+    "anyVal",
+    "$times", // *
+    "isNull",
+    "isNotNull",
+    "eqTo",
+    "eqToVal",
+    "same",
+    "isA",
+    "refEq",
+    "function0",
+    "matches",
+    "startsWith",
+    "contains",
+    "endsWith",
+    "argThat",
+    "byteThat",
+    "booleanThat",
+    "charThat",
+    "doubleThat",
+    "intThat",
+    "floatThat",
+    "shortThat",
+    "longThat",
+    "argMatching",
+    "$greater", // >
+    "$greater$eq", // >=
+    "$less", // <
+    "$less$eq", // <=
+    "$eq$tilde", // =~
+    "Captor.asCapture",
+    "capture"
+  )
+
+  private val specs2implicits: Regex                       = "(matcher)?[t,T]o(Partial)?FunctionCall(\\d*)".r
+  private def isSpecs2Matcher(methodName: String): Boolean = specs2implicits.pattern.matcher(methodName).matches
+
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {
     import c.universe._
     if (arg.toString().contains("org.mockito.matchers.MacroMatchers")) true
-    else
-      arg match {
-        case q"$_.anyList[$_]"     => true
-        case q"$_.anySeq[$_]"      => true
-        case q"$_.anyIterable[$_]" => true
-        case q"$_.anySet[$_]"      => true
-        case q"$_.anyMap[$_, $_]"  => true
-        case q"$_.any[$_]($_)"     => true
-        case q"$_.anyVal[$_]($_)"  => true
-        case q"$_.*[$_]($_)"       => true
-        case q"$_.anyByte"         => true
-        case q"$_.anyBoolean"      => true
-        case q"$_.anyChar"         => true
-        case q"$_.anyDouble"       => true
-        case q"$_.anyInt"          => true
-        case q"$_.anyFloat"        => true
-        case q"$_.anyShort"        => true
-        case q"$_.anyLong"         => true
+    else {
+      val methodName = arg match {
+        case q"$_.Captor.asCapture[$_]($_)" => Some("Captor.asCapture")
+        case q"$_.n.$methodName[$_](...$_)" => Some(methodName.toString)
+        case q"$_.$methodName"              => Some(methodName.toString)
+        case q"$_.$methodName[..$_]"        => Some(methodName.toString)
+        case q"$_.$methodName(...$_)"       => Some(methodName.toString)
+        case q"$_.$methodName[..$_](...$_)" => Some(methodName.toString)
 
-        case q"$_.isNull[$_]"    => true
-        case q"$_.isNotNull[$_]" => true
-
-        case q"$_.eqTo[$_](...$_)"    => true
-        case q"$_.eqToVal[$_](...$_)" => true
-        case q"$_.same[$_]($_)"       => true
-        case q"$_.isA[$_]($_)"        => true
-        case q"$_.refEq[$_]($_, $_)"  => true
-
-        case q"$_.function0[$_]($_)" => true
-
-        case q"$_.matches($_)"    => true
-        case q"$_.startsWith($_)" => true
-        case q"$_.contains($_)"   => true
-        case q"$_.endsWith($_)"   => true
-
-        case q"$_.argThat[$_](..$_)"   => true
-        case q"$_.byteThat[$_]($_)"    => true
-        case q"$_.booleanThat[$_]($_)" => true
-        case q"$_.charThat[$_]($_)"    => true
-        case q"$_.doubleThat[$_]($_)"  => true
-        case q"$_.intThat[$_]($_)"     => true
-        case q"$_.floatThat[$_]($_)"   => true
-        case q"$_.shortThat[$_]($_)"   => true
-        case q"$_.longThat[$_]($_)"    => true
-        case q"$_.argMatching[$_]($_)" => true
-
-        case q"$_.n.>[$_]($_)($_)"  => true
-        case q"$_.n.>=[$_]($_)($_)" => true
-        case q"$_.n.<[$_]($_)($_)"  => true
-        case q"$_.n.<=[$_]($_)($_)" => true
-        case q"$_.n.=~[$_]($_)"     => true
-
-        case q"$_.Captor.asCapture[$_]($_)" => true
-        case q"$_.capture" => true
-
-        case q"($_.MacroMatchers_211.eqTo[$_](...$_): $_)"         => true
-        case q"($_($_.MacroMatchers_211.eqTo[$_](...$_)): $_)"     => true
-        case q"(new $_($_.MacroMatchers_211.eqTo[$_](...$_)): $_)" => true
-
-        case _ => false
+        case _ => None
       }
+      methodName.exists(mn => MockitoMatchers.contains(mn) || isSpecs2Matcher(mn))
+    }
+
   }
 
   private[mockito] def transformArgs(c: blackbox.Context)(args: List[c.Tree]): List[c.Tree] =
@@ -79,7 +84,7 @@ object Utils {
     if (isMatcher(c)(arg)) arg
     else
       arg match {
-        case q"$a" => q"_root_.org.mockito.ArgumentMatchersSugar.eqTo($a)"
+        case q"$a" => q"_root_.org.mockito.matchers.DefaultMatcher.defaultMatcher($a)"
       }
   }
 }

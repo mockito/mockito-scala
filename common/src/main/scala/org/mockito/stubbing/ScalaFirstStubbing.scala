@@ -5,13 +5,14 @@ import org.mockito.internal.stubbing.OngoingStubbingImpl
 import org.mockito.internal.util.MockUtil.getMockSettings
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.quality.Strictness.LENIENT
-import org.mockito.{clazz, functionToAnswer, invocationToAnswer}
+import org.mockito.{ clazz, functionToAnswer, invocationToAnswer }
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 object ScalaFirstStubbing {
   implicit def toScalaFirstStubbing[T: ValueClassExtractor](v: OngoingStubbing[T]): ScalaFirstStubbing[T] = ScalaFirstStubbing(v)
+  implicit def toMock[T](s: ScalaFirstStubbing[_]): T                                                     = s.getMock[T]
 }
 
 case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T])(implicit $vce: ValueClassExtractor[T]) {

@@ -3,8 +3,8 @@ package org.mockito
 import org.mockito.stubbing.DefaultAnswer
 
 /**
-  * Simple object to act as an 'enum' of DefaultAnswers
-  */
+ * Simple object to act as an 'enum' of DefaultAnswers
+ */
 object DefaultAnswers {
   val ReturnsDefaults: DefaultAnswer    = org.mockito.stubbing.ReturnsDefaults
   val ReturnsDeepStubs: DefaultAnswer   = org.mockito.stubbing.ReturnsDeepStubs

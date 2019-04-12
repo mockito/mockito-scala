@@ -13,19 +13,17 @@ object WhenMacro {
     def apply(value: T): ScalaOngoingStubbing[T] = os thenReturn value
   }
 
+  val ShouldReturnOptions = Set("shouldReturn", "mustReturn", "returns")
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ReturnActions[T]] = {
     import c.universe._
 
     val r = c.Expr[ReturnActions[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldReturn" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldReturnOptions.contains(m.toString) =>
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
-          } else
-            q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldReturn" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldReturnOptions.contains(m.toString) =>
           q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
@@ -41,11 +39,8 @@ object WhenMacro {
     val r = c.Expr[Unit] {
       c.macroApplication match {
         case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).isLenient()" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs))).isLenient()"
-          } else
-            q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args))).isLenient()"
 
         case q"$_.StubbingOps[$t]($obj.$method[..$targs]).isLenient()" =>
           q"new _root_.org.mockito.stubbing.ScalaFirstStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs])).isLenient()"
@@ -57,21 +52,21 @@ object WhenMacro {
     r
   }
 
-  class RealMethod
+  object RealMethod {
+    def willBe(called: Called.type): Called.type = called
+  }
 
-  def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod]): c.Expr[ScalaOngoingStubbing[T]] = {
+  val ShouldCallOptions = Set("shouldCall", "mustCall", "calls")
+  def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod.type]): c.Expr[ScalaOngoingStubbing[T]] = {
     import c.universe._
 
     val r = c.Expr[ScalaOngoingStubbing[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldCall($_.realMethod)" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m($_.realMethod)" if ShouldCallOptions.contains(m.toString) =>
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)).thenCallRealMethod())"
-          } else
-            q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)).thenCallRealMethod())"
 
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldCall($_.realMethod)" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m($_.realMethod)" if ShouldCallOptions.contains(m.toString) =>
           q"new _root_.org.mockito.stubbing.ScalaOngoingStubbing(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]).thenCallRealMethod())"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
@@ -85,19 +80,17 @@ object WhenMacro {
     def apply[E <: Throwable](e: E): ScalaOngoingStubbing[T] = os thenThrow e
   }
 
+  val ShouldThrowOptions = Set("shouldThrow", "mustThrow", "throws")
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ThrowActions[T]] = {
     import c.universe._
 
     val r = c.Expr[ThrowActions[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldThrow" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldThrowOptions.contains(m.toString) =>
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
-          } else
-            q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldThrow" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldThrowOptions.contains(m.toString) =>
           q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
@@ -133,19 +126,17 @@ object WhenMacro {
       os thenAnswer f
   }
 
+  val ShouldAnswerOptions = Set("shouldAnswer", "mustAnswer", "answers")
   def shouldAnswer[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[AnswerActions[T]] = {
     import c.universe._
 
     val r = c.Expr[AnswerActions[T]] {
       c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).shouldAnswer" =>
-          if (args.exists(a => hasMatchers(c)(a))) {
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldAnswerOptions.contains(m.toString) =>
           val newArgs = args.map(a => transformArgs(c)(a))
           q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
-          } else
-            q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$args)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).shouldAnswer" =>
+        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldAnswerOptions.contains(m.toString) =>
           q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")

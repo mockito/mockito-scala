@@ -20,15 +20,33 @@ The library has independent developers, release cycle and versioning from core m
 
 ## Dependency
 
-*   Artifact identifier: "org.mockito:mockito-scala_2.11:VERSION"
-*   Artifact identifier: "org.mockito:mockito-scala_2.12:VERSION"
-*   Artifact identifier: "org.mockito:mockito-scala_2.13.0-RC1:VERSION"
+*   Artifact identifier: "org.mockito:mockito-scala_<scala-version>:<version>"
+*   Artifact identifier: "org.mockito:mockito-scala-scalatest_<scala-version>:<version>"
+*   Artifact identifier: "org.mockito:mockito-scala-specs2_<scala-version>:<version>"
 *   Latest version - see [release notes](/docs/release-notes.md)
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
 ### Please ensure `mockito-scala` is your only mockito dependency
 
 ### Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
+
+## Notes for v1.3.0
+As Specs2 support was added, now the library has been split in 3 different artifacts
+- **mockito-scala** being the core
+- **mockito-scala-scalatest** having specific classes that provide extra support for Scalatest
+- **mockito-scala-specs2** having specific classes that provide extra support for Specs2
+
+From now on, when using the idiomatic syntax, you'll get any non-matcher parameter automatically wrapped in an `eqTo`, 
+this means you shouldn't need to use it manually anymore. This is to provide a consistent behaviour when a custom `scalactic.Equality` has been defined for
+a type.
+
+The traits that provide the specifics for each test framework are 
+- Scalatest: 
+    - `org.mockito.scalatest.MockitoSugar` and `org.mockito.scalatest.IdiomaticMockito` for standard specs
+    - `org.mockito.scalatest.AsyncMockitoSugar`, `org.mockito.scalatest.AsyncIdiomaticMockito` for async specs
+- Specs2: `org.mockito.specs2.Mockito`
+
+This version also includes a lot of under-the-hood fixes and improvements that provide an even better experience.
 
 ## Note for v1.2.0
 As now the varargs support works consistently across the whole lib, no no special syntax is needed, so if you were using `eqTo` with varargs, i.e. 
@@ -85,12 +103,7 @@ This trait wraps the API available on `org.mockito.Mockito` from the Java versio
 *   Eliminates parenthesis when possible to make the test code more readable
 *   Adds `spyLambda[T]` to allow spying lambdas (they don't work with the standard spy as they are created as final classes by the compiler)
 *   Supports mocking inline mixins like `mock[MyClass with MyTrait]`
-*   Supports by-name arguments in some scenarios
-    *   Full support when all arguments in a method are by-name
-    *   Full support when only some arguments in a method are by-name, but we use the `any[T]` matcher for every argument
-    *   Full support when only some arguments in a method are by-name, but we use NO matchers at all
-    *   Partial support when only some arguments in a method are by-name and we use specific matchers, 
-    in this scenario the stubbing will only work if the by-name arguments are the last ones in the method signature
+*   Full support for by-name arguments (the full support was added in **1.4.0**, before it was partial).
 *   Adds support for working with default arguments
 
 The companion object also extends the trait to allow the usage of the API without mixing-in the trait in case that's desired
@@ -193,24 +206,18 @@ aMock.myMethod(*) isLenient()
 when(aMock.myMethod(*)).isLenient()
 ``` 
 
-## MockitoFixture
+## Strict Mode
 
 For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f)
 
-If you mix-in this trait on your test class **after** your favourite Spec trait, you will get an automatic 
-`MockitoScalaSession` around each one of your tests, so **all** of them will run in **Strict Stub** mode.
+When using Scalatest and `org.mockito.scalatest.Mockito` this is the default mode, you can override the strictness to be lenient by doing `val strictness: Strictness = Strictness.Lenient`
+The implication under the hood is that every test will run inside a `MockitoScalaSession`, so **all** of them will run in **Strict Stub** mode.
 
-This trait also includes `org.mockito.MockitoSugar` and `org.mockito.ArgumentMatchersSugar` so you have pretty much all 
+`org.mockito.scalatest.Mockito` also includes `org.mockito.IdiomaticMockito` and `org.mockito.ArgumentMatchersSugar` so you have pretty much all 
 the mockito-scala API available in one go, i.e.
 
 ```scala
-class MyTest extends WordSpec with MockitoFixture
-```
-
-In case you want to use the Idiomatic Syntax just do
-
-```scala
-class MyTest extends WordSpec with IdiomaticMockitoFixture
+class MyTest extends WordSpec with Mockito
 ```
 
 IMPORTANT: A session is defined on a per-test basis, and only the mocks created within the scope of the session are 
@@ -219,7 +226,7 @@ be ignored by the session. If you use the same mocks in all or most of the tests
 still usfing the advantages of strict stubbing then declare those mocks in a setup trait.
 
 ```scala
-class MySpec extends WordSpec with MockitoFixture {
+class MySpec extends WordSpec with Mockito {
    trait Setup {
       val myMock = mock[Sth] 
       myMock.someMethod shouldReturn "something" /*stub common to **all** tests -notice that if it's not used by all of them then the session will find it as an unused stubbing on those-*/
@@ -315,6 +322,8 @@ verify(aMock, atMost(6)).bar                                    <=> aMock.bar wa
 verify(aMock, atMost(6)).bar                                    <=> aMock.bar wasCalled atMost(sixTimes)
 verify(aMock, atMost(6)).bar                                    <=> aMock.bar wasCalled atMost(6.times)
 
+verify(aMock, timeout(2000).atLeast(6)).bar                     <=> aMock.bar wasCalled (atLeastSixTimes within 2.seconds)
+
 verifyNoMoreInteractions(aMock)                                 <=> aMock wasNever calledAgain
 
 val order = inOrder(mock1, mock2)                               <=> InOrder(mock1, mock2) { implicit order =>
@@ -325,7 +334,7 @@ order.verify(mock1).anotherMethod()                             <=>   mock1.anot
 
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
 
-Check the [tests](/core/src/test/scala/user/org/mockito/IdiomaticMockitoTest.scala) for more examples
+Check the [tests](/scalatest/src/test/scala/user/org/mockito/IdiomaticMockitoTest.scala) for more examples
 
 NOTE: When using the willBe syntax for stubbing, you can only stub one value to be returned, this is due to a limitation of the 
 type inference. If for some reason you have to do that (ideally all functions should be referentially transparent, so you wouldn't have to), you can 
@@ -493,6 +502,22 @@ aMock.method(4.999)
 aMock.method(n =~ 5.0 +- 0.001) was called
 ```
 
+### Prettifier
+
+An instance of `org.scalactic.Prettifier` is implicitly pulled by the `EqTo` matcher to provide a nicer (and customisable) printing of 
+your types when an verification fails. `EqTo` is also used internally by `Mockito` to print the arguments of every invocation, so you'll 
+get a consisten printing for both the expectation and the actual call.
+
+If you want to customise the print of any type you just need to declare your `Prettifier` in the implicit scope like
+
+```scala
+  implicit val prettifier: Prettifier = new Prettifier {
+    override def apply(o: Any): String = o match {
+      case Baz2(_, s) => s"PrettifiedBaz($s)"
+      case other      => Prettifier.default(other)
+    }
+  }
+```
 
 ## Notes
 

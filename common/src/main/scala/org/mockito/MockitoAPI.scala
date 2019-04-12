@@ -15,8 +15,11 @@ import org.mockito.Answers.CALLS_REAL_METHODS
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
+import org.mockito.internal.exceptions.Reporter
+import org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions
 import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
+import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
@@ -93,10 +96,13 @@ private[mockito] trait DoSomething {
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
   def doAnswer[R: ValueClassExtractor](l: => R): Stubber =
-    Mockito.doAnswer(invocationToAnswer(_ =>
-      l match {
+    Mockito.doAnswer(invocationToAnswer(_ => {
+      // Store the param so we don't evaluate the by-name twice
+      val _l = l
+      _l match {
         case f: Function0[_] => f()
-        case _               => l
+        case _               => _l
+      }
     }))
   def doAnswer[P0: ClassTag, R: ValueClassExtractor](f: P0 => R): Stubber = clazz[P0] match {
     case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
@@ -175,7 +181,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * as the value for the second parameter would have been null...
    */
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T = {
-    val interfaces = ReflectionUtils.interfaces
+    val interfaces = ReflectionUtils.extraInterfaces
 
     val realClass: Class[T] = mockSettings match {
       case m: MockSettingsImpl[_] if !m.getExtraInterfaces.isEmpty =>
@@ -188,7 +194,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
       else mockSettings
 
-    ReflectionUtils.markMethodsWithLazyArgs(realClass)
+    ReflectionUtils.markMethodsWithLazyArgsOrVarArgs(realClass)
 
     def createMock(settings: MockCreationSettings[T]): T = {
       val mock          = getMockMaker.createMock(settings, ScalaMockHandler(settings))
@@ -262,14 +268,30 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    */
   def verifyNoMoreInteractions(mocks: AnyRef*): Unit = {
 
-    mocks.foreach { m =>
+    def ignoreDefaultArguments(m: AnyRef) =
       mockingDetails(m).getInvocations.asScala
         .filter(_.getMethod.getName.contains("$default$"))
         .foreach(_.ignoreForVerification())
-    }
 
-    Mockito.verifyNoMoreInteractions(mocks: _*)
+    mocks.foreach {
+      case m: AnyRef if MockUtil.isMock(m) =>
+        ignoreDefaultArguments(m)
+        Mockito.verifyNoMoreInteractions(m)
+      case t: Iterable[_] => verifyNoMoreInteractions(t)
+      case _              => notAMockPassedToVerifyNoMoreInteractions
+    }
   }
+
+  /**
+   * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
+   */
+  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
+
+  /**
+   * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
+   * they are created as final classes by the compiler
+   */
+  def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
 }
 
 private[mockito] trait Verifications {
@@ -328,20 +350,9 @@ private[mockito] trait Verifications {
 private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifications {
 
   /**
-   * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
-   * they are created as final classes by the compiler
-   */
-  def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
-
-  /**
    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
    */
   def when[T: ValueClassExtractor](methodCall: T): ScalaFirstStubbing[T] = Mockito.when(methodCall)
-
-  /**
-   * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
-   */
-  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
 
   /**
    * Delegates to <code>Mockito.validateMockitoUsage()</code>, it's only here to expose the full Mockito API

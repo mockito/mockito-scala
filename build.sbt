@@ -6,21 +6,19 @@ import scala.util.Try
 
 ThisBuild / scalaVersion := "2.12.8"
 
-lazy val baseVersion = {
-  val pattern = """^version=(.+)$""".r
-  val source  = Source.fromFile("version.properties")
-  val version = Try(source.getLines.collectFirst {
-    case pattern(v) => v
-  }.get)
-  source.close
-  version.get
-}
-
 lazy val commonSettings =
   Seq(
     organization := "org.mockito",
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
-    version := baseVersion,
+    version := {
+      val pattern = """^version=(.+)$""".r
+      val source = Source.fromFile("version.properties")
+      val version = Try(source.getLines.collectFirst {
+        case pattern(v) => v
+      }.get)
+      source.close
+      version.get
+    },
     crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC1"),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
@@ -89,7 +87,6 @@ lazy val specs2 = (project in file("specs2"))
     publishSettings,
     libraryDependencies += "org.specs2"   %% "specs2-core"  % "4.5.1" % "provided",
     libraryDependencies += "org.hamcrest" % "hamcrest-core" % "1.3"   % "provided",
-    version := baseVersion + "-beta.1"
   )
 
 lazy val common = (project in file("common"))

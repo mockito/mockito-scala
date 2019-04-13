@@ -117,6 +117,36 @@ class MockitoSugarTest
         aMock.returnBar shouldBe a[Bar]
       }
 
+      "stub a runtime exception instance to be thrown" in {
+        val aMock = foo()
+
+        when(aMock.bar) thenThrow new IllegalArgumentException
+
+        an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
+      }
+
+      "stub a checked exception instance to be thrown" in {
+        val aMock = foo()
+
+        when(aMock.bar) thenThrow new Exception
+
+        an[Exception] shouldBe thrownBy(aMock.bar)
+      }
+
+      "stub a multiple exceptions instance to be thrown" in {
+        val aMock = foo()
+
+        when(aMock.bar) thenThrow new Exception andThenThrow new IllegalArgumentException
+
+        an[Exception] shouldBe thrownBy(aMock.bar)
+        an[IllegalArgumentException] shouldBe thrownBy(aMock.bar)
+
+        when(aMock.returnBar) thenThrow new IllegalArgumentException andThenThrow new Exception
+
+        an[IllegalArgumentException] shouldBe thrownBy(aMock.returnBar)
+        an[Exception] shouldBe thrownBy(aMock.returnBar)
+      }
+
       "default answer should deal with default arguments" in {
         val aMock = foo()
 

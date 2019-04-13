@@ -20,9 +20,9 @@ The library has independent developers, release cycle and versioning from core m
 
 ## Dependency
 
-*   Artifact identifier: "org.mockito:mockito-scala_<scala-version>:<version>"
-*   Artifact identifier: "org.mockito:mockito-scala-scalatest_<scala-version>:<version>"
-*   Artifact identifier: "org.mockito:mockito-scala-specs2_<scala-version>:<version>"
+*   Artifact identifier: "org.mockito:mockito-scala_[scala-version]:[version]"
+*   Artifact identifier: "org.mockito:mockito-scala-scalatest_[scala-version]:[version]"
+*   Artifact identifier: "org.mockito:mockito-scala-specs2_[scala-version]:[version]"
 *   Latest version - see [release notes](/docs/release-notes.md)
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 

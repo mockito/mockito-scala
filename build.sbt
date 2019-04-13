@@ -93,7 +93,6 @@ lazy val common = (project in file("common"))
   .dependsOn(macroCommon)
   .settings(
     commonSettings,
-    publishSettings,
     libraryDependencies ++= commonLibraries,
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     publish := {},
@@ -106,6 +105,7 @@ lazy val core = (project in file("core"))
   .dependsOn(common % "compile-internal, test-internal")
   .settings(
     commonSettings,
+    publishSettings,
     name := "mockito-scala",
     libraryDependencies ++= commonLibraries,
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,

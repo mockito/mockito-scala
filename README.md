@@ -30,7 +30,7 @@ The library has independent developers, release cycle and versioning from core m
 
 ### Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
 
-## Notes for v1.3.0
+## Notes for v1.4.0
 As Specs2 support was added, now the library has been split in 3 different artifacts
 - **mockito-scala** being the core
 - **mockito-scala-scalatest** having specific classes that provide extra support for Scalatest

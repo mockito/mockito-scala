@@ -1,9 +1,7 @@
 package org.mockito
 
 import java.lang.reflect.Method
-import java.util.function
 
-import org.mockito.internal.handler.ScalaMockHandler.Extractors
 import org.mockito.invocation.InvocationOnMock
 import org.scalactic.TripleEquals._
 import ru.vyarus.java.generics.resolver.GenericsResolver
@@ -11,10 +9,11 @@ import ru.vyarus.java.generics.resolver.GenericsResolver
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 import scala.reflect.internal.Symbols
-import scala.reflect.runtime.{ universe => ru }
-import ru._
 
 private[mockito] object ReflectionUtils {
+
+  import scala.reflect.runtime.{ universe => ru }
+  import ru._
 
   implicit def symbolToMethodSymbol(sym: Symbol): Symbols#MethodSymbol = sym.asInstanceOf[Symbols#MethodSymbol]
 
@@ -42,11 +41,13 @@ private[mockito] object ReflectionUtils {
             .classSymbol(method.getDeclaringClass)
             .info
             .decls
-            .filter(isNonConstructorMethod)
-            .find(d => customMirror.methodToJava(d) === method)
-            .map(_.asMethod)
-            .filter(_.returnType.typeSymbol.isClass)
-            .map(methodSymbol => mirror.runtimeClass(methodSymbol.returnType.typeSymbol.asClass))
+            .collectFirst {
+              case symbol
+                  if isNonConstructorMethod(symbol) &&
+                  customMirror.methodToJava(symbol) === method &&
+                  symbol.returnType.typeSymbol.isClass =>
+                mirror.runtimeClass(symbol.asMethod.returnType.typeSymbol.asClass)
+            }
         }
         .toOption
         .flatten
@@ -62,10 +63,11 @@ private[mockito] object ReflectionUtils {
   def extraInterfaces[T](implicit $wtt: WeakTypeTag[T], $ct: ClassTag[T]): List[Class[_]] =
     scala.util
       .Try {
+        val cls = clazz($ct)
         $wtt.tpe match {
           case RefinedType(types, _) =>
             types.map($wtt.mirror.runtimeClass).collect {
-              case c: Class[_] if c != clazz($ct) && c.isInterface => c
+              case c: Class[_] if c.isInterface && c != cls => c
             }
           case _ => List.empty
         }
@@ -73,32 +75,27 @@ private[mockito] object ReflectionUtils {
       .toOption
       .getOrElse(List.empty)
 
-  def markMethodsWithLazyArgsOrVarArgs(clazz: Class[_]): Unit =
-    Extractors.computeIfAbsent(
-      clazz,
-      new function.Function[Class[_], Seq[(Class[_], Method, Set[Int])]] {
-        override def apply(t: Class[_]): Seq[(Class[_], Method, Set[Int])] =
-          scala.util
-            .Try {
-              mirror
-                .classSymbol(clazz)
-                .info
-                .members
-                .collect {
-                  case s if isNonConstructorMethod(s) =>
-                    (s, s.typeSignature.paramLists.flatten.zipWithIndex.collect {
-                      case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
-                      case (p, idx) if p.typeSignature.toString.endsWith("*")    => idx
-                    }.toSet)
-                }
-                .toSeq
-                .filter(_._2.nonEmpty)
-                .map {
-                  case (s, indices) => (clazz, customMirror.methodToJava(s), indices)
-                }
+  def methodsWithLazyOrVarArgs(classes: Seq[Class[_]]): Seq[(Method, Set[Int])] =
+    classes.flatMap { clazz =>
+      scala.util
+        .Try {
+          mirror
+            .classSymbol(clazz)
+            .info
+            .members
+            .collect {
+              case symbol if isNonConstructorMethod(symbol) =>
+                symbol -> symbol.typeSignature.paramLists.flatten.zipWithIndex.collect {
+                  case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
+                  case (p, idx) if p.typeSignature.toString.endsWith("*")    => idx
+                }.toSet
             }
-            .toOption
-            .getOrElse(Seq.empty)
-      }
-    )
+            .collect {
+              case (symbol, indices) if indices.nonEmpty => customMirror.methodToJava(symbol) -> indices
+            }
+            .toSeq
+        }
+        .toOption
+        .getOrElse(Seq.empty)
+    }
 }

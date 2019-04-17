@@ -22,27 +22,23 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
 
   def finishMocking(t: Option[Throwable] = None): Unit = {
     listener.cleanLenientStubs()
-    try {
-      t.fold {
-        mockitoSession.finishMocking()
-        listener.reportIssues().foreach(_.report())
-      } {
-        case e: NullPointerException =>
-          mockitoSession.finishMocking(e)
-          listener.reportIssues().foreach {
-            case unStubbedCalls: UnexpectedInvocations if unStubbedCalls.nonEmpty =>
-              throw new UnexpectedInvocationException(s"""A NullPointerException was thrown, check if maybe related to
+    try t.fold {
+      mockitoSession.finishMocking()
+      listener.reportIssues().foreach(_.report())
+    } {
+      case e: NullPointerException =>
+        mockitoSession.finishMocking(e)
+        listener.reportIssues().foreach {
+          case unStubbedCalls: UnexpectedInvocations if unStubbedCalls.nonEmpty =>
+            throw new UnexpectedInvocationException(s"""A NullPointerException was thrown, check if maybe related to
                    |$unStubbedCalls""".stripMargin,
-                                                      e)
-            case _ => throw e
-          }
-        case other =>
-          mockitoSession.finishMocking(other)
-          throw other
-      }
-    } finally {
-      Mockito.framework().removeListener(listener)
-    }
+                                                    e)
+          case _ => throw e
+        }
+      case other =>
+        mockitoSession.finishMocking(other)
+        throw other
+    } finally Mockito.framework().removeListener(listener)
   }
 
   def run[T](block: => T): T =

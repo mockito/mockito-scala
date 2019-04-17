@@ -38,7 +38,7 @@ lazy val commonSettings =
           Nil
       }
     },
-    Test / scalacOptions ++= Seq("-Ywarn-value-discard")
+    Test / scalacOptions += "-Ywarn-value-discard"
   )
 
 lazy val publishSettings = Seq(

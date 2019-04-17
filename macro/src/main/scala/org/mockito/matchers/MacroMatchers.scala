@@ -3,7 +3,6 @@ package org.mockito.matchers
 import org.mockito.matchers.MacroMatchers.anyValMatcher
 import org.mockito.{ ArgumentMatchers => JavaMatchers }
 
-import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
 trait AnyMatcher[T] {

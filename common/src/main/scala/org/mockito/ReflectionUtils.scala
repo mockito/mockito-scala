@@ -6,7 +6,6 @@ import org.mockito.invocation.InvocationOnMock
 import org.scalactic.TripleEquals._
 import ru.vyarus.java.generics.resolver.GenericsResolver
 
-import scala.language.implicitConversions
 import scala.reflect.ClassTag
 import scala.reflect.internal.Symbols
 

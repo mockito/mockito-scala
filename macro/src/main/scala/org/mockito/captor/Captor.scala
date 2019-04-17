@@ -6,8 +6,7 @@ import org.scalactic.Equality
 import org.scalactic.TripleEquals._
 
 import scala.collection.JavaConverters._
-import scala.language.experimental.macros
-import scala.language.implicitConversions
+
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
 

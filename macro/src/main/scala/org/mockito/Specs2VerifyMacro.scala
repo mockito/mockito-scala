@@ -2,8 +2,6 @@ package org.mockito
 
 import org.mockito.Utils._
 
-import scala.language.experimental.macros
-import scala.language.higherKinds
 import scala.reflect.macros.blackbox
 
 object Specs2VerifyMacro {

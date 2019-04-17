@@ -1,6 +1,5 @@
 package org.mockito.internal
 
-import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scala.util.Properties
 

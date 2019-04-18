@@ -8,13 +8,13 @@ import scala.concurrent.duration.Duration
 
 object IdiomaticMockitoBase {
   object Returned
-  object ReturnedBy {
-    def by[T](stubbing: T): T = macro DoSomethingMacro.returnedBy[T]
+  case class ReturnedBy[T]() {
+    def by[S](stubbing: S)(implicit $ev: T <:< S): S = macro DoSomethingMacro.returnedBy[T, S]
   }
 
   object Answered
-  object AnsweredBy {
-    def by[T](stubbing: T): T = macro DoSomethingMacro.answeredBy[T]
+  case class AnsweredBy[T]() {
+    def by[S](stubbing: S)(implicit $ev: T <:< S): S = macro DoSomethingMacro.answeredBy[T, S]
   }
 
   object Thrown
@@ -114,8 +114,42 @@ trait IdiomaticMockitoBase extends MockitoEnhancer {
   val theRealMethod: RealMethod.type = RealMethod
 
   implicit class DoSomethingOps[R](v: R) {
-    def willBe(r: Returned.type): ReturnedBy.type = ReturnedBy
-    def willBe(a: Answered.type): AnsweredBy.type = AnsweredBy
+    def willBe(r: Returned.type): ReturnedBy[R] = ReturnedBy[R]()
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+
+  implicit class DoSomethingOps0[R](v: () => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps1[P0, R](v: P0 => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps2[P0, P1, R](v: (P0, P1) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps3[P0, P1, P2, R](v: (P0, P1, P2) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps4[P0, P1, P2, P3, R](v: (P0, P1, P2, P3) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps5[P0, P1, P2, P3, P4, R](v: (P0, P1, P2, P3, P4) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps6[P0, P1, P2, P3, P4, P5, R](v: (P0, P1, P2, P3, P4, P5) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps7[P0, P1, P2, P3, P4, P5, P6, R](v: (P0, P1, P2, P3, P4, P5, P6) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps8[P0, P1, P2, P3, P4, P5, P6, P7, R](v: (P0, P1, P2, P3, P4, P5, P6, P7) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps9[P0, P1, P2, P3, P4, P5, P6, P7, P8, R](v: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
+  }
+  implicit class DoSomethingOps10[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R](v: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R) {
+    def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
   }
 
   implicit class ThrowSomethingOps[R <: Throwable](v: R) {

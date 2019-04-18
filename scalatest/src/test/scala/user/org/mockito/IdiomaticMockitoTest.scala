@@ -193,6 +193,51 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.returnsValueCaseClass shouldBe ValueCaseClass(100)
       }
 
+      "doStub return value should be type safe" in {
+        val org = orgDouble()
+
+        ValueCaseClass(100) willBe returned by org.returnsValueCaseClass
+
+        """"mocked" willBe returned by org.returnsValueCaseClass""" shouldNot compile
+      }
+
+      "doStub return value should be type safe and allow subtypes" in {
+        val org = orgDouble()
+
+        Some("Hola") willBe returned by org.option
+        None willBe returned by org.option
+
+        """Some(42) willBe returned by org.option""" shouldNot compile
+      }
+
+      "doStub answer value should be type safe" in {
+        val org = orgDouble()
+
+        { (v1: Int, _: String) =>
+          v1.toString
+        } willBe answered by org.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
+
+        { (_: Int, v2: String) =>
+          v2
+        } willBe answered by org.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)
+
+        """{ (_: Int, _: String, v3: Boolean) => v3 } willBe answered by org.doSomethingWithThisIntAndStringAndBoolean(*, *, v3 = true)""" shouldNot compile
+      }
+
+      "doStub answer function should be type safe and allow subtypes" in {
+        val org = orgDouble()
+
+        { (a: String, _: Int) =>
+          Some(a)
+        } willBe answered by org.option(*, *)
+
+        { (_: String, _: Int) =>
+          None: Option[String]
+        } willBe answered by org.option(*, *)
+
+        """{ (a: String, b: Int) => Some(b) } willBe answered by org.option2(*, *)""" shouldNot compile
+      }
+
       "doStub a failure" in {
         val org = orgDouble()
 

@@ -1,7 +1,5 @@
 package org.mockito.matchers
 
-import scala.language.experimental.macros
-
 trait EqMatchers_VersionSpecific {
 
   /**

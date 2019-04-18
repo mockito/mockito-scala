@@ -4,7 +4,6 @@ import org.mockito.internal.ValueClassExtractor
 import org.mockito.{ ArgumentMatchers => JavaMatchers }
 import org.scalactic.{ Equality, Prettifier }
 
-import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
 object MacroMatchers_211 {

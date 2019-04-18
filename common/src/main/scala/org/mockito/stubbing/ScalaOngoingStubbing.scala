@@ -2,7 +2,6 @@ package org.mockito.stubbing
 
 import org.mockito.internal.ValueClassExtractor
 
-import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 object ScalaOngoingStubbing {

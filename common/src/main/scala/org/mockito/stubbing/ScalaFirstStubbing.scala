@@ -6,7 +6,6 @@ import org.mockito.internal.util.MockUtil.getMockSettings
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.quality.Strictness.LENIENT
 
-import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 object ScalaFirstStubbing {

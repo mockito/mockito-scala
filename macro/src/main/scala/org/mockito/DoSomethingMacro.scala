@@ -3,7 +3,6 @@ package org.mockito
 import org.mockito.Utils._
 import org.mockito.stubbing.Answer
 
-import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
 object DoSomethingMacro {

@@ -6,7 +6,6 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ clazz, functionToAnswer, invocationToAnswer }
 import org.objenesis.ObjenesisStd
 
-import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 trait ScalaBaseStubbing[T] {

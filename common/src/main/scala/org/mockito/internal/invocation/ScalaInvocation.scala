@@ -9,7 +9,9 @@ import org.mockito.internal.exceptions.VerificationAwareInvocation
 import org.mockito.internal.invocation.mockref.MockReference
 import org.mockito.internal.reporting.PrintSettings
 import org.mockito.invocation.{ Invocation, Location, StubInfo }
+import org.mockito.matchers.EqTo
 import org.scalactic.Prettifier
+import scala.collection.JavaConverters._
 
 class ScalaInvocation(val mockRef: MockReference[AnyRef],
                       val mockitoMethod: MockitoMethod,
@@ -53,9 +55,9 @@ class ScalaInvocation(val mockRef: MockReference[AnyRef],
     case _ => false
   }
   override def hashCode(): Int = {
-    val state = Seq(super.hashCode(), mockRef.get, mockitoMethod, arguments)
+    val state = Seq(super.hashCode(), getMock, mockitoMethod, arguments.toSeq)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
   override def toString: String                                      = new PrintSettings().print(getArgumentsAsMatchers, this)
-  override def getArgumentsAsMatchers: util.List[ArgumentMatcher[_]] = argumentsToMatchers(arguments)
+  override def getArgumentsAsMatchers: util.List[ArgumentMatcher[_]] = arguments.map(EqTo(_): ArgumentMatcher[_]).toList.asJava
 }

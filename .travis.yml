@@ -4,7 +4,7 @@
 language: java
 
 jdk:
-- oraclejdk8
+- oraclejdk11
 
 #Skipping install step to avoid having Travis run arbitrary './gradlew assemble' task
 # https://docs.travis-ci.com/user/customizing-the-build/#Skipping-the-Installation-Step

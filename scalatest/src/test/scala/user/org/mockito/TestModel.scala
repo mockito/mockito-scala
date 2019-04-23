@@ -98,6 +98,9 @@ class Org {
   def valueClassWithVarArg(bread: Bread*): Unit                                            = ()
   def valueClassWithSecondParameterList(bread: Bread)(cheese: Cheese): Unit                = ()
   def valueClassWithVarArgAndSecondParameterList(breads: Bread*)(cheese: Cheese): Unit     = ()
+
+  def option: Option[String]                    = None
+  def option(a: String, b: Int): Option[String] = None
 }
 
 case class Baz2(param1: Int, param2: String)

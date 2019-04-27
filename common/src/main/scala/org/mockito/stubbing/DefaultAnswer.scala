@@ -8,7 +8,7 @@ import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 import scala.concurrent.Future
 import scala.util.{ Failure, Try }
 
-trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[Any]] { self =>
+trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[Any]] with Serializable { self =>
   override def answer(invocation: InvocationOnMock): Any = apply(invocation).orNull
 
   def orElse(next: DefaultAnswer): DefaultAnswer = new DefaultAnswer {

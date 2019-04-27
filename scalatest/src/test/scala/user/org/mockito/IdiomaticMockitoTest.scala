@@ -1,5 +1,6 @@
 package user.org.mockito
 
+import java.io.{ File, FileOutputStream, ObjectOutputStream }
 import java.util.concurrent.atomic.AtomicInteger
 
 import org.mockito.captor.ArgCaptor
@@ -10,6 +11,7 @@ import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ FixtureContext, Matchers, WordSpec }
 import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
+import user.org.mockito.model.JavaFoo
 
 import scala.concurrent.duration._
 
@@ -793,6 +795,19 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
     "stub a real call" in {
       val org: Org = mock[Org].bar shouldCall realMethod
       org.bar shouldBe "not mocked"
+    }
+
+    "be serialisable" in {
+      val list = mock[java.util.List[String]](withSettings.name("list1").serializable())
+      list.get(3) shouldReturn "mocked"
+      list.get(3) shouldBe "mocked"
+
+      val file = File.createTempFile("mock", "tmp")
+      file.deleteOnExit()
+
+      val oos = new ObjectOutputStream(new FileOutputStream(file))
+      oos.writeObject(list)
+      oos.close()
     }
   }
 

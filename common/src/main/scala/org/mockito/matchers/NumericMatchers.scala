@@ -7,7 +7,7 @@ import org.scalactic.TripleEqualsSupport.Spread
 /**
  * I transform everything to BigDecimal so any kind of number type can be compared
  */
-class NumericMatcher[N](n: N, name: String, comparison: (BigDecimal, BigDecimal) => Boolean) extends ArgumentMatcher[N] {
+class NumericMatcher[N](n: N, name: String, comparison: (BigDecimal, BigDecimal) => Boolean) extends ArgumentMatcher[N] with Serializable {
   private val expected                = BigDecimal(n.toString)
   override def matches(v: N): Boolean = comparison(BigDecimal(v.toString), expected)
   override def toString: String       = s"n $name $expected"

@@ -15,7 +15,6 @@ import org.mockito.Answers.CALLS_REAL_METHODS
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
-import org.mockito.internal.exceptions.Reporter
 import org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions
 import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
@@ -25,7 +24,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
 import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
 import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
-import org.scalactic.Prettifier
+import org.scalactic.{ Equality, Prettifier }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -48,6 +47,8 @@ private[mockito] trait MockCreator {
   def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
     Mockito.withSettings().defaultAnswer(defaultAnswer)
 
+  //Hack until Equality can be made serialisable
+  implicit def mockitoSerialisableEquality[T]: Equality[T] = serialisableEquality[T]
 }
 
 //noinspection MutatorLikeMethodIsParameterless
@@ -266,7 +267,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    */
   def verifyNoMoreInteractions(mocks: AnyRef*): Unit = {
 
-    def ignoreDefaultArguments(m: AnyRef) =
+    def ignoreDefaultArguments(m: AnyRef): Unit =
       mockingDetails(m).getInvocations.asScala
         .filter(_.getMethod.getName.contains("$default$"))
         .foreach(_.ignoreForVerification())

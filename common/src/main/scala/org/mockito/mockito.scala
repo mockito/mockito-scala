@@ -14,9 +14,10 @@ package object mockito {
   def clazz[T](implicit classTag: ClassTag[T]): Class[T] = classTag.runtimeClass.asInstanceOf[Class[T]]
 
   //noinspection ConvertExpressionToSAM
-  def invocationToAnswer[T](f: InvocationOnMock => T)(implicit $vce: ValueClassExtractor[T]): Answer[Any] = new Answer[Any] {
-    override def answer(invocation: InvocationOnMock): Any = $vce.extract(f(invocation))
-  }
+  def invocationToAnswer[T](f: InvocationOnMock => T)(implicit $vce: ValueClassExtractor[T]): Answer[Any] =
+    new Answer[Any] with Serializable {
+      override def answer(invocation: InvocationOnMock): Any = $vce.extract(f(invocation))
+    }
 
   def functionToAnswer[T: ValueClassExtractor, P0](f: P0 => T): Answer[Any] =
     invocationToAnswer(i => f(i.getArgument[P0](0)))
@@ -120,5 +121,9 @@ package object mockito {
         m1.getName === m2.getName && m1.getParameterTypes === m2.getParameterTypes
       case _ => false
     }
+  }
+
+  def serialisableEquality[T]: Equality[T] = new Equality[T] with Serializable {
+    override def areEqual(a: T, b: Any): Boolean = Equality.default[T].areEqual(a, b)
   }
 }

@@ -3,7 +3,7 @@ package org.mockito.internal
 import scala.reflect.macros.blackbox
 import scala.util.Properties
 
-trait ValueClassExtractor[VC] {
+trait ValueClassExtractor[VC] extends Serializable {
   def extract(vc: VC): Any
   def extractAs[T](vc: VC): T = extract(vc).asInstanceOf[T]
 }

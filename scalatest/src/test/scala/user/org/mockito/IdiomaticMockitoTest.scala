@@ -809,6 +809,17 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       oos.writeObject(list)
       oos.close()
     }
+
+    "work with java varargs" in {
+      val aMock = mock[JavaFoo]
+
+      aMock.varargMethod(1, 2, 3) shouldReturn 42
+
+      aMock.varargMethod(1, 2, 3) shouldBe 42
+
+      aMock.varargMethod(1, 2, 3) was called
+      a[WantedButNotInvoked] should be thrownBy (aMock.varargMethod(1, 2) was called)
+    }
   }
 
   "spy" should {

@@ -48,13 +48,17 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
         case (mtd, indices) if method === mtd =>
           val argumentMatcherStorage = mockingProgress().getArgumentMatcherStorage
           val matchers               = argumentMatcherStorage.pullLocalizedMatchers().asScala.toIterator
-          def reportMatcher()        = if (matchers.nonEmpty) argumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
+          def reportMatcher(): Unit  = if (matchers.nonEmpty) argumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
 
           args.zipWithIndex.flatMap {
-            case (arg: Function0[_], idx) if indices.contains(idx) => List(arg())
+            case (arg: Function0[_], idx) if indices.contains(idx) =>
+              List(arg())
             case (arg: Iterable[_], idx) if indices.contains(idx) =>
               arg.foreach(_ => reportMatcher())
               arg
+            case (arg: Array[_], idx) if indices.contains(idx) =>
+              arg.foreach(_ => reportMatcher())
+              arg.toList
             case (arg, _) =>
               reportMatcher()
               List(arg)

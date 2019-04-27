@@ -16,7 +16,7 @@ private[mockito] trait ThatMatchers {
    * It also adds support for varargs out of the box
    */
   def argThat[T](f: T => Boolean, desc: => String = "argThat(<condition>)"): T =
-    JavaMatchers.argThat(new ArgumentMatcher[T] {
+    JavaMatchers.argThat(new ArgumentMatcher[T] with Serializable {
       override def matches(argument: T): Boolean = f(argument)
       override def toString: String              = desc
     })

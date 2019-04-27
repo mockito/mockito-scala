@@ -1,5 +1,6 @@
 package org.mockito.specs2
 
+import java.io.{ File, FileOutputStream, ObjectOutputStream }
 import java.util
 
 import org.hamcrest.core.IsNull
@@ -36,6 +37,7 @@ CREATION
    with a name and default return value  $creation3
    with a default answer                 $creation4
    with settings                         $creation5
+   serialisable                          $creation5
 
 VERIFICATION
 ============
@@ -170,6 +172,19 @@ The Mockito trait is reusable in other contexts
   def creation5 = {
     val list = mock[java.util.List[String]](withSettings.name("list1"))
     (there was one(list).add("one")).message must contain("list1.add(\"one\")")
+  }
+
+  def creation6 = {
+    val list = mock[java.util.List[String]](withSettings.name("list1").serializable())
+    list.get(3) returns "mocked"
+    list.get(3) must_== "mocked"
+
+    val file = File.createTempFile("mock", "tmp")
+    file.deleteOnExit()
+
+    val oos = new ObjectOutputStream(new FileOutputStream(file))
+    oos.writeObject(list)
+    oos.close()
   }
 
   /* VERIFICATION */

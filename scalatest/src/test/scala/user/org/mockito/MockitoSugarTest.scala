@@ -1,5 +1,6 @@
 package user.org.mockito
 
+import java.io.{ File, FileOutputStream, ObjectOutputStream }
 import java.util.concurrent.atomic.AtomicInteger
 
 import org.mockito.captor.ArgCaptor
@@ -314,6 +315,19 @@ class MockitoSugarTest
   }
 
   "mock[T]" should {
+    "be serialisable" in {
+      val list = mock[java.util.List[String]](withSettings.name("list1").serializable())
+      when(list.get(eqTo(3))) thenAnswer "mocked"
+      list.get(3) shouldBe "mocked"
+
+      val file = File.createTempFile("mock", "tmp")
+      file.deleteOnExit()
+
+      val oos = new ObjectOutputStream(new FileOutputStream(file))
+      oos.writeObject(list)
+      oos.close()
+    }
+
     "work with type aliases" in {
       type MyType = String
 

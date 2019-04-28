@@ -37,7 +37,7 @@ CREATION
    with a name and default return value  $creation3
    with a default answer                 $creation4
    with settings                         $creation5
-   serialisable                          $creation5
+   serialisable                          $creation6
 
 VERIFICATION
 ============
@@ -176,7 +176,7 @@ The Mockito trait is reusable in other contexts
 
   def creation6 = {
     val list = mock[java.util.List[String]](withSettings.name("list1").serializable())
-    list.get(3) returns "mocked"
+    list.get(3) answers "mocked"
     list.get(3) must_== "mocked"
 
     val file = File.createTempFile("mock", "tmp")
@@ -185,6 +185,8 @@ The Mockito trait is reusable in other contexts
     val oos = new ObjectOutputStream(new FileOutputStream(file))
     oos.writeObject(list)
     oos.close()
+
+    success
   }
 
   /* VERIFICATION */

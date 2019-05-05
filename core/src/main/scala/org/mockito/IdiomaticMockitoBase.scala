@@ -92,19 +92,19 @@ trait IdiomaticMockitoBase extends MockitoEnhancer {
     def mustAnswer: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
     def answers: AnswerActions[T] = macro WhenMacro.shouldAnswer[T]
 
-    def was(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]
-
-    def wasNever(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasNotMacro[T, Verification]
-
-    def wasNever(called: CalledAgain)(implicit $ev: T <:< AnyRef): Verification = called match {
-      case CalledAgain        => verification(verifyNoMoreInteractions(stubbing.asInstanceOf[AnyRef]))
-      case LenientCalledAgain => verification(verifyNoMoreInteractions(ignoreStubs(stubbing.asInstanceOf[AnyRef]): _*))
-    }
-
-    def wasCalled(t: ScalaVerificationMode)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasCalledMacro[T, Verification]
-
     //noinspection AccessorLikeMethodIsUnit
     def isLenient(): Unit = macro WhenMacro.isLenient[T]
+  }
+
+  implicit class VerifyingOps[T](stubbing: T) {
+    def was(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]
+
+    def wasNever(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]
+
+    def wasNever(called: CalledAgain)(implicit $ev: T <:< AnyRef): Verification =
+      macro VerifyMacro.wasNeverCalledAgainMacro[T, Verification]
+
+    def wasCalled(called: ScalaVerificationMode)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]
   }
 
   val called: Called.type            = Called

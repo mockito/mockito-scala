@@ -35,8 +35,6 @@ class MockitoSugar$Test extends WordSpec with ScalatestMatchers {
     }
 
     "create a mock with name" in {
-      implicit val defaultAnswer: DefaultAnswer = ReturnsDefaults
-
       val aMock = MockitoSugar.mock[Foo]("Nice Mock")
 
       aMock.toString shouldBe "Nice Mock"

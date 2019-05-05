@@ -1,8 +1,8 @@
 package user.org.mockito
 
 package object matchers {
-  class ValueClass(private val v: String) extends AnyVal
-  case class ValueCaseClass(v: Int)       extends AnyVal
+  class ValueClass(private val v: String)    extends AnyVal
+  case class ValueCaseClass private (v: Int) extends AnyVal
 
   case class Baz(param1: String, param2: String)
 

@@ -9,7 +9,7 @@ import scala.reflect.macros.blackbox
 object WhenMacro {
 
   class ReturnActions[T](os: ScalaFirstStubbing[T]) {
-    def apply(value: T): ScalaOngoingStubbing[T] = os thenReturn value
+    def apply(value: T, values: T*): ScalaOngoingStubbing[T] = os thenReturn (value, values: _*)
   }
 
   val ShouldReturnOptions = Set("shouldReturn", "mustReturn", "returns")
@@ -76,7 +76,7 @@ object WhenMacro {
   }
 
   class ThrowActions[T](os: ScalaFirstStubbing[T]) {
-    def apply[E <: Throwable](e: E): ScalaOngoingStubbing[T] = os thenThrow e
+    def apply[E <: Throwable](e: E*): ScalaOngoingStubbing[T] = os thenThrow (e: _*)
   }
 
   val ShouldThrowOptions = Set("shouldThrow", "mustThrow", "throws")
@@ -100,8 +100,10 @@ object WhenMacro {
   }
 
   class AnswerActions[T](os: ScalaFirstStubbing[T]) {
-    def apply(f: => T): ScalaOngoingStubbing[T]                  = os thenAnswer f
+    def apply(f: => T): ScalaOngoingStubbing[T] = os thenAnswer f
+
     def apply[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T] = os thenAnswer f
+
     def apply[P0, P1](f: (P0, P1) => T): ScalaOngoingStubbing[T] = os thenAnswer f
 
     def apply[P0, P1, P2](f: (P0, P1, P2) => T): ScalaOngoingStubbing[T] = os thenAnswer f

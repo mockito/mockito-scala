@@ -1,13 +1,17 @@
 package org.mockito.specs2
 
+import org.mockito.captor.{ ArgCaptor, Captor }
 import org.mockito.hamcrest.MockitoHamcrest
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.matchers.DefaultMatcher
+import org.mockito.stubbing.ScalaOngoingStubbing
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockitoBase, Specs2VerifyMacro, VerifyInOrder, VerifyOrder }
 import org.scalactic.{ Equality, Prettifier }
 import org.specs2.control.Exceptions.catchAll
 import org.specs2.control.Throwablex._
 import org.specs2.matcher.{ Expectable, MatchFailure, MatchResult, MatchSuccess, Matcher }
+
+import scala.reflect.ClassTag
 
 trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSpecs2Support {
 
@@ -100,9 +104,17 @@ trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with Mocki
     def times[T](obj: T): T = obj
   }
 
+  implicit class Specs2Stubbing[T](s: ScalaOngoingStubbing[T]) {
+    def thenReturns(value: T, values: T*): ScalaOngoingStubbing[T] = s.andThen(value, values: _*)
+  }
+
   implicit class MatchResultOps[T](m: MatchResult[T]) {
     def andThen[O](calls: => O)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[O, Verification]
   }
+
+  def got[T](calls: => T)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[T, Verification]
+
+  def capture[T: ClassTag]: Captor[T] = ArgCaptor[T]
 
   def inOrder(mocks: AnyRef*) =
     VerifyInOrder(mocks.toList.flatMap {

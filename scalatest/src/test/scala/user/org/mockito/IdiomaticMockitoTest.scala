@@ -412,6 +412,25 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         }
       }
 
+      "check a mock was not called apart from the verified methods and stubbed" in {
+        val org = orgDouble()
+
+        org.baz shouldReturn "hola"
+        org.baz
+
+        org.bar
+
+        org.bar was called
+
+        org wasNever calledAgain(ignoringStubs)
+
+        a[NoInteractionsWanted] should be thrownBy {
+          org.bar
+
+          org wasNever calledAgain(ignoringStubs)
+        }
+      }
+
       "work with a captor" in {
         val org       = orgDouble()
         val argCaptor = ArgCaptor[Int]

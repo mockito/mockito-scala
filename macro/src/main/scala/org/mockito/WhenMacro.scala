@@ -8,27 +8,29 @@ import scala.reflect.macros.blackbox
 
 object WhenMacro {
 
-  class ReturnActions[T](os: ScalaFirstStubbing[T]) {
-    def apply(value: T, values: T*): ScalaOngoingStubbing[T] = os thenReturn (value, values: _*)
-  }
-
-  val ShouldReturnOptions = Set("shouldReturn", "mustReturn", "returns")
-  def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ReturnActions[T]] = {
+  private val ShouldReturnOptions     = Set("shouldReturn", "mustReturn", "returns")
+  private val CatsShouldReturnOptions = ShouldReturnOptions.map(_ + "F")
+  def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
-    val r = c.Expr[ReturnActions[T]] {
-      c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldReturnOptions.contains(m.toString) =>
-          val newArgs = args.map(a => transformArgs(c)(a))
-          q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
+    val r = c.macroApplication match {
+      case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldReturnOptions.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.IdiomaticMockitoBase.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldReturnOptions.contains(m.toString) =>
-          q"new _root_.org.mockito.WhenMacro.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
+      case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldReturnOptions.contains(m.toString) =>
+        q"new _root_.org.mockito.IdiomaticMockitoBase.ReturnActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
-        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
-      }
+      case q"$_.StubbingOps[..$_]($obj.$method[..$targs](...$args)).$m" if CatsShouldReturnOptions.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ReturnActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs](...$newArgs)))"
+
+      case q"$_.StubbingOps[..$_]($obj.$method[..$targs]).$m" if CatsShouldReturnOptions.contains(m.toString) =>
+        q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ReturnActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
+
+      case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r.tree))
+    if (c.settings.contains("mockito-print-when")) println(show(r))
     r
   }
 
@@ -75,27 +77,29 @@ object WhenMacro {
     r
   }
 
-  class ThrowActions[T](os: ScalaFirstStubbing[T]) {
-    def apply[E <: Throwable](e: E*): ScalaOngoingStubbing[T] = os thenThrow (e: _*)
-  }
-
-  val ShouldThrowOptions = Set("shouldThrow", "mustThrow", "throws")
-  def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[ThrowActions[T]] = {
+  private val ShouldThrowOptions    = Set("shouldThrow", "mustThrow", "throws")
+  private val CatsShouldFailOptions = Set("shouldFailWith", "mustFailWith", "failsWith")
+  def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
-    val r = c.Expr[ThrowActions[T]] {
-      c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldThrowOptions.contains(m.toString) =>
-          val newArgs = args.map(a => transformArgs(c)(a))
-          q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
+    val r = c.macroApplication match {
+      case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldThrowOptions.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.IdiomaticMockitoBase.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldThrowOptions.contains(m.toString) =>
-          q"new _root_.org.mockito.WhenMacro.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
+      case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldThrowOptions.contains(m.toString) =>
+        q"new _root_.org.mockito.IdiomaticMockitoBase.ThrowActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
-        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
-      }
+      case q"$_.StubbingOps[..$_]($obj.$method[..$targs](...$args)).$m" if CatsShouldFailOptions.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ThrowActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs](...$newArgs)))"
+
+      case q"$_.StubbingOps[..$_]($obj.$method[..$targs]).$m" if CatsShouldFailOptions.contains(m.toString) =>
+        q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ThrowActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
+
+      case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r.tree))
+    if (c.settings.contains("mockito-print-when")) println(show(r))
     r
   }
 

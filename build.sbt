@@ -175,4 +175,4 @@ lazy val root = (project in file("."))
   .settings(
     publish := {},
     publishLocal := {}
-  ) aggregate (core, scalatest, specs2)
+  ) aggregate (core, scalatest, specs2, cats)

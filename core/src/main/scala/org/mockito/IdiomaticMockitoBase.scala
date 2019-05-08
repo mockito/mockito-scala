@@ -1,7 +1,7 @@
 package org.mockito
 
 import org.mockito.WhenMacro._
-import org.mockito.stubbing.ScalaOngoingStubbing
+import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
 import org.mockito.verification.VerificationMode
 
 import scala.concurrent.duration.Duration
@@ -64,11 +64,19 @@ object IdiomaticMockitoBase {
       override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).only
     }
   }
+
+  class ReturnActions[T](os: ScalaFirstStubbing[T]) {
+    def apply(value: T, values: T*): ScalaOngoingStubbing[T] = os thenReturn (value, values: _*)
+  }
+
+  class ThrowActions[T](os: ScalaFirstStubbing[T]) {
+    def apply[E <: Throwable](e: E*): ScalaOngoingStubbing[T] = os thenThrow (e: _*)
+  }
 }
 
 trait IdiomaticMockitoBase extends MockitoEnhancer {
 
-  import IdiomaticMockitoBase._
+  import org.mockito.IdiomaticMockitoBase._
 
   type Verification
 

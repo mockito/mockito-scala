@@ -1,10 +1,11 @@
 package org.mockito.cats
 
+import cats.Eq
 import cats.implicits._
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
-import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
+import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 
-class MockitoCatsApplicativeTest
+class MockitoCatsTest
     extends WordSpec
     with Matchers
     with MockitoSugar
@@ -55,6 +56,15 @@ class MockitoCatsApplicativeTest
 
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).right.value shouldBe ValueClass("mocked!")
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")).left.value shouldBe Error("error")
+    }
+
+    "work with cats Eq" in {
+      implicit val stringEq: Eq[ValueClass] = Eq.instance((x: ValueClass, y: ValueClass) => x.s.toLowerCase == y.s.toLowerCase)
+      val aMock                             = mock[Foo]
+
+      whenF(aMock.returnsOptionT(eqTo(ValueClass("HoLa")))) thenReturn ValueClass("Mocked!")
+
+      aMock.returnsOptionT(ValueClass("HOLA")) should ===(Some(ValueClass("mocked!")))
     }
   }
 }

@@ -20,8 +20,6 @@ trait IdiomaticMockitoCats extends IdiomaticMockito {
     def failsWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
   }
 
-  def whenF[F[_], T](methodCall: F[T]): CatsStubbing[F, T] = Mockito.when(methodCall)
-
   implicit def catsEquality[T: ClassTag: Eq]: Equality[T] = new EqToEquality[T]
 }
 

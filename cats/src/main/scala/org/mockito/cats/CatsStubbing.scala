@@ -2,7 +2,7 @@ package org.mockito.cats
 
 import cats.implicits._
 import cats.{ Applicative, ApplicativeError }
-import org.mockito.stubbing.OngoingStubbing
+import org.mockito.stubbing.{ OngoingStubbing, ScalaFirstStubbing }
 
 case class CatsStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
 
@@ -15,4 +15,6 @@ case class CatsStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
 
 object CatsStubbing {
   implicit def toCatsFirstStubbing[F[_], T](v: OngoingStubbing[F[T]]): CatsStubbing[F, T] = CatsStubbing(v)
+
+  implicit def toMock[F[_], T, M](s: CatsStubbing[F, T]): M = s.getMock[M]
 }

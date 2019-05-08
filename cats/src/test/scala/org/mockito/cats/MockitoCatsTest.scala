@@ -47,6 +47,12 @@ class MockitoCatsTest
       aMock.returnsMT[Option, ValueClass](ValueClass("hi")).value shouldBe ValueClass("mocked!")
     }
 
+    "create and stub in one line" in {
+      val aMock: Foo = whenF(mock[Foo].returnsOptionString(*)) thenReturn "mocked!"
+
+      aMock.returnsOptionString("hello").value shouldBe "mocked!"
+    }
+
     "raise errors" in {
       type ErrorOr[A] = Either[Error, A]
       val aMock = mock[Foo]

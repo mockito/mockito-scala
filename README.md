@@ -531,25 +531,25 @@ the content of said applicative (or the error).
 So for 
 ```scala
 trait Foo {
-    def returnsOptionT[T](v: T): Option[T]
+    def returnsOption[T](v: T): Option[T]
     def returnsMT[M[_], T](v: T): M[T]
 }
 // We can now write 
 val aMock = mock[Foo]
-whenF(aMock.returnsOptionT("hello")) thenReturn "mocked!"
-whenF(aMock.returnsMT[Future, String]("hello")) thenReturn "mocked!"
+whenF(aMock.returnsOption(*)) thenReturn "mocked!"
+whenF(aMock.returnsMT[Future, String](*)) thenReturn "mocked!"
 // Rather than
-when(aMock.returnsOptionT("hello")) thenReturn Some("mocked!")
-when(aMock.returnsMT[Future, String]("hello")) thenReturn Future.successful("mocked!")
+when(aMock.returnsOption(*)) thenReturn Some("mocked!")
+when(aMock.returnsMT[Future, String](*)) thenReturn Future.successful("mocked!")
 
 //We could also do stubbings in a single line if that's all we need from the mock
-val inlineMock: Foo = whenF(mock[Foo].returnsOptionT("hello")) thenReturn "mocked!"
+val inlineMock: Foo = whenF(mock[Foo].returnsOption(*)) thenReturn "mocked!"
 
 // For errors we can do
 type ErrorOr[A] = Either[Error, A]
-val failingMock: Foo = whenF(mock[Foo].returnsMT[ErrorOr, ValueClass](ValueClass("bye"))) thenFailWith Error("error")
+val failingMock: Foo = whenF(mock[Foo].returnsMT[ErrorOr, MyClass](*)) thenFailWith Error("error")
 //Rather than
-val failingMock: Foo = when(mock[Foo].returnsMT[ErrorOr, ValueClass](ValueClass("bye"))) thenReturn Left(Error("error"))
+val failingMock: Foo = when(mock[Foo].returnsMT[ErrorOr, MyClass](*)) thenReturn Left(Error("error"))
 ```
 
 The trait also provides and implicit conversion from `cats.Eq` to `scalactic.Equality` so if you have an implicit `cats.Eq` instance in scope,
@@ -561,25 +561,25 @@ Similar to `MockitoCats` but for the idiomatic syntax (including the conversion 
 
 ```scala
 trait Foo {
-    def returnsOptionT[T](v: T): Option[T]
+    def returnsOption[T](v: T): Option[T]
     def returnsMT[M[_], T](v: T): M[T]
 }
 // We can now write 
 val aMock = mock[Foo]
-aMock.returnsOptionT("hello") shouldReturnF "mocked!"
-aMock.returnsMT[Future, String]("hello") shouldReturnF "mocked!"
+aMock.returnsOption(*) shouldReturnF "mocked!"
+aMock.returnsMT[Future, String](*) shouldReturnF "mocked!"
 // Rather than
-aMock.returnsOptionT("hello") shouldReturn Some("mocked!")
-aMock.returnsMT[Future, String]("hello") shouldReturn Future.successful("mocked!")
+aMock.returnsOption(*) shouldReturn Some("mocked!")
+aMock.returnsMT[Future, String](*) shouldReturn Future.successful("mocked!")
 
 //We could also do stubbings in a single line if that's all we need from the mock
-val inlineMock: Foo = mock[Foo].returnsOptionT("hello") shouldReturnF "mocked!"
+val inlineMock: Foo = mock[Foo].returnsOption(*) shouldReturnF "mocked!"
 
 // For errors we can do
 type ErrorOr[A] = Either[Error, A]
-val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, ValueClass](ValueClass("bye")) shouldFailWith Error("error")
+val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldFailWith Error("error")
 //Rather than
-val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, ValueClass](ValueClass("bye")) shouldReturn Left(Error("error"))
+val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldReturn Left(Error("error"))
 ```
 
 ## Notes

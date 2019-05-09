@@ -57,7 +57,7 @@ class MockitoCatsTest
       type ErrorOr[A] = Either[Error, A]
       val aMock = mock[Foo]
 
-      whenF(aMock.returnsMT[ErrorOr, ValueClass](eqTo(ValueClass("hi")))) thenReturn ValueClass("mocked!")
+      whenF(aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi"))) thenReturn ValueClass("mocked!")
       whenF(aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye"))) thenFailWith Error("error")
 
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).right.value shouldBe ValueClass("mocked!")
@@ -70,7 +70,7 @@ class MockitoCatsTest
 
       whenF(aMock.returnsOptionT(eqTo(ValueClass("HoLa")))) thenReturn ValueClass("Mocked!")
 
-      aMock.returnsOptionT(ValueClass("HOLA")) should ===(Some(ValueClass("mocked!")))
+      aMock.returnsOptionT(ValueClass("HOLA")).value should ===(ValueClass("mocked!"))
     }
   }
 }

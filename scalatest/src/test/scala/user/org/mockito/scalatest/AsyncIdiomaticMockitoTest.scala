@@ -1,7 +1,7 @@
 package user.org.mockito.scalatest
 
 import org.mockito.scalatest.AsyncIdiomaticMockito
-import org.scalatest.{ AsyncWordSpec, FixtureContext, Matchers }
+import org.scalatest.{ AsyncWordSpec, Matchers }
 
 import scala.concurrent.Future
 
@@ -18,7 +18,7 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
     }
   }
 
-  trait Setup {
+  class Setup {
     val foo: Foo = mock[Foo]
   }
 
@@ -33,7 +33,10 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
       foo.bar("pepe") was called
     }
 
-    "work on tests with setup" in new Setup with FixtureContext {
+    "work on tests with setup" in {
+      val setup = new Setup
+      import setup._
+
       "mocked" willBe returned by foo.bar("pepe")
 
       foo.bar("pepe") shouldBe "mocked"
@@ -42,7 +45,9 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
     }
 
     "work with real future assertions" in {
-      val foo = mock[Foo]
+      val setup = new Setup
+      import setup._
+
       val baz = new Baz
 
       foo.bar(*) shouldReturn "mocked"
@@ -53,5 +58,4 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
       }
     }
   }
-
 }

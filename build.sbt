@@ -89,6 +89,20 @@ lazy val specs2 = (project in file("specs2"))
     libraryDependencies += "org.hamcrest" % "hamcrest-core" % "1.3"   % "provided",
   )
 
+lazy val cats = (project in file("cats"))
+  .dependsOn(core)
+  .dependsOn(common % "compile-internal, test-internal")
+  .dependsOn(macroSub % "compile-internal, test-internal")
+  .settings(
+    name := "mockito-scala-cats",
+    commonSettings,
+    publishSettings,
+    libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-core" % "2.0.0-M1" % "provided",
+      "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "test"
+    ),
+  )
+
 lazy val common = (project in file("common"))
   .dependsOn(macroCommon)
   .settings(
@@ -161,4 +175,4 @@ lazy val root = (project in file("."))
   .settings(
     publish := {},
     publishLocal := {}
-  ) aggregate (core, scalatest, specs2)
+  ) aggregate (core, scalatest, specs2, cats)

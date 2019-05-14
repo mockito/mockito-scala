@@ -6,7 +6,7 @@ import org.scalactic.Equality
 
 import scala.reflect.ClassTag
 
-trait MockitoCats extends MockitoSugar {
+trait MockitoCats extends ScalacticSerialisableHack {
 
   def whenF[F[_], T](methodCall: F[T]): CatsStubbing[F, T] = Mockito.when(methodCall)
 

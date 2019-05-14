@@ -1,7 +1,7 @@
 package org.mockito.cats
 
 import cats.implicits._
-import cats.{Applicative, ApplicativeError}
+import cats.{ Applicative, ApplicativeError }
 import org.mockito.stubbing.OngoingStubbing
 
 case class CatsStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {

@@ -7,7 +7,7 @@ import org.scalactic.Equality
 
 import scala.reflect.ClassTag
 
-trait IdiomaticMockitoCats extends IdiomaticMockito {
+trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
 
   implicit class StubbingOps[F[_], T](stubbing: F[T]) {
 

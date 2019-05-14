@@ -74,7 +74,7 @@ object IdiomaticMockitoBase {
   }
 }
 
-trait IdiomaticMockitoBase extends MockitoEnhancer {
+trait IdiomaticMockitoBase extends MockitoEnhancer with ScalacticSerialisableHack {
 
   import org.mockito.IdiomaticMockitoBase._
 

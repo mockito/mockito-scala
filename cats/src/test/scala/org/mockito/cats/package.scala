@@ -12,6 +12,8 @@ package object cats {
     def returnsOptionT[T](v: T): Option[T]
 
     def returnsMT[M[_], T](v: T): M[T]
+
+    def shouldI(should: Boolean): String
   }
 
 }

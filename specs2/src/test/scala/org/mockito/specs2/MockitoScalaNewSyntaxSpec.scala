@@ -24,11 +24,6 @@ import scala.concurrent.duration._
 class MockitoScalaNewSyntaxSpec extends Spec with Mockito {
   def is       = s2"""
 
- Mockito is a Java library for mocking.
-
- The following samples are taken from the main documentation which can be found here:
- https://static.javadoc.io/org.mockito/mockito-core/2.25.1/org/mockito/Mockito.html
-
 CREATION
 ========
 
@@ -358,7 +353,7 @@ The Mockito trait is reusable in other contexts
     object list extends list; import list._
 
     scala.concurrent.Future { Thread.sleep(2000); takesSometime.call(10) }
-    ((takesSometime.call(10) wasCalled (once within 10.millis)).message must contain("Wanted but not invoked")) and
+    ((takesSometime.call(10) was called).message must contain("Wanted but not invoked")) and
     (takesSometime.call(10) wasCalled (once within 10.seconds))
   }
 

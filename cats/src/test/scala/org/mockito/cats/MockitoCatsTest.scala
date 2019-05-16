@@ -3,7 +3,10 @@ package org.mockito.cats
 import cats.Eq
 import cats.implicits._
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class MockitoCatsTest
     extends WordSpec
@@ -12,7 +15,8 @@ class MockitoCatsTest
     with ArgumentMatchersSugar
     with MockitoCats
     with EitherValues
-    with OptionValues {
+    with OptionValues
+    with ScalaFutures {
 
   "mock[T]" should {
     "stub full applicative" in {
@@ -39,6 +43,16 @@ class MockitoCatsTest
       aMock.returnsMT[Option, String]("hello").value shouldBe "mocked!"
     }
 
+    "stub composed applicative" in {
+      val aMock = mock[Foo]
+
+      whenFG(aMock.returnsFutureEither("hello")) thenReturn ValueClass("mocked!")
+      whenFG(aMock.returnsFutureEither("bye")) thenFailWith Error("boom")
+
+      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("bye"))(_.left.value shouldBe Error("boom"))
+    }
+
     "work with value classes" in {
       val aMock = mock[Foo]
 
@@ -54,7 +68,6 @@ class MockitoCatsTest
     }
 
     "raise errors" in {
-      type ErrorOr[A] = Either[Error, A]
       val aMock = mock[Foo]
 
       whenF(aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi"))) thenReturn ValueClass("mocked!")

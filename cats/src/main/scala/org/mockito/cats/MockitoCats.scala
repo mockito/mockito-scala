@@ -8,6 +8,8 @@ trait MockitoCats extends ScalacticSerialisableHack {
 
   def whenF[F[_], T](methodCall: F[T]): CatsStubbing[F, T] = Mockito.when(methodCall)
 
+  def whenFG[F[_], G[_], T](methodCall: F[G[T]]): CatsStubbing2[F, G, T] = Mockito.when(methodCall)
+
   implicit def catsEquality[T: Eq]: Equality[T] = new EqToEquality[T]
 }
 

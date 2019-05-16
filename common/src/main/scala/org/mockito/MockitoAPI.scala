@@ -30,6 +30,11 @@ import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
 
+private[mockito] trait ScalacticSerialisableHack {
+  //Hack until Equality can be made serialisable
+  implicit def mockitoSerialisableEquality[T]: Equality[T] = serialisableEquality[T]
+}
+
 private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[_])(implicit $pt: Prettifier): T =
@@ -46,9 +51,6 @@ private[mockito] trait MockCreator {
    */
   def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
     Mockito.withSettings().defaultAnswer(defaultAnswer)
-
-  //Hack until Equality can be made serialisable
-  implicit def mockitoSerialisableEquality[T]: Equality[T] = serialisableEquality[T]
 }
 
 //noinspection MutatorLikeMethodIsParameterless

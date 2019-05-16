@@ -69,8 +69,12 @@ class MockitoCatsTest
       val aMock                             = mock[Foo]
 
       whenF(aMock.returnsOptionT(eqTo(ValueClass("HoLa")))) thenReturn ValueClass("Mocked!")
+      when(aMock.shouldI(eqTo(false))) thenReturn "Mocked!"
+      when(aMock.shouldI(eqTo(true))) thenReturn "Mocked again!"
 
       aMock.returnsOptionT(ValueClass("HOLA")).value should ===(ValueClass("mocked!"))
+      aMock.shouldI(false) shouldBe "Mocked!"
+      aMock.shouldI(true) shouldBe "Mocked again!"
     }
   }
 }

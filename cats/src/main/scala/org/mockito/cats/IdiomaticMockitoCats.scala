@@ -5,9 +5,7 @@ import org.mockito._
 import org.mockito.cats.IdiomaticMockitoCats.{ ReturnActions, ThrowActions }
 import org.scalactic.Equality
 
-import scala.reflect.ClassTag
-
-trait IdiomaticMockitoCats extends IdiomaticMockito {
+trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
 
   implicit class StubbingOps[F[_], T](stubbing: F[T]) {
 
@@ -20,7 +18,7 @@ trait IdiomaticMockitoCats extends IdiomaticMockito {
     def failsWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
   }
 
-  implicit def catsEquality[T: ClassTag: Eq]: Equality[T] = new EqToEquality[T]
+  implicit def catsEquality[T: Eq]: Equality[T] = new EqToEquality[T]
 }
 
 object IdiomaticMockitoCats extends IdiomaticMockitoCats {

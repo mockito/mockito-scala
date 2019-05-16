@@ -69,8 +69,12 @@ class IdiomaticMockitoCatsTest
       val aMock                             = mock[Foo]
 
       aMock.returnsOptionT(ValueClass("HoLa")) shouldReturnF ValueClass("Mocked!")
+      aMock.shouldI(false) shouldReturn "Mocked!"
+      aMock.shouldI(true) shouldReturn "Mocked again!"
 
       aMock.returnsOptionT(ValueClass("HOLA")).value should ===(ValueClass("mocked!"))
+      aMock.shouldI(false) shouldBe "Mocked!"
+      aMock.shouldI(true) shouldBe "Mocked again!"
     }
   }
 }

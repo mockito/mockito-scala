@@ -23,16 +23,23 @@ object MacroMatchers {
     val isValueClass     = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
     val isCaseValueClass = isValueClass && typeSymbol.asClass.isCaseClass
 
+    lazy val innerType =
+      tpe.members
+        .filter(_.isConstructor)
+        .flatMap(_.asMethod.paramLists)
+        .flatMap(_.map(_.typeSignature))
+        .head
+
     val r = if (isCaseValueClass) c.Expr[AnyMatcher[T]] {
       q"""
       new _root_.org.mockito.matchers.AnyMatcher[$tpe] {
-        override def any: $tpe = ${tpe.companion.decl(TermName("apply"))}(_root_.org.mockito.ArgumentMatchers.any())
+        override def any: $tpe = ${tpe.companion.decl(TermName("apply"))}(_root_.org.mockito.ArgumentMatchers.any[$innerType]())
       }
     """
     } else if (isValueClass) c.Expr[AnyMatcher[T]] {
       q"""
       new _root_.org.mockito.matchers.AnyMatcher[$tpe] {
-        override def any: $tpe = new $tpe(_root_.org.mockito.ArgumentMatchers.any())
+        override def any: $tpe = new $tpe(_root_.org.mockito.ArgumentMatchers.any[$innerType]())
       }
     """
     } else

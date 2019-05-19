@@ -1,9 +1,9 @@
 package org.mockito.cats
 
 import cats.implicits._
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
+import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -29,9 +29,9 @@ class DoSomethingCatsTest
     "stub specific applicative" in {
       val aMock = mock[Foo]
 
-      "mocked!" willBe returnedF by aMock.returnsOptionT("hello")
+      "mocked!" willBe returnedF by aMock.returnsGenericOption("hello")
 
-      aMock.returnsOptionT("hello").value shouldBe "mocked!"
+      aMock.returnsGenericOption("hello").value shouldBe "mocked!"
     }
 
     "stub generic applicative" in {
@@ -78,6 +78,24 @@ class DoSomethingCatsTest
 
       whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
       whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked!"))
+    }
+
+    "work with EitherT" in {
+      val aMock = mock[Foo]
+
+      Error("error") willBe raised by aMock.returnsEitherT("bye")
+      ValueClass("mocked!") willBe returnedF by aMock.returnsEitherT("hello")
+
+      whenReady(aMock.returnsEitherT("bye").value)(_.left.value shouldBe Error("error"))
+      whenReady(aMock.returnsEitherT("hello").value)(_.right.value shouldBe ValueClass("mocked!"))
+    }
+
+    "work with OptionT" in {
+      val aMock = mock[Foo]
+
+      ValueClass("mocked!") willBe returnedF by aMock.returnsOptionT("hello")
+
+      aMock.returnsOptionT("hello").value.head.value shouldBe ValueClass("mocked!")
     }
   }
 }

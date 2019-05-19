@@ -94,7 +94,7 @@ class MockitoCatsTest
     "work with futures" in {
       val aMock = mock[Foo]
 
-      whenF(aMock.returnsFuture("bye")) thenFailWith [Throwable] new RuntimeException("Boom")
+      whenF(aMock.returnsFuture("bye")) thenFailWith new RuntimeException("Boom")
       whenF(aMock.returnsFuture("hello")) thenReturn ValueClass("mocked!")
 
       whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")

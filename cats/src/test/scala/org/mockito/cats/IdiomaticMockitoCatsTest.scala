@@ -95,7 +95,7 @@ class IdiomaticMockitoCatsTest
       val aMock            = mock[Foo]
       val unrealisedFuture = Promise[ValueClass]()
 
-      aMock.returnsFuture("bye") shouldFailWith [Throwable] new RuntimeException("Boom") andThen Future.failed(
+      aMock.returnsFuture("bye") shouldFailWith new RuntimeException("Boom") andThen Future.failed(
         new RuntimeException("Boom2"))
       aMock.returnsFuture("hello") shouldReturnF ValueClass("mocked!") andThen unrealisedFuture.future
 
@@ -110,7 +110,7 @@ class IdiomaticMockitoCatsTest
     "work with futures" in {
       val aMock            = mock[Foo]
 
-      aMock.returnsFuture("bye") shouldFailWith [Throwable] new RuntimeException("Boom")
+      aMock.returnsFuture("bye") shouldFailWith new RuntimeException("Boom")
       aMock.returnsFuture("hello") shouldReturnF ValueClass("mocked!")
 
       whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")

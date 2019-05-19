@@ -1,6 +1,6 @@
 package org.mockito.cats
 
-import cats.{Applicative, ApplicativeError, Eq}
+import cats.{ Applicative, ApplicativeError, Eq }
 import org.mockito._
 import org.scalactic.Equality
 
@@ -74,10 +74,10 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
   }
 
   class ThrowActions[F[_], T](os: CatsStubbing[F, T]) {
-    def apply[E](error: E)(implicit ae: ApplicativeError[F, E]): CatsStubbing[F, T] = os thenFailWith error
+    def apply[E](error: E)(implicit ae: ApplicativeError[F, _ >: E]): CatsStubbing[F, T] = os thenFailWith error
   }
 
   class ThrowActions2[F[_], G[_], T](os: CatsStubbing2[F, G, T]) {
-    def apply[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, E]): CatsStubbing2[F, G, T] = os thenFailWith error
+    def apply[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): CatsStubbing2[F, G, T] = os thenFailWith error
   }
 }

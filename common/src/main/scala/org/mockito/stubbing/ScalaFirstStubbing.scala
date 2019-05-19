@@ -20,7 +20,7 @@ case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T])(implicit protecte
   def isLenient(): Unit = {
     delegate.asInstanceOf[OngoingStubbingImpl[T]].setStrictness(LENIENT)
     delegate.thenAnswer(new Answer[T] {
-      override def answer(i: InvocationOnMock): T = getMockSettings(delegate.getMock).getDefaultAnswer.answer(i).asInstanceOf[T]
+      override def answer(i: InvocationOnMock): T = getMockSettings(delegate.getMock[Any]).getDefaultAnswer.answer(i).asInstanceOf[T]
     })
   }
 

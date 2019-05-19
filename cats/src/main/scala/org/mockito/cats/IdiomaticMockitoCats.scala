@@ -2,10 +2,11 @@ package org.mockito.cats
 
 import cats.{Applicative, ApplicativeError, Eq}
 import org.mockito._
-import org.mockito.cats.IdiomaticMockitoCats.{ReturnActions, ReturnActions2, ThrowActions, ThrowActions2}
 import org.scalactic.Equality
 
 trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
+
+  import org.mockito.cats.IdiomaticMockitoCats._
 
   implicit class StubbingOps[F[_], T](stubbing: F[T]) {
 
@@ -29,10 +30,40 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
     def failsWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
   }
 
+  val returnedF: ReturnedF.type   = ReturnedF
+  val returnedFG: ReturnedFG.type = ReturnedFG
+  val raised: Raised.type         = Raised
+  val raisedG: RaisedG.type       = RaisedG
+  implicit class DoSomethingOpsCats[R](v: R) {
+    def willBe(r: ReturnedF.type): ReturnedByF[R]   = ReturnedByF[R]()
+    def willBe(r: ReturnedFG.type): ReturnedByFG[R] = ReturnedByFG[R]()
+    def willBe(r: Raised.type): Raised[R]           = Raised[R]()
+    def willBe(r: RaisedG.type): RaisedG[R]         = RaisedG[R]()
+  }
+
   implicit def catsEquality[T: Eq]: Equality[T] = new EqToEquality[T]
 }
 
 object IdiomaticMockitoCats extends IdiomaticMockitoCats {
+  object ReturnedF
+  case class ReturnedByF[T]() {
+    def by[F[_], S](stubbing: F[S])(implicit $ev: T <:< S): F[S] = macro DoSomethingMacro.returnedBy[T, S]
+  }
+
+  object ReturnedFG
+  case class ReturnedByFG[T]() {
+    def by[F[_], G[_], S](stubbing: F[G[S]])(implicit $ev: T <:< S): F[G[S]] = macro DoSomethingMacro.returnedBy[T, S]
+  }
+
+  object Raised
+  case class Raised[T]() {
+    def by[F[_], E](stubbing: F[E]): F[E] = macro DoSomethingMacro.raisedBy[E]
+  }
+
+  object RaisedG
+  case class RaisedG[T]() {
+    def by[F[_], G[_], E](stubbing: F[G[E]]): F[G[E]] = macro DoSomethingMacro.raisedBy[E]
+  }
 
   class ReturnActions[F[_], T](os: CatsStubbing[F, T]) {
     def apply(value: T)(implicit a: Applicative[F]): CatsStubbing[F, T] = os thenReturn value

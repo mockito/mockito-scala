@@ -8,8 +8,8 @@ import scala.reflect.macros.blackbox
 
 object WhenMacro {
 
-  private val ShouldReturnOptions     = Set("shouldReturn", "mustReturn", "returns")
-  private val CatsShouldReturnOptions = ShouldReturnOptions.map(_ + "F")
+  private val ShouldReturnOptions      = Set("shouldReturn", "mustReturn", "returns")
+  private val CatsShouldReturnOptions  = ShouldReturnOptions.map(_ + "F")
   private val CatsShouldReturnOptions2 = ShouldReturnOptions.map(_ + "FG")
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
@@ -85,8 +85,8 @@ object WhenMacro {
     r
   }
 
-  private val ShouldThrowOptions    = Set("shouldThrow", "mustThrow", "throws")
-  private val CatsShouldFailOptions = Set("shouldFailWith", "mustFailWith", "failsWith")
+  private val ShouldThrowOptions     = Set("shouldThrow", "mustThrow", "throws")
+  private val CatsShouldFailOptions  = Set("shouldFailWith", "mustFailWith", "failsWith")
   private val CatsShouldFailOptions2 = Set("shouldFailWithG", "mustFailWithG", "failsWithG")
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._

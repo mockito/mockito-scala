@@ -18,8 +18,8 @@ object IdiomaticMockitoBase {
   }
 
   object Thrown
-  object ThrownBy {
-    def by[T](stubbing: T): T = macro DoSomethingMacro.thrownBy[T]
+  class ThrownBy[E] {
+    def by[T](stubbing: T)(implicit $ev: E <:< Throwable): T = macro DoSomethingMacro.thrownBy[T]
   }
 
   object On
@@ -160,8 +160,8 @@ trait IdiomaticMockitoBase extends MockitoEnhancer with ScalacticSerialisableHac
     def willBe(a: Answered.type): AnsweredBy[R] = AnsweredBy[R]()
   }
 
-  implicit class ThrowSomethingOps[R <: Throwable](v: R) {
-    def willBe(thrown: Thrown.type): ThrownBy.type = ThrownBy
+  implicit class ThrowSomethingOps[E](v: E) {
+    def willBe(thrown: Thrown.type): ThrownBy[E] = new ThrownBy[E]
   }
 
   val calledAgain: CalledAgain.type     = CalledAgain

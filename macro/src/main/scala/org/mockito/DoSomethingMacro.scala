@@ -30,12 +30,14 @@ object DoSomethingMacro {
 
     val r = c.Expr[S] {
       c.macroApplication match {
-        case q"$_.DoSomethingOpsCats[$_]($v).willBe($_.returnedF).by[$f, $s]($obj.$method[..$targs](...$args))(..$_)" =>
+        case q"$_.$cls[$_]($v).willBe($_.returnedF).by[$f, $s]($obj.$method[..$targs](...$args))(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
           val newArgs = args.map(a => transformArgs(c)(a))
-          q"_root_.org.mockito.cats.MockitoCats.doReturnF[$f, $s]($v)($F).when($obj).$method[..$targs](...$newArgs)"
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doReturnF[$f, $s]($v)($F).when($obj).$method[..$targs](...$newArgs)"
 
-        case q"$_.DoSomethingOpsCats[$_]($v).willBe($_.returnedF).by[$f, $s]($obj.$method[..$targs])(..$_)" =>
-          q"_root_.org.mockito.cats.MockitoCats.doReturnF[$f, $s]($v)($F).when($obj).$method[..$targs]"
+        case q"$_.$cls[$_]($v).willBe($_.returnedF).by[$f, $s]($obj.$method[..$targs])(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doReturnF[$f, $s]($v)($F).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -49,12 +51,14 @@ object DoSomethingMacro {
 
     val r = c.Expr[S] {
       c.macroApplication match {
-        case q"$_.DoSomethingOpsCats[$_]($v).willBe($_.returnedFG).by[$f, $g, $s]($obj.$method[..$targs](...$args))(..$_)" =>
+        case q"$_.$cls[$_]($v).willBe($_.returnedFG).by[$f, $g, $s]($obj.$method[..$targs](...$args))(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
           val newArgs = args.map(a => transformArgs(c)(a))
-          q"_root_.org.mockito.cats.MockitoCats.doReturnFG[$f, $g, $s]($v)($F, $G).when($obj).$method[..$targs](...$newArgs)"
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doReturnFG[$f, $g, $s]($v)($F, $G).when($obj).$method[..$targs](...$newArgs)"
 
-        case q"$_.DoSomethingOpsCats[$_]($v).willBe($_.returnedFG).by[$f, $g, $s]($obj.$method[..$targs])(..$_)" =>
-          q"_root_.org.mockito.cats.MockitoCats.doReturnFG[$f, $g, $s]($v)($F, $G).when($obj).$method[..$targs]"
+        case q"$_.$cls[$_]($v).willBe($_.returnedFG).by[$f, $g, $s]($obj.$method[..$targs])(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doReturnFG[$f, $g, $s]($v)($F, $G).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -107,12 +111,13 @@ object DoSomethingMacro {
 
     val r = c.Expr[T] {
       c.macroApplication match {
-        case q"$_.DoSomethingOpsCats[$e]($v).willBe($_.raised).by[$f, $t]($obj.$method[..$targs](...$args))(..$_)" =>
+        case q"$_.$cls[$e]($v).willBe($_.raised).by[$f, $t]($obj.$method[..$targs](...$args))(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
           val newArgs = args.map(a => transformArgs(c)(a))
-          q"_root_.org.mockito.cats.MockitoCats.doFailWith[$f, $e, $t]($v)($F).when($obj).$method[..$targs](...$newArgs)"
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doFailWith[$f, $e, $t]($v)($F).when($obj).$method[..$targs](...$newArgs)"
 
-        case q"$_.DoSomethingOpsCats[$e]($v).willBe($_.raised).by[$f, $t]($obj.$method[..$targs])(..$_)" =>
-          q"_root_.org.mockito.cats.MockitoCats.doFailWith[$f, $e, $t]($v)($F).when($obj).$method[..$targs]"
+        case q"$_.$cls[$e]($v).willBe($_.raised).by[$f, $t]($obj.$method[..$targs])(..$_)" if cls.toString.startsWith("DoSomethingOps") =>
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doFailWith[$f, $e, $t]($v)($F).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
@@ -126,12 +131,14 @@ object DoSomethingMacro {
 
     val r = c.Expr[T] {
       c.macroApplication match {
-        case q"$_.DoSomethingOpsCats[$e]($v).willBe($_.raisedG).by[$f, $g, $t]($obj.$method[..$targs](...$args))(..$_)" =>
+        case q"$_.$cls[$e]($v).willBe($_.raisedG).by[$f, $g, $t]($obj.$method[..$targs](...$args))(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
           val newArgs = args.map(a => transformArgs(c)(a))
-          q"_root_.org.mockito.cats.MockitoCats.doFailWithG[$f, $g, $e, $t]($v)($F, $G).when($obj).$method[..$targs](...$newArgs)"
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doFailWithG[$f, $g, $e, $t]($v)($F, $G).when($obj).$method[..$targs](...$newArgs)"
 
-        case q"$_.DoSomethingOpsCats[$e]($v).willBe($_.raisedG).by[$f, $g, $t]($obj.$method[..$targs])(..$_)" =>
-          q"_root_.org.mockito.cats.MockitoCats.doFailWithG[$f, $g, $e, $t]($v)($F, $G).when($obj).$method[..$targs]"
+        case q"$_.$cls[$e]($v).willBe($_.raisedG).by[$f, $g, $t]($obj.$method[..$targs])(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doFailWithG[$f, $g, $e, $t]($v)($F, $G).when($obj).$method[..$targs]"
 
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }

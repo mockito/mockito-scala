@@ -24,10 +24,11 @@ The library has independent developers, release cycle and versioning from core m
 *   Artifact identifier: "org.mockito:mockito-scala-scalatest_[scala-version]:[version]"
 *   Artifact identifier: "org.mockito:mockito-scala-specs2_[scala-version]:[version]"
 *   Artifact identifier: "org.mockito:mockito-scala-cats_[scala-version]:[version]"
+*   Artifact identifier: "org.mockito:mockito-scala-scalaz[scala-version]:[version]"
 *   Latest version - see [release notes](/docs/release-notes.md)
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
 
-### Please ensure `mockito-scala` is your only mockito dependency
+### Please ensure you donn't declare `mockito-core` as a dependency as `mockito-scala` will pull the appropiate version automatically
 
 ### Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
 
@@ -581,6 +582,69 @@ val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldFailWith E
 //Rather than
 val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldReturn Left(Error("error"))
 ```
+
+## Scalaz integration
+By adding the module `mockito-scala-scalaz` 2 new traits are available, `IdiomaticMockitoScalaz` and `MockitoScalaz` which are meant to be mixed-in in
+tests that use `IdiomaticMockito` and `MockitoSugar` respectively.
+Please look at the [tests](/scalaz/src/test) for more detailed examples
+
+### MockitoScalaz
+This traits adds `whenF()` which allows stubbing methods that return an Applicative (or an ApplicativeError) to be stubbed by just providing 
+the content of said applicative (or the error).
+So for 
+```scala
+trait Foo {
+    def returnsOption[T](v: T): Option[T]
+    def returnsMT[M[_], T](v: T): M[T]
+}
+// We can now write 
+val aMock = mock[Foo]
+whenF(aMock.returnsOption(*)) thenReturn "mocked!"
+whenF(aMock.returnsMT[Future, String](*)) thenReturn "mocked!"
+// Rather than
+when(aMock.returnsOption(*)) thenReturn Some("mocked!")
+when(aMock.returnsMT[Future, String](*)) thenReturn Future.successful("mocked!")
+
+//We could also do stubbings in a single line if that's all we need from the mock
+val inlineMock: Foo = whenF(mock[Foo].returnsOption(*)) thenReturn "mocked!"
+
+// For errors we can do
+type ErrorOr[A] = Either[Error, A]
+val failingMock: Foo = whenF(mock[Foo].returnsMT[ErrorOr, MyClass](*)) thenFailWith Error("error")
+//Rather than
+val failingMock: Foo = when(mock[Foo].returnsMT[ErrorOr, MyClass](*)) thenReturn Left(Error("error"))
+```
+
+The trait also provides and implicit conversion from `scalaz.Equal` to `scalactic.Equality` so if you have an implicit `scalaz.Equal` instance in scope,
+it will be automatically used by the `eqTo` matcher.
+
+### IdiomaticMockitoScalaz
+
+Similar to `MockitoScalaz` but for the idiomatic syntax (including the conversion from `scalaz.Equal` to `scalactic.Equality`), so the code would look like
+
+```scala
+trait Foo {
+    def returnsOption[T](v: T): Option[T]
+    def returnsMT[M[_], T](v: T): M[T]
+}
+// We can now write 
+val aMock = mock[Foo]
+aMock.returnsOption(*) shouldReturnF "mocked!"
+aMock.returnsMT[Future, String](*) shouldReturnF "mocked!"
+// Rather than
+aMock.returnsOption(*) shouldReturn Some("mocked!")
+aMock.returnsMT[Future, String](*) shouldReturn Future.successful("mocked!")
+
+//We could also do stubbings in a single line if that's all we need from the mock
+val inlineMock: Foo = mock[Foo].returnsOption(*) shouldReturnF "mocked!"
+
+// For errors we can do
+type ErrorOr[A] = Either[Error, A]
+val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldFailWith Error("error")
+//Rather than
+val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldReturn Left(Error("error"))
+```
+
 
 ## Notes
 

@@ -87,4 +87,15 @@ object Utils {
         case q"$a" => q"_root_.org.mockito.matchers.DefaultMatcher.defaultMatcher($a)"
       }
   }
+
+  private[mockito] def packageName(c: blackbox.Context)(cls: c.TermName): c.TermName = {
+    import c.universe._
+    if (cls.toString.contains("Scalaz")) TermName("scalaz") else TermName("cats")
+  }
+
+  private[mockito] def className(c: blackbox.Context)(cls: c.TermName, start: String): c.TermName = {
+    import c.universe._
+    if (cls.toString.contains("Scalaz")) TermName(start + "Scalaz") else TermName(start + "Cats")
+  }
+
 }

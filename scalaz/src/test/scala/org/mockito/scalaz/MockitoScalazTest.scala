@@ -1,8 +1,7 @@
-package org.mockito.cats
+package org.mockito.scalaz
 
-import cats. Eq
-import cats.data.{ EitherT, OptionT }
-import cats.implicits._
+import _root_.scalaz._
+import Scalaz._
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
@@ -10,12 +9,12 @@ import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MockitoCatsTest
+class MockitoScalazTest
     extends WordSpec
     with Matchers
     with MockitoSugar
     with ArgumentMatchersSugar
-    with MockitoCats
+    with MockitoScalaz
     with EitherValues
     with OptionValues
     with ScalaFutures {
@@ -79,9 +78,11 @@ class MockitoCatsTest
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")).left.value shouldBe Error("error")
     }
 
-    "work with cats Eq" in {
-      implicit val stringEq: Eq[ValueClass] = Eq.instance((x: ValueClass, y: ValueClass) => x.s.toLowerCase == y.s.toLowerCase)
-      val aMock                             = mock[Foo]
+    "work with scalaz Eq" in {
+      implicit val stringEq: Equal[ValueClass] = new Equal[ValueClass] {
+        override def equal(x: ValueClass, y: ValueClass): Boolean = x.s.toLowerCase == y.s.toLowerCase
+      }
+      val aMock = mock[Foo]
 
       whenF(aMock.returnsGenericOption(eqTo(ValueClass("HoLa")))) thenReturn ValueClass("Mocked!")
       when(aMock.shouldI(eqTo(false))) thenReturn "Mocked!"
@@ -108,8 +109,8 @@ class MockitoCatsTest
       whenF(aMock.returnsEitherT("bye")) thenFailWith Error("error")
       whenF(aMock.returnsEitherT("hello")) thenReturn ValueClass("mocked!")
 
-      whenReady(aMock.returnsEitherT("bye").value)(_.left.value shouldBe Error("error"))
-      whenReady(aMock.returnsEitherT("hello").value)(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsEitherT("bye").run)(_.toEither.left.value shouldBe Error("error"))
+      whenReady(aMock.returnsEitherT("hello").run)(_.toEither.right.value shouldBe ValueClass("mocked!"))
     }
 
     "work with OptionT" in {
@@ -117,7 +118,7 @@ class MockitoCatsTest
 
       whenF(aMock.returnsOptionT("hello")) thenReturn ValueClass("mocked!")
 
-      aMock.returnsOptionT("hello").value.head.value shouldBe ValueClass("mocked!")
+      aMock.returnsOptionT("hello").run.head.value shouldBe ValueClass("mocked!")
     }
   }
 
@@ -186,13 +187,13 @@ class MockitoCatsTest
 
     "work with EitherT" in {
       val aMock = mock[Foo]
-      type F[T] = EitherT[Future, Error, T]
+      type F[T] = EitherT[Error, Future, T]
 
       doFailWith[F, Error, ValueClass](Error("error")).when(aMock).returnsEitherT("bye")
       doReturnF[F, ValueClass](ValueClass("mocked!")).when(aMock).returnsEitherT("hello")
 
-      whenReady(aMock.returnsEitherT("bye").value)(_.left.value shouldBe Error("error"))
-      whenReady(aMock.returnsEitherT("hello").value)(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsEitherT("bye").run)(_.toEither.left.value shouldBe Error("error"))
+      whenReady(aMock.returnsEitherT("hello").run)(_.toEither.right.value shouldBe ValueClass("mocked!"))
     }
 
     "work with OptionT" in {
@@ -201,7 +202,7 @@ class MockitoCatsTest
 
       doReturnF[F, ValueClass](ValueClass("mocked!")).when(aMock).returnsOptionT("hello")
 
-      aMock.returnsOptionT("hello").value.head.value shouldBe ValueClass("mocked!")
+      aMock.returnsOptionT("hello").run.head.value shouldBe ValueClass("mocked!")
     }
   }
 }

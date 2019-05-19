@@ -1,14 +1,14 @@
-package org.mockito.cats
+package org.mockito.scalaz
 
-import cats.{ Applicative, ApplicativeError, Eq }
+import scalaz.{ Applicative, ApplicativeError, Equal }
 import org.mockito._
 import org.scalactic.Equality
 
-trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
+trait IdiomaticMockitoScalaz extends ScalacticSerialisableHack {
 
-  import org.mockito.cats.IdiomaticMockitoCats._
+  import org.mockito.scalaz.IdiomaticMockitoScalaz._
 
-  implicit class StubbingOpsCats[F[_], T](stubbing: F[T]) {
+  implicit class StubbingOpsScalaz[F[_], T](stubbing: F[T]) {
 
     def shouldReturnF: ReturnActions[F, T] = macro WhenMacro.shouldReturn[T]
     def mustReturnF: ReturnActions[F, T] = macro WhenMacro.shouldReturn[T]
@@ -19,7 +19,7 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
     def failsWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
   }
 
-  implicit class StubbingOps2Cats[F[_], G[_], T](stubbing: F[G[T]]) {
+  implicit class StubbingOps2Scalaz[F[_], G[_], T](stubbing: F[G[T]]) {
 
     def shouldReturnFG: ReturnActions2[F, G, T] = macro WhenMacro.shouldReturn[T]
     def mustReturnFG: ReturnActions2[F, G, T] = macro WhenMacro.shouldReturn[T]
@@ -34,17 +34,17 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
   val returnedFG: ReturnedFG.type = ReturnedFG
   val raised: Raised.type         = Raised
   val raisedG: RaisedG.type       = RaisedG
-  implicit class DoSomethingOpsCats[R](v: R) {
+  implicit class DoSomethingOpsScalaz[R](v: R) {
     def willBe(r: ReturnedF.type): ReturnedByF[R]   = ReturnedByF[R]()
     def willBe(r: ReturnedFG.type): ReturnedByFG[R] = ReturnedByFG[R]()
     def willBe(r: Raised.type): Raised[R]           = Raised[R]()
     def willBe(r: RaisedG.type): RaisedG[R]         = RaisedG[R]()
   }
 
-  implicit def catsEquality[T: Eq]: Equality[T] = new EqToEquality[T]
+  implicit def scalazEquality[T: Equal]: Equality[T] = new EqToEquality[T]
 }
 
-object IdiomaticMockitoCats extends IdiomaticMockitoCats {
+object IdiomaticMockitoScalaz extends IdiomaticMockitoScalaz {
   object ReturnedF
   case class ReturnedByF[T]() {
     def by[F[_], S](stubbing: F[S])(implicit F: Applicative[F], $ev: T <:< S): F[S] = macro DoSomethingMacro.returnedF[T, S]
@@ -67,19 +67,19 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
       macro DoSomethingMacro.raisedG[E]
   }
 
-  class ReturnActions[F[_], T](os: CatsStubbing[F, T]) {
-    def apply(value: T)(implicit a: Applicative[F]): CatsStubbing[F, T] = os thenReturn value
+  class ReturnActions[F[_], T](os: ScalazStubbing[F, T]) {
+    def apply(value: T)(implicit a: Applicative[F]): ScalazStubbing[F, T] = os thenReturn value
   }
 
-  class ReturnActions2[F[_], G[_], T](os: CatsStubbing2[F, G, T]) {
-    def apply(value: T)(implicit a: Applicative[F], ag: Applicative[G]): CatsStubbing2[F, G, T] = os thenReturn value
+  class ReturnActions2[F[_], G[_], T](os: ScalazStubbing2[F, G, T]) {
+    def apply(value: T)(implicit a: Applicative[F], ag: Applicative[G]): ScalazStubbing2[F, G, T] = os thenReturn value
   }
 
-  class ThrowActions[F[_], T](os: CatsStubbing[F, T]) {
-    def apply[E](error: E)(implicit ae: ApplicativeError[F, _ >: E]): CatsStubbing[F, T] = os thenFailWith error
+  class ThrowActions[F[_], T](os: ScalazStubbing[F, T]) {
+    def apply[E](error: E)(implicit ae: ApplicativeError[F, _ >: E]): ScalazStubbing[F, T] = os thenFailWith error
   }
 
-  class ThrowActions2[F[_], G[_], T](os: CatsStubbing2[F, G, T]) {
-    def apply[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): CatsStubbing2[F, G, T] = os thenFailWith error
+  class ThrowActions2[F[_], G[_], T](os: ScalazStubbing2[F, G, T]) {
+    def apply[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): ScalazStubbing2[F, G, T] = os thenFailWith error
   }
 }

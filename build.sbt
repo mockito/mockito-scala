@@ -103,6 +103,20 @@ lazy val cats = (project in file("cats"))
     ),
   )
 
+lazy val scalaz = (project in file("scalaz"))
+  .dependsOn(core)
+  .dependsOn(common % "compile-internal, test-internal")
+  .dependsOn(macroSub % "compile-internal, test-internal")
+  .settings(
+    name := "mockito-scala-scalaz",
+    commonSettings,
+    publishSettings,
+    libraryDependencies ++= Seq(
+      "org.scalaz" %% "scalaz-core" % "7.3.0-M29" % "provided",
+      "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "test"
+    ),
+  )
+
 lazy val common = (project in file("common"))
   .dependsOn(macroCommon)
   .settings(
@@ -175,4 +189,4 @@ lazy val root = (project in file("."))
   .settings(
     publish := {},
     publishLocal := {}
-  ) aggregate (core, scalatest, specs2, cats)
+  ) aggregate (core, scalatest, specs2, cats, scalaz)

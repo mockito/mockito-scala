@@ -7,6 +7,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class MockitoCatsTest
     extends WordSpec
@@ -18,7 +19,7 @@ class MockitoCatsTest
     with OptionValues
     with ScalaFutures {
 
-  "mock[T]" should {
+  "when" should {
     "stub full applicative" in {
       val aMock = mock[Foo]
 
@@ -88,6 +89,60 @@ class MockitoCatsTest
       aMock.returnsOptionT(ValueClass("HOLA")).value should ===(ValueClass("mocked!"))
       aMock.shouldI(false) shouldBe "Mocked!"
       aMock.shouldI(true) shouldBe "Mocked again!"
+    }
+  }
+
+  "doReturn" should {
+    "stub full applicative" in {
+      val aMock = mock[Foo]
+
+      doReturnF[Option, String]("mocked!").when(aMock).returnsOptionString(*)
+
+      aMock.returnsOptionString("hello").value shouldBe "mocked!"
+    }
+
+    "stub specific applicative" in {
+      val aMock = mock[Foo]
+
+      doReturnF[Option, String]("mocked!").when(aMock).returnsOptionT("hello")
+
+      aMock.returnsOptionT("hello").value shouldBe "mocked!"
+    }
+
+    "stub generic applicative" in {
+      val aMock = mock[Foo]
+
+      doReturnF[Option, String]("mocked!").when(aMock).returnsMT("hello")
+
+      aMock.returnsMT[Option, String]("hello").value shouldBe "mocked!"
+    }
+
+    "stub composed applicative" in {
+      val aMock = mock[Foo]
+
+      doReturnFG[Future, ErrorOr, ValueClass](ValueClass("mocked!")).when(aMock).returnsFutureEither("hello")
+      doFailWithG[Future, ErrorOr, Error, ValueClass](Error("boom")).when(aMock).returnsFutureEither("bye")
+
+      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("bye"))(_.left.value shouldBe Error("boom"))
+    }
+
+    "work with value classes" in {
+      val aMock = mock[Foo]
+
+      doReturnF[Option, ValueClass](ValueClass("mocked!")).when(aMock).returnsMT(eqTo(ValueClass("hi")))
+
+      aMock.returnsMT[Option, ValueClass](ValueClass("hi")).value shouldBe ValueClass("mocked!")
+    }
+
+    "raise errors" in {
+      val aMock = mock[Foo]
+
+      doReturnF[ErrorOr, ValueClass](ValueClass("mocked!")).when(aMock).returnsMT(ValueClass("hi"))
+      doFailWith[ErrorOr, Error, ValueClass](Error("error")).when(aMock).returnsMT(ValueClass("bye"))
+
+      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).right.value shouldBe ValueClass("mocked!")
+      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")).left.value shouldBe Error("error")
     }
   }
 }

@@ -91,6 +91,22 @@ class IdiomaticMockitoCatsTest
       aMock.shouldI(true) shouldBe "Mocked again!"
     }
 
+    "mix with vanilla api (cats -> vanilla)" in {
+      val aMock            = mock[Foo]
+      val unrealisedFuture = Promise[ValueClass]()
+
+      aMock.returnsFuture("bye") shouldFailWith [Throwable] new RuntimeException("Boom") andThen Future.failed(
+        new RuntimeException("Boom2"))
+      aMock.returnsFuture("hello") shouldReturnF ValueClass("mocked!") andThen unrealisedFuture.future
+
+      whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
+      whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom2")
+      whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked!"))
+
+      unrealisedFuture.success(ValueClass("mocked2!"))
+      whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked2!"))
+    }
+
     "work with futures" in {
       val aMock            = mock[Foo]
 

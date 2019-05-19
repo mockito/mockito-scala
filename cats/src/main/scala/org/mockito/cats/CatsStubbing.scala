@@ -7,6 +7,8 @@ import org.mockito.stubbing.OngoingStubbing
 case class CatsStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
 
   def thenReturn(value: T)(implicit a: Applicative[F]): CatsStubbing[F, T] = delegate thenReturn value.pure[F]
+  def andThen(value: T)(implicit a: Applicative[F]): CatsStubbing[F, T]    = thenReturn(value)
+  def andThen(value: F[T]): CatsStubbing[F, T]                             = delegate thenReturn value
 
   def thenFailWith[E](error: E)(implicit ae: ApplicativeError[F, E]): CatsStubbing[F, T] = delegate thenReturn error.raiseError[F, T]
 
@@ -23,6 +25,9 @@ case class CatsStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
 
   def thenReturn(value: T)(implicit af: Applicative[F], ag: Applicative[G]): CatsStubbing2[F, G, T] =
     delegate thenReturn Applicative[F].compose[G].pure(value)
+  def andThen(value: T)(implicit af: Applicative[F], ag: Applicative[G]): CatsStubbing2[F, G, T] = thenReturn(value)
+  def andThen(value: G[T])(implicit af: Applicative[F]): CatsStubbing2[F, G, T]                  = delegate thenReturn Applicative[F].pure(value)
+  def andThen(value: F[G[T]]): CatsStubbing2[F, G, T]                                            = delegate thenReturn value
 
   def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, E]): CatsStubbing2[F, G, T] =
     delegate thenReturn Applicative[F].pure(ApplicativeError[G, E].raiseError[T](error))

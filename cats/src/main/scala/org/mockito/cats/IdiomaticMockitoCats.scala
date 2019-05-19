@@ -47,22 +47,24 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
 object IdiomaticMockitoCats extends IdiomaticMockitoCats {
   object ReturnedF
   case class ReturnedByF[T]() {
-    def by[F[_], S](stubbing: F[S])(implicit $ev: T <:< S): F[S] = macro DoSomethingMacro.returnedBy[T, S]
+    def by[F[_], S](stubbing: F[S])(implicit F: Applicative[F], $ev: T <:< S): F[S] = macro DoSomethingMacro.returnedF[T, S]
   }
 
   object ReturnedFG
   case class ReturnedByFG[T]() {
-    def by[F[_], G[_], S](stubbing: F[G[S]])(implicit $ev: T <:< S): F[G[S]] = macro DoSomethingMacro.returnedBy[T, S]
+    def by[F[_], G[_], S](stubbing: F[G[S]])(implicit F: Applicative[F], G: Applicative[G], $ev: T <:< S): F[G[S]] =
+      macro DoSomethingMacro.returnedFG[T, S]
   }
 
   object Raised
   case class Raised[T]() {
-    def by[F[_], E](stubbing: F[E]): F[E] = macro DoSomethingMacro.raisedBy[E]
+    def by[F[_], E](stubbing: F[E])(implicit F: ApplicativeError[F, _ >: T]): F[E] = macro DoSomethingMacro.raised[E]
   }
 
   object RaisedG
   case class RaisedG[T]() {
-    def by[F[_], G[_], E](stubbing: F[G[E]]): F[G[E]] = macro DoSomethingMacro.raisedBy[E]
+    def by[F[_], G[_], E](stubbing: F[G[E]])(implicit F: Applicative[F], G: ApplicativeError[G, _ >: T]): F[G[E]] =
+      macro DoSomethingMacro.raisedG[E]
   }
 
   class ReturnActions[F[_], T](os: CatsStubbing[F, T]) {

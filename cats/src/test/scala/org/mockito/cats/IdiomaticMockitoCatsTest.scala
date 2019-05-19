@@ -2,9 +2,9 @@ package org.mockito.cats
 
 import cats.Eq
 import cats.implicits._
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
+import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -88,6 +88,16 @@ class IdiomaticMockitoCatsTest
       aMock.returnsOptionT(ValueClass("HOLA")).value should ===(ValueClass("mocked!"))
       aMock.shouldI(false) shouldBe "Mocked!"
       aMock.shouldI(true) shouldBe "Mocked again!"
+    }
+
+    "work with futures" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsFuture("bye") shouldFailWith[Throwable] new RuntimeException("Boom")
+      aMock.returnsFuture("hello") shouldReturnF ValueClass("mocked!")
+
+      whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
+      whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked!"))
     }
   }
 }

@@ -90,6 +90,16 @@ class MockitoCatsTest
       aMock.shouldI(false) shouldBe "Mocked!"
       aMock.shouldI(true) shouldBe "Mocked again!"
     }
+
+    "work with futures" in {
+      val aMock = mock[Foo]
+
+      whenF(aMock.returnsFuture("bye")) thenFailWith [Throwable] new RuntimeException("Boom")
+      whenF(aMock.returnsFuture("hello")) thenReturn ValueClass("mocked!")
+
+      whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
+      whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked!"))
+    }
   }
 
   "doReturn" should {
@@ -143,6 +153,16 @@ class MockitoCatsTest
 
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).right.value shouldBe ValueClass("mocked!")
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")).left.value shouldBe Error("error")
+    }
+
+    "work with futures" in {
+      val aMock = mock[Foo]
+
+      doFailWith[Future, Throwable, ValueClass](new RuntimeException("Boom")).when(aMock).returnsFuture("bye")
+      doReturnF[Future, ValueClass](ValueClass("mocked!")).when(aMock).returnsFuture("hello")
+
+      whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
+      whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked!"))
     }
   }
 }

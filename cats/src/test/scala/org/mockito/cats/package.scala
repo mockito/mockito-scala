@@ -19,6 +19,8 @@ package object cats {
 
     def shouldI(should: Boolean): String
 
+    def returnsFuture(v: String): Future[ValueClass]
+
     def returnsFutureEither(v: String): Future[ErrorOr[ValueClass]]
   }
 

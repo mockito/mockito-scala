@@ -25,6 +25,8 @@ class ReflectionExtractor[VC] extends ValueClassExtractor[VC] {
 
 object ValueClassExtractor {
 
+  def apply[T: ValueClassExtractor]: ValueClassExtractor[T] = implicitly[ValueClassExtractor[T]]
+
   private val ScalaVersion = Properties.scalaPropOrElse("version.number", "unknown")
 
   implicit def instance[VC]: ValueClassExtractor[VC] = macro materialise[VC]

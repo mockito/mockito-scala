@@ -3,7 +3,11 @@ package org.mockito.cats
 import cats.Eq
 import cats.implicits._
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ Future, Promise }
 
 class IdiomaticMockitoCatsTest
     extends WordSpec
@@ -12,9 +16,10 @@ class IdiomaticMockitoCatsTest
     with ArgumentMatchersSugar
     with IdiomaticMockitoCats
     with EitherValues
-    with OptionValues {
+    with OptionValues
+    with ScalaFutures {
 
-  "mock[T]" should {
+  "shouldReturn" should {
     "stub full applicative" in {
       val aMock = mock[Foo]
 
@@ -26,9 +31,9 @@ class IdiomaticMockitoCatsTest
     "stub specific applicative" in {
       val aMock = mock[Foo]
 
-      aMock.returnsOptionT("hello") shouldReturnF "mocked!"
+      aMock.returnsGenericOption("hello") shouldReturnF "mocked!"
 
-      aMock.returnsOptionT("hello").value shouldBe "mocked!"
+      aMock.returnsGenericOption("hello").value shouldBe "mocked!"
     }
 
     "stub generic applicative" in {
@@ -37,6 +42,16 @@ class IdiomaticMockitoCatsTest
       aMock.returnsMT[Option, String]("hello") shouldReturnF "mocked!"
 
       aMock.returnsMT[Option, String]("hello").value shouldBe "mocked!"
+    }
+
+    "stub composed applicative" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsFutureEither("hello") shouldReturnFG ValueClass("mocked!")
+      aMock.returnsFutureEither("bye") shouldFailWithG Error("boom")
+
+      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("bye"))(_.left.value shouldBe Error("boom"))
     }
 
     "work with value classes" in {
@@ -54,7 +69,6 @@ class IdiomaticMockitoCatsTest
     }
 
     "raise errors" in {
-      type ErrorOr[A] = Either[Error, A]
       val aMock = mock[Foo]
 
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")) shouldReturnF ValueClass("mocked!")
@@ -68,13 +82,56 @@ class IdiomaticMockitoCatsTest
       implicit val stringEq: Eq[ValueClass] = Eq.instance((x: ValueClass, y: ValueClass) => x.s.toLowerCase == y.s.toLowerCase)
       val aMock                             = mock[Foo]
 
-      aMock.returnsOptionT(ValueClass("HoLa")) shouldReturnF ValueClass("Mocked!")
+      aMock.returnsGenericOption(ValueClass("HoLa")) shouldReturnF ValueClass("Mocked!")
       aMock.shouldI(false) shouldReturn "Mocked!"
       aMock.shouldI(true) shouldReturn "Mocked again!"
 
-      aMock.returnsOptionT(ValueClass("HOLA")).value should ===(ValueClass("mocked!"))
+      aMock.returnsGenericOption(ValueClass("HOLA")).value should ===(ValueClass("mocked!"))
       aMock.shouldI(false) shouldBe "Mocked!"
       aMock.shouldI(true) shouldBe "Mocked again!"
+    }
+
+    "mix with vanilla api (cats -> vanilla)" in {
+      val aMock            = mock[Foo]
+      val unrealisedFuture = Promise[ValueClass]()
+
+      aMock.returnsFuture("bye") shouldFailWith new RuntimeException("Boom") andThen Future.failed(new RuntimeException("Boom2"))
+      aMock.returnsFuture("hello") shouldReturnF ValueClass("mocked!") andThen unrealisedFuture.future
+
+      whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
+      whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom2")
+      whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked!"))
+
+      unrealisedFuture.success(ValueClass("mocked2!"))
+      whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked2!"))
+    }
+
+    "work with futures" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsFuture("bye") shouldFailWith new RuntimeException("Boom")
+      aMock.returnsFuture("hello") shouldReturnF ValueClass("mocked!")
+
+      whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
+      whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked!"))
+    }
+
+    "work with EitherT" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsEitherT("bye") shouldFailWith Error("error")
+      aMock.returnsEitherT("hello") shouldReturnF ValueClass("mocked!")
+
+      whenReady(aMock.returnsEitherT("bye").value)(_.left.value shouldBe Error("error"))
+      whenReady(aMock.returnsEitherT("hello").value)(_.right.value shouldBe ValueClass("mocked!"))
+    }
+
+    "work with OptionT" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsOptionT("hello") shouldReturnF ValueClass("mocked!")
+
+      aMock.returnsOptionT("hello").value.head.value shouldBe ValueClass("mocked!")
     }
   }
 }

@@ -251,7 +251,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
           org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true)
         }
 
-        """"some value" willBe thrown by org bar""" shouldNot compile
+        """"some value" willBe thrown by org.bar""" shouldNot compile
       }
 
       "check a mock was not used" in {

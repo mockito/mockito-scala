@@ -8,8 +8,9 @@ import scala.reflect.macros.blackbox
 
 object WhenMacro {
 
-  private val ShouldReturnOptions     = Set("shouldReturn", "mustReturn", "returns")
-  private val CatsShouldReturnOptions = ShouldReturnOptions.map(_ + "F")
+  private val ShouldReturnOptions      = Set("shouldReturn", "mustReturn", "returns")
+  private val CatsShouldReturnOptions  = ShouldReturnOptions.map(_ + "F")
+  private val CatsShouldReturnOptions2 = ShouldReturnOptions.map(_ + "FG")
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
@@ -27,6 +28,13 @@ object WhenMacro {
 
       case q"$_.StubbingOps[..$_]($obj.$method[..$targs]).$m" if CatsShouldReturnOptions.contains(m.toString) =>
         q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ReturnActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
+
+      case q"$_.StubbingOps2[..$_]($obj.$method[..$targs](...$args)).$m" if CatsShouldReturnOptions2.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ReturnActions2(_root_.org.mockito.Mockito.when($obj.$method[..$targs](...$newArgs)))"
+
+      case q"$_.StubbingOps2[..$_]($obj.$method[..$targs]).$m" if CatsShouldReturnOptions2.contains(m.toString) =>
+        q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ReturnActions2(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
 
       case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }
@@ -77,8 +85,9 @@ object WhenMacro {
     r
   }
 
-  private val ShouldThrowOptions    = Set("shouldThrow", "mustThrow", "throws")
-  private val CatsShouldFailOptions = Set("shouldFailWith", "mustFailWith", "failsWith")
+  private val ShouldThrowOptions     = Set("shouldThrow", "mustThrow", "throws")
+  private val CatsShouldFailOptions  = Set("shouldFailWith", "mustFailWith", "failsWith")
+  private val CatsShouldFailOptions2 = Set("shouldFailWithG", "mustFailWithG", "failsWithG")
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
@@ -96,6 +105,13 @@ object WhenMacro {
 
       case q"$_.StubbingOps[..$_]($obj.$method[..$targs]).$m" if CatsShouldFailOptions.contains(m.toString) =>
         q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ThrowActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
+
+      case q"$_.StubbingOps2[..$_]($obj.$method[..$targs](...$args)).$m" if CatsShouldFailOptions2.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ThrowActions2(_root_.org.mockito.Mockito.when($obj.$method[..$targs](...$newArgs)))"
+
+      case q"$_.StubbingOps2[..$_]($obj.$method[..$targs]).$m" if CatsShouldFailOptions2.contains(m.toString) =>
+        q"new _root_.org.mockito.cats.IdiomaticMockitoCats.ThrowActions2(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
 
       case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }

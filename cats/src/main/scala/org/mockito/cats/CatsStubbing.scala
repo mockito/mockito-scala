@@ -1,16 +1,16 @@
 package org.mockito.cats
 
-import cats.implicits._
 import cats.{ Applicative, ApplicativeError }
 import org.mockito.stubbing.OngoingStubbing
 
 case class CatsStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
 
-  def thenReturn(value: T)(implicit a: Applicative[F]): CatsStubbing[F, T] = delegate thenReturn value.pure[F]
-  def andThen(value: T)(implicit a: Applicative[F]): CatsStubbing[F, T]    = thenReturn(value)
+  def thenReturn(value: T)(implicit F: Applicative[F]): CatsStubbing[F, T] = delegate thenReturn F.pure(value)
+  def andThen(value: T)(implicit F: Applicative[F]): CatsStubbing[F, T]    = thenReturn(value)
   def andThen(value: F[T]): CatsStubbing[F, T]                             = delegate thenReturn value
 
-  def thenFailWith[E](error: E)(implicit ae: ApplicativeError[F, _ >: E]): CatsStubbing[F, T] = delegate thenReturn error.raiseError[F, T]
+  def thenFailWith[E](error: E)(implicit F: ApplicativeError[F, _ >: E]): CatsStubbing[F, T] =
+    delegate thenReturn F.raiseError[T](error)
 
   def getMock[M]: M = delegate.getMock[M]
 }

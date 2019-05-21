@@ -1,11 +1,11 @@
 package org.mockito.cats
 
-import cats.{ApplicativeError, Eq}
-import cats.data.{EitherT, OptionT}
+import cats.Eq
+import cats.data.{ EitherT, OptionT }
 import cats.implicits._
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
+import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

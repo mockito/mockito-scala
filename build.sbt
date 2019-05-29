@@ -19,7 +19,7 @@ lazy val commonSettings =
       source.close
       version.get
     },
-    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC1"),
+    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC2"),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
       "-unchecked",
@@ -62,7 +62,7 @@ lazy val publishSettings = Seq(
 
 lazy val commonLibraries = Seq(
   "org.mockito"   % "mockito-core"      % "2.27.0",
-  "org.scalactic" %% "scalactic"        % "3.0.8-RC2",
+  "org.scalactic" %% "scalactic"        % "3.0.8-RC4",
   "ru.vyarus"     % "generics-resolver" % "3.0.0",
 )
 
@@ -74,7 +74,7 @@ lazy val scalatest = (project in file("scalatest"))
       name := "mockito-scala-scalatest",
       commonSettings,
       publishSettings,
-      libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "provided",
+      libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC4" % "provided",
     )
 
 lazy val specs2 = (project in file("specs2"))
@@ -98,8 +98,8 @@ lazy val cats = (project in file("cats"))
     commonSettings,
     publishSettings,
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.0.0-M1" % "provided",
-      "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "test"
+      "org.typelevel" %% "cats-core" % "2.0.0-M2" % "provided",
+      "org.scalatest" %% "scalatest" % "3.0.8-RC4" % "test"
     ),
   )
 
@@ -124,7 +124,7 @@ lazy val core = (project in file("core"))
     libraryDependencies ++= commonLibraries,
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     //TODO remove when we remove the deprecated classes in org.mockito.integrations.scalatest
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "provided",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC4" % "provided",
     // include the macro classes and resources in the main jar
     mappings in (Compile, packageBin) ++= mappings
       .in(macroSub, Compile, packageBin)

@@ -15,6 +15,8 @@ import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 import user.org.mockito.matchers.ValueCaseClass
 import user.org.mockito.model.JavaFoo
 
+import scala.reflect.io.AbstractFile
+
 //noinspection RedundantDefaultArgument
 class MockitoSugarTest
     extends WordSpec
@@ -315,6 +317,15 @@ class MockitoSugarTest
   }
 
   "mock[T]" should {
+
+    "not mock final methods" in {
+      val abstractFile = mock[AbstractFile]
+
+      when(abstractFile.path) thenReturn "sammy.scala"
+
+      abstractFile.path shouldBe "sammy.scala"
+    }
+
     "be serialisable" in {
       val list = mock[java.util.List[String]](withSettings.name("list1").serializable())
       when(list.get(eqTo(3))) thenAnswer "mocked"

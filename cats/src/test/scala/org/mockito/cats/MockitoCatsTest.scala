@@ -1,6 +1,6 @@
 package org.mockito.cats
 
-import cats. Eq
+import cats.Eq
 import cats.data.{ EitherT, OptionT }
 import cats.implicits._
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }

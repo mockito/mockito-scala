@@ -187,7 +187,7 @@ class MockitoScalazTest
 
     "work with EitherT" in {
       val aMock = mock[Foo]
-      type F[T] = EitherT[Error, Future, T]
+      type F[T] = EitherT[Future, Error, T]
 
       doFailWith[F, Error, ValueClass](Error("error")).when(aMock).returnsEitherT("bye")
       doReturnF[F, ValueClass](ValueClass("mocked!")).when(aMock).returnsEitherT("hello")

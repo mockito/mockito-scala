@@ -1,7 +1,7 @@
 package org.mockito.scalaz
 
 import org.mockito.stubbing.OngoingStubbing
-import scalaz.{ Applicative, ApplicativeError }
+import scalaz.{ Applicative, MonadError }
 
 case class ScalazStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
 
@@ -9,7 +9,7 @@ case class ScalazStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
   def andThen(value: T)(implicit a: Applicative[F]): ScalazStubbing[F, T]    = thenReturn(value)
   def andThen(value: F[T]): ScalazStubbing[F, T]                             = delegate thenReturn value
 
-  def thenFailWith[E](error: E)(implicit ae: ApplicativeError[F, _ >: E]): ScalazStubbing[F, T] =
+  def thenFailWith[E](error: E)(implicit ae: MonadError[F, _ >: E]): ScalazStubbing[F, T] =
     delegate thenReturn ae.raiseError[T](error)
 
   def getMock[M]: M = delegate.getMock[M]
@@ -29,7 +29,7 @@ case class ScalazStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
   def andThen(value: G[T])(implicit af: Applicative[F]): ScalazStubbing2[F, G, T]                  = delegate thenReturn af.pure(value)
   def andThen(value: F[G[T]]): ScalazStubbing2[F, G, T]                                            = delegate thenReturn value
 
-  def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): ScalazStubbing2[F, G, T] =
+  def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: MonadError[G, _ >: E]): ScalazStubbing2[F, G, T] =
     delegate thenReturn ae.pure(ag.raiseError[T](error))
 
   def getMock[M]: M = delegate.getMock[M]

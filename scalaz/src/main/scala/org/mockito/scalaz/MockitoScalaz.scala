@@ -1,6 +1,6 @@
 package org.mockito.scalaz
 
-import scalaz.{ Applicative, ApplicativeError, Equal }
+import scalaz.{ Applicative, Equal, MonadError }
 import org.mockito._
 import org.mockito.stubbing.Stubber
 import org.scalactic.Equality
@@ -23,13 +23,13 @@ trait MockitoScalaz extends ScalacticSerialisableHack {
       toBeReturnedNext.map(Applicative[F].compose[G].pure(_)).map(_.asInstanceOf[Object]): _*
     )
 
-  def doFailWith[F[_], E, T](error: E, errors: E*)(implicit ae: ApplicativeError[F, E]): Stubber =
+  def doFailWith[F[_], E, T](error: E, errors: E*)(implicit ae: MonadError[F, E]): Stubber =
     Mockito.doReturn(
       ae.raiseError[T](error),
       errors.map(e => ae.raiseError[T](e)).map(_.asInstanceOf[Object]): _*
     )
 
-  def doFailWithG[F[_]: Applicative, G[_], E, T](error: E, errors: E*)(implicit ae: ApplicativeError[G, E]): Stubber =
+  def doFailWithG[F[_]: Applicative, G[_], E, T](error: E, errors: E*)(implicit ae: MonadError[G, E]): Stubber =
     Mockito.doReturn(
       Applicative[F].pure(ae.raiseError[T](error)),
       errors.map(e => ae.raiseError[T](e)).map(Applicative[F].pure(_)).map(_.asInstanceOf[Object]): _*

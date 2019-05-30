@@ -1,6 +1,6 @@
 package org.mockito.scalaz
 
-import scalaz.{ Applicative, ApplicativeError, Equal }
+import scalaz.{ Applicative, Equal, MonadError }
 import org.mockito._
 import org.scalactic.Equality
 
@@ -58,12 +58,12 @@ object IdiomaticMockitoScalaz extends IdiomaticMockitoScalaz {
 
   object Raised
   case class Raised[T]() {
-    def by[F[_], E](stubbing: F[E])(implicit F: ApplicativeError[F, _ >: T]): F[E] = macro DoSomethingMacro.raised[E]
+    def by[F[_], E](stubbing: F[E])(implicit F: MonadError[F, _ >: T]): F[E] = macro DoSomethingMacro.raised[E]
   }
 
   object RaisedG
   case class RaisedG[T]() {
-    def by[F[_], G[_], E](stubbing: F[G[E]])(implicit F: Applicative[F], G: ApplicativeError[G, _ >: T]): F[G[E]] =
+    def by[F[_], G[_], E](stubbing: F[G[E]])(implicit F: Applicative[F], G: MonadError[G, _ >: T]): F[G[E]] =
       macro DoSomethingMacro.raisedG[E]
   }
 
@@ -76,10 +76,10 @@ object IdiomaticMockitoScalaz extends IdiomaticMockitoScalaz {
   }
 
   class ThrowActions[F[_], T](os: ScalazStubbing[F, T]) {
-    def apply[E](error: E)(implicit ae: ApplicativeError[F, _ >: E]): ScalazStubbing[F, T] = os thenFailWith error
+    def apply[E](error: E)(implicit ae: MonadError[F, _ >: E]): ScalazStubbing[F, T] = os thenFailWith error
   }
 
   class ThrowActions2[F[_], G[_], T](os: ScalazStubbing2[F, G, T]) {
-    def apply[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): ScalazStubbing2[F, G, T] = os thenFailWith error
+    def apply[E](error: E)(implicit ae: Applicative[F], ag: MonadError[G, _ >: E]): ScalazStubbing2[F, G, T] = os thenFailWith error
   }
 }

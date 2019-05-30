@@ -112,8 +112,8 @@ lazy val scalaz = (project in file("scalaz"))
     commonSettings,
     publishSettings,
     libraryDependencies ++= Seq(
-      "org.scalaz" %% "scalaz-core" % "7.3.0-M29" % "provided",
-      "org.scalatest" %% "scalatest" % "3.0.8-RC2" % "test"
+      "org.scalaz" %% "scalaz-core" % "7.2.27" % "provided",
+      "org.scalatest" %% "scalatest" % "3.0.8-RC4" % "test"
     ),
   )
 

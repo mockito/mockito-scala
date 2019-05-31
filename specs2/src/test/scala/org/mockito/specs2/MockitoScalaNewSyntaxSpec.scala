@@ -70,7 +70,6 @@ VERIFICATION
      when the argument is not defined                                  $verification23
 
    it is possible to verify a function with repeated parameters        $verification24
-   it is possible to specify a timeout for the call                    $verification25
    it doesn't match maps and functions as equal                        $verification26
    spies must not be checked for matchers when called for real         $verification27
 
@@ -347,14 +346,6 @@ The Mockito trait is reusable in other contexts
     repeated.call(1, 2, 3)
     (repeated.call(1, 2, 3) was called) and
     ((repeated.call(1, 2) was called).message must contain("withRepeatedParams.call(1, 2)"))
-  }
-
-  def verification25 = {
-    object list extends list; import list._
-
-    scala.concurrent.Future { Thread.sleep(2000); takesSometime.call(10) }
-    ((takesSometime.call(10) was called).message must contain("Wanted but not invoked")) and
-    (takesSometime.call(10) wasCalled (once within 10.seconds))
   }
 
   def verification26 = {

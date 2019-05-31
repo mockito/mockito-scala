@@ -794,19 +794,6 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
         aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
       }
-
-      "verify things allowing a timeout" in {
-        val org = orgDouble()
-        scala.concurrent.Future {
-          Thread.sleep(200)
-          org.doSomethingWithThisInt(10)
-        }(scala.concurrent.ExecutionContext.Implicits.global)
-
-        a[WantedButNotInvoked] should be thrownBy {
-          org.doSomethingWithThisInt(10) wasCalled (once within 10.millis)
-        }
-        org.doSomethingWithThisInt(10) wasCalled (once within 10.seconds)
-      }
     }
   }
 

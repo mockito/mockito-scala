@@ -66,10 +66,10 @@ private[mockito] trait DoSomething {
    * match argument types (`Type`)}}}
    *
    */
-  def doReturn[T](toBeReturned: T, toBeReturnedNext: T*)(implicit $vce: ValueClassExtractor[T]): Stubber =
+  def doReturn[T: ValueClassExtractor](toBeReturned: T, toBeReturnedNext: T*): Stubber =
     Mockito.doReturn(
-      $vce.extract(toBeReturned),
-      toBeReturnedNext.map($vce.extractAs[Object]): _*
+      ValueClassExtractor[T].extract(toBeReturned),
+      toBeReturnedNext.map(ValueClassExtractor[T].extractAs[Object]): _*
     )
 
   /**

@@ -14,9 +14,9 @@ package object mockito {
   def clazz[T](implicit classTag: ClassTag[T]): Class[T] = classTag.runtimeClass.asInstanceOf[Class[T]]
 
   //noinspection ConvertExpressionToSAM
-  def invocationToAnswer[T](f: InvocationOnMock => T)(implicit $vce: ValueClassExtractor[T]): Answer[Any] =
+  def invocationToAnswer[T: ValueClassExtractor](f: InvocationOnMock => T): Answer[Any] =
     new Answer[Any] with Serializable {
-      override def answer(invocation: InvocationOnMock): Any = $vce.extract(f(invocation))
+      override def answer(invocation: InvocationOnMock): Any = ValueClassExtractor[T].extract(f(invocation))
     }
 
   def functionToAnswer[T: ValueClassExtractor, P0](f: P0 => T): Answer[Any] =

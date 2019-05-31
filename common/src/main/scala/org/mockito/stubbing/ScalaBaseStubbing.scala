@@ -8,13 +8,12 @@ import org.objenesis.ObjenesisStd
 
 import scala.reflect.ClassTag
 
-trait ScalaBaseStubbing[T] {
+abstract class ScalaBaseStubbing[T: ValueClassExtractor] {
 
   protected def delegate: OngoingStubbing[T]
-  protected implicit def $vce: ValueClassExtractor[T]
 
   protected def _thenReturn(value: T, values: Seq[T]): ScalaOngoingStubbing[T] =
-    delegate.thenReturn($vce.extractAs[T](value), values.map($vce.extractAs[T]): _*)
+    delegate.thenReturn(ValueClassExtractor[T].extractAs[T](value), values.map(ValueClassExtractor[T].extractAs[T]): _*)
 
   private def thenThrow(t: Throwable): ScalaOngoingStubbing[T] = delegate thenAnswer new ScalaThrowsException(t)
 

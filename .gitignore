@@ -4,3 +4,4 @@ dist/
 .gradle/
 build/
 *.sc
+.DS_Store

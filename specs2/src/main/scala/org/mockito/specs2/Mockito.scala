@@ -35,14 +35,15 @@ trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with Mocki
   override type Verification = MatchResult[Any]
   override def verification(v: => Any): Verification = createExpectable(v).applyMatcher(checkCalls)
 
-  implicit def defaultMatcher[T]: DefaultMatcher[T] = new DefaultMatcher[T] {
-    override def registerDefaultMatcher(value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T], $pt: Prettifier): T =
-      value match {
-        case m: org.hamcrest.Matcher[_]       => MockitoHamcrest.argThat[T](m.asInstanceOf[org.hamcrest.Matcher[T]])
-        case m: org.specs2.matcher.Matcher[_] => argThat(m)
-        case _                                => eqTo(value)
-      }
-  }
+  implicit def defaultMatcher[T: Equality: ValueClassExtractor](implicit prettifier: Prettifier): DefaultMatcher[T] =
+    new DefaultMatcher[T] {
+      override def registerDefaultMatcher(value: T): T =
+        value match {
+          case m: org.hamcrest.Matcher[_]       => MockitoHamcrest.argThat[T](m.asInstanceOf[org.hamcrest.Matcher[T]])
+          case m: org.specs2.matcher.Matcher[_] => argThat(m)
+          case _                                => eqTo(value)
+        }
+    }
 
   /** create an object supporting 'was' and 'were' methods */
   def there = new Calls

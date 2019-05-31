@@ -84,7 +84,7 @@ object Utils {
     if (isMatcher(c)(arg)) arg
     else
       arg match {
-        case q"$a" => q"_root_.org.mockito.matchers.DefaultMatcher.defaultMatcher($a)"
+        case q"$a" => q"_root_.org.mockito.matchers.DefaultMatcher($a)"
       }
   }
 

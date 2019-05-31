@@ -9,8 +9,7 @@ object ScalaOngoingStubbing {
   implicit def toMock[T](s: ScalaOngoingStubbing[_]): T                                                       = s.getMock[T]
 }
 
-case class ScalaOngoingStubbing[T](delegate: OngoingStubbing[T])(implicit protected val $vce: ValueClassExtractor[T])
-    extends ScalaBaseStubbing[T] {
+case class ScalaOngoingStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[T]) extends ScalaBaseStubbing[T] {
 
   /**
    * Sets consecutive return values to be returned when the method is called. E.g:

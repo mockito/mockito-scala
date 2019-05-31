@@ -13,8 +13,6 @@ import org.scalatest.{ FixtureContext, Matchers, WordSpec }
 import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
 import user.org.mockito.model.JavaFoo
 
-import scala.concurrent.duration._
-
 case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
 

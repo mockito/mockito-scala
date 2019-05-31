@@ -8,7 +8,7 @@ import scala.reflect.macros.blackbox
 
 object MacroMatchers_211 {
 
-  def eqTo[T](value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T], $pt: Prettifier): T = {
+  def eqTo[T: Equality: ValueClassExtractor](value: T)(implicit $pt: Prettifier): T = {
     JavaMatchers.argThat(new EqTo[T](value))
     value
   }

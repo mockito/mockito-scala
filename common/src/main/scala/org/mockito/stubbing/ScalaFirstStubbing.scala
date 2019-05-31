@@ -13,8 +13,7 @@ object ScalaFirstStubbing {
   implicit def toMock[T](s: ScalaFirstStubbing[_]): T                                                     = s.getMock[T]
 }
 
-case class ScalaFirstStubbing[T](delegate: OngoingStubbing[T])(implicit protected val $vce: ValueClassExtractor[T])
-    extends ScalaBaseStubbing[T] {
+case class ScalaFirstStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[T]) extends ScalaBaseStubbing[T] {
 
   //noinspection AccessorLikeMethodIsUnit
   def isLenient(): Unit = {

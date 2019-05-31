@@ -5,15 +5,14 @@ import org.mockito.internal.ValueClassExtractor
 import org.scalactic.{ Equality, Prettifier }
 
 trait DefaultMatcher[T] {
-  def registerDefaultMatcher(value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T], $pt: Prettifier): T
+  def registerDefaultMatcher(value: T): T
 }
 
 object DefaultMatcher {
-  implicit def default[T]: DefaultMatcher[T] = new DefaultMatcher[T] {
-    override def registerDefaultMatcher(value: T)(implicit $eq: Equality[T], $vce: ValueClassExtractor[T], $pt: Prettifier): T =
-      ArgumentMatchersSugar.eqTo(value)
+  implicit def default[T: Equality: ValueClassExtractor](implicit prettifier: Prettifier): DefaultMatcher[T] = new DefaultMatcher[T] {
+    override def registerDefaultMatcher(value: T): T = ArgumentMatchersSugar.eqTo(value)
   }
 
-  def defaultMatcher[T: Equality: ValueClassExtractor](value: T)(implicit $def: DefaultMatcher[T], $pt: Prettifier): T =
-    $def.registerDefaultMatcher(value)
+  def apply[T: Equality: ValueClassExtractor: DefaultMatcher](value: T): T =
+    implicitly[DefaultMatcher[T]].registerDefaultMatcher(value)
 }

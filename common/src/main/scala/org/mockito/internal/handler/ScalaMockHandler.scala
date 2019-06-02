@@ -2,12 +2,13 @@ package org.mockito
 package internal.handler
 
 import java.lang.reflect.Method
+import java.util.regex.Pattern
 
 import org.mockito.ReflectionUtils.methodsWithLazyOrVarArgs
 import org.mockito.internal.handler.ScalaMockHandler._
 import org.mockito.internal.invocation._
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
-import org.mockito.invocation.{Invocation, MockHandler}
+import org.mockito.invocation.{ Invocation, MockHandler }
 import org.mockito.mock.MockCreationSettings
 import org.scalactic.Prettifier
 import org.scalactic.TripleEquals._
@@ -21,8 +22,9 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
     invocation match {
       case i: InterceptedInvocation =>
         val method     = i.getMethod
+        val methodName = method.getName
         val realMethod = i.getRealMethod
-        if (realMethod.isInvokable && method.getName.contains("$default$"))
+        if (realMethod.isInvokable && (methodName.contains("$default$") || ExecuteIfSpecialised(methodName)))
           i.callRealMethod()
         else {
           val rawArguments = i.getRawArguments
@@ -68,6 +70,9 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
 }
 
 object ScalaMockHandler {
+  private val SpecialisedMethodsPattern: Pattern      = """.*\$mc[ZBCDFIJSV]\$sp$""".r.pattern
+  private val ExecuteIfSpecialised: String => Boolean = SpecialisedMethodsPattern.matcher(_).matches()
+
   implicit def anyArrayToObjectArray(a: Array[Any]): Array[Object] = a.asInstanceOf[Array[Object]]
   implicit def anyRefArrayToAnyArray(a: Array[AnyRef]): Array[Any] = a.asInstanceOf[Array[Any]]
 

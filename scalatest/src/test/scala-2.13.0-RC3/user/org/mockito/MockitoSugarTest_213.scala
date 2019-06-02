@@ -1,11 +1,21 @@
 package user.org.mockito
 
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ Matchers, WordSpec }
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 //noinspection RedundantDefaultArgument
-class MockitoSugarTest_213 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with TableDrivenPropertyChecks {
+class MockitoSugarTest_213
+    extends WordSpec
+    with MockitoSugar
+    with Matchers
+    with ArgumentMatchersSugar
+    with TableDrivenPropertyChecks
+    with ScalaFutures {
 
   val scenarios = Table(
     ("testDouble", "foo", "baz"),
@@ -45,6 +55,16 @@ class MockitoSugarTest_213 extends WordSpec with MockitoSugar with Matchers with
 
         verify(testDouble).iHaveByNameAndFunction0Args(eqTo("arg1"), function0("arg2"), startsWith("arg"))
       }
+    }
+  }
+
+  "mock[T]" should {
+    "work with specialised methods" in {
+      val mockFunction = mock[() => Unit]
+
+      val f = Future(mockFunction.apply())
+
+      whenReady(f)(_ => verify(mockFunction).apply())
     }
   }
 }

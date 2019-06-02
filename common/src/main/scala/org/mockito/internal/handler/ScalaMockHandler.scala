@@ -2,7 +2,7 @@ package org.mockito
 package internal.handler
 
 import java.lang.reflect.Method
-import java.lang.reflect.Modifier.isAbstract
+import java.util.regex.Pattern
 
 import org.mockito.ReflectionUtils.methodsWithLazyOrVarArgs
 import org.mockito.internal.handler.ScalaMockHandler._
@@ -18,29 +18,26 @@ import scala.collection.JavaConverters._
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProcess: Seq[(Method, Set[Int])])(implicit $pt: Prettifier)
     extends MockHandlerImpl[T](mockSettings) {
 
-  override def handle(invocation: Invocation): AnyRef = {
-    val method = invocation.getMethod
-    if (!isAbstract(method.getModifiers) && method.getName.contains("$default$")) invocation.callRealMethod()
-    else
-      super.handle {
-        invocation match {
-          case i: InterceptedInvocation =>
-            val rawArguments = i.getRawArguments
-            val arguments =
-              if (rawArguments != null && rawArguments.nonEmpty && !isCallRealMethod) unwrapArgs(method, rawArguments)
-              else rawArguments
+  override def handle(invocation: Invocation): AnyRef =
+    invocation match {
+      case i: InterceptedInvocation =>
+        val method     = i.getMethod
+        val methodName = method.getName
+        val realMethod = i.getRealMethod
+        if (realMethod.isInvokable && (methodName.contains("$default$") || ExecuteIfSpecialised(methodName)))
+          i.callRealMethod()
+        else {
+          val rawArguments = i.getRawArguments
+          val arguments =
+            if (rawArguments != null && rawArguments.nonEmpty && !isCallRealMethod) unwrapArgs(method, rawArguments)
+            else rawArguments
 
-            new ScalaInvocation(i.getMockRef,
-                                i.getMockitoMethod,
-                                arguments,
-                                rawArguments,
-                                i.getRealMethod,
-                                i.getLocation,
-                                i.getSequenceNumber)
-          case other => other
+          val scalaInvocation =
+            new ScalaInvocation(i.getMockRef, i.getMockitoMethod, arguments, rawArguments, realMethod, i.getLocation, i.getSequenceNumber)
+          super.handle(scalaInvocation)
         }
-      }
-  }
+      case other => super.handle(other)
+    }
 
   private def unwrapArgs(method: Method, args: Array[Any]): Array[Object] = {
     val transformed = methodsToProcess
@@ -73,6 +70,9 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
 }
 
 object ScalaMockHandler {
+  private val SpecialisedMethodsPattern: Pattern      = """.*\$mc[ZBCDFIJSV]\$sp$""".r.pattern
+  private val ExecuteIfSpecialised: String => Boolean = SpecialisedMethodsPattern.matcher(_).matches()
+
   implicit def anyArrayToObjectArray(a: Array[Any]): Array[Object] = a.asInstanceOf[Array[Object]]
   implicit def anyRefArrayToAnyArray(a: Array[AnyRef]): Array[Any] = a.asInstanceOf[Array[Any]]
 

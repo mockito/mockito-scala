@@ -1,11 +1,14 @@
 package user.org.mockito
 
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
-import org.scalatest
-import org.scalatest.WordSpec
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.{ Matchers, WordSpec }
 import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
 
-class IdiomaticMockitoTest_213 extends WordSpec with scalatest.Matchers with IdiomaticMockito with ArgumentMatchersSugar {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+class IdiomaticMockitoTest_213 extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with ScalaFutures {
 
   class Foo {
     def valueClass(n: Int, v: ValueClass): String = ???
@@ -43,6 +46,14 @@ class IdiomaticMockitoTest_213 extends WordSpec with scalatest.Matchers with Idi
       aMock.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
       aMock.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
       aMock.valueCaseClass(*, ValueCaseClass(200)) was called
+    }
+
+    "work with specialised methods" in {
+      val mockFunction = mock[() => Unit]
+
+      val f = Future(mockFunction.apply())
+
+      whenReady(f)(_ => mockFunction() was called)
     }
   }
 }

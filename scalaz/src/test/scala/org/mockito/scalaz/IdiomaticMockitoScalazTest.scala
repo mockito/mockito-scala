@@ -1,6 +1,7 @@
 package org.mockito.scalaz
 
 import _root_.scalaz._
+import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
@@ -134,6 +135,36 @@ class IdiomaticMockitoScalazTest
       aMock.returnsOptionT("hello") returnsF ValueClass("mocked!")
 
       aMock.returnsOptionT("hello").run.head.value shouldBe ValueClass("mocked!")
+    }
+  }
+
+  "shouldAnswer" should {
+    "stub single applicative" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsOptionString("hello") answersF "mocked!"
+      aMock.returnsOptionString("hi") answersF ((s: String) => s + " mocked!")
+      aMock.returnsOptionString("hola") answersF ((i: InvocationOnMock) => i.getArgument[String](0) + " invocation mocked!")
+      aMock.returnsOptionFrom(42, true) answersF ((i: Int, b: Boolean) => s"$i, $b")
+
+      aMock.returnsOptionString("hello").value shouldBe "mocked!"
+      aMock.returnsOptionString("hi").value shouldBe "hi mocked!"
+      aMock.returnsOptionString("hola").value shouldBe "hola invocation mocked!"
+      aMock.returnsOptionFrom(42, true).value shouldBe "42, true"
+    }
+
+    "stub composed applicative" in {
+      val aMock = mock[Foo]
+
+      aMock.returnsFutureEither("hello") answersFG ValueClass("mocked!")
+      aMock.returnsFutureEither("hi") answersFG ((s: String) => ValueClass(s + " mocked!"))
+      aMock.returnsFutureEither("hola") answersFG ((i: InvocationOnMock) => ValueClass(i.getArgument[String](0) + " invocation mocked!"))
+      aMock.returnsFutureOptionFrom(42, true) answersFG ((i: Int, b: Boolean) => s"$i, $b")
+
+      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("hi"))(_.right.value shouldBe ValueClass("hi mocked!"))
+      whenReady(aMock.returnsFutureEither("hola"))(_.right.value shouldBe ValueClass("hola invocation mocked!"))
+      whenReady(aMock.returnsFutureOptionFrom(42, true))(_.value shouldBe "42, true")
     }
   }
 }

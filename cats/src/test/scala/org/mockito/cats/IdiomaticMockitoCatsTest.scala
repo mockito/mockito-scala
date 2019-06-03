@@ -3,12 +3,12 @@ package org.mockito.cats
 import cats.Eq
 import cats.implicits._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ArgumentMatchersSugar, IdiomaticMockito}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
+import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ Future, Promise }
 
 class IdiomaticMockitoCatsTest
     extends WordSpec
@@ -156,7 +156,8 @@ class IdiomaticMockitoCatsTest
 
       aMock.returnsFutureEither("hello") shouldAnswerFG ValueClass("mocked!")
       aMock.returnsFutureEither("hi") shouldAnswerFG ((s: String) => ValueClass(s + " mocked!"))
-      aMock.returnsFutureEither("hola") shouldAnswerFG ((i: InvocationOnMock) => ValueClass(i.getArgument[String](0) + " invocation mocked!"))
+      aMock.returnsFutureEither("hola") shouldAnswerFG ((i: InvocationOnMock) =>
+        ValueClass(i.getArgument[String](0) + " invocation mocked!"))
       aMock.returnsFutureOptionFrom(42, true) shouldAnswerFG ((i: Int, b: Boolean) => s"$i, $b")
 
       whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))

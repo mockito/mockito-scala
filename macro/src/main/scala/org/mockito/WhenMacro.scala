@@ -170,21 +170,21 @@ object WhenMacro {
         q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
       case q"$_.$cls[..$_]($obj.$method[..$targs](...$args)).$m"
-        if cls.toString.startsWith("StubbingOps") && FunctionalShouldAnswerOptions.contains(m.toString) =>
+          if cls.toString.startsWith("StubbingOps") && FunctionalShouldAnswerOptions.contains(m.toString) =>
         val newArgs = args.map(a => transformArgs(c)(a))
         q"new _root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "IdiomaticMockito")}.AnswerActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs](...$newArgs)))"
 
       case q"$_.$cls[..$_]($obj.$method[..$targs]).$m"
-        if cls.toString.startsWith("StubbingOps") && FunctionalShouldAnswerOptions.contains(m.toString) =>
+          if cls.toString.startsWith("StubbingOps") && FunctionalShouldAnswerOptions.contains(m.toString) =>
         q"new _root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "IdiomaticMockito")}.AnswerActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
 
       case q"$_.$cls[..$_]($obj.$method[..$targs](...$args)).$m"
-        if cls.toString.startsWith("StubbingOps2") && FunctionalShouldAnswerOptions2.contains(m.toString) =>
+          if cls.toString.startsWith("StubbingOps2") && FunctionalShouldAnswerOptions2.contains(m.toString) =>
         val newArgs = args.map(a => transformArgs(c)(a))
         q"new _root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "IdiomaticMockito")}.AnswerActions2(_root_.org.mockito.Mockito.when($obj.$method[..$targs](...$newArgs)))"
 
       case q"$_.$cls[..$_]($obj.$method[..$targs]).$m"
-        if cls.toString.startsWith("StubbingOps2") && FunctionalShouldAnswerOptions2.contains(m.toString) =>
+          if cls.toString.startsWith("StubbingOps2") && FunctionalShouldAnswerOptions2.contains(m.toString) =>
         q"new _root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "IdiomaticMockito")}.AnswerActions2(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
 
       case o => throw new Exception(s"Couldn't recognize ${show(o)}")

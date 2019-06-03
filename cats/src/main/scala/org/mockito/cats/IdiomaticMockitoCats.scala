@@ -41,14 +41,64 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
   }
 
   val returnedF: ReturnedF.type   = ReturnedF
+  val answeredF: AnsweredF.type   = AnsweredF
   val returnedFG: ReturnedFG.type = ReturnedFG
+  val answeredFG: AnsweredFG.type = AnsweredFG
   val raised: Raised.type         = Raised
   val raisedG: RaisedG.type       = RaisedG
+
   implicit class DoSomethingOpsCats[R](v: R) {
     def willBe(r: ReturnedF.type): ReturnedByF[R]   = ReturnedByF[R]()
     def willBe(r: ReturnedFG.type): ReturnedByFG[R] = ReturnedByFG[R]()
     def willBe(r: Raised.type): Raised[R]           = Raised[R]()
     def willBe(r: RaisedG.type): RaisedG[R]         = RaisedG[R]()
+    def willBe(r: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(r: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+
+  implicit class DoSomethingOps0Cats[R](v: () => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps1Cats[P0, R](v: P0 => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps2Cats[P0, P1, R](v: (P0, P1) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps3Cats[P0, P1, P2, R](v: (P0, P1, P2) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps4Cats[P0, P1, P2, P3, R](v: (P0, P1, P2, P3) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps5Cats[P0, P1, P2, P3, P4, R](v: (P0, P1, P2, P3, P4) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps6Cats[P0, P1, P2, P3, P4, P5, R](v: (P0, P1, P2, P3, P4, P5) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps7Cats[P0, P1, P2, P3, P4, P5, P6, R](v: (P0, P1, P2, P3, P4, P5, P6) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps8Cats[P0, P1, P2, P3, P4, P5, P6, P7, R](v: (P0, P1, P2, P3, P4, P5, P6, P7) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps9Cats[P0, P1, P2, P3, P4, P5, P6, P7, P8, R](v: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
+  }
+  implicit class DoSomethingOps10Cats[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R](v: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R) {
+    def willBe(a: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
+    def willBe(a: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
   }
 
   implicit def catsEquality[T: Eq]: Equality[T] = new EqToEquality[T]
@@ -60,10 +110,21 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
     def by[F[_], S](stubbing: F[S])(implicit F: Applicative[F], $ev: T <:< S): F[S] = macro DoSomethingMacro.returnedF[T, S]
   }
 
+  object AnsweredF
+  case class AnsweredByF[T]() {
+    def by[F[_], S](stubbing: F[S])(implicit F: Applicative[F], $ev: T <:< S): F[S] = macro DoSomethingMacro.answeredF[T, S]
+  }
+
   object ReturnedFG
   case class ReturnedByFG[T]() {
     def by[F[_], G[_], S](stubbing: F[G[S]])(implicit F: Applicative[F], G: Applicative[G], $ev: T <:< S): F[G[S]] =
       macro DoSomethingMacro.returnedFG[T, S]
+  }
+
+  object AnsweredFG
+  case class AnsweredByFG[T]() {
+    def by[F[_], G[_], S](stubbing: F[G[S]])(implicit F: Applicative[F], G: Applicative[G], $ev: T <:< S): F[G[S]] =
+      macro DoSomethingMacro.answeredFG[T, S]
   }
 
   object Raised

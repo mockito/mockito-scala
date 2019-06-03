@@ -1,6 +1,6 @@
 package org.mockito.cats
 
-import cats.{Applicative, ApplicativeError, Eq}
+import cats.{ Applicative, ApplicativeError, Eq }
 import org.mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Stubber

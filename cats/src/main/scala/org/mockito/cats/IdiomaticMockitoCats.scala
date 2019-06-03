@@ -4,6 +4,8 @@ import cats.{ Applicative, ApplicativeError, Eq }
 import org.mockito._
 import org.scalactic.Equality
 
+import scala.reflect.ClassTag
+
 trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
 
   import org.mockito.cats.IdiomaticMockitoCats._
@@ -17,6 +19,10 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
     def shouldFailWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
     def mustFailWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
     def failsWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
+
+    def shouldAnswerF: AnswerActions[F, T] = macro WhenMacro.shouldAnswer[T]
+    def mustAnswerF: AnswerActions[F, T] = macro WhenMacro.shouldAnswer[T]
+    def answersF: AnswerActions[F, T] = macro WhenMacro.shouldAnswer[T]
   }
 
   implicit class StubbingOps2Cats[F[_], G[_], T](stubbing: F[G[T]]) {
@@ -28,6 +34,10 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
     def shouldFailWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
     def mustFailWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
     def failsWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
+
+    def shouldAnswerFG: AnswerActions2[F, G, T] = macro WhenMacro.shouldAnswer[T]
+    def mustAnswerFG: AnswerActions2[F, G, T] = macro WhenMacro.shouldAnswer[T]
+    def answersFG: AnswerActions2[F, G, T] = macro WhenMacro.shouldAnswer[T]
   }
 
   val returnedF: ReturnedF.type   = ReturnedF
@@ -81,5 +91,77 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
 
   class ThrowActions2[F[_], G[_], T](os: CatsStubbing2[F, G, T]) {
     def apply[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): CatsStubbing2[F, G, T] = os thenFailWith error
+  }
+
+  class AnswerActions[F[_], T](os: CatsStubbing[F, T]) {
+    def apply(f: => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+
+    def apply[P0: ClassTag](f: P0 => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+
+    def apply[P0, P1](f: (P0, P1) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+
+    def apply[P0, P1, P2](f: (P0, P1, P2) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+
+    def apply[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T)(
+        implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(
+        implicit F: Applicative[F]): CatsStubbing[F, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(
+        implicit F: Applicative[F]): CatsStubbing[F, T] =
+      os thenAnswer f
+  }
+
+  class AnswerActions2[F[_], G[_], T](os: CatsStubbing2[F, G, T]) {
+    def apply(f: => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
+
+    def apply[P0: ClassTag](f: P0 => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
+
+    def apply[P0, P1](f: (P0, P1) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
+
+    def apply[P0, P1, P2](f: (P0, P1, P2) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
+
+    def apply[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T)(implicit F: Applicative[F],
+                                                                        G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T)(implicit F: Applicative[F],
+                                                                                G: Applicative[G]): CatsStubbing2[F, G, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T)(implicit F: Applicative[F],
+                                                                                        G: Applicative[G]): CatsStubbing2[F, G, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T)(implicit F: Applicative[F],
+                                                                                                G: Applicative[G]): CatsStubbing2[F, G, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](
+        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+      os thenAnswer f
+
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
+        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+      os thenAnswer f
   }
 }

@@ -19,6 +19,7 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
     def shouldFailWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
     def mustFailWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
     def failsWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
+    def raises: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
 
     def shouldAnswerF: AnswerActions[F, T] = macro WhenMacro.shouldAnswer[T]
     def mustAnswerF: AnswerActions[F, T] = macro WhenMacro.shouldAnswer[T]
@@ -34,6 +35,7 @@ trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
     def shouldFailWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
     def mustFailWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
     def failsWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
+    def raisesG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
 
     def shouldAnswerFG: AnswerActions2[F, G, T] = macro WhenMacro.shouldAnswer[T]
     def mustAnswerFG: AnswerActions2[F, G, T] = macro WhenMacro.shouldAnswer[T]

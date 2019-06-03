@@ -26,7 +26,7 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
     "check the mocks were called with the right arguments" in {
       val foo = mock[Foo]
 
-      foo.bar(*) shouldReturn "mocked"
+      foo.bar(*) returns "mocked"
 
       foo.bar("pepe") shouldBe "mocked"
 
@@ -50,7 +50,7 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
 
       val baz = new Baz
 
-      foo.bar(*) shouldReturn "mocked"
+      foo.bar(*) returns "mocked"
 
       baz.fut(foo).map { r =>
         r shouldBe "mocked"

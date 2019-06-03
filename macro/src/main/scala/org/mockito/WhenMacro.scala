@@ -90,8 +90,8 @@ object WhenMacro {
   }
 
   private val ShouldThrowOptions           = Set("shouldThrow", "mustThrow", "throws")
-  private val FunctionalShouldFailOptions  = Set("shouldFailWith", "mustFailWith", "failsWith")
-  private val FunctionalShouldFailOptions2 = Set("shouldFailWithG", "mustFailWithG", "failsWithG")
+  private val FunctionalShouldFailOptions  = Set("shouldFailWith", "mustFailWith", "failsWith", "raises")
+  private val FunctionalShouldFailOptions2 = Set("shouldFailWithG", "mustFailWithG", "failsWithG", "raisesG")
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 

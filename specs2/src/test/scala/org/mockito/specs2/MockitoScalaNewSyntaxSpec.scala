@@ -361,7 +361,7 @@ The Mockito trait is reusable in other contexts
     val foo        = mock[FooComponent]
     val controller = spy(new TestController(foo))
 
-    foo.getBar(1) shouldReturn 1
+    foo.getBar(1) returns 1
     // controller is a spy. Calling 'test' for real must not re-evaluate
     // the arguments, hence make a mock call, to register matchers
     controller.test(1)
@@ -377,7 +377,7 @@ The Mockito trait is reusable in other contexts
 
   def stubs2 = {
     val list = mock[java.util.List[String]]
-    list.add("one") shouldReturn true andThen false andThen true
+    list.add("one") returns true andThen false andThen true
     (list.add("one"), list.add("one"), list.add("one")) must_== ((true, false, true))
   }
 
@@ -389,7 +389,7 @@ The Mockito trait is reusable in other contexts
 
   def stubs4 = {
     val list = mock[java.util.List[String]]
-    list.contains(beMatching(".*o")) shouldReturn true
+    list.contains(beMatching(".*o")) returns true
     list.contains("o") must_== true
   }
 
@@ -407,14 +407,14 @@ The Mockito trait is reusable in other contexts
 
   def stubs6 = {
     val list = mock[java.util.List[String]]
-    list.contains(Set(1)) shouldReturn true
+    list.contains(Set(1)) returns true
     list.contains(Set(1)) must_== true
     list.contains(Set(2)) must_== false
   }
 
   def stubs7 = {
     val list = mock[java.util.List[String]]
-    list.contains(List(1)) shouldReturn true andThen false
+    list.contains(List(1)) returns true andThen false
     list.contains(List(1)) must_== true
     list.contains(List(1)) must_== false
     list.contains(List(2)) must_== false
@@ -435,7 +435,7 @@ The Mockito trait is reusable in other contexts
 
   def stubs10 = {
     val list = mock[java.util.List[String]]
-    list.contains("o") shouldReturn true
+    list.contains("o") returns true
     list.contains("o") must beTrue
   }
 
@@ -508,8 +508,8 @@ The Mockito trait is reusable in other contexts
   def calls9 = {
     val list33 = mock[java.util.List[String]]
     val list44 = mock[java.util.List[String]]
-    list33.contains("3") shouldReturn false
-    list44.contains("4") shouldReturn false
+    list33.contains("3") returns false
+    list44.contains("4") returns false
 
     list33.add("one")
     list44.add("one"); list44.add("one")
@@ -539,7 +539,7 @@ The Mockito trait is reusable in other contexts
     val list1 = mock[java.util.List[String]]
     val list2 = mock[java.util.List[String]]
 
-    list1.get(1) shouldReturn "1"
+    list1.get(1) returns "1"
 
     // there is an out of order call but to a stubbed method
     list1.get(1)
@@ -736,7 +736,7 @@ The Mockito trait is reusable in other contexts
 
   def mockitoMatchers2 = {
     val m              = mock[M]
-    val shouldReturnOk = m.method(*, *) shouldReturn 1
+    val shouldReturnOk = m.method(*, *) returns 1
 
     m.method(new B, b = true)
     got {

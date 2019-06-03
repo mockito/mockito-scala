@@ -17,6 +17,7 @@ trait IdiomaticMockitoScalaz extends ScalacticSerialisableHack {
     def shouldFailWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
     def mustFailWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
     def failsWith: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
+    def raises: ThrowActions[F, T] = macro WhenMacro.shouldThrow[T]
   }
 
   implicit class StubbingOps2Scalaz[F[_], G[_], T](stubbing: F[G[T]]) {
@@ -28,6 +29,7 @@ trait IdiomaticMockitoScalaz extends ScalacticSerialisableHack {
     def shouldFailWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
     def mustFailWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
     def failsWithG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
+    def raisesG: ThrowActions2[F, G, T] = macro WhenMacro.shouldThrow[T]
   }
 
   val returnedF: ReturnedF.type   = ReturnedF

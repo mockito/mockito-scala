@@ -23,7 +23,7 @@ class IdiomaticMockitoScalazTest
     "stub full applicative" in {
       val aMock = mock[Foo]
 
-      aMock.returnsOptionString(*) shouldReturnF "mocked!"
+      aMock.returnsOptionString(*) returnsF "mocked!"
 
       aMock.returnsOptionString("hello").value shouldBe "mocked!"
     }
@@ -31,7 +31,7 @@ class IdiomaticMockitoScalazTest
     "stub specific applicative" in {
       val aMock = mock[Foo]
 
-      aMock.returnsGenericOption("hello") shouldReturnF "mocked!"
+      aMock.returnsGenericOption("hello") returnsF "mocked!"
 
       aMock.returnsGenericOption("hello").value shouldBe "mocked!"
     }
@@ -39,7 +39,7 @@ class IdiomaticMockitoScalazTest
     "stub generic applicative" in {
       val aMock = mock[Foo]
 
-      aMock.returnsMT[Option, String]("hello") shouldReturnF "mocked!"
+      aMock.returnsMT[Option, String]("hello") returnsF "mocked!"
 
       aMock.returnsMT[Option, String]("hello").value shouldBe "mocked!"
     }
@@ -47,8 +47,8 @@ class IdiomaticMockitoScalazTest
     "stub composed applicative" in {
       val aMock = mock[Foo]
 
-      aMock.returnsFutureEither("hello") shouldReturnFG ValueClass("mocked!")
-      aMock.returnsFutureEither("bye") shouldFailWithG Error("boom")
+      aMock.returnsFutureEither("hello") returnsFG ValueClass("mocked!")
+      aMock.returnsFutureEither("bye") raisesG Error("boom")
 
       whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
       whenReady(aMock.returnsFutureEither("bye"))(_.left.value shouldBe Error("boom"))
@@ -57,13 +57,13 @@ class IdiomaticMockitoScalazTest
     "work with value classes" in {
       val aMock = mock[Foo]
 
-      aMock.returnsMT[Option, ValueClass](ValueClass("hi")) shouldReturnF ValueClass("mocked!")
+      aMock.returnsMT[Option, ValueClass](ValueClass("hi")) returnsF ValueClass("mocked!")
 
       aMock.returnsMT[Option, ValueClass](ValueClass("hi")).value shouldBe ValueClass("mocked!")
     }
 
     "create and stub in one line" in {
-      val aMock: Foo = mock[Foo].returnsOptionString(*) shouldReturnF "mocked!"
+      val aMock: Foo = mock[Foo].returnsOptionString(*) returnsF "mocked!"
 
       aMock.returnsOptionString("hello").value shouldBe "mocked!"
     }
@@ -71,8 +71,8 @@ class IdiomaticMockitoScalazTest
     "raise errors" in {
       val aMock = mock[Foo]
 
-      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")) shouldReturnF ValueClass("mocked!")
-      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")) shouldFailWith Error("error")
+      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")) returnsF ValueClass("mocked!")
+      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")) raises Error("error")
 
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).right.value shouldBe ValueClass("mocked!")
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")).left.value shouldBe Error("error")
@@ -84,9 +84,9 @@ class IdiomaticMockitoScalazTest
       }
       val aMock = mock[Foo]
 
-      aMock.returnsGenericOption(ValueClass("HoLa")) shouldReturnF ValueClass("Mocked!")
-      aMock.shouldI(false) shouldReturn "Mocked!"
-      aMock.shouldI(true) shouldReturn "Mocked again!"
+      aMock.returnsGenericOption(ValueClass("HoLa")) returnsF ValueClass("Mocked!")
+      aMock.shouldI(false) returns "Mocked!"
+      aMock.shouldI(true) returns "Mocked again!"
 
       aMock.returnsGenericOption(ValueClass("HOLA")).value should ===(ValueClass("mocked!"))
       aMock.shouldI(false) shouldBe "Mocked!"
@@ -97,8 +97,8 @@ class IdiomaticMockitoScalazTest
       val aMock            = mock[Foo]
       val unrealisedFuture = Promise[ValueClass]()
 
-      aMock.returnsFuture("bye") shouldFailWith new RuntimeException("Boom") andThen Future.failed(new RuntimeException("Boom2"))
-      aMock.returnsFuture("hello") shouldReturnF ValueClass("mocked!") andThen unrealisedFuture.future
+      aMock.returnsFuture("bye") raises new RuntimeException("Boom") andThen Future.failed(new RuntimeException("Boom2"))
+      aMock.returnsFuture("hello") returnsF ValueClass("mocked!") andThen unrealisedFuture.future
 
       whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
       whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom2")
@@ -111,8 +111,8 @@ class IdiomaticMockitoScalazTest
     "work with futures" in {
       val aMock = mock[Foo]
 
-      aMock.returnsFuture("bye") shouldFailWith new RuntimeException("Boom")
-      aMock.returnsFuture("hello") shouldReturnF ValueClass("mocked!")
+      aMock.returnsFuture("bye") raises new RuntimeException("Boom")
+      aMock.returnsFuture("hello") returnsF ValueClass("mocked!")
 
       whenReady(aMock.returnsFuture("bye").failed)(_.getMessage shouldBe "Boom")
       whenReady(aMock.returnsFuture("hello"))(_ shouldBe ValueClass("mocked!"))
@@ -121,8 +121,8 @@ class IdiomaticMockitoScalazTest
     "work with EitherT" in {
       val aMock = mock[Foo]
 
-      aMock.returnsEitherT("bye") shouldFailWith Error("error")
-      aMock.returnsEitherT("hello") shouldReturnF ValueClass("mocked!")
+      aMock.returnsEitherT("bye") raises Error("error")
+      aMock.returnsEitherT("hello") returnsF ValueClass("mocked!")
 
       whenReady(aMock.returnsEitherT("bye").run)(_.toEither.left.value shouldBe Error("error"))
       whenReady(aMock.returnsEitherT("hello").run)(_.toEither.right.value shouldBe ValueClass("mocked!"))
@@ -131,7 +131,7 @@ class IdiomaticMockitoScalazTest
     "work with OptionT" in {
       val aMock = mock[Foo]
 
-      aMock.returnsOptionT("hello") shouldReturnF ValueClass("mocked!")
+      aMock.returnsOptionT("hello") returnsF ValueClass("mocked!")
 
       aMock.returnsOptionT("hello").run.head.value shouldBe ValueClass("mocked!")
     }

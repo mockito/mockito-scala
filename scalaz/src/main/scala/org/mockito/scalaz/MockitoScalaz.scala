@@ -47,7 +47,7 @@ trait MockitoScalaz extends ScalacticSerialisableHack {
         case _               => _l
       }
     }).andThen(Applicative[F].pure(_)))
-  def doAnswerF[F[_]: Applicative, P0: ClassTag, R](f: P0 => R): Stubber = clazz[P0] match {
+  def doAnswerF[F[_]: Applicative, P0, R](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber = clazz[P0] match {
     case c if c == classOf[InvocationOnMock] =>
       Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])).andThen(Applicative[F].pure(_)))
     case _ =>
@@ -84,12 +84,13 @@ trait MockitoScalaz extends ScalacticSerialisableHack {
         case _               => _l
       }
     }).andThen(Applicative[F].compose[G].pure(_)))
-  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0: ClassTag, R](f: P0 => R): Stubber = clazz[P0] match {
-    case c if c == classOf[InvocationOnMock] =>
-      Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])).andThen(Applicative[F].compose[G].pure(_)))
-    case _ =>
-      Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure(_)))
-  }
+  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, R](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber =
+    clazz[P0] match {
+      case c if c == classOf[InvocationOnMock] =>
+        Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])).andThen(Applicative[F].compose[G].pure(_)))
+      case _ =>
+        Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure(_)))
+    }
   def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, R](f: (P0, P1) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure(_)))
   def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, R](f: (P0, P1, P2) => R): Stubber =

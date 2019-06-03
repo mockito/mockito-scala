@@ -14,10 +14,11 @@ case class CatsStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
   def andThen(value: F[T]): CatsStubbing[F, T]                             = delegate thenReturn value
 
   def thenAnswer(f: => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = delegate thenAnswer invocationToAnswer(_ => f).andThen(F.pure)
-  def thenAnswer[P0: ClassTag](f: P0 => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = clazz[P0] match {
-    case c if c == classOf[InvocationOnMock] => delegate thenAnswer invocationToAnswer(i => f(i.asInstanceOf[P0])).andThen(F.pure)
-    case _                                   => delegate thenAnswer functionToAnswer(f).andThen(F.pure)
-  }
+  def thenAnswer[P0](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0], F: Applicative[F]): CatsStubbing[F, T] =
+    clazz[P0] match {
+      case c if c == classOf[InvocationOnMock] => delegate thenAnswer invocationToAnswer(i => f(i.asInstanceOf[P0])).andThen(F.pure)
+      case _                                   => delegate thenAnswer functionToAnswer(f).andThen(F.pure)
+    }
   def thenAnswer[P0, P1](f: (P0, P1) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] =
     delegate thenAnswer functionToAnswer(f).andThen(F.pure)
   def thenAnswer[P0, P1, P2](f: (P0, P1, P2) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] =
@@ -64,11 +65,13 @@ case class CatsStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
 
   def thenAnswer(f: => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
     delegate thenAnswer invocationToAnswer(_ => f).andThen(F.compose[G].pure)
-  def thenAnswer[P0: ClassTag](f: P0 => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = clazz[P0] match {
-    case c if c == classOf[InvocationOnMock] =>
-      delegate thenAnswer invocationToAnswer(i => f(i.asInstanceOf[P0])).andThen(F.compose[G].pure)
-    case _ => delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure)
-  }
+  def thenAnswer[P0](
+      f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0], F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+    clazz[P0] match {
+      case c if c == classOf[InvocationOnMock] =>
+        delegate thenAnswer invocationToAnswer(i => f(i.asInstanceOf[P0])).andThen(F.compose[G].pure)
+      case _ => delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure)
+    }
   def thenAnswer[P0, P1](f: (P0, P1) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
     delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure)
   def thenAnswer[P0, P1, P2](f: (P0, P1, P2) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =

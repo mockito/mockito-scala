@@ -85,8 +85,10 @@ lazy val specs2 = (project in file("specs2"))
     name := "mockito-scala-specs2",
     commonSettings,
     publishSettings,
-    libraryDependencies += "org.specs2"   %% "specs2-core"  % "4.5.1" % "provided",
-    libraryDependencies += "org.hamcrest" % "hamcrest-core" % "1.3"   % "provided",
+    libraryDependencies ++= Seq(
+      "org.specs2"   %% "specs2-core"  % "4.5.1" % "provided",
+      "org.hamcrest" % "hamcrest-core" % "1.3"   % "provided"
+    )
   )
 
 lazy val cats = (project in file("cats"))

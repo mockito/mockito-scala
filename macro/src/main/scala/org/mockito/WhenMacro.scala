@@ -130,7 +130,8 @@ object WhenMacro {
   class AnswerActions[T](os: ScalaFirstStubbing[T]) {
     def apply(f: => T): ScalaOngoingStubbing[T] = os thenAnswer f
 
-    def apply[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T] = os thenAnswer f
+    def apply[P0](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): ScalaOngoingStubbing[T] =
+      os thenAnswer f
 
     def apply[P0, P1](f: (P0, P1) => T): ScalaOngoingStubbing[T] = os thenAnswer f
 

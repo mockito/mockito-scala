@@ -159,7 +159,8 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
   class AnswerActions[F[_], T](os: CatsStubbing[F, T]) {
     def apply(f: => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
 
-    def apply[P0: ClassTag](f: P0 => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+    def apply[P0](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0], F: Applicative[F]): CatsStubbing[F, T] =
+      os thenAnswer f
 
     def apply[P0, P1](f: (P0, P1) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
 
@@ -192,7 +193,9 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
   class AnswerActions2[F[_], G[_], T](os: CatsStubbing2[F, G, T]) {
     def apply(f: => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
 
-    def apply[P0: ClassTag](f: P0 => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
+    def apply[P0](
+        f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0], F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+      os thenAnswer f
 
     def apply[P0, P1](f: (P0, P1) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
 

@@ -10,7 +10,7 @@ class AsyncIdiomaticMockitoTest_213 extends AsyncWordSpec with Matchers with Asy
   "AsyncMockito" should {
     "work with specialised methods" in {
       val mockFunction = mock[() => Int]
-      mockFunction() shouldReturn 42
+      mockFunction() returns 42
 
       Future(mockFunction.apply())
         .map { v =>

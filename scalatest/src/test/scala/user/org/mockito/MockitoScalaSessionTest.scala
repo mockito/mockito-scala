@@ -79,7 +79,7 @@ class MockitoScalaSessionTest
 
           aFoo.bar(*).isLenient()
 
-          aFoo.bar("pepe") shouldReturn "mocked"
+          aFoo.bar("pepe") returns "mocked"
         }
       }
 
@@ -87,7 +87,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = foo()
 
-          aFoo.bar("pepe") shouldReturn "mocked"
+          aFoo.bar("pepe") returns "mocked"
 
           aFoo.bar(*).isLenient()
         }
@@ -98,7 +98,7 @@ class MockitoScalaSessionTest
           MockitoScalaSession().run {
             val aFoo = foo()
 
-            aFoo.bar(*) shouldReturn "mocked"
+            aFoo.bar(*) returns "mocked"
           }
         }
       }
@@ -108,7 +108,7 @@ class MockitoScalaSessionTest
           MockitoScalaSession().run {
             val aFoo = foo()
 
-            aFoo.bar("pepe") shouldReturn "mocked"
+            aFoo.bar("pepe") returns "mocked"
 
             aFoo.bar("paco").toLowerCase
           }
@@ -120,7 +120,7 @@ class MockitoScalaSessionTest
           MockitoScalaSession().run {
             val aFoo = foo()
 
-            aFoo.bar("pepe") shouldReturn "mocked"
+            aFoo.bar("pepe") returns "mocked"
 
             aFoo.bar("pepe")
 
@@ -158,7 +158,7 @@ class MockitoScalaSessionTest
           MockitoScalaSession().run {
             val aFoo = foo()
 
-            aFoo.baz("pepe") shouldReturn "mocked"
+            aFoo.baz("pepe") returns "mocked"
 
             aFoo.baz().toLowerCase
           }
@@ -169,7 +169,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = foo()
 
-          aFoo.baz() shouldReturn "mocked"
+          aFoo.baz() returns "mocked"
 
           aFoo.baz() shouldBe "mocked"
         }
@@ -179,7 +179,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = foo()
 
-          aFoo.baz("papa") shouldReturn "mocked"
+          aFoo.baz("papa") returns "mocked"
 
           aFoo.baz("papa") shouldBe "mocked"
         }
@@ -189,7 +189,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = foo()
 
-          aFoo.baz("default") shouldReturn "mocked"
+          aFoo.baz("default") returns "mocked"
 
           aFoo.baz() shouldBe "mocked"
         }
@@ -199,7 +199,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = parametrisedFoo(withSettings.lenient())
 
-          aFoo.bar("pepe") shouldReturn "mocked"
+          aFoo.bar("pepe") returns "mocked"
 
           aFoo.bar("pepe")
 
@@ -212,7 +212,7 @@ class MockitoScalaSessionTest
           MockitoScalaSession().run {
             val aFoo = foo()
 
-            aFoo.bar("pepe") shouldReturn "mocked"
+            aFoo.bar("pepe") returns "mocked"
 
             aFoo.bar("pepe")
 
@@ -225,7 +225,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession(strictness = Strictness.LENIENT).run {
           val aFoo = foo()
 
-          aFoo.bar("pepe") shouldReturn "mocked"
+          aFoo.bar("pepe") returns "mocked"
 
           aFoo.bar("pepe")
 
@@ -237,7 +237,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = parametrisedFoo(withSettings.lenient())
 
-          aFoo.bar("pepe") shouldReturn "mocked"
+          aFoo.bar("pepe") returns "mocked"
         }
       }
 
@@ -245,7 +245,7 @@ class MockitoScalaSessionTest
         intercept[UnnecessaryStubbingException] {
           MockitoScalaSession().run {
             val aFoo = foo()
-            aFoo.bar("pepe") shouldReturn "mocked"
+            aFoo.bar("pepe") returns "mocked"
           }
         }
       }
@@ -253,7 +253,7 @@ class MockitoScalaSessionTest
       "don't check unused stubs in lenient setting" in {
         MockitoScalaSession(strictness = Strictness.LENIENT).run {
           val aFoo = foo()
-          aFoo.bar("pepe") shouldReturn "mocked"
+          aFoo.bar("pepe") returns "mocked"
         }
       }
 
@@ -261,7 +261,7 @@ class MockitoScalaSessionTest
         intercept[UnnecessaryStubbingException] {
           MockitoScalaSession(strictness = Strictness.STRICT_STUBS).run {
             val aFoo = foo()
-            aFoo.bar("pepe") shouldReturn "mocked"
+            aFoo.bar("pepe") returns "mocked"
           }
         }
       }
@@ -289,7 +289,7 @@ class MockitoScalaSessionTest
       MockitoScalaSession().run {
         val aFoo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
-        aFoo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
+        aFoo.userClass.callMeMaybe.callMe returns Some("my number")
 
         aFoo.userClass.callMeMaybe.callMe.value shouldBe "my number"
       }
@@ -299,7 +299,7 @@ class MockitoScalaSessionTest
       MockitoScalaSession().run {
         val aFoo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
-        aFoo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
+        aFoo.userClass.callMeMaybe.callMe returns Some("my number")
 
         aFoo.userClass.callMeMaybe.callMe.value shouldBe "my number"
 
@@ -312,7 +312,7 @@ class MockitoScalaSessionTest
       MockitoScalaSession().run {
         val aFoo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
-        aFoo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
+        aFoo.userClass.callMeMaybe.callMe returns Some("my number")
 
         aFoo.userClass.callMeMaybe.callMe.value shouldBe "my number"
 
@@ -326,7 +326,7 @@ class MockitoScalaSessionTest
         MockitoScalaSession().run {
           val aFoo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
-          aFoo.userClass.callMeMaybe.callMe shouldReturn Some("my number")
+          aFoo.userClass.callMeMaybe.callMe returns Some("my number")
 
         }
       }

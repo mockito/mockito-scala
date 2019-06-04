@@ -1,4 +1,5 @@
-package org.mockito.stubbing
+package org.mockito
+package stubbing
 
 import org.mockito.internal.ValueClassExtractor
 
@@ -102,8 +103,9 @@ case class ScalaOngoingStubbing[T: ValueClassExtractor](delegate: OngoingStubbin
    */
   def andThenCallRealMethod(): ScalaOngoingStubbing[T] = _thenCallRealMethod()
 
-  def andThenAnswer(f: => T): ScalaOngoingStubbing[T]                                                                  = _thenAnswer(f)
-  def andThenAnswer[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T]                                                 = _thenAnswer(f)
+  def andThenAnswer(f: => T): ScalaOngoingStubbing[T] = _thenAnswer(f)
+  def andThenAnswer[P0](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): ScalaOngoingStubbing[T] =
+    _thenAnswer(f)
   def andThenAnswer[P0, P1](f: (P0, P1) => T): ScalaOngoingStubbing[T]                                                 = _thenAnswer(f)
   def andThenAnswer[P0, P1, P2](f: (P0, P1, P2) => T): ScalaOngoingStubbing[T]                                         = _thenAnswer(f)
   def andThenAnswer[P0, P1, P2, P3](f: (P0, P1, P2, P3) => T): ScalaOngoingStubbing[T]                                 = _thenAnswer(f)

@@ -90,8 +90,8 @@ object WhenMacro {
   }
 
   private val ShouldThrowOptions           = Set("shouldThrow", "mustThrow", "throws")
-  private val FunctionalShouldFailOptions  = Set("shouldFailWith", "mustFailWith", "failsWith")
-  private val FunctionalShouldFailOptions2 = Set("shouldFailWithG", "mustFailWithG", "failsWithG")
+  private val FunctionalShouldFailOptions  = Set("shouldFailWith", "mustFailWith", "failsWith", "raises")
+  private val FunctionalShouldFailOptions2 = Set("shouldFailWithG", "mustFailWithG", "failsWithG", "raisesG")
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
@@ -130,7 +130,8 @@ object WhenMacro {
   class AnswerActions[T](os: ScalaFirstStubbing[T]) {
     def apply(f: => T): ScalaOngoingStubbing[T] = os thenAnswer f
 
-    def apply[P0: ClassTag](f: P0 => T): ScalaOngoingStubbing[T] = os thenAnswer f
+    def apply[P0](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): ScalaOngoingStubbing[T] =
+      os thenAnswer f
 
     def apply[P0, P1](f: (P0, P1) => T): ScalaOngoingStubbing[T] = os thenAnswer f
 
@@ -155,23 +156,41 @@ object WhenMacro {
       os thenAnswer f
   }
 
-  val ShouldAnswerOptions = Set("shouldAnswer", "mustAnswer", "answers")
-  def shouldAnswer[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[AnswerActions[T]] = {
+  private val ShouldAnswerOptions            = Set("shouldAnswer", "mustAnswer", "answers")
+  private val FunctionalShouldAnswerOptions  = ShouldAnswerOptions.map(_ + "F")
+  private val FunctionalShouldAnswerOptions2 = ShouldAnswerOptions.map(_ + "FG")
+  def shouldAnswer[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
-    val r = c.Expr[AnswerActions[T]] {
-      c.macroApplication match {
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldAnswerOptions.contains(m.toString) =>
-          val newArgs = args.map(a => transformArgs(c)(a))
-          q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
+    val r = c.macroApplication match {
+      case q"$_.StubbingOps[$t]($obj.$method[..$targs](...$args)).$m" if ShouldAnswerOptions.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs](...$newArgs)))"
 
-        case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldAnswerOptions.contains(m.toString) =>
-          q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
+      case q"$_.StubbingOps[$t]($obj.$method[..$targs]).$m" if ShouldAnswerOptions.contains(m.toString) =>
+        q"new _root_.org.mockito.WhenMacro.AnswerActions(_root_.org.mockito.Mockito.when[$t]($obj.$method[..$targs]))"
 
-        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
-      }
+      case q"$_.$cls[..$_]($obj.$method[..$targs](...$args)).$m"
+          if cls.toString.startsWith("StubbingOps") && FunctionalShouldAnswerOptions.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "IdiomaticMockito")}.AnswerActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs](...$newArgs)))"
+
+      case q"$_.$cls[..$_]($obj.$method[..$targs]).$m"
+          if cls.toString.startsWith("StubbingOps") && FunctionalShouldAnswerOptions.contains(m.toString) =>
+        q"new _root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "IdiomaticMockito")}.AnswerActions(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
+
+      case q"$_.$cls[..$_]($obj.$method[..$targs](...$args)).$m"
+          if cls.toString.startsWith("StubbingOps2") && FunctionalShouldAnswerOptions2.contains(m.toString) =>
+        val newArgs = args.map(a => transformArgs(c)(a))
+        q"new _root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "IdiomaticMockito")}.AnswerActions2(_root_.org.mockito.Mockito.when($obj.$method[..$targs](...$newArgs)))"
+
+      case q"$_.$cls[..$_]($obj.$method[..$targs]).$m"
+          if cls.toString.startsWith("StubbingOps2") && FunctionalShouldAnswerOptions2.contains(m.toString) =>
+        q"new _root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "IdiomaticMockito")}.AnswerActions2(_root_.org.mockito.Mockito.when($obj.$method[..$targs]))"
+
+      case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r.tree))
+    if (c.settings.contains("mockito-print-when")) println(show(r))
     r
   }
 }

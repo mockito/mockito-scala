@@ -17,7 +17,7 @@ class IdiomaticMockitoTest extends WordSpec with IdiomaticMockito with Matchers 
     "check the mocks were called with the right arguments" in {
       val foo = mock[Foo]
 
-      foo.bar(*) shouldReturn "mocked"
+      foo.bar(*) returns "mocked"
 
       foo.bar("pepe") shouldBe "mocked"
 

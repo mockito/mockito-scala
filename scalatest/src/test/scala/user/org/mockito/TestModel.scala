@@ -3,7 +3,7 @@ import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
 
 import scala.annotation.varargs
 
-class FooTrait {
+trait FooTrait {
   def bar = "not mocked"
 
   def iHaveByNameArgs(normal: String, byName: => String, byName2: => String): String = "not mocked"

@@ -36,7 +36,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "stub a return value" in {
         val org = orgDouble()
 
-        org.bar shouldReturn "mocked!"
+        org.bar returns "mocked!"
 
         org.bar shouldBe "mocked!"
       }
@@ -44,7 +44,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "stub a value class return value" in {
         val org = orgDouble()
 
-        org.returnsValueCaseClass shouldReturn ValueCaseClass(100) andThen ValueCaseClass(200)
+        org.returnsValueCaseClass returns ValueCaseClass(100) andThen ValueCaseClass(200)
 
         org.returnsValueCaseClass shouldBe ValueCaseClass(100)
         org.returnsValueCaseClass shouldBe ValueCaseClass(200)
@@ -53,7 +53,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "stub multiple return values" in {
         val org = orgDouble()
 
-        org.bar shouldReturn "mocked!" andThen "mocked again!"
+        org.bar returns "mocked!" andThen "mocked again!"
 
         org.bar shouldBe "mocked!"
         org.bar shouldBe "mocked again!"
@@ -63,7 +63,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "stub an exception instance to be thrown" in {
         val org = orgDouble()
 
-        org.bar shouldThrow new IllegalArgumentException
+        org.bar throws new IllegalArgumentException
 
         an[IllegalArgumentException] shouldBe thrownBy(org.bar)
       }
@@ -71,7 +71,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "chain exception and value" in {
         val org = orgDouble()
 
-        org.bar shouldThrow new IllegalArgumentException andThen "mocked!"
+        org.bar throws new IllegalArgumentException andThen "mocked!"
 
         an[IllegalArgumentException] shouldBe thrownBy(org.bar)
         org.bar shouldBe "mocked!"
@@ -80,7 +80,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "chain value and exception" in {
         val org = orgDouble()
 
-        org.bar shouldReturn "mocked!" andThenThrow new IllegalArgumentException
+        org.bar returns "mocked!" andThenThrow new IllegalArgumentException
 
         org.bar shouldBe "mocked!"
         an[IllegalArgumentException] shouldBe thrownBy(org.bar)
@@ -91,7 +91,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         val org = orgDouble()
 
         val counter = new AtomicInteger(1)
-        org.bar shouldAnswer counter.getAndIncrement().toString
+        org.bar answers counter.getAndIncrement().toString
 
         counter.get shouldBe 1
         org.bar shouldBe "1"
@@ -102,11 +102,11 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "simplify answer API" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2)
-        org.doSomethingWithThisIntAndString(*, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
-        org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int,
-                                                                              s: String,
-                                                                              boolean: Boolean) => (i * 10 + s.toInt).toString + boolean)
+        org.doSomethingWithThisInt(*) answers ((i: Int) => i * 10 + 2)
+        org.doSomethingWithThisIntAndString(*, *) answers ((i: Int, s: String) => (i * 10 + s.toInt).toString)
+        org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) answers ((i: Int,
+                                                                         s: String,
+                                                                         boolean: Boolean) => (i * 10 + s.toInt).toString + boolean)
 
         org.doSomethingWithThisInt(4) shouldBe 42
         org.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
@@ -116,7 +116,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "create a mock where I can mix matchers and normal parameters (answer)" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisIntAndString(*, "test") shouldAnswer "mocked!"
+        org.doSomethingWithThisIntAndString(*, "test") answers "mocked!"
 
         org.doSomethingWithThisIntAndString(3, "test") shouldBe "mocked!"
         org.doSomethingWithThisIntAndString(5, "test") shouldBe "mocked!"
@@ -126,7 +126,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "simplify answer API (invocation usage)" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2)
+        org.doSomethingWithThisInt(*) answers ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2)
 
         org.doSomethingWithThisInt(4) shouldBe 42
       }
@@ -134,7 +134,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "chain answers" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisInt(*) shouldAnswer ((i: Int) => i * 10 + 2) andThenAnswer ((i: Int) => i * 15 + 9)
+        org.doSomethingWithThisInt(*) answers ((i: Int) => i * 10 + 2) andThenAnswer ((i: Int) => i * 15 + 9)
 
         org.doSomethingWithThisInt(4) shouldBe 42
         org.doSomethingWithThisInt(4) shouldBe 69
@@ -143,7 +143,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "chain answers (invocation usage)" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisInt(*) shouldAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2) andThenAnswer (
+        org.doSomethingWithThisInt(*) answers ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2) andThenAnswer (
             (i: InvocationOnMock) => i.getArgument[Int](0) * 15 + 9)
 
         org.doSomethingWithThisInt(4) shouldBe 42
@@ -153,7 +153,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "allow using less params than method on answer stubbing" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) shouldAnswer ((i: Int, s: String) => (i * 10 + s.toInt).toString)
+        org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) answers ((i: Int, s: String) => (i * 10 + s.toInt).toString)
 
         org.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42"
       }
@@ -161,7 +161,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "stub a mock inline that has default args" in {
         val aMock = orgDouble()
 
-        aMock.returnBar shouldReturn mock[Bar] andThen mock[Bar]
+        aMock.returnBar returns mock[Bar] andThen mock[Bar]
 
         aMock.returnBar shouldBe a[Bar]
         aMock.returnBar shouldBe a[Bar]
@@ -170,7 +170,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "stub a high order function" in {
         val org = orgDouble()
 
-        org.highOrderFunction(*) shouldReturn "mocked!"
+        org.highOrderFunction(*) returns "mocked!"
 
         org.highOrderFunction(_.toString) shouldBe "mocked!"
       }
@@ -413,7 +413,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "check a mock was not called apart from the verified methods and stubbed" in {
         val org = orgDouble()
 
-        org.baz shouldReturn "hola"
+        org.baz returns "hola"
         org.baz
 
         org.bar
@@ -527,7 +527,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         val org                                   = orgDouble()
         implicit val implicitValue: Implicit[Int] = mock[Implicit[Int]]
 
-        org.iHaveTypeParamsAndImplicits[Int, String](*, "test") shouldReturn "mocked!"
+        org.iHaveTypeParamsAndImplicits[Int, String](*, "test") returns "mocked!"
 
         org.iHaveTypeParamsAndImplicits(3, "test") shouldBe "mocked!"
         org.iHaveTypeParamsAndImplicits(5, "test") shouldBe "mocked!"
@@ -539,7 +539,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "handle the eqTo properly" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisIntAndString(eqTo(1), "meh") shouldReturn "mocked!"
+        org.doSomethingWithThisIntAndString(eqTo(1), "meh") returns "mocked!"
         org.doSomethingWithThisIntAndString(1, "meh") shouldBe "mocked!"
         org.doSomethingWithThisIntAndString(1, eqTo("meh")) was called
       }
@@ -621,20 +621,20 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "eqToVal works with new syntax" in {
         val org = orgDouble()
 
-        org.valueClass(1, eqToVal(new ValueClass("meh"))) shouldReturn "mocked!"
+        org.valueClass(1, eqToVal(new ValueClass("meh"))) returns "mocked!"
         org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
         org.valueClass(1, eqToVal(new ValueClass("meh"))) was called
 
-        org.valueCaseClass(2, eqToVal(ValueCaseClass(100))) shouldReturn "mocked!"
+        org.valueCaseClass(2, eqToVal(ValueCaseClass(100))) returns "mocked!"
         org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
         org.valueCaseClass(2, eqToVal(ValueCaseClass(100))) was called
 
         val caseClassValue = ValueCaseClass(100)
-        org.valueCaseClass(3, eqToVal(caseClassValue)) shouldReturn "mocked!"
+        org.valueCaseClass(3, eqToVal(caseClassValue)) returns "mocked!"
         org.valueCaseClass(3, ValueCaseClass(100)) shouldBe "mocked!"
         org.valueCaseClass(3, eqToVal(caseClassValue)) was called
 
-        org.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
+        org.valueCaseClass(*, ValueCaseClass(200)) returns "mocked!"
         org.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
         org.valueCaseClass(*, ValueCaseClass(200)) was called
       }
@@ -642,20 +642,20 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "eqTo macro works with new syntax" in {
         val org = orgDouble()
 
-        org.valueClass(1, eqTo(new ValueClass("meh"))) shouldReturn "mocked!"
+        org.valueClass(1, eqTo(new ValueClass("meh"))) returns "mocked!"
         org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
         org.valueClass(1, eqTo(new ValueClass("meh"))) was called
 
-        org.valueCaseClass(2, eqTo(ValueCaseClass(100))) shouldReturn "mocked!"
+        org.valueCaseClass(2, eqTo(ValueCaseClass(100))) returns "mocked!"
         org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
         org.valueCaseClass(2, eqTo(ValueCaseClass(100))) was called
 
         val caseClassValue = ValueCaseClass(100)
-        org.valueCaseClass(3, eqTo(caseClassValue)) shouldReturn "mocked!"
+        org.valueCaseClass(3, eqTo(caseClassValue)) returns "mocked!"
         org.valueCaseClass(3, caseClassValue) shouldBe "mocked!"
         org.valueCaseClass(3, eqTo(caseClassValue)) was called
 
-        org.valueCaseClass(*, ValueCaseClass(200)) shouldReturn "mocked!"
+        org.valueCaseClass(*, ValueCaseClass(200)) returns "mocked!"
         org.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
         org.valueCaseClass(*, ValueCaseClass(200)) was called
       }
@@ -663,7 +663,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "argMatching works with new syntax" in {
         val org = orgDouble()
 
-        org.baz(2, argMatching({ case Baz2(n, _) if n > 90 => })) shouldReturn "mocked!"
+        org.baz(2, argMatching({ case Baz2(n, _) if n > 90 => })) returns "mocked!"
         org.baz(2, Baz2(100, "pepe")) shouldBe "mocked!"
         org.baz(2, argMatching({ case Baz2(_, "pepe") => })) was called
 
@@ -675,11 +675,11 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "anyVal works with new syntax" in {
         val org = orgDouble()
 
-        org.valueClass(1, anyVal[ValueClass]) shouldReturn "mocked!"
+        org.valueClass(1, anyVal[ValueClass]) returns "mocked!"
         org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
         org.valueClass(1, anyVal[ValueClass]) was called
 
-        org.valueCaseClass(2, anyVal[ValueCaseClass]) shouldReturn "mocked!"
+        org.valueCaseClass(2, anyVal[ValueCaseClass]) returns "mocked!"
         org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
         org.valueCaseClass(2, anyVal[ValueCaseClass]) was called
       }
@@ -687,11 +687,11 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "any works with new syntax" in {
         val org = orgDouble()
 
-        org.valueClass(1, any[ValueClass]) shouldReturn "mocked!"
+        org.valueClass(1, any[ValueClass]) returns "mocked!"
         org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
         org.valueClass(1, any[ValueClass]) was called
 
-        org.valueCaseClass(2, any[ValueCaseClass]) shouldReturn "mocked!"
+        org.valueCaseClass(2, any[ValueCaseClass]) returns "mocked!"
         org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
         org.valueCaseClass(2, any[ValueCaseClass]) was called
       }
@@ -724,7 +724,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "work with by-name arguments" in {
         val aMock = foo()
 
-        aMock.iStartWithByNameArgs("arg1", "arg2") shouldReturn "mocked!"
+        aMock.iStartWithByNameArgs("arg1", "arg2") returns "mocked!"
 
         aMock.iStartWithByNameArgs("arg1", "arg2") shouldBe "mocked!"
         aMock.iStartWithByNameArgs("arg111", "arg2") should not be "mocked!"
@@ -736,7 +736,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "work with primitive by-name arguments" in {
         val aMock = foo()
 
-        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldReturn "mocked!"
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") returns "mocked!"
 
         aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
         aMock.iHavePrimitiveByNameArgs(2, "arg2") should not be "mocked!"
@@ -748,7 +748,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "work mixed by-name, normal and vararg arguments" in {
         val aMock = foo()
 
-        aMock.iHaveByNameAndVarArgs("arg1", "arg2", "arg3", "arg4", "vararg1", "vararg2")("arg5", "arg6", "vararg3", "vararg4") shouldReturn "mocked!"
+        aMock.iHaveByNameAndVarArgs("arg1", "arg2", "arg3", "arg4", "vararg1", "vararg2")("arg5", "arg6", "vararg3", "vararg4") returns "mocked!"
 
         aMock.iHaveByNameAndVarArgs("arg1", "arg2", "arg3", "arg4", "vararg1", "vararg2")("arg5", "arg6", "vararg3", "vararg4") shouldBe "mocked!"
         aMock.iHaveByNameAndVarArgs("arg2", "arg2", "arg3", "arg4", "vararg1", "vararg2")("arg5", "arg6", "vararg3", "vararg4") should not be "mocked!"
@@ -764,7 +764,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "work with Function0 arguments" in {
         val aMock = foo()
 
-        aMock.iHaveFunction0Args(eqTo("arg1"), function0("arg2")) shouldReturn "mocked!"
+        aMock.iHaveFunction0Args(eqTo("arg1"), function0("arg2")) returns "mocked!"
 
         aMock.iHaveFunction0Args("arg1", () => "arg2") shouldBe "mocked!"
         aMock.iHaveFunction0Args("arg1", () => "arg3") should not be "mocked!"
@@ -776,8 +776,8 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "reset" in {
         val aMock = foo()
 
-        aMock.bar shouldReturn "mocked!"
-        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldReturn "mocked!"
+        aMock.bar returns "mocked!"
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") returns "mocked!"
 
         aMock.bar shouldBe "mocked!"
         aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
@@ -788,7 +788,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         aMock.iHavePrimitiveByNameArgs(1, "arg2") should not be "mocked!"
 
         //to verify the reset mock handler still handles by-name params
-        aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldReturn "mocked!"
+        aMock.iHavePrimitiveByNameArgs(1, "arg2") returns "mocked!"
 
         aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"
       }
@@ -803,7 +803,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
     "be serialisable" in {
       val list = mock[java.util.List[String]](withSettings.name("list1").serializable())
-      list.get(3) shouldReturn "mocked"
+      list.get(3) returns "mocked"
       list.get(3) shouldBe "mocked"
 
       val file = File.createTempFile("mock", "tmp")
@@ -817,7 +817,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
     "work with java varargs" in {
       val aMock = mock[JavaFoo]
 
-      aMock.varargMethod(1, 2, 3) shouldReturn 42
+      aMock.varargMethod(1, 2, 3) returns 42
 
       aMock.varargMethod(1, 2, 3) shouldBe 42
 
@@ -839,7 +839,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       val org        = mock[Org]
       val controller = spy(new TestController(org))
 
-      org.doSomethingWithThisInt(1) shouldReturn 1
+      org.doSomethingWithThisInt(1) returns 1
       // controller is a spy. Calling 'test' for real must not re-evaluate
       // the arguments, hence make a mock call, to register matchers
       controller.test(1)
@@ -852,7 +852,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       val aSpy = spy(new Org)
 
       an[IllegalArgumentException] should be thrownBy {
-        aSpy.iBlowUp(*, *) shouldReturn "mocked!"
+        aSpy.iBlowUp(*, *) returns "mocked!"
       }
 
       "mocked!" willBe returned by aSpy.iBlowUp(*, "ok")

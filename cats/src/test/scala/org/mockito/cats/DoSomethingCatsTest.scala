@@ -1,6 +1,7 @@
 package org.mockito.cats
 
 import cats.implicits._
+import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
@@ -96,6 +97,37 @@ class DoSomethingCatsTest
       ValueClass("mocked!") willBe returnedF by aMock.returnsOptionT("hello")
 
       aMock.returnsOptionT("hello").value.head.value shouldBe ValueClass("mocked!")
+    }
+  }
+
+  "willBe answeredF by" should {
+    "stub single applicative" in {
+      val aMock = mock[Foo]
+
+      "mocked!" willBe answeredF by aMock.returnsOptionString("hello")
+      ((s: String) => s + " mocked!") willBe answeredF by aMock.returnsOptionString("hi")
+      ((i: InvocationOnMock) => i.getArgument[String](0) + " invocation mocked!") willBe answeredF by aMock.returnsOptionString("hola")
+      ((i: Int, b: Boolean) => s"$i, $b") willBe answeredF by aMock.returnsOptionFrom(42, true)
+
+      aMock.returnsOptionString("hello").value shouldBe "mocked!"
+      aMock.returnsOptionString("hi").value shouldBe "hi mocked!"
+      aMock.returnsOptionString("hola").value shouldBe "hola invocation mocked!"
+      aMock.returnsOptionFrom(42, true).value shouldBe "42, true"
+    }
+
+    "stub composed applicative" in {
+      val aMock = mock[Foo]
+
+      ValueClass("mocked!") willBe answeredFG by aMock.returnsFutureEither("hello")
+      ((s: String) => ValueClass(s + " mocked!")) willBe answeredFG by aMock.returnsFutureEither("hi")
+      ((i: InvocationOnMock) => ValueClass(i.getArgument[String](0) + " invocation mocked!")) willBe answeredFG by aMock
+        .returnsFutureEither("hola")
+      ((i: Int, b: Boolean) => s"$i, $b") willBe answeredFG by aMock.returnsFutureOptionFrom(42, true)
+
+      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("hi"))(_.right.value shouldBe ValueClass("hi mocked!"))
+      whenReady(aMock.returnsFutureEither("hola"))(_.right.value shouldBe ValueClass("hola invocation mocked!"))
+      whenReady(aMock.returnsFutureOptionFrom(42, true))(_.value shouldBe "42, true")
     }
   }
 }

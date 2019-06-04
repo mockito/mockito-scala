@@ -28,6 +28,10 @@ package object cats {
     def returnsEitherT(v: String): EitherT[Future, Error, ValueClass]
 
     def returnsOptionT(v: String): OptionT[List, ValueClass]
+
+    def returnsOptionFrom[A, B](a: A, b: B): Option[String]
+
+    def returnsFutureOptionFrom[A, B](a: A, b: B): Future[Option[String]]
   }
 
 }

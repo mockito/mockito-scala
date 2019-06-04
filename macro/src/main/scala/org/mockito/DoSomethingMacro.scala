@@ -87,6 +87,48 @@ object DoSomethingMacro {
     r
   }
 
+  def answeredF[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
+    import c.universe._
+
+    val r = c.Expr[S] {
+      c.macroApplication match {
+        case q"$_.$cls[..$ftargs]($v).willBe($_.answeredF).by[$f, $_]($obj.$method[..$targs](...$args))(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
+          val newArgs = args.map(a => transformArgs(c)(a))
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doAnswerF[$f, ..$ftargs]($v).when($obj).$method[..$targs](...$newArgs)"
+
+        case q"$_.$cls[..$ftargs]($v).willBe($_.answeredF).by[$f, $_]($obj.$method[..$targs])(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doAnswerF[$f, ..$ftargs]($v).when($obj).$method[..$targs]"
+
+        case o => throw new Exception(s"Couldn't recognize ${show(o)}")
+      }
+    }
+    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    r
+  }
+
+  def answeredFG[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, G: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
+    import c.universe._
+
+    val r = c.Expr[S] {
+      c.macroApplication match {
+        case q"$_.$cls[..$ftargs]($v).willBe($_.answeredFG).by[$f, $g, $_]($obj.$method[..$targs](...$args))(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
+          val newArgs = args.map(a => transformArgs(c)(a))
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doAnswerFG[$f, $g, ..$ftargs]($v).when($obj).$method[..$targs](...$newArgs)"
+
+        case q"$_.$cls[..$ftargs]($v).willBe($_.answeredFG).by[$f, $g, $_]($obj.$method[..$targs])(..$_)"
+            if cls.toString.startsWith("DoSomethingOps") =>
+          q"_root_.org.mockito.${packageName(c)(cls)}.${className(c)(cls, "Mockito")}.doAnswerFG[$f, $g, ..$ftargs]($v).when($obj).$method[..$targs]"
+
+        case o => throw new Exception(s"Couldn't recognize answeredFG ${show(o)}")
+      }
+    }
+    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    r
+  }
+
   def thrownBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Tree): c.Expr[T] = {
     import c.universe._
 

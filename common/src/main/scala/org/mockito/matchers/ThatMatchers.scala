@@ -88,7 +88,7 @@ private[mockito] trait ThatMatchers {
   /**
    * Creates a matcher that delegates on a partial function to enable syntax like
    *
-   *       foo.bar(argMatching({ case Baz(n, _) if n > 90 => })) shouldReturn "mocked!"
+   *       foo.bar(argMatching({ case Baz(n, _) if n > 90 => })) returns "mocked!"
    *       foo.bar(argMatching({ case Baz(_, "pepe") => })) was called
    *
    */

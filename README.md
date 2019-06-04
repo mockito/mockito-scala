@@ -231,17 +231,17 @@ still usfing the advantages of strict stubbing then declare those mocks in a set
 class MySpec extends WordSpec with Mockito {
    trait Setup {
       val myMock = mock[Sth] 
-      myMock.someMethod shouldReturn "something" /*stub common to **all** tests -notice that if it's not used by all of them then the session will find it as an unused stubbing on those-*/
+      myMock.someMethod returns "something" /*stub common to **all** tests -notice that if it's not used by all of them then the session will find it as an unused stubbing on those-*/
    }
 
    "some feature" should {
        "test whatever i want" in new Setup {
-            myMock.someOtherMethod(*) shouldReturn None /*stub specific only to this test*/
+            myMock.someOtherMethod(*) returns None /*stub specific only to this test*/
              ...test
        }
 
       "test something else" in new Setup {
-             myMock.someOtherMethod("expected value") shouldReturn Some("result")  /*stub specific only to this test*/
+             myMock.someOtherMethod("expected value") returns Some("result")  /*stub specific only to this test*/
              ...test
        }
    }
@@ -289,13 +289,13 @@ trait Foo {
   
 val aMock = mock[Foo]  
   
-when(aMock.bar) thenReturn "mocked!"                            <=> aMock.bar shouldReturn "mocked!"
-when(aMock.bar) thenReturn "mocked!" thenReturn "mocked again!" <=> aMock.bar shouldReturn "mocked!" andThen "mocked again!"
+when(aMock.bar) thenReturn "mocked!"                            <=> aMock.bar returns "mocked!"
+when(aMock.bar) thenReturn "mocked!" thenReturn "mocked again!" <=> aMock.bar returns "mocked!" andThen "mocked again!"
 when(aMock.bar) thenCallRealMethod()                            <=> aMock.bar shouldCall realMethod
 when(aMock.bar).thenThrow[IllegalArgumentException]             <=> aMock.bar.shouldThrow[IllegalArgumentException]
-when(aMock.bar) thenThrow new IllegalArgumentException          <=> aMock.bar shouldThrow new IllegalArgumentException
-when(aMock.bar) thenAnswer(_ => "mocked!")                      <=> aMock.bar shouldAnswer "mocked!"
-when(aMock.bar(any)) thenAnswer(_.getArgument[Int](0) * 10)     <=> aMock.bar(*) shouldAnswer ((i: Int) => i * 10)
+when(aMock.bar) thenThrow new IllegalArgumentException          <=> aMock.bar throws new IllegalArgumentException
+when(aMock.bar) thenAnswer(_ => "mocked!")                      <=> aMock.bar answers "mocked!"
+when(aMock.bar(any)) thenAnswer(_.getArgument[Int](0) * 10)     <=> aMock.bar(*) answers ((i: Int) => i * 10)
 
 doReturn("mocked!").when(aMock).bar                             <=> "mocked!" willBe returned by aMock.bar
 doAnswer(_ => "mocked!").when(aMock).bar                        <=> "mocked!" willBe answered by aMock.bar
@@ -431,10 +431,10 @@ trait Foo {
   
 val aMock = mock[Foo]  
   
-aMock.bar(1,2) shouldReturn "mocked!"
-aMock.bar(1,*) shouldReturn "mocked!"
-aMock.bar(*,*) shouldReturn "mocked!"
-aMock.bar(*,*, 3) shouldReturn "mocked!"
+aMock.bar(1,2) returns "mocked!"
+aMock.bar(1,*) returns "mocked!"
+aMock.bar(*,*) returns "mocked!"
+aMock.bar(*,*, 3) returns "mocked!"
 
 "mocked!" willBe returned by aMock.bar(1,2)
 "mocked!" willBe returned by aMock.bar(1,*)
@@ -567,20 +567,20 @@ trait Foo {
 }
 // We can now write 
 val aMock = mock[Foo]
-aMock.returnsOption(*) shouldReturnF "mocked!"
-aMock.returnsMT[Future, String](*) shouldReturnF "mocked!"
+aMock.returnsOption(*) returnsF "mocked!"
+aMock.returnsMT[Future, String](*) returnsF "mocked!"
 // Rather than
-aMock.returnsOption(*) shouldReturn Some("mocked!")
-aMock.returnsMT[Future, String](*) shouldReturn Future.successful("mocked!")
+aMock.returnsOption(*) returns Some("mocked!")
+aMock.returnsMT[Future, String](*) returns Future.successful("mocked!")
 
 //We could also do stubbings in a single line if that's all we need from the mock
-val inlineMock: Foo = mock[Foo].returnsOption(*) shouldReturnF "mocked!"
+val inlineMock: Foo = mock[Foo].returnsOption(*) returnsF "mocked!"
 
 // For errors we can do
 type ErrorOr[A] = Either[Error, A]
-val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldFailWith Error("error")
+val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) raises Error("error")
 //Rather than
-val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldReturn Left(Error("error"))
+val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) returns Left(Error("error"))
 ```
 
 ## Scalaz integration
@@ -629,20 +629,20 @@ trait Foo {
 }
 // We can now write 
 val aMock = mock[Foo]
-aMock.returnsOption(*) shouldReturnF "mocked!"
-aMock.returnsMT[Future, String](*) shouldReturnF "mocked!"
+aMock.returnsOption(*) returnsF "mocked!"
+aMock.returnsMT[Future, String](*) returnsF "mocked!"
 // Rather than
-aMock.returnsOption(*) shouldReturn Some("mocked!")
-aMock.returnsMT[Future, String](*) shouldReturn Future.successful("mocked!")
+aMock.returnsOption(*) returns Some("mocked!")
+aMock.returnsMT[Future, String](*) returns Future.successful("mocked!")
 
 //We could also do stubbings in a single line if that's all we need from the mock
-val inlineMock: Foo = mock[Foo].returnsOption(*) shouldReturnF "mocked!"
+val inlineMock: Foo = mock[Foo].returnsOption(*) returnsF "mocked!"
 
 // For errors we can do
 type ErrorOr[A] = Either[Error, A]
-val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldFailWith Error("error")
+val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) raises Error("error")
 //Rather than
-val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) shouldReturn Left(Error("error"))
+val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) returns Left(Error("error"))
 ```
 
 

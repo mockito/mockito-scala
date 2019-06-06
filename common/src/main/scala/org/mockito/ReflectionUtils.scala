@@ -8,6 +8,7 @@ import ru.vyarus.java.generics.resolver.GenericsResolver
 
 import scala.reflect.ClassTag
 import scala.reflect.internal.Symbols
+import scala.util.control.NonFatal
 
 private[mockito] object ReflectionUtils {
 
@@ -52,9 +53,13 @@ private[mockito] object ReflectionUtils {
         .flatten
 
     private def resolveWithJavaGenerics(method: Method): Option[Class[_]] =
-      scala.util.Try {
-        GenericsResolver.resolve(invocation.getMock.getClass).`type`(method.getDeclaringClass).method(method).resolveReturnClass()
-      }.toOption
+      try Some(GenericsResolver.resolve(invocation.getMock.getClass).`type`(method.getDeclaringClass).method(method).resolveReturnClass())
+      catch {
+        // HACK for JVM 8 due to java.lang.InternalError: Malformed class name being thrown when calling getSimpleName on objects nested in
+        // other objects
+        case e: InternalError if e.getMessage == "Malformed class name" => None
+        case NonFatal(_)                                                => None
+      }
   }
 
   private def isNonConstructorMethod(d: ru.Symbol): Boolean = d.isMethod && !d.isConstructor

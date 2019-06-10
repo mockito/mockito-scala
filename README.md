@@ -1,8 +1,8 @@
 # Mockito Scala
 
 <a href="http://site.mockito.org">
-<img src="https://raw.githubusercontent.com/mockito/mockito/master/src/javadoc/org/mockito/logo.png"
-     srcset="https://raw.githubusercontent.com/mockito/mockito/master/src/javadoc/org/mockito/logo@2x.png 2x"
+<img src="https://github.com/mockito/mockito/raw/release/2.x/src/javadoc/org/mockito/logo.png"
+     srcset="https://github.com/mockito/mockito/raw/release/2.x/src/javadoc/org/mockito/logo@2x.png 2x"
      alt="Mockito" />
 </a>
 

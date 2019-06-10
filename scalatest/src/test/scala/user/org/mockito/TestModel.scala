@@ -42,6 +42,7 @@ class Bar {
 }
 
 trait Baz {
+  def varargMethod(s: String, arg: Int*): Int                                                = -1
   def varargMethod(arg: Int*): Int                                                           = -1
   @varargs def javaVarargMethod(arg: Int*): Int                                              = -1
   def byNameMethod(arg: => Int): Int                                                         = -1

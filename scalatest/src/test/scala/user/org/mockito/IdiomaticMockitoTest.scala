@@ -824,6 +824,19 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       aMock.varargMethod(1, 2, 3) was called
       a[WantedButNotInvoked] should be thrownBy (aMock.varargMethod(1, 2) was called)
     }
+
+    "work when getting varargs from collections" in {
+      val aMock = mock[Baz]
+      val args  = List(1, 2, 3)
+
+      aMock.varargMethod("hola", args: _*) returns 42
+
+      aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
+
+      aMock.varargMethod("hola", Array(1, 2, 3): _*) was called
+      aMock.varargMethod("hola", Vector(1, 2, 3): _*) was called
+      aMock.varargMethod("hola", 1, 2, 3) was called
+    }
   }
 
   "spy" should {

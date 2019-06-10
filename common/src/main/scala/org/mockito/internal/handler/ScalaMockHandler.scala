@@ -9,6 +9,7 @@ import org.mockito.internal.handler.ScalaMockHandler._
 import org.mockito.internal.invocation._
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.invocation.{ Invocation, MockHandler }
+import org.mockito.matchers.EqTo
 import org.mockito.mock.MockCreationSettings
 import org.scalactic.Prettifier
 import org.scalactic.TripleEquals._
@@ -45,17 +46,30 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
         case (mtd, indices) if method === mtd =>
           val argumentMatcherStorage = mockingProgress().getArgumentMatcherStorage
           val matchers               = argumentMatcherStorage.pullLocalizedMatchers().asScala.toIterator
+          val matchersWereUsed       = matchers.nonEmpty
           def reportMatcher(): Unit  = if (matchers.nonEmpty) argumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
+          def reportMatchers(varargs: Iterable[_]): Unit = if (matchersWereUsed && varargs.nonEmpty) {
+            def reportAsEqTo(): Unit = varargs.map(EqTo(_)).foreach(argumentMatcherStorage.reportMatcher(_))
+            val matcher              = matchers.next().getMatcher
+            matcher match {
+              case EqTo(value: Array[_]) if varargs.sameElements(value) => reportAsEqTo()
+              case EqTo(value) if varargs == value                      => reportAsEqTo()
+              case other =>
+                argumentMatcherStorage.reportMatcher(other)
+                varargs.drop(1).foreach(_ => reportMatcher())
+            }
+          }
 
           args.zipWithIndex.flatMap {
             case (arg: Function0[_], idx) if indices.contains(idx) =>
               List(arg())
             case (arg: Iterable[_], idx) if indices.contains(idx) =>
-              arg.foreach(_ => reportMatcher())
+              reportMatchers(arg)
               arg
             case (arg: Array[_], idx) if indices.contains(idx) =>
-              arg.foreach(_ => reportMatcher())
-              arg.toList
+              val argList = arg.toList
+              reportMatchers(arg)
+              argList
             case (arg, _) =>
               reportMatcher()
               List(arg)

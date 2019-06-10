@@ -412,6 +412,26 @@ class MockitoSugarTest
         mock[Foo](withSettings.extraInterfaces(classOf[Baz]))
       }
     }
+
+    "work when getting varargs from collections" in {
+      val aMock = mock[Baz]
+
+      when(aMock.varargMethod("hola", List(1, 2, 3): _*)) thenReturn 42
+
+      aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
+
+      verify(aMock).varargMethod("hola", 1, 2, 3)
+    }
+
+    "work when getting varargs from collections (with matchers)" in {
+      val aMock = mock[Baz]
+
+      when(aMock.varargMethod(eqTo("hola"), eqTo(List(1, 2, 3)): _*)) thenReturn 42
+
+      aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
+
+      verify(aMock).varargMethod("hola", 1, 2, 3)
+    }
   }
 
   "spyLambda[T]" should {

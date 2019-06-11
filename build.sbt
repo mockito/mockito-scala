@@ -4,7 +4,7 @@ import scala.io.Source
 import scala.language.postfixOps
 import scala.util.Try
 
-ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / scalaVersion := "2.13.0"
 
 lazy val commonSettings =
   Seq(
@@ -19,7 +19,7 @@ lazy val commonSettings =
       source.close
       version.get
     },
-    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC3"),
+    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0"),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
       "-unchecked",
@@ -60,9 +60,11 @@ lazy val publishSettings = Seq(
   )
 )
 
+val scalatestVersion = "3.0.8"
+
 lazy val commonLibraries = Seq(
   "org.mockito"   % "mockito-core"      % "2.27.0",
-  "org.scalactic" %% "scalactic"        % "3.0.8-RC5",
+  "org.scalactic" %% "scalactic"        % scalatestVersion,
   "ru.vyarus"     % "generics-resolver" % "3.0.0",
 )
 
@@ -74,7 +76,7 @@ lazy val scalatest = (project in file("scalatest"))
       name := "mockito-scala-scalatest",
       commonSettings,
       publishSettings,
-      libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "provided",
+      libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % "provided",
     )
 
 lazy val specs2 = (project in file("specs2"))
@@ -100,8 +102,8 @@ lazy val cats = (project in file("cats"))
     commonSettings,
     publishSettings,
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.0.0-M3" % "provided",
-      "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "test"
+      "org.typelevel" %% "cats-core" % "2.0.0-M4" % "provided",
+      "org.scalatest" %% "scalatest" % scalatestVersion % "test"
     ),
   )
 
@@ -115,7 +117,7 @@ lazy val scalaz = (project in file("scalaz"))
     publishSettings,
     libraryDependencies ++= Seq(
       "org.scalaz" %% "scalaz-core" % "7.2.27" % "provided",
-      "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "test"
+      "org.scalatest" %% "scalatest" % scalatestVersion % "test"
     ),
   )
 
@@ -140,7 +142,7 @@ lazy val core = (project in file("core"))
     libraryDependencies ++= commonLibraries,
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     //TODO remove when we remove the deprecated classes in org.mockito.integrations.scalatest
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "provided",
+    libraryDependencies += "org.scalatest" %% "scalatest" % scalatestVersion % "provided",
     // include the macro classes and resources in the main jar
     mappings in (Compile, packageBin) ++= mappings
       .in(macroSub, Compile, packageBin)

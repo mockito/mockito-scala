@@ -310,7 +310,7 @@ class MockitoSugarTest
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("foo.baz(42, PrettifiedBaz(hola));")
-        e.getMessage should include("Actual invocation has different arguments:")
+        e.getMessage should include("Actual invocations have different arguments:")
         e.getMessage should include("foo.baz(42, PrettifiedBaz(chau));")
       }
     }

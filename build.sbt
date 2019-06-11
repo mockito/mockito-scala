@@ -4,7 +4,9 @@ import scala.io.Source
 import scala.language.postfixOps
 import scala.util.Try
 
-ThisBuild / scalaVersion := "2.12.8"
+val currentScalaVersion = "2.13.0"
+
+ThisBuild / scalaVersion := currentScalaVersion
 
 lazy val commonSettings =
   Seq(
@@ -19,7 +21,7 @@ lazy val commonSettings =
       source.close
       version.get
     },
-    crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-RC3"),
+    crossScalaVersions := Seq("2.11.12", "2.12.8", currentScalaVersion),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
       "-unchecked",
@@ -60,12 +62,6 @@ lazy val publishSettings = Seq(
   )
 )
 
-lazy val commonLibraries = Seq(
-  "org.mockito"   % "mockito-core"      % "2.27.0",
-  "org.scalactic" %% "scalactic"        % "3.0.8-RC5",
-  "ru.vyarus"     % "generics-resolver" % "3.0.0",
-)
-
 lazy val scalatest = (project in file("scalatest"))
     .dependsOn(core)
     .dependsOn(common % "compile-internal, test-internal")
@@ -74,7 +70,7 @@ lazy val scalatest = (project in file("scalatest"))
       name := "mockito-scala-scalatest",
       commonSettings,
       publishSettings,
-      libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "provided",
+      libraryDependencies += Dependencies.scalatest % "provided",
     )
 
 lazy val specs2 = (project in file("specs2"))
@@ -85,10 +81,7 @@ lazy val specs2 = (project in file("specs2"))
     name := "mockito-scala-specs2",
     commonSettings,
     publishSettings,
-    libraryDependencies ++= Seq(
-      "org.specs2"   %% "specs2-core"  % "4.5.1" % "provided",
-      "org.hamcrest" % "hamcrest-core" % "1.3"   % "provided"
-    )
+    libraryDependencies ++= Dependencies.specs2
   )
 
 lazy val cats = (project in file("cats"))
@@ -100,8 +93,8 @@ lazy val cats = (project in file("cats"))
     commonSettings,
     publishSettings,
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.0.0-M3" % "provided",
-      "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "test"
+      Dependencies.cats,
+      Dependencies.scalatest % "test"
     ),
   )
 
@@ -114,8 +107,8 @@ lazy val scalaz = (project in file("scalaz"))
     commonSettings,
     publishSettings,
     libraryDependencies ++= Seq(
-      "org.scalaz" %% "scalaz-core" % "7.2.27" % "provided",
-      "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "test"
+      Dependencies.scalaz,
+      Dependencies.scalatest % "test"
     ),
   )
 
@@ -123,8 +116,8 @@ lazy val common = (project in file("common"))
   .dependsOn(macroCommon)
   .settings(
     commonSettings,
-    libraryDependencies ++= commonLibraries,
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    libraryDependencies ++= Dependencies.commonLibraries,
+    libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
     publish := {},
     publishLocal := {},
     publishArtifact := false
@@ -137,10 +130,10 @@ lazy val core = (project in file("core"))
     commonSettings,
     publishSettings,
     name := "mockito-scala",
-    libraryDependencies ++= commonLibraries,
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    //TODO remove when we remove the deprecated classes in org.mockito.integrations.scalatest
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "provided",
+    libraryDependencies ++= Dependencies.commonLibraries,
+    libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
+    //TODO remove when we remove the deprecated classes in org.mockito.integrations.Dependencies.scalatest
+    libraryDependencies += Dependencies.scalatest % "provided",
     // include the macro classes and resources in the main jar
     mappings in (Compile, packageBin) ++= mappings
       .in(macroSub, Compile, packageBin)
@@ -171,8 +164,8 @@ lazy val macroSub = (project in file("macro"))
   .dependsOn(common)
   .settings(
     commonSettings,
-    libraryDependencies ++= commonLibraries,
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    libraryDependencies ++= Dependencies.commonLibraries,
+    libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
     publish := {},
     publishLocal := {},
     publishArtifact := false
@@ -181,7 +174,7 @@ lazy val macroSub = (project in file("macro"))
 lazy val macroCommon = (project in file("macro-common"))
   .settings(
     commonSettings,
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
     publish := {},
     publishLocal := {},
     publishArtifact := false

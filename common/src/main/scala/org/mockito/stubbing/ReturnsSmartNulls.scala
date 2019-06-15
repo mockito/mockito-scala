@@ -1,7 +1,7 @@
 package org.mockito.stubbing
 import java.lang.reflect.Modifier.isFinal
 
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.{ mock, withSettings }
 import org.mockito.ReflectionUtils._
 import org.mockito.internal.debugging.LocationImpl
 import org.mockito.internal.exceptions.Reporter.smartNullPointerException
@@ -17,7 +17,7 @@ object ReturnsSmartNulls extends DefaultAnswer {
     val returnType = invocation.returnType
 
     if (!returnType.isPrimitive && !isFinal(returnType.getModifiers) && classOf[Object] != returnType)
-      Some(mock(returnType, ThrowsSmartNullPointer(invocation)))
+      Some(mock(returnType, withSettings.defaultAnswer(ThrowsSmartNullPointer(invocation)).lenient()))
     else
       None
   }

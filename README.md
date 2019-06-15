@@ -14,6 +14,8 @@ The most popular mocking framework for Java, now in Scala!!!
 [![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala_2.12.svg)](https://search.maven.org/search?q=mockito-scala)
 
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/mockito-scala/)
+
+[![Cats Friendly](https://typelevel.org/cats/img/cats-badge-tiny.png)](https://typelevel.org/cats/)
 ## Why separate project?
 
 The library has independent developers, release cycle and versioning from core mockito library (<https://github.com/mockito/mockito>). This is intentional because core Mockito developers don't use Scala and cannot confidently review PRs, and set the vision for the Scala library.

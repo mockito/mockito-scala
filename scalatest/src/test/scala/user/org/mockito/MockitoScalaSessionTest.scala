@@ -26,6 +26,20 @@ class MockitoScalaSessionTest
      "bar")
   )
 
+  class FinalEqualsAndHashcode {
+    def id: String = ???
+
+    final override def equals(other: Any): Boolean = other match {
+      case that: FinalEqualsAndHashcode => id == that.id
+      case _                            => false
+    }
+
+    final override def hashCode(): Int = {
+      val state = Seq(id)
+      state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    }
+  }
+
   class Foo {
     def bar(a: String) = "bar"
 
@@ -34,6 +48,8 @@ class MockitoScalaSessionTest
     def userClass: Bar = new Bar
 
     def userClassFinal: BarFinal = new BarFinal
+
+    def finalFinalEqualsAndHashcode: FinalEqualsAndHashcode = ???
   }
 
   class Bar {
@@ -269,6 +285,16 @@ class MockitoScalaSessionTest
   }
 
   "MockitoScalaSession" should {
+    "don't fail if equals calls on an internal method" in {
+      MockitoScalaSession().run {
+        val aFoo = mock[Foo]
+
+        aFoo.finalFinalEqualsAndHashcode
+
+        aFoo.finalFinalEqualsAndHashcode was called
+      }
+    }
+
     "re-throw an exception produced by the test" in {
       an[IllegalArgumentException] should be thrownBy {
         MockitoScalaSession().run {

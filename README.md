@@ -193,6 +193,18 @@ MockitoScalaSession().run {
 That's it! that block of code will execute within a session which will take care of checking the use of the framework and,
 if the test fails, it will try to find out if the failure could be related to a mock being used incorrectly
 
+### Spies
+
+Spies for partial mocking of real objects
+
+```scala
+"LinkedList size" should "return 100" in {
+    val spiedList = spy(new util.LinkedList[String])
+    when(spiedList.size).thenReturn(100)
+    assert(spiedList.size === 100)
+  }
+```  
+
 ### Leniency
 
 If for some reason we want that a mock created within the scope of a session does not report failures for some or all methods we can specify leniency for it.

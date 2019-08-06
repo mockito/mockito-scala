@@ -19,6 +19,6 @@ object Dependencies {
 
   def scalaReflection(scalaVersion: String) = "org.scala-lang" % "scala-reflect" % scalaVersion
 
-  val cats   = "org.typelevel" %% "cats-core"   % "2.0.0-M4" % "provided"
+  val cats   = "org.typelevel" %% "cats-core"   % "2.0.0-RC1" % "provided"
   val scalaz = "org.scalaz"    %% "scalaz-core" % "7.2.28"   % "provided"
 }

@@ -12,6 +12,7 @@
 package org.mockito
 
 import org.mockito.Answers.CALLS_REAL_METHODS
+import org.mockito.ReflectionUtils.InvocationOnMockOps
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
@@ -134,6 +135,8 @@ private[mockito] trait DoSomething {
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {
+
+  implicit val invocationOps: InvocationOnMock => InvocationOnMockOps = InvocationOps
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T])</code>

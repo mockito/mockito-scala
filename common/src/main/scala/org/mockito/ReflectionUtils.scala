@@ -10,7 +10,7 @@ import scala.reflect.ClassTag
 import scala.reflect.internal.Symbols
 import scala.util.control.NonFatal
 
-private[mockito] object ReflectionUtils {
+object ReflectionUtils {
 
   import scala.reflect.runtime.{ universe => ru }
   import ru._
@@ -22,9 +22,14 @@ private[mockito] object ReflectionUtils {
     def methodToJava(sym: Symbols#MethodSymbol): Method
   }]
 
-  implicit class InvocationOnMockOps(invocation: InvocationOnMock) {
+  implicit class InvocationOnMockOps(val invocation: InvocationOnMock) extends AnyVal {
+    def mock[M]: M             = invocation.getMock.asInstanceOf[M]
+    def method: Method         = invocation.getMethod
+    def arg[A](index: Int): A  = invocation.getArgument(index)
+    def args: List[Any]        = invocation.getArguments.toList
+    def callRealMethod[A](): A = invocation.callRealMethod.asInstanceOf[A]
+
     def returnType: Class[_] = {
-      val method         = invocation.getMethod
       val javaReturnType = method.getReturnType
 
       if (javaReturnType == classOf[Object])

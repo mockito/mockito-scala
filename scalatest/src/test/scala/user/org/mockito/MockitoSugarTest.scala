@@ -277,8 +277,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       "create a mock with nice answer API (invocation usage)" in {
         val aMock = baz()
 
-        when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClass(i.getArgument[Int](0) * 10 + 2)) andThenAnswer ((i: InvocationOnMock) =>
-          ValueCaseClass(i.getArgument[Int](0) * 10 + 3))
+        when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClass(i.arg[Int](0) * 10 + 2)) andThenAnswer ((i: InvocationOnMock) =>
+          ValueCaseClass(i.arg[Int](0) * 10 + 3))
 
         aMock.traitMethod(4) shouldBe ValueCaseClass(42)
         aMock.traitMethod(4) shouldBe ValueCaseClass(43)

@@ -1,4 +1,5 @@
-package org.mockito.stubbing
+package org.mockito
+package stubbing
 
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
@@ -35,5 +36,5 @@ object ReturnsEmptyValues extends DefaultAnswer {
   )
 
   override def apply(invocation: InvocationOnMock): Option[Any] =
-    Option(javaEmptyValuesAndPrimitives.answer(invocation)).orElse(emptyValues.get(invocation.getMethod.getReturnType))
+    Option(javaEmptyValuesAndPrimitives.answer(invocation)).orElse(emptyValues.get(invocation.returnType))
 }

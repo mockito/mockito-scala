@@ -106,7 +106,7 @@ class DoSomethingCatsTest
 
       "mocked!" willBe answeredF by aMock.returnsOptionString("hello")
       ((s: String) => s + " mocked!") willBe answeredF by aMock.returnsOptionString("hi")
-      ((i: InvocationOnMock) => i.getArgument[String](0) + " invocation mocked!") willBe answeredF by aMock.returnsOptionString("hola")
+      ((i: InvocationOnMock) => i.arg[String](0) + " invocation mocked!") willBe answeredF by aMock.returnsOptionString("hola")
       ((i: Int, b: Boolean) => s"$i, $b") willBe answeredF by aMock.returnsOptionFrom(42, true)
 
       aMock.returnsOptionString("hello").value shouldBe "mocked!"
@@ -120,7 +120,7 @@ class DoSomethingCatsTest
 
       ValueClass("mocked!") willBe answeredFG by aMock.returnsFutureEither("hello")
       ((s: String) => ValueClass(s + " mocked!")) willBe answeredFG by aMock.returnsFutureEither("hi")
-      ((i: InvocationOnMock) => ValueClass(i.getArgument[String](0) + " invocation mocked!")) willBe answeredFG by aMock
+      ((i: InvocationOnMock) => ValueClass(i.arg[String](0) + " invocation mocked!")) willBe answeredFG by aMock
         .returnsFutureEither("hola")
       ((i: Int, b: Boolean) => s"$i, $b") willBe answeredFG by aMock.returnsFutureOptionFrom(42, true)
 

@@ -322,10 +322,10 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
         org.doSomethingWithThisIntAndString(1, "test")
 
-        a[TooLittleActualInvocations] should be thrownBy {
+        a[TooFewActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled twice
         }
-        a[TooLittleActualInvocations] should be thrownBy {
+        a[TooFewActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled 2.times
         }
 
@@ -349,13 +349,13 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
         org.doSomethingWithThisIntAndString(1, "test")
 
-        a[TooLittleActualInvocations] should be thrownBy {
+        a[TooFewActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeastTwice
         }
-        a[TooLittleActualInvocations] should be thrownBy {
+        a[TooFewActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeast(twice)
         }
-        a[TooLittleActualInvocations] should be thrownBy {
+        a[TooFewActualInvocations] should be thrownBy {
           org.doSomethingWithThisIntAndString(*, "test") wasCalled atLeast(2.times)
         }
 

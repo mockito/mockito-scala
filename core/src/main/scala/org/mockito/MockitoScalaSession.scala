@@ -54,9 +54,7 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
 }
 
 object MockitoScalaSession {
-  def apply(name: String = "<Unnamed Session>",
-            strictness: Strictness = Strictness.StrictStubs,
-            logger: MockitoSessionLogger = MockitoScalaLogger): MockitoScalaSession =
+  def apply(name: String = "<Unnamed Session>", strictness: Strictness = Strictness.StrictStubs, logger: MockitoSessionLogger = MockitoScalaLogger): MockitoScalaSession =
     new MockitoScalaSession(name, strictness, logger)
 
   trait Reporter {

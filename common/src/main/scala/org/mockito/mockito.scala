@@ -39,19 +39,11 @@ package object mockito {
     invocationToAnswer(i => f(i.getArgument[P0](0), i.getArgument[P1](1), i.getArgument[P2](2), i.getArgument[P3](3), i.getArgument[P4](4)))
 
   def functionToAnswer[T: ValueClassExtractor, P5, P4, P3, P2, P1, P0](f: (P0, P1, P2, P3, P4, P5) => T): ScalaAnswer[T] =
-    invocationToAnswer(i =>
-      f(i.getArgument[P0](0), i.getArgument[P1](1), i.getArgument[P2](2), i.getArgument[P3](3), i.getArgument[P4](4), i.getArgument[P5](5)))
+    invocationToAnswer(i => f(i.getArgument[P0](0), i.getArgument[P1](1), i.getArgument[P2](2), i.getArgument[P3](3), i.getArgument[P4](4), i.getArgument[P5](5)))
 
   def functionToAnswer[T: ValueClassExtractor, P6, P5, P4, P3, P2, P1, P0](f: (P0, P1, P2, P3, P4, P5, P6) => T): ScalaAnswer[T] =
     invocationToAnswer(
-      i =>
-        f(i.getArgument[P0](0),
-          i.getArgument[P1](1),
-          i.getArgument[P2](2),
-          i.getArgument[P3](3),
-          i.getArgument[P4](4),
-          i.getArgument[P5](5),
-          i.getArgument[P6](6)))
+      i => f(i.getArgument[P0](0), i.getArgument[P1](1), i.getArgument[P2](2), i.getArgument[P3](3), i.getArgument[P4](4), i.getArgument[P5](5), i.getArgument[P6](6)))
 
   def functionToAnswer[T: ValueClassExtractor, P7, P6, P5, P4, P3, P2, P1, P0](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T): ScalaAnswer[T] =
     invocationToAnswer(
@@ -67,8 +59,7 @@ package object mockito {
           i.getArgument[P7](7)
       ))
 
-  def functionToAnswer[T: ValueClassExtractor, P8, P7, P6, P5, P4, P3, P2, P1, P0](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): ScalaAnswer[T] =
+  def functionToAnswer[T: ValueClassExtractor, P8, P7, P6, P5, P4, P3, P2, P1, P0](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): ScalaAnswer[T] =
     invocationToAnswer(
       i =>
         f(
@@ -83,8 +74,7 @@ package object mockito {
           i.getArgument[P8](8)
       ))
 
-  def functionToAnswer[T: ValueClassExtractor, P9, P8, P7, P6, P5, P4, P3, P2, P1, P0](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): ScalaAnswer[T] =
+  def functionToAnswer[T: ValueClassExtractor, P9, P8, P7, P6, P5, P4, P3, P2, P1, P0](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): ScalaAnswer[T] =
     invocationToAnswer(
       i =>
         f(
@@ -100,8 +90,7 @@ package object mockito {
           i.getArgument[P9](9)
       ))
 
-  def functionToAnswer[T: ValueClassExtractor, P10, P9, P8, P7, P6, P5, P4, P3, P2, P1, P0](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaAnswer[T] =
+  def functionToAnswer[T: ValueClassExtractor, P10, P9, P8, P7, P6, P5, P4, P3, P2, P1, P0](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaAnswer[T] =
     invocationToAnswer(
       i =>
         f(

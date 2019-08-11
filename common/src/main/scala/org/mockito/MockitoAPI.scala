@@ -22,9 +22,9 @@ import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaFirstStubbing, Stubber}
-import org.mockito.verification.{VerificationAfterDelay, VerificationMode, VerificationWithTimeout}
-import org.scalactic.{Equality, Prettifier}
+import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
+import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
+import org.scalactic.{ Equality, Prettifier }
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -129,8 +129,7 @@ private[mockito] trait DoSomething {
     Mockito.doAnswer(functionToAnswer(f))
   def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R: ValueClassExtractor](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
 }
 

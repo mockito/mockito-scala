@@ -9,13 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 //noinspection RedundantDefaultArgument
-class MockitoSugarTest_213
-    extends WordSpec
-    with MockitoSugar
-    with Matchers
-    with ArgumentMatchersSugar
-    with TableDrivenPropertyChecks
-    with ScalaFutures {
+class MockitoSugarTest_213 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with TableDrivenPropertyChecks with ScalaFutures {
 
   val scenarios = Table(
     ("testDouble", "foo", "baz"),

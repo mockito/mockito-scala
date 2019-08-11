@@ -49,11 +49,9 @@ abstract class ScalaBaseStubbing[T: ValueClassExtractor] {
     delegate thenAnswer functionToAnswer(f)
   protected def _thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T): ScalaOngoingStubbing[T] =
     delegate thenAnswer functionToAnswer(f)
-  protected def _thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): ScalaOngoingStubbing[T] =
+  protected def _thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): ScalaOngoingStubbing[T] =
     delegate thenAnswer functionToAnswer(f)
-  protected def _thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaOngoingStubbing[T] =
+  protected def _thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaOngoingStubbing[T] =
     delegate thenAnswer functionToAnswer(f)
 
   /**

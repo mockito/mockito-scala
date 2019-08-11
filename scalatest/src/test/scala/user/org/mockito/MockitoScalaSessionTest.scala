@@ -9,21 +9,12 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ Matchers, OptionValues, WordSpec }
 
 //noinspection RedundantDefaultArgument
-class MockitoScalaSessionTest
-    extends WordSpec
-    with IdiomaticMockito
-    with Matchers
-    with ArgumentMatchersSugar
-    with OptionValues
-    with TableDrivenPropertyChecks {
+class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar with OptionValues with TableDrivenPropertyChecks {
 
   val scenarios = Table(
     ("testDouble", "foo", "parametrisedFoo", "fooBar"),
     ("mock", () => mock[Foo], (mockSettings: MockSettings) => mock[Foo](mockSettings), ""),
-    ("spy",
-     () => spy(new Foo),
-     (mockSettings: MockSettings) => spy(new Foo, mockSettings.asInstanceOf[CreationSettings[_]].isLenient),
-     "bar")
+    ("spy", () => spy(new Foo), (mockSettings: MockSettings) => spy(new Foo, mockSettings.asInstanceOf[CreationSettings[_]].isLenient), "bar")
   )
 
   class FinalEqualsAndHashcode {

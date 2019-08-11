@@ -11,15 +11,7 @@ import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MockitoCatsTest
-    extends WordSpec
-    with Matchers
-    with MockitoSugar
-    with ArgumentMatchersSugar
-    with MockitoCats
-    with EitherValues
-    with OptionValues
-    with ScalaFutures {
+class MockitoCatsTest extends WordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with MockitoCats with EitherValues with OptionValues with ScalaFutures {
 
   "when - return" should {
     "stub full applicative" in {
@@ -142,8 +134,7 @@ class MockitoCatsTest
 
       whenFG(aMock.returnsFutureEither("hello")) thenAnswer ValueClass("mocked!")
       whenFG(aMock.returnsFutureEither("hi")) thenAnswer ((s: String) => ValueClass(s + " mocked!"))
-      whenFG(aMock.returnsFutureEither("hola")) thenAnswer ((i: InvocationOnMock) =>
-        ValueClass(i.getArgument[String](0) + " invocation mocked!"))
+      whenFG(aMock.returnsFutureEither("hola")) thenAnswer ((i: InvocationOnMock) => ValueClass(i.getArgument[String](0) + " invocation mocked!"))
       whenFG(aMock.returnsFutureOptionFrom(42, true)) thenAnswer ((i: Int, b: Boolean) => s"$i, $b")
 
       whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))

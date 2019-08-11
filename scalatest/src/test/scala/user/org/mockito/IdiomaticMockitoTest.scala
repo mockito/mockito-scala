@@ -104,9 +104,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
         org.doSomethingWithThisInt(*) answers ((i: Int) => i * 10 + 2)
         org.doSomethingWithThisIntAndString(*, *) answers ((i: Int, s: String) => (i * 10 + s.toInt).toString)
-        org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) answers ((i: Int,
-                                                                         s: String,
-                                                                         boolean: Boolean) => (i * 10 + s.toInt).toString + boolean)
+        org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) answers ((i: Int, s: String, boolean: Boolean) => (i * 10 + s.toInt).toString + boolean)
 
         org.doSomethingWithThisInt(4) shouldBe 42
         org.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
@@ -143,8 +141,7 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "chain answers (invocation usage)" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisInt(*) answers ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2) andThenAnswer (
-            (i: InvocationOnMock) => i.getArgument[Int](0) * 15 + 9)
+        org.doSomethingWithThisInt(*) answers ((i: InvocationOnMock) => i.getArgument[Int](0) * 10 + 2) andThenAnswer ((i: InvocationOnMock) => i.getArgument[Int](0) * 15 + 9)
 
         org.doSomethingWithThisInt(4) shouldBe 42
         org.doSomethingWithThisInt(4) shouldBe 69

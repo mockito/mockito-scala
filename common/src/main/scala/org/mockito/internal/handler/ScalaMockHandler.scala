@@ -16,8 +16,7 @@ import org.scalactic.TripleEquals._
 
 import scala.collection.JavaConverters._
 
-class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProcess: Seq[(Method, Set[Int])])(implicit $pt: Prettifier)
-    extends MockHandlerImpl[T](mockSettings) {
+class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProcess: Seq[(Method, Set[Int])])(implicit $pt: Prettifier) extends MockHandlerImpl[T](mockSettings) {
 
   override def handle(invocation: Invocation): AnyRef =
     invocation match {

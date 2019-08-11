@@ -117,6 +117,5 @@ case class ScalaOngoingStubbing[T: ValueClassExtractor](delegate: OngoingStubbin
     _thenAnswer(f)
   def andThenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T): ScalaOngoingStubbing[T] =
     _thenAnswer(f)
-  def andThenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaOngoingStubbing[T] = _thenAnswer(f)
+  def andThenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaOngoingStubbing[T] = _thenAnswer(f)
 }

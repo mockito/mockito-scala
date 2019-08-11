@@ -12,6 +12,7 @@
 package org.mockito
 
 import org.mockito.Answers.CALLS_REAL_METHODS
+import org.mockito.ReflectionUtils.InvocationOnMockOps
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
@@ -23,7 +24,7 @@ import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
 import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
-import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
+import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
 import org.scalactic.{ Equality, Prettifier }
 
 import scala.collection.JavaConverters._
@@ -129,12 +130,13 @@ private[mockito] trait DoSomething {
     Mockito.doAnswer(functionToAnswer(f))
   def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R: ValueClassExtractor](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
+  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {
+
+  implicit val invocationOps: InvocationOnMock => InvocationOnMockOps = InvocationOps
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T])</code>
@@ -316,6 +318,11 @@ private[mockito] trait Verifications {
    * Delegates to <code>Mockito.timeout()</code>, it's only here to expose the full Mockito API
    */
   def timeout(millis: Int): VerificationWithTimeout = Mockito.timeout(millis)
+
+  /**
+   * Delegates to <code>Mockito.after()</code>, it's only here to expose the full Mockito API
+   */
+  def after(millis: Int): VerificationAfterDelay = Mockito.after(millis)
 
   /**
    * Delegates to <code>Mockito.times()</code>, it's only here to expose the full Mockito API

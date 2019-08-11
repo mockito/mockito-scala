@@ -1,8 +1,9 @@
-package org.mockito.internal.handler
+package org.mockito
+package internal.handler
+
 import org.mockito.internal.util.Primitives.defaultValue
 import org.mockito.invocation.{ Invocation, InvocationContainer, MockHandler }
 import org.mockito.mock.MockCreationSettings
-import org.mockito.ReflectionUtils._
 
 class ScalaNullResultGuardian[T](delegate: MockHandler[T]) extends MockHandler[T] {
 

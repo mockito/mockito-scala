@@ -81,7 +81,7 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
     "simplify answer API (invocation usage)" in {
       val aMock = mock[Foo]
 
-      doAnswer((i: InvocationOnMock) => ValueCaseClass(i.getArgument[Int](0) * 10 + i.getArgument[String](1).toInt))
+      doAnswer((i: InvocationOnMock) => ValueCaseClass(i.arg[Int](0) * 10 + i.arg[String](1).toInt))
         .when(aMock)
         .doSomethingWithThisIntAndString(*, *)
 

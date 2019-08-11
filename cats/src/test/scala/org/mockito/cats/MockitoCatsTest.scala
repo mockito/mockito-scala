@@ -11,15 +11,7 @@ import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MockitoCatsTest
-    extends WordSpec
-    with Matchers
-    with MockitoSugar
-    with ArgumentMatchersSugar
-    with MockitoCats
-    with EitherValues
-    with OptionValues
-    with ScalaFutures {
+class MockitoCatsTest extends WordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with MockitoCats with EitherValues with OptionValues with ScalaFutures {
 
   "when - return" should {
     "stub full applicative" in {
@@ -128,7 +120,7 @@ class MockitoCatsTest
 
       whenF(aMock.returnsOptionString("hello")) thenAnswer "mocked!"
       whenF(aMock.returnsOptionString("hi")) thenAnswer ((s: String) => s + " mocked!")
-      whenF(aMock.returnsOptionString("hola")) thenAnswer ((i: InvocationOnMock) => i.getArgument[String](0) + " invocation mocked!")
+      whenF(aMock.returnsOptionString("hola")) thenAnswer ((i: InvocationOnMock) => i.arg[String](0) + " invocation mocked!")
       whenF(aMock.returnsOptionFrom(42, true)) thenAnswer ((i: Int, b: Boolean) => s"$i, $b")
 
       aMock.returnsOptionString("hello").value shouldBe "mocked!"
@@ -142,8 +134,7 @@ class MockitoCatsTest
 
       whenFG(aMock.returnsFutureEither("hello")) thenAnswer ValueClass("mocked!")
       whenFG(aMock.returnsFutureEither("hi")) thenAnswer ((s: String) => ValueClass(s + " mocked!"))
-      whenFG(aMock.returnsFutureEither("hola")) thenAnswer ((i: InvocationOnMock) =>
-        ValueClass(i.getArgument[String](0) + " invocation mocked!"))
+      whenFG(aMock.returnsFutureEither("hola")) thenAnswer ((i: InvocationOnMock) => ValueClass(i.arg[String](0) + " invocation mocked!"))
       whenFG(aMock.returnsFutureOptionFrom(42, true)) thenAnswer ((i: Int, b: Boolean) => s"$i, $b")
 
       whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
@@ -243,7 +234,7 @@ class MockitoCatsTest
 
       doAnswerF[Option, String]("mocked!").when(aMock).returnsOptionString("hello")
       doAnswerF[Option, String, String]((s: String) => s + " mocked!").when(aMock).returnsOptionString("hi")
-      doAnswerF[Option, InvocationOnMock, String]((i: InvocationOnMock) => i.getArgument[String](0) + " invocation mocked!")
+      doAnswerF[Option, InvocationOnMock, String]((i: InvocationOnMock) => i.arg[String](0) + " invocation mocked!")
         .when(aMock)
         .returnsOptionString("hola")
       doAnswerF[Option, Int, Boolean, String]((i: Int, b: Boolean) => s"$i, $b").when(aMock).returnsOptionFrom(42, true)
@@ -260,7 +251,7 @@ class MockitoCatsTest
       doAnswerFG[Future, ErrorOr, ValueClass](ValueClass("mocked!")).when(aMock).returnsFutureEither("hello")
       doAnswerFG[Future, ErrorOr, String, ValueClass]((s: String) => ValueClass(s + " mocked!")).when(aMock).returnsFutureEither("hi")
       doAnswerFG[Future, ErrorOr, InvocationOnMock, ValueClass] { i: InvocationOnMock =>
-        ValueClass(i.getArgument[String](0) + " invocation mocked!")
+        ValueClass(i.arg[String](0) + " invocation mocked!")
       }.when(aMock)
         .returnsFutureEither("hola")
       doAnswerFG[Future, Option, Int, Boolean, String]((i: Int, b: Boolean) => s"$i, $b").when(aMock).returnsFutureOptionFrom(42, true)

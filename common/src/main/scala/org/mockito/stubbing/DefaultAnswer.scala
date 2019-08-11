@@ -38,27 +38,3 @@ class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {
 object ReturnsDefaults  extends DecoratedAnswer(RETURNS_DEFAULTS)
 object ReturnsDeepStubs extends DecoratedAnswer(RETURNS_DEEP_STUBS)
 object CallsRealMethods extends DecoratedAnswer(CALLS_REAL_METHODS)
-object ReturnsEmptyValues extends DefaultAnswer {
-  private val javaEmptyValuesAndPrimitives = new ReturnsMoreEmptyValues
-
-  private[mockito] lazy val emptyValues: Map[Class[_], AnyRef] = Map(
-    classOf[Option[_]]      -> Option.empty,
-    classOf[List[_]]        -> List.empty,
-    classOf[Set[_]]         -> Set.empty,
-    classOf[Seq[_]]         -> Seq.empty,
-    classOf[Iterable[_]]    -> Iterable.empty,
-    classOf[Traversable[_]] -> Traversable.empty,
-    classOf[IndexedSeq[_]]  -> IndexedSeq.empty,
-    classOf[Iterator[_]]    -> Iterator.empty,
-    classOf[Stream[_]]      -> Stream.empty,
-    classOf[Vector[_]]      -> Vector.empty,
-    classOf[Try[_]]         -> Failure(new MockitoException("Auto stub provided by mockito-scala")),
-    classOf[Future[_]]      -> Future.failed(new MockitoException("Auto stub provided by mockito-scala")),
-    classOf[BigDecimal]     -> BigDecimal(0),
-    classOf[BigInt]         -> BigInt(0),
-    classOf[StringBuilder]  -> StringBuilder.newBuilder
-  )
-
-  override def apply(invocation: InvocationOnMock): Option[Any] =
-    Option(javaEmptyValuesAndPrimitives.answer(invocation)).orElse(emptyValues.get(invocation.getMethod.getReturnType))
-}

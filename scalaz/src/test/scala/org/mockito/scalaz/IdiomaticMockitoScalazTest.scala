@@ -144,7 +144,7 @@ class IdiomaticMockitoScalazTest
 
       aMock.returnsOptionString("hello") answersF "mocked!"
       aMock.returnsOptionString("hi") answersF ((s: String) => s + " mocked!")
-      aMock.returnsOptionString("hola") answersF ((i: InvocationOnMock) => i.getArgument[String](0) + " invocation mocked!")
+      aMock.returnsOptionString("hola") answersF ((i: InvocationOnMock) => i.arg[String](0) + " invocation mocked!")
       aMock.returnsOptionFrom(42, true) answersF ((i: Int, b: Boolean) => s"$i, $b")
 
       aMock.returnsOptionString("hello").value shouldBe "mocked!"
@@ -158,7 +158,7 @@ class IdiomaticMockitoScalazTest
 
       aMock.returnsFutureEither("hello") answersFG ValueClass("mocked!")
       aMock.returnsFutureEither("hi") answersFG ((s: String) => ValueClass(s + " mocked!"))
-      aMock.returnsFutureEither("hola") answersFG ((i: InvocationOnMock) => ValueClass(i.getArgument[String](0) + " invocation mocked!"))
+      aMock.returnsFutureEither("hola") answersFG ((i: InvocationOnMock) => ValueClass(i.arg[String](0) + " invocation mocked!"))
       aMock.returnsFutureOptionFrom(42, true) answersFG ((i: Int, b: Boolean) => s"$i, $b")
 
       whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))

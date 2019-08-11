@@ -71,8 +71,7 @@ trait MockitoCats extends ScalacticSerialisableHack {
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].pure))
   def doAnswerF[F[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].pure))
-  def doAnswerF[F[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
+  def doAnswerF[F[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].pure))
 
   def doAnswerFG[F[_]: Applicative, G[_]: Applicative, R](l: => R): Stubber =
@@ -103,17 +102,13 @@ trait MockitoCats extends ScalacticSerialisableHack {
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure))
   def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, R](f: (P0, P1, P2, P3, P4, P5, P6) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure))
-  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, R](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7) => R): Stubber =
+  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, R](f: (P0, P1, P2, P3, P4, P5, P6, P7) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure))
-  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, R](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R): Stubber =
+  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure))
-  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
+  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure))
-  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R](
-      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
+  def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].compose[G].pure))
 
   implicit def catsEquality[T: Eq]: Equality[T] = new EqToEquality[T]

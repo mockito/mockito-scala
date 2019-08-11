@@ -1,8 +1,8 @@
-package org.mockito.stubbing
+package org.mockito
+package stubbing
 import java.lang.reflect.Modifier.isFinal
 
 import org.mockito.Mockito.{ mock, withSettings }
-import org.mockito.ReflectionUtils._
 import org.mockito.internal.debugging.LocationImpl
 import org.mockito.internal.exceptions.Reporter.smartNullPointerException
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues

@@ -178,23 +178,19 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
     def apply[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] =
       os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T)(
-        implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] = os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(
-        implicit F: Applicative[F]): CatsStubbing[F, T] =
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] =
       os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(
-        implicit F: Applicative[F]): CatsStubbing[F, T] =
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(implicit F: Applicative[F]): CatsStubbing[F, T] =
       os thenAnswer f
   }
 
   class AnswerActions2[F[_], G[_], T](os: CatsStubbing2[F, G, T]) {
     def apply(f: => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
 
-    def apply[P0](
-        f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0], F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+    def apply[P0](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0], F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
       os thenAnswer f
 
     def apply[P0, P1](f: (P0, P1) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
@@ -207,27 +203,22 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
     def apply[P0, P1, P2, P3, P4](f: (P0, P1, P2, P3, P4) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
       os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T)(implicit F: Applicative[F],
-                                                                        G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
+    def apply[P0, P1, P2, P3, P4, P5](f: (P0, P1, P2, P3, P4, P5) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T)(implicit F: Applicative[F],
-                                                                                G: Applicative[G]): CatsStubbing2[F, G, T] =
+    def apply[P0, P1, P2, P3, P4, P5, P6](f: (P0, P1, P2, P3, P4, P5, P6) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
       os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T)(implicit F: Applicative[F],
-                                                                                        G: Applicative[G]): CatsStubbing2[F, G, T] =
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7](f: (P0, P1, P2, P3, P4, P5, P6, P7) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
       os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T)(implicit F: Applicative[F],
-                                                                                                G: Applicative[G]): CatsStubbing2[F, G, T] =
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
       os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
       os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
-        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(implicit F: Applicative[F],
+                                                                                                                  G: Applicative[G]): CatsStubbing2[F, G, T] =
       os thenAnswer f
   }
 }

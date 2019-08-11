@@ -22,9 +22,9 @@ import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
-import org.mockito.verification.{ VerificationMode, VerificationWithTimeout }
-import org.scalactic.{ Equality, Prettifier }
+import org.mockito.stubbing.{Answer, DefaultAnswer, ScalaFirstStubbing, Stubber}
+import org.mockito.verification.{VerificationAfterDelay, VerificationMode, VerificationWithTimeout}
+import org.scalactic.{Equality, Prettifier}
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -316,6 +316,11 @@ private[mockito] trait Verifications {
    * Delegates to <code>Mockito.timeout()</code>, it's only here to expose the full Mockito API
    */
   def timeout(millis: Int): VerificationWithTimeout = Mockito.timeout(millis)
+
+  /**
+   * Delegates to <code>Mockito.after()</code>, it's only here to expose the full Mockito API
+   */
+  def after(millis: Int): VerificationAfterDelay = Mockito.after(millis)
 
   /**
    * Delegates to <code>Mockito.times()</code>, it's only here to expose the full Mockito API

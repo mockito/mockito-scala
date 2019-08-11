@@ -36,6 +36,9 @@ object IdiomaticMockitoBase {
     def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
       override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).times(times)
     }
+    def after(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
+      override def verificationMode: VerificationMode = Mockito.after(d.toMillis).times(times)
+    }
   }
 
   //Helper methods for the specs2 macro
@@ -52,16 +55,25 @@ object IdiomaticMockitoBase {
     def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
       override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).atLeast(times)
     }
+    def after(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
+      override def verificationMode: VerificationMode = Mockito.after(d.toMillis).atLeast(times)
+    }
   }
 
   case class AtMost(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.atMost(times)
+    def after(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
+      override def verificationMode: VerificationMode = Mockito.after(d.toMillis).atMost(times)
+    }
   }
 
   object OnlyOn extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.only
     def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
       override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).only
+    }
+    def after(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
+      override def verificationMode: VerificationMode = Mockito.after(d.toMillis).only
     }
   }
 

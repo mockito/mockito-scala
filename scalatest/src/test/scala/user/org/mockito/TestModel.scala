@@ -14,9 +14,11 @@ trait FooTrait {
 
   def iHavePrimitiveByNameArgs(byName: => Int, normal: String): String = "not mocked"
 
-  def iHaveByNameAndVarArgs(byName: => String, normal: String, byName2: => String, normal2: String, vararg: String*)(byName3: => String,
-                                                                                                                     normal3: String,
-                                                                                                                     vararg3: String*): String = "not mocked"
+  def iHaveByNameAndVarArgs(byName: => String, normal: String, byName2: => String, normal2: String, vararg: String*)(
+      byName3: => String,
+      normal3: String,
+      vararg3: String*
+  ): String = "not mocked"
 
   def iHaveFunction0Args(normal: String, f0: () => String): String = "not mocked"
 

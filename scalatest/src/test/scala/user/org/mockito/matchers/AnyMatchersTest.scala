@@ -98,9 +98,9 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
     aMock.barShort(1) shouldBe 100
     verify(aMock).barShort(1)
 
-    when(aMock.barLong(any)) thenReturn 100l
-    aMock.barLong(1) shouldBe 100l
-    verify(aMock).barLong(1l)
+    when(aMock.barLong(any)) thenReturn 100L
+    aMock.barLong(1) shouldBe 100L
+    verify(aMock).barLong(1L)
   }
 
   "anyPrimitive" should "work with AnyVal" in {
@@ -134,9 +134,9 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
     aMock.barShort(1) shouldBe 100
     verify(aMock).barShort(1)
 
-    when(aMock.barLong(anyLong)) thenReturn 100l
-    aMock.barLong(1) shouldBe 100l
-    verify(aMock).barLong(1l)
+    when(aMock.barLong(anyLong)) thenReturn 100L
+    aMock.barLong(1) shouldBe 100L
+    verify(aMock).barLong(1L)
   }
 
   "*" should "be a valid alias of any" in {

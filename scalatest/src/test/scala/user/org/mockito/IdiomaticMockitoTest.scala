@@ -699,8 +699,8 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         aMock.baz(42, Baz2(69, "hola"))
 
         val e = the[ArgumentsAreDifferent] thrownBy {
-          aMock.baz(42, Baz2(69, "chau")) was called
-        }
+            aMock.baz(42, Baz2(69, "chau")) was called
+          }
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("org.baz(42, PrettifiedBaz(hola));")

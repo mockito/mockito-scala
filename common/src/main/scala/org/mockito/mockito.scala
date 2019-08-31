@@ -58,7 +58,8 @@ package object mockito {
 
   def functionToAnswer[T: ValueClassExtractor, P10, P9, P8, P7, P6, P5, P4, P3, P2, P1, P0](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaAnswer[T] =
     invocationToAnswer(
-      i => f(i.arg[P0](0), i.arg[P1](1), i.arg[P2](2), i.arg[P3](3), i.arg[P4](4), i.arg[P5](5), i.arg[P6](6), i.arg[P7](7), i.arg[P8](8), i.arg[P9](9), i.arg[P10](10)))
+      i => f(i.arg[P0](0), i.arg[P1](1), i.arg[P2](2), i.arg[P3](3), i.arg[P4](4), i.arg[P5](5), i.arg[P6](6), i.arg[P7](7), i.arg[P8](8), i.arg[P9](9), i.arg[P10](10))
+    )
 
   //Look at org.mockito.internal.invocation.InvocationMatcher#hasSameMethod
   implicit val JavaMethodEquality: Equality[Method] = new Equality[Method] {

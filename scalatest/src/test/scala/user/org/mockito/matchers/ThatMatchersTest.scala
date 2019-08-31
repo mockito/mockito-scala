@@ -71,7 +71,7 @@ class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers
     verify(aMock).barShort(argThat(EqTo(1.toShort)))
 
     aMock.barLong(1)
-    verify(aMock).barLong(argThat(EqTo(1l)))
+    verify(aMock).barLong(argThat(EqTo(1L)))
   }
 
   "primitiveThat[T]" should "work with AnyVal" in {
@@ -99,6 +99,6 @@ class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers
     verify(aMock).barShort(shortThat(EqTo(1.toShort)))
 
     aMock.barLong(1)
-    verify(aMock).barLong(longThat(EqTo(1l)))
+    verify(aMock).barLong(longThat(EqTo(1L)))
   }
 }

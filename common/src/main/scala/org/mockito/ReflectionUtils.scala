@@ -19,8 +19,9 @@ object ReflectionUtils {
 
   private val mirror = runtimeMirror(getClass.getClassLoader)
   private val customMirror = mirror.asInstanceOf[{
-    def methodToJava(sym: Symbols#MethodSymbol): Method
-  }]
+      def methodToJava(sym: Symbols#MethodSymbol): Method
+    }
+  ]
 
   implicit class InvocationOnMockOps(val invocation: InvocationOnMock) extends AnyVal {
     def mock[M]: M             = invocation.getMock.asInstanceOf[M]

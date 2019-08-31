@@ -15,13 +15,15 @@ import org.scalactic.Prettifier
 
 import scala.collection.JavaConverters._
 
-class ScalaInvocation(val mockRef: MockReference[AnyRef],
-                      val mockitoMethod: MockitoMethod,
-                      val arguments: Array[AnyRef],
-                      rawArguments: Array[AnyRef],
-                      realMethod: RealMethod,
-                      location: Location,
-                      sequenceNumber: Int)(implicit $pt: Prettifier)
+class ScalaInvocation(
+    val mockRef: MockReference[AnyRef],
+    val mockitoMethod: MockitoMethod,
+    val arguments: Array[AnyRef],
+    rawArguments: Array[AnyRef],
+    realMethod: RealMethod,
+    location: Location,
+    sequenceNumber: Int
+)(implicit $pt: Prettifier)
     extends Invocation
     with VerificationAwareInvocation {
 

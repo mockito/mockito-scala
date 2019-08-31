@@ -116,7 +116,7 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
       doReturn(999f).when(aMock).returnFloat
       aMock.returnFloat shouldBe 999
 
-      doReturn(999l).when(aMock).returnLong
+      doReturn(999L).when(aMock).returnLong
       aMock.returnLong shouldBe 999
 
       doReturn(999).when(aMock).returnInt
@@ -146,7 +146,7 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
       aMock.returnFloat shouldBe 999
       aMock.returnFloat shouldBe 111
 
-      doReturn(999l, 111l).when(aMock).returnLong
+      doReturn(999L, 111L).when(aMock).returnLong
       aMock.returnLong shouldBe 999
       aMock.returnLong shouldBe 111
 

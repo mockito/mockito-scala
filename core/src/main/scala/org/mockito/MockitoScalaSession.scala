@@ -31,8 +31,7 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
         listener.reportIssues().foreach {
           case unStubbedCalls: UnexpectedInvocations if unStubbedCalls.nonEmpty =>
             throw new UnexpectedInvocationException(s"""A NullPointerException was thrown, check if maybe related to
-                   |$unStubbedCalls""".stripMargin,
-                                                    e)
+                   |$unStubbedCalls""".stripMargin, e)
           case _ => throw e
         }
       case other =>

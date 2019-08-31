@@ -86,8 +86,9 @@ case class CatsStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
     delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure)
   def thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
     delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure)
-  def thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(implicit F: Applicative[F],
-                                                                                                                     G: Applicative[G]): CatsStubbing2[F, G, T] =
+  def thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
+      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T
+  )(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
     delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure)
 
   def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): CatsStubbing2[F, G, T] =

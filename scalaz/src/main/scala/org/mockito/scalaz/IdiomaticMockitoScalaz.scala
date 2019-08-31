@@ -217,8 +217,9 @@ object IdiomaticMockitoScalaz extends IdiomaticMockitoScalaz {
     def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(implicit F: Applicative[F], G: Applicative[G]): ScalazStubbing2[F, G, T] =
       os thenAnswer f
 
-    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(implicit F: Applicative[F],
-                                                                                                                  G: Applicative[G]): ScalazStubbing2[F, G, T] =
+    def apply[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
+        f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T
+    )(implicit F: Applicative[F], G: Applicative[G]): ScalazStubbing2[F, G, T] =
       os thenAnswer f
   }
 }

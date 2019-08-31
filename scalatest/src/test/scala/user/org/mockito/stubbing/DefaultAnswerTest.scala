@@ -50,8 +50,8 @@ class DefaultAnswerTest extends WordSpec with scalatest.Matchers with IdiomaticM
       smartNull should not be null
 
       val throwable = the[SmartNullPointerException] thrownBy {
-        smartNull.callMeMaybe()
-      }
+          smartNull.callMeMaybe()
+        }
 
       throwable.getMessage should include("You have a NullPointerException here:")
     }
@@ -62,8 +62,8 @@ class DefaultAnswerTest extends WordSpec with scalatest.Matchers with IdiomaticM
       smartNull should not be null
 
       val throwable: SmartNullPointerException = the[SmartNullPointerException] thrownBy {
-        smartNull.isEmpty
-      }
+          smartNull.isEmpty
+        }
 
       throwable.getMessage should include("You have a NullPointerException here:")
     }

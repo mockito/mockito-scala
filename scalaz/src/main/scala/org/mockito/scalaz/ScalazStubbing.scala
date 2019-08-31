@@ -86,11 +86,13 @@ case class ScalazStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
     delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure(_))
   def thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T)(implicit F: Applicative[F], G: Applicative[G]): ScalazStubbing2[F, G, T] =
     delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure(_))
-  def thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T)(implicit F: Applicative[F],
-                                                                                                           G: Applicative[G]): ScalazStubbing2[F, G, T] =
+  def thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9](
+      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => T
+  )(implicit F: Applicative[F], G: Applicative[G]): ScalazStubbing2[F, G, T] =
     delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure(_))
-  def thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T)(implicit F: Applicative[F],
-                                                                                                                     G: Applicative[G]): ScalazStubbing2[F, G, T] =
+  def thenAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10](
+      f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T
+  )(implicit F: Applicative[F], G: Applicative[G]): ScalazStubbing2[F, G, T] =
     delegate thenAnswer functionToAnswer(f).andThen(F.compose[G].pure(_))
 
   def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: MonadError[G, _ >: E]): ScalazStubbing2[F, G, T] =

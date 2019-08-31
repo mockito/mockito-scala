@@ -45,11 +45,11 @@ object Utils {
     "shortThat",
     "longThat",
     "argMatching",
-    "$greater", // >
+    "$greater",    // >
     "$greater$eq", // >=
-    "$less", // <
-    "$less$eq", // <=
-    "$eq$tilde", // =~
+    "$less",       // <
+    "$less$eq",    // <=
+    "$eq$tilde",   // =~
     "Captor.asCapture",
     "capture"
   )

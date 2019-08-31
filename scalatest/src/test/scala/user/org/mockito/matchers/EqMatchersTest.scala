@@ -71,7 +71,7 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
     verify(aMock).barShort(eqTo(1))
 
     aMock.barLong(1)
-    verify(aMock).barLong(eqTo(1l))
+    verify(aMock).barLong(eqTo(1L))
   }
 
   "same[T]" should "work with AnyRef" in {

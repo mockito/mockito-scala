@@ -30,13 +30,15 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
   val scenarios = Table(
     ("testDouble", "foo", "higherKinded", "concreteHigherKinded", "fooWithBaz", "baz", "parametrisedTraitInt"),
     ("mock", () => mock[Foo], () => mock[HigherKinded[Option]], () => mock[ConcreteHigherKinded], () => mock[FooWithBaz], () => mock[Baz], () => mock[ParametrisedTraitInt]),
-    ("spy",
-     () => spy(new Foo),
-     () => spy(new HigherKinded[Option]),
-     () => spy(new ConcreteHigherKinded),
-     () => spy(new FooWithBaz),
-     () => spy(new ConcreteBaz),
-     () => spy(new ParametrisedTraitInt))
+    (
+      "spy",
+      () => spy(new Foo),
+      () => spy(new HigherKinded[Option]),
+      () => spy(new ConcreteHigherKinded),
+      () => spy(new FooWithBaz),
+      () => spy(new ConcreteBaz),
+      () => spy(new ParametrisedTraitInt)
+    )
   )
 
   forAll(scenarios) { (testDouble, foo, higherKinded, concreteHigherKinded, fooWithBaz, baz, parametrisedTraitInt) =>
@@ -78,8 +80,12 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       "create a mock with nice answer API (multiple params)" in {
         val aMock = foo()
 
-        when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClass(i * 10 + s.toInt)) andThenAnswer ((i: Int,
-                                                                                                                                               _: String) => ValueCaseClass(i))
+        when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClass(i * 10 + s.toInt)) andThenAnswer (
+            (
+                i: Int,
+                _: String
+            ) => ValueCaseClass(i)
+        )
 
         aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(42)
         aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(4)
@@ -277,8 +283,9 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       "create a mock with nice answer API (invocation usage)" in {
         val aMock = baz()
 
-        when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClass(i.arg[Int](0) * 10 + 2)) andThenAnswer ((i: InvocationOnMock) =>
-          ValueCaseClass(i.arg[Int](0) * 10 + 3))
+        when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClass(i.arg[Int](0) * 10 + 2)) andThenAnswer (
+            (i: InvocationOnMock) => ValueCaseClass(i.arg[Int](0) * 10 + 3)
+        )
 
         aMock.traitMethod(4) shouldBe ValueCaseClass(42)
         aMock.traitMethod(4) shouldBe ValueCaseClass(43)
@@ -290,8 +297,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
         aMock.baz(42, Baz2(69, "hola"))
 
         val e = the[ArgumentsAreDifferent] thrownBy {
-          verify(aMock).baz(42, Baz2(69, "chau"))
-        }
+            verify(aMock).baz(42, Baz2(69, "chau"))
+          }
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("foo.baz(42, PrettifiedBaz(hola));")

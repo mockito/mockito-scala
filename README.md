@@ -32,7 +32,11 @@ The library has independent developers, release cycle and versioning from core m
 
 ### Please ensure you don't declare `mockito-core` as a dependency. `mockito-scala` will pull the appropiate version automatically
 
-### Note: For more examples and use cases than the ones shown below, please refer to the library's [tests](/core/src/test)
+### Note: For more examples and use cases than the ones shown below, please refer to the library's specific tests
+- [Cats](/cats/src/test)
+- [ScalaTest](/scalatest/src/test)
+- [Specs2](/specs2/src/test)
+- [Scalaz](/scalaz/src/test)
 
 ## Notes for v1.4.0
 As Specs2 support was added, now the library has been split in 3 different artifacts

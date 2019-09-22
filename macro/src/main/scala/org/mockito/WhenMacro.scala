@@ -1,7 +1,7 @@
 package org.mockito
 
 import org.mockito.Utils._
-import org.mockito.stubbing.{ScalaFirstStubbing, ScalaOngoingStubbing}
+import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
 
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox

@@ -68,6 +68,9 @@ class Org {
   def bar = "not mocked"
   def baz = "not mocked"
 
+  def defaultParams(a: String, defaultParam1: Boolean = false, defaultParam2: Int = 1): String               = "not mocked"
+  def curriedDefaultParams(a: String, defaultParam1: Boolean = false)(defaultParam2: Int = a.length): String = "not mocked"
+
   def doSomethingWithThisInt(v: Int): Int = -1
 
   def doSomethingWithThisIntAndString(v: Int, v2: String): String = "not mocked"

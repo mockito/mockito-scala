@@ -4,12 +4,14 @@ import scala.reflect.macros.blackbox
 import scala.util.Properties
 
 trait ValueClassExtractor[VC] extends Serializable {
+  def isValueClass: Boolean = true
   def extract(vc: VC): Any
   def extractAs[T](vc: VC): T = extract(vc).asInstanceOf[T]
 }
 
 class NormalClassExtractor[T] extends ValueClassExtractor[T] {
-  override def extract(vc: T): Any = vc
+  override def isValueClass: Boolean = false
+  override def extract(vc: T): Any   = vc
 }
 
 class ReflectionExtractor[VC] extends ValueClassExtractor[VC] {

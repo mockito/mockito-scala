@@ -1,5 +1,5 @@
 package user.org.mockito
-import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
+import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 
 import scala.annotation.varargs
 
@@ -26,11 +26,11 @@ trait FooTrait {
 
   def returnBar: Bar = new Bar
 
-  def doSomethingWithThisIntAndString(v: Int, v2: String): ValueCaseClass = ValueCaseClass(v)
+  def doSomethingWithThisIntAndString(v: Int, v2: String): ValueCaseClassInt = ValueCaseClassInt(v)
 
-  def returnsValueCaseClass: ValueCaseClass = ValueCaseClass(-1)
+  def returnsValueCaseClass: ValueCaseClassInt = ValueCaseClassInt(-1)
 
-  def returnsValueCaseClass(i: Int): ValueCaseClass = ValueCaseClass(i)
+  def returnsValueCaseClass(i: Int): ValueCaseClassInt = ValueCaseClassInt(i)
 
   def baz(i: Int, b: Baz2): String = "not mocked"
 }
@@ -47,7 +47,7 @@ trait Baz {
   def varargMethod(arg: Int*): Int                                                           = -1
   @varargs def javaVarargMethod(arg: Int*): Int                                              = -1
   def byNameMethod(arg: => Int): Int                                                         = -1
-  def traitMethod(arg: Int): ValueCaseClass                                                  = ValueCaseClass(arg)
+  def traitMethod(arg: Int): ValueCaseClassInt                                               = ValueCaseClassInt(arg)
   def traitMethodWithDefaultArgs(defaultArg: Int = 30, anotherDefault: String = "hola"): Int = -1
 }
 
@@ -89,9 +89,10 @@ class Org {
 
   def valueClass(n: Int, v: ValueClass): String = "not mocked"
 
-  def valueCaseClass(n: Int, v: ValueCaseClass): String = "not mocked"
+  def valueCaseClass(n: Int, v: ValueCaseClassInt): String = "not mocked"
 
-  def returnsValueCaseClass: ValueCaseClass = ValueCaseClass(-1)
+  def returnsValueCaseClassInt: ValueCaseClassInt       = ValueCaseClassInt(-1)
+  def returnsValueCaseClassString: ValueCaseClassString = ValueCaseClassString("not mocked")
 
   def baz(i: Int, b: Baz2): String = "not mocked"
 

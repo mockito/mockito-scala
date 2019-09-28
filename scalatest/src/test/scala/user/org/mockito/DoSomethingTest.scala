@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
-import user.org.mockito.matchers.ValueCaseClass
+import user.org.mockito.matchers.ValueCaseClassInt
 
 class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
@@ -30,9 +30,9 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
 
     def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value"): String = ???
 
-    def doSomethingWithThisIntAndString(v: Int, v2: String): ValueCaseClass = ???
+    def doSomethingWithThisIntAndString(v: Int, v2: String): ValueCaseClassInt = ???
 
-    def returnValueClass: ValueCaseClass = ???
+    def returnValueClass: ValueCaseClassInt = ???
   }
 
   "doCallRealMethod" should {
@@ -73,19 +73,19 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
     "simplify answer API" in {
       val aMock = mock[Foo]
 
-      doAnswer((i: Int, s: String) => ValueCaseClass(i * 10 + s.toInt)).when(aMock).doSomethingWithThisIntAndString(*, *)
+      doAnswer((i: Int, s: String) => ValueCaseClassInt(i * 10 + s.toInt)).when(aMock).doSomethingWithThisIntAndString(*, *)
 
-      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(42)
+      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClassInt(42)
     }
 
     "simplify answer API (invocation usage)" in {
       val aMock = mock[Foo]
 
-      doAnswer((i: InvocationOnMock) => ValueCaseClass(i.arg[Int](0) * 10 + i.arg[String](1).toInt))
+      doAnswer((i: InvocationOnMock) => ValueCaseClassInt(i.arg[Int](0) * 10 + i.arg[String](1).toInt))
         .when(aMock)
         .doSomethingWithThisIntAndString(*, *)
 
-      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(42)
+      aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClassInt(42)
     }
   }
 
@@ -170,9 +170,9 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
       aMock.returnBoolean shouldBe false
       aMock.returnBoolean shouldBe true
 
-      doReturn(ValueCaseClass(100), ValueCaseClass(200)).when(aMock).returnValueClass
-      aMock.returnValueClass shouldBe ValueCaseClass(100)
-      aMock.returnValueClass shouldBe ValueCaseClass(200)
+      doReturn(ValueCaseClassInt(100), ValueCaseClassInt(200)).when(aMock).returnValueClass
+      aMock.returnValueClass shouldBe ValueCaseClassInt(100)
+      aMock.returnValueClass shouldBe ValueCaseClassInt(200)
     }
   }
 

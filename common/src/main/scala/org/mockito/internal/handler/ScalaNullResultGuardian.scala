@@ -8,11 +8,19 @@ import org.mockito.mock.MockCreationSettings
 class ScalaNullResultGuardian[T](delegate: MockHandler[T]) extends MockHandler[T] {
 
   override def handle(invocation: Invocation): AnyRef = {
-    val result     = delegate.handle(invocation)
+    val result = delegate.handle(invocation)
+
     val returnType = invocation.returnType
+
     if (result == null && returnType.isPrimitive)
       defaultValue(returnType).asInstanceOf[AnyRef]
-    else
+    else if (result == null && invocation.returnsValueClass) {
+      val runtimeReturnType = invocation.getRawReturnType
+      if (runtimeReturnType.isPrimitive)
+        defaultValue(runtimeReturnType).asInstanceOf[AnyRef]
+      else
+        DefaultAnswers.ReturnsSmartNulls(invocation).orNull.asInstanceOf[AnyRef]
+    } else
       result
   }
 

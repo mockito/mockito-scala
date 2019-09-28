@@ -1,9 +1,9 @@
-package org.mockito.stubbing
+package org.mockito
+package stubbing
 
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.stubbing.answers.ScalaThrowsException
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ clazz, functionToAnswer, invocationToAnswer }
 import org.objenesis.ObjenesisStd
 
 import scala.reflect.ClassTag
@@ -13,7 +13,9 @@ abstract class ScalaBaseStubbing[T: ValueClassExtractor] {
   protected def delegate: OngoingStubbing[T]
 
   protected def _thenReturn(value: T, values: Seq[T]): ScalaOngoingStubbing[T] =
-    delegate.thenReturn(ValueClassExtractor[T].extractAs[T](value), values.map(ValueClassExtractor[T].extractAs[T]): _*)
+    values.foldLeft(delegate.thenAnswer(ScalaReturns(value))) {
+      case (s, v) => s.thenAnswer(ScalaReturns(v))
+    }
 
   private def thenThrow(t: Throwable): ScalaOngoingStubbing[T] = delegate thenAnswer new ScalaThrowsException(t)
 

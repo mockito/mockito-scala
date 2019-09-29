@@ -10,7 +10,7 @@ import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar }
 import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ FixtureContext, Matchers, WordSpec }
-import user.org.mockito.matchers.{ ValueCaseClass, ValueClass }
+import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import user.org.mockito.model.JavaFoo
 
 case class Bread(name: String) extends AnyVal
@@ -44,10 +44,10 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "stub a value class return value" in {
         val org = orgDouble()
 
-        org.returnsValueCaseClass returns ValueCaseClass(100) andThen ValueCaseClass(200)
+        org.returnsValueCaseClassInt returns ValueCaseClassInt(100) andThen ValueCaseClassInt(200)
 
-        org.returnsValueCaseClass shouldBe ValueCaseClass(100)
-        org.returnsValueCaseClass shouldBe ValueCaseClass(200)
+        org.returnsValueCaseClassInt shouldBe ValueCaseClassInt(100)
+        org.returnsValueCaseClassInt shouldBe ValueCaseClassInt(200)
       }
 
       "stub multiple return values" in {
@@ -185,15 +185,17 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       "doStub a value class return value" in {
         val org = orgDouble()
 
-        ValueCaseClass(100) willBe returned by org.returnsValueCaseClass
+        ValueCaseClassString("100") willBe returned by org.returnsValueCaseClassString
+        ValueCaseClassInt(100) willBe returned by org.returnsValueCaseClassInt
 
-        org.returnsValueCaseClass shouldBe ValueCaseClass(100)
+        org.returnsValueCaseClassString shouldBe ValueCaseClassString("100")
+        org.returnsValueCaseClassInt shouldBe ValueCaseClassInt(100)
       }
 
       "doStub return value should be type safe" in {
         val org = orgDouble()
 
-        ValueCaseClass(100) willBe returned by org.returnsValueCaseClass
+        ValueCaseClassInt(100) willBe returned by org.returnsValueCaseClassInt
 
         """"mocked" willBe returned by org.returnsValueCaseClass""" shouldNot compile
       }
@@ -622,18 +624,18 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
         org.valueClass(1, eqToVal(new ValueClass("meh"))) was called
 
-        org.valueCaseClass(2, eqToVal(ValueCaseClass(100))) returns "mocked!"
-        org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
-        org.valueCaseClass(2, eqToVal(ValueCaseClass(100))) was called
+        org.valueCaseClass(2, eqToVal(ValueCaseClassInt(100))) returns "mocked!"
+        org.valueCaseClass(2, ValueCaseClassInt(100)) shouldBe "mocked!"
+        org.valueCaseClass(2, eqToVal(ValueCaseClassInt(100))) was called
 
-        val caseClassValue = ValueCaseClass(100)
+        val caseClassValue = ValueCaseClassInt(100)
         org.valueCaseClass(3, eqToVal(caseClassValue)) returns "mocked!"
-        org.valueCaseClass(3, ValueCaseClass(100)) shouldBe "mocked!"
+        org.valueCaseClass(3, ValueCaseClassInt(100)) shouldBe "mocked!"
         org.valueCaseClass(3, eqToVal(caseClassValue)) was called
 
-        org.valueCaseClass(*, ValueCaseClass(200)) returns "mocked!"
-        org.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
-        org.valueCaseClass(*, ValueCaseClass(200)) was called
+        org.valueCaseClass(*, ValueCaseClassInt(200)) returns "mocked!"
+        org.valueCaseClass(4, ValueCaseClassInt(200)) shouldBe "mocked!"
+        org.valueCaseClass(*, ValueCaseClassInt(200)) was called
       }
 
       "eqTo macro works with new syntax" in {
@@ -643,18 +645,18 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
         org.valueClass(1, eqTo(new ValueClass("meh"))) was called
 
-        org.valueCaseClass(2, eqTo(ValueCaseClass(100))) returns "mocked!"
-        org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
-        org.valueCaseClass(2, eqTo(ValueCaseClass(100))) was called
+        org.valueCaseClass(2, eqTo(ValueCaseClassInt(100))) returns "mocked!"
+        org.valueCaseClass(2, ValueCaseClassInt(100)) shouldBe "mocked!"
+        org.valueCaseClass(2, eqTo(ValueCaseClassInt(100))) was called
 
-        val caseClassValue = ValueCaseClass(100)
+        val caseClassValue = ValueCaseClassInt(100)
         org.valueCaseClass(3, eqTo(caseClassValue)) returns "mocked!"
         org.valueCaseClass(3, caseClassValue) shouldBe "mocked!"
         org.valueCaseClass(3, eqTo(caseClassValue)) was called
 
-        org.valueCaseClass(*, ValueCaseClass(200)) returns "mocked!"
-        org.valueCaseClass(4, ValueCaseClass(200)) shouldBe "mocked!"
-        org.valueCaseClass(*, ValueCaseClass(200)) was called
+        org.valueCaseClass(*, ValueCaseClassInt(200)) returns "mocked!"
+        org.valueCaseClass(4, ValueCaseClassInt(200)) shouldBe "mocked!"
+        org.valueCaseClass(*, ValueCaseClassInt(200)) was called
       }
 
       "argMatching works with new syntax" in {
@@ -676,9 +678,9 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
         org.valueClass(1, anyVal[ValueClass]) was called
 
-        org.valueCaseClass(2, anyVal[ValueCaseClass]) returns "mocked!"
-        org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
-        org.valueCaseClass(2, anyVal[ValueCaseClass]) was called
+        org.valueCaseClass(2, anyVal[ValueCaseClassInt]) returns "mocked!"
+        org.valueCaseClass(2, ValueCaseClassInt(100)) shouldBe "mocked!"
+        org.valueCaseClass(2, anyVal[ValueCaseClassInt]) was called
       }
 
       "any works with new syntax" in {
@@ -688,9 +690,9 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
         org.valueClass(1, any[ValueClass]) was called
 
-        org.valueCaseClass(2, any[ValueCaseClass]) returns "mocked!"
-        org.valueCaseClass(2, ValueCaseClass(100)) shouldBe "mocked!"
-        org.valueCaseClass(2, any[ValueCaseClass]) was called
+        org.valueCaseClass(2, any[ValueCaseClassInt]) returns "mocked!"
+        org.valueCaseClass(2, ValueCaseClassInt(100)) shouldBe "mocked!"
+        org.valueCaseClass(2, any[ValueCaseClassInt]) was called
       }
 
       "use Prettifier for the arguments" in {
@@ -918,6 +920,14 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
       aMock.varargMethod("hola", Array(1, 2, 3): _*) was called
       aMock.varargMethod("hola", Vector(1, 2, 3): _*) was called
       aMock.varargMethod("hola", 1, 2, 3) was called
+    }
+
+    "return the same value class on a function" in {
+      val f: String => ValueClass = mock[String => ValueClass]
+
+      f(*) returns new ValueClass("str")
+
+      f("anyStringValue") shouldEqual new ValueClass("str")
     }
   }
 

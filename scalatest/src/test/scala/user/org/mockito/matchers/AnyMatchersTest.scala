@@ -50,9 +50,9 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
     aMock.valueClass(new ValueClass("meh")) shouldBe "mocked!"
     verify(aMock).valueClass(anyVal[ValueClass])
 
-    when(aMock.valueCaseClass(anyVal[ValueCaseClass])) thenReturn 100
-    aMock.valueCaseClass(ValueCaseClass(1)) shouldBe 100
-    verify(aMock).valueCaseClass(anyVal[ValueCaseClass])
+    when(aMock.valueCaseClass(anyVal[ValueCaseClassInt])) thenReturn 100
+    aMock.valueCaseClass(ValueCaseClassInt(1)) shouldBe 100
+    verify(aMock).valueCaseClass(anyVal[ValueCaseClassInt])
   }
 
   "any" should "work with a value class" in {
@@ -62,9 +62,9 @@ class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers 
     aMock.valueClass(new ValueClass("meh")) shouldBe "mocked!"
     verify(aMock).valueClass(any[ValueClass])
 
-    when(aMock.valueCaseClass(any[ValueCaseClass])) thenReturn 100
-    aMock.valueCaseClass(ValueCaseClass(1)) shouldBe 100
-    verify(aMock).valueCaseClass(any[ValueCaseClass])
+    when(aMock.valueCaseClass(any[ValueCaseClassInt])) thenReturn 100
+    aMock.valueCaseClass(ValueCaseClassInt(1)) shouldBe 100
+    verify(aMock).valueCaseClass(any[ValueCaseClassInt])
   }
 
   "any" should "work with AnyVal" in {

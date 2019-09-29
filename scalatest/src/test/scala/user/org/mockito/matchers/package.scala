@@ -1,8 +1,9 @@
 package user.org.mockito
 
 package object matchers {
-  class ValueClass(private val v: String)    extends AnyVal
-  case class ValueCaseClass private (v: Int) extends AnyVal
+  class ValueClass(private val v: String)             extends AnyVal
+  case class ValueCaseClassInt private (v: Int)       extends AnyVal
+  case class ValueCaseClassString private (v: String) extends AnyVal
 
   case class Baz(param1: String, param2: String)
 
@@ -39,7 +40,7 @@ package object matchers {
 
     def valueClass(v: ValueClass): String = ???
 
-    def valueCaseClass(v: ValueCaseClass): Int = ???
+    def valueCaseClass(v: ValueCaseClassInt): Int = ???
 
     def baz(v: Baz): Baz = v
 

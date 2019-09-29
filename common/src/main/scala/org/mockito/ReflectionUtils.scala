@@ -34,13 +34,21 @@ object ReflectionUtils {
       val javaReturnType = method.getReturnType
 
       if (javaReturnType == classOf[Object])
-        resolveWithScalaGenerics(method)
-          .orElse(resolveWithJavaGenerics(method))
+        resolveWithScalaGenerics
+          .orElse(resolveWithJavaGenerics)
           .getOrElse(javaReturnType)
       else javaReturnType
     }
 
-    private def resolveWithScalaGenerics(method: Method): Option[Class[_]] =
+    def returnsValueClass: Boolean = findTypeSymbol.exists(_.returnType.typeSymbol.isDerivedValueClass)
+
+    private def resolveWithScalaGenerics: Option[Class[_]] =
+      findTypeSymbol
+        .filter(_.returnType.typeSymbol.isClass)
+        .map(_.asMethod.returnType.typeSymbol.asClass)
+        .map(mirror.runtimeClass)
+
+    private def findTypeSymbol =
       scala.util
         .Try {
           mirror
@@ -48,17 +56,13 @@ object ReflectionUtils {
             .info
             .decls
             .collectFirst {
-              case symbol
-                  if isNonConstructorMethod(symbol) &&
-                  customMirror.methodToJava(symbol) === method &&
-                  symbol.returnType.typeSymbol.isClass =>
-                mirror.runtimeClass(symbol.asMethod.returnType.typeSymbol.asClass)
+              case symbol if isNonConstructorMethod(symbol) && customMirror.methodToJava(symbol) === method => symbol
             }
         }
         .toOption
         .flatten
 
-    private def resolveWithJavaGenerics(method: Method): Option[Class[_]] =
+    private def resolveWithJavaGenerics: Option[Class[_]] =
       try Some(GenericsResolver.resolve(invocation.getMock.getClass).`type`(method.getDeclaringClass).method(method).resolveReturnClass())
       catch {
         // HACK for JVM 8 due to java.lang.InternalError: Malformed class name being thrown when calling getSimpleName on objects nested in

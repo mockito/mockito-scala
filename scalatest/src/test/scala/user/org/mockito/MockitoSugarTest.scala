@@ -12,7 +12,7 @@ import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
-import user.org.mockito.matchers.ValueCaseClass
+import user.org.mockito.matchers.ValueCaseClassInt
 import user.org.mockito.model.JavaFoo
 
 import scala.reflect.io.AbstractFile
@@ -71,24 +71,24 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       "stub a value class return value" in {
         val aMock = foo()
 
-        when(aMock.returnsValueCaseClass) thenReturn ValueCaseClass(100) andThen ValueCaseClass(200)
+        when(aMock.returnsValueCaseClass) thenReturn ValueCaseClassInt(100) andThen ValueCaseClassInt(200)
 
-        aMock.returnsValueCaseClass shouldBe ValueCaseClass(100)
-        aMock.returnsValueCaseClass shouldBe ValueCaseClass(200)
+        aMock.returnsValueCaseClass shouldBe ValueCaseClassInt(100)
+        aMock.returnsValueCaseClass shouldBe ValueCaseClassInt(200)
       }
 
       "create a mock with nice answer API (multiple params)" in {
         val aMock = foo()
 
-        when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClass(i * 10 + s.toInt)) andThenAnswer (
+        when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClassInt(i * 10 + s.toInt)) andThenAnswer (
             (
                 i: Int,
                 _: String
-            ) => ValueCaseClass(i)
+            ) => ValueCaseClassInt(i)
         )
 
-        aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(42)
-        aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClass(4)
+        aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClassInt(42)
+        aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClassInt(4)
       }
 
       //useful if we want to delay the evaluation of whatever we are returning until the method is called
@@ -263,10 +263,10 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
         val aMock = fooWithBaz()
 
         when(aMock.bar) thenReturn "mocked!"
-        when(aMock.traitMethod(any)) thenReturn ValueCaseClass(69)
+        when(aMock.traitMethod(any)) thenReturn ValueCaseClassInt(69)
 
         aMock.bar shouldBe "mocked!"
-        aMock.traitMethod(30) shouldBe ValueCaseClass(69)
+        aMock.traitMethod(30) shouldBe ValueCaseClassInt(69)
 
         verify(aMock).traitMethod(30)
       }
@@ -274,21 +274,21 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       "create a mock with nice answer API (single param)" in {
         val aMock = baz()
 
-        when(aMock.traitMethod(*)) thenAnswer ((i: Int) => ValueCaseClass(i * 10 + 2)) andThenAnswer ((i: Int) => ValueCaseClass(i * 10 + 3))
+        when(aMock.traitMethod(*)) thenAnswer ((i: Int) => ValueCaseClassInt(i * 10 + 2)) andThenAnswer ((i: Int) => ValueCaseClassInt(i * 10 + 3))
 
-        aMock.traitMethod(4) shouldBe ValueCaseClass(42)
-        aMock.traitMethod(4) shouldBe ValueCaseClass(43)
+        aMock.traitMethod(4) shouldBe ValueCaseClassInt(42)
+        aMock.traitMethod(4) shouldBe ValueCaseClassInt(43)
       }
 
       "create a mock with nice answer API (invocation usage)" in {
         val aMock = baz()
 
-        when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClass(i.arg[Int](0) * 10 + 2)) andThenAnswer (
-            (i: InvocationOnMock) => ValueCaseClass(i.arg[Int](0) * 10 + 3)
+        when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClassInt(i.arg[Int](0) * 10 + 2)) andThenAnswer (
+            (i: InvocationOnMock) => ValueCaseClassInt(i.arg[Int](0) * 10 + 3)
         )
 
-        aMock.traitMethod(4) shouldBe ValueCaseClass(42)
-        aMock.traitMethod(4) shouldBe ValueCaseClass(43)
+        aMock.traitMethod(4) shouldBe ValueCaseClassInt(42)
+        aMock.traitMethod(4) shouldBe ValueCaseClassInt(43)
       }
 
       "use Prettifier for the arguments" in {
@@ -368,13 +368,13 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
       val aMock: FooTrait with Baz = mock[FooTrait with Baz]
 
       when(aMock.bar) thenReturn "mocked!"
-      when(aMock.traitMethod(any)) thenReturn ValueCaseClass(69)
+      when(aMock.traitMethod(any)) thenReturn ValueCaseClassInt(69)
       when(aMock.varargMethod(1, 2, 3)) thenReturn 42
       when(aMock.javaVarargMethod(1, 2, 3)) thenReturn 42
       when(aMock.byNameMethod(69)) thenReturn 42
 
       aMock.bar shouldBe "mocked!"
-      aMock.traitMethod(30) shouldBe ValueCaseClass(69)
+      aMock.traitMethod(30) shouldBe ValueCaseClassInt(69)
       aMock.varargMethod(1, 2, 3) shouldBe 42
       aMock.javaVarargMethod(1, 2, 3) shouldBe 42
       aMock.byNameMethod(69) shouldBe 42

@@ -12,9 +12,9 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
     aMock.valueClass(new ValueClass("meh"))
     verify(aMock).valueClass(eqTo(new ValueClass("meh")))
 
-    aMock.valueCaseClass(ValueCaseClass(100))
-    verify(aMock).valueCaseClass(eqTo(ValueCaseClass(100)))
-    val expected = ValueCaseClass(100)
+    aMock.valueCaseClass(ValueCaseClassInt(100))
+    verify(aMock).valueCaseClass(eqTo(ValueCaseClassInt(100)))
+    val expected = ValueCaseClassInt(100)
     verify(aMock).valueCaseClass(eqTo(expected))
   }
 
@@ -24,9 +24,9 @@ class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers w
     aMock.valueClass(new ValueClass("meh"))
     verify(aMock).valueClass(eqToVal(new ValueClass("meh")))
 
-    aMock.valueCaseClass(ValueCaseClass(100))
-    verify(aMock).valueCaseClass(eqToVal(ValueCaseClass(100)))
-    val expected = ValueCaseClass(100)
+    aMock.valueCaseClass(ValueCaseClassInt(100))
+    verify(aMock).valueCaseClass(eqToVal(ValueCaseClassInt(100)))
+    val expected = ValueCaseClassInt(100)
     verify(aMock).valueCaseClass(eqToVal(expected))
   }
 

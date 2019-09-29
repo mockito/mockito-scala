@@ -23,7 +23,7 @@ import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, Stubber }
+import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, ScalaReturns, Stubber }
 import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
 import org.scalactic.{ Equality, Prettifier }
 
@@ -68,10 +68,9 @@ private[mockito] trait DoSomething {
    *
    */
   def doReturn[T: ValueClassExtractor](toBeReturned: T, toBeReturnedNext: T*): Stubber =
-    Mockito.doReturn(
-      ValueClassExtractor[T].extract(toBeReturned),
-      toBeReturnedNext.map(ValueClassExtractor[T].extractAs[Object]): _*
-    )
+    toBeReturnedNext.foldLeft(Mockito.doAnswer(ScalaReturns(toBeReturned))) {
+      case (s, v) => s.doAnswer(ScalaReturns(v))
+    }
 
   /**
    * Delegates to <code>Mockito.doThrow</code>, it's only here so we expose all the Mockito API

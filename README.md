@@ -38,6 +38,9 @@ The library has independent developers, release cycle and versioning from core m
 - [Specs2](/specs2/src/test)
 - [Scalaz](/scalaz/src/test)
 
+## Partial unification
+If you're in Scala 2.11 or 2.12 you'll probably want to add the compiler flag "-Ypartial-unification", if you don't you risk some compile errors when trying to stub complex types using the idiomatic syntax
+
 ## Notes for v1.4.0
 As Specs2 support was added, now the library has been split in 3 different artifacts
 - **mockito-scala** being the core

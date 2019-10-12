@@ -7,7 +7,7 @@ object Dependencies {
   val commonLibraries = Seq(
     "org.mockito"   % "mockito-core"      % "3.1.0",
     "org.scalactic" %% "scalactic"        % scalatestVersion,
-    "ru.vyarus"     % "generics-resolver" % "3.0.0",
+    "ru.vyarus"     % "generics-resolver" % "3.0.1",
   )
 
   val scalatest = "org.scalatest" %% "scalatest" % scalatestVersion

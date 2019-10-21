@@ -13,7 +13,7 @@ object Dependencies {
   val scalatest = "org.scalatest" %% "scalatest" % scalatestVersion
 
   val specs2 = Seq(
-    "org.specs2"   %% "specs2-core"  % "4.7.1" % "provided",
+    "org.specs2"   %% "specs2-core"  % "4.8.0" % "provided",
     "org.hamcrest" % "hamcrest-core" % "2.2"   % "provided"
   )
 

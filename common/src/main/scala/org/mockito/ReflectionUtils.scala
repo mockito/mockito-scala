@@ -2,6 +2,7 @@ package org.mockito
 
 import java.lang.reflect.Method
 
+import org.mockito.internal.ValueClassWrapper
 import org.mockito.invocation.InvocationOnMock
 import org.scalactic.TripleEquals._
 import ru.vyarus.java.generics.resolver.GenericsResolver
@@ -24,11 +25,11 @@ object ReflectionUtils {
   ]
 
   implicit class InvocationOnMockOps(val invocation: InvocationOnMock) extends AnyVal {
-    def mock[M]: M             = invocation.getMock.asInstanceOf[M]
-    def method: Method         = invocation.getMethod
-    def arg[A](index: Int): A  = invocation.getArgument(index)
-    def args: List[Any]        = invocation.getArguments.toList
-    def callRealMethod[A](): A = invocation.callRealMethod.asInstanceOf[A]
+    def mock[M]: M                               = invocation.getMock.asInstanceOf[M]
+    def method: Method                           = invocation.getMethod
+    def arg[A: ValueClassWrapper](index: Int): A = ValueClassWrapper[A].wrapAs[A](invocation.getArgument(index))
+    def args: List[Any]                          = invocation.getArguments.toList
+    def callRealMethod[A](): A                   = invocation.callRealMethod.asInstanceOf[A]
 
     def returnType: Class[_] = {
       val javaReturnType = method.getReturnType

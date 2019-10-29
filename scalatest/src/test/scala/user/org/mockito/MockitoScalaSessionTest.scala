@@ -124,28 +124,28 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with Matche
 
       "check incorrect stubs after the expected one was called" in {
         val thrown = the[UnexpectedInvocationException] thrownBy {
-            MockitoScalaSession().run {
-              val aFoo = foo()
+          MockitoScalaSession().run {
+            val aFoo = foo()
 
-              aFoo.bar("pepe") returns "mocked"
+            aFoo.bar("pepe") returns "mocked"
 
-              aFoo.bar("pepe")
+            aFoo.bar("pepe")
 
-              aFoo.bar("paco").toLowerCase
-            }
+            aFoo.bar("paco").toLowerCase
           }
+        }
 
         thrown.getMessage should startWith("Unexpected invocations found")
       }
 
       "check unexpected invocations" in {
         val thrown = the[UnexpectedInvocationException] thrownBy {
-            MockitoScalaSession().run {
-              val aFoo = foo()
+          MockitoScalaSession().run {
+            val aFoo = foo()
 
-              aFoo.bar("pepe")
-            }
+            aFoo.bar("pepe")
           }
+        }
 
         thrown.getMessage should startWith("Unexpected invocations found")
       }
@@ -340,37 +340,37 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with Matche
 
     "fail if a nested deep stub is stubbed but not used" in {
       val thrown = the[UnnecessaryStubbingException] thrownBy {
-          MockitoScalaSession().run {
-            val aFoo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
+        MockitoScalaSession().run {
+          val aFoo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
-            aFoo.userClass.callMeMaybe.callMe returns Some("my number")
+          aFoo.userClass.callMeMaybe.callMe returns Some("my number")
 
-          }
         }
+      }
 
       thrown.getMessage should startWith("Unnecessary stubbings detected")
     }
 
     "check incorrect stubs after the expected one was called on a final class" in {
       val thrown = the[UnexpectedInvocationException] thrownBy {
-          MockitoScalaSession().run {
-            val aFoo = mock[Foo]
+        MockitoScalaSession().run {
+          val aFoo = mock[Foo]
 
-            aFoo.userClassFinal.callMeMaybe
-          }
+          aFoo.userClassFinal.callMeMaybe
         }
+      }
 
       thrown.getMessage should startWith("A NullPointerException was thrown, check if maybe related to")
     }
 
     "check SmartNull" in {
       val thrown = the[SmartNullPointerException] thrownBy {
-          MockitoScalaSession().run {
-            val aFoo = mock[Foo]
+        MockitoScalaSession().run {
+          val aFoo = mock[Foo]
 
-            aFoo.userClass.callMeMaybe
-          }
+          aFoo.userClass.callMeMaybe
         }
+      }
 
       thrown.getMessage should include("You have a NullPointerException here:")
     }

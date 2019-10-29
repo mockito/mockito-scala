@@ -64,6 +64,8 @@ class ConcreteHigherKinded extends HigherKinded[Option]
 
 class Implicit[T]
 
+case class TaggedValue[T](v: Int) extends AnyVal
+
 class Org {
   def bar = "not mocked"
   def baz = "not mocked"
@@ -94,6 +96,8 @@ class Org {
   def returnsValueCaseClassInt: ValueCaseClassInt       = ValueCaseClassInt(-1)
   def returnsValueCaseClassString: ValueCaseClassString = ValueCaseClassString("not mocked")
 
+  def takesManyValueClasses(v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString): String = "not mocked"
+
   def baz(i: Int, b: Baz2): String = "not mocked"
 
   def fooWithVarArg(bells: String*): Unit                                                  = ()
@@ -107,6 +111,8 @@ class Org {
 
   def option: Option[String]                    = None
   def option(a: String, b: Int): Option[String] = None
+
+  def printTaggedValue(value: TaggedValue[String]): String = "not mocked"
 }
 
 case class Baz2(param1: Int, param2: String)

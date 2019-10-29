@@ -31,9 +31,12 @@ object MacroMatchers {
         .head
 
     val r = if (isCaseValueClass) c.Expr[AnyMatcher[T]] {
+      val companion     = tpe.companion
+      val apply         = companion.decl(TermName("apply"))
+      val companionTerm = companion.typeSymbol.name.toTermName
       q"""
       new _root_.org.mockito.matchers.AnyMatcher[$tpe] {
-        override def any: $tpe = ${tpe.companion.decl(TermName("apply"))}(_root_.org.mockito.ArgumentMatchers.any[$innerType]())
+        override def any: $tpe = $companionTerm.$apply(_root_.org.mockito.ArgumentMatchers.any[$innerType]())
       }
     """
     } else if (isValueClass) c.Expr[AnyMatcher[T]] {

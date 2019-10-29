@@ -13,7 +13,6 @@ package org.mockito
 
 import org.mockito.Answers.CALLS_REAL_METHODS
 import org.mockito.ReflectionUtils.InvocationOnMockOps
-import org.mockito.internal.ValueClassExtractor
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions
@@ -21,9 +20,10 @@ import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
+import org.mockito.internal.{ ValueClassExtractor, ValueClassWrapper }
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.mock.MockCreationSettings
-import org.mockito.stubbing.{ Answer, DefaultAnswer, ScalaFirstStubbing, ScalaReturns, Stubber }
+import org.mockito.stubbing._
 import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
 import org.scalactic.{ Equality, Prettifier }
 
@@ -107,30 +107,348 @@ private[mockito] trait DoSomething {
         case _               => _l
       }
     }))
-  def doAnswer[P0, R: ValueClassExtractor](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber = clazz[P0] match {
+  def doAnswer[P0: ValueClassWrapper, R: ValueClassExtractor](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber = clazz[P0] match {
     case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
     case _                                   => Mockito.doAnswer(functionToAnswer(f))
   }
-  def doAnswer[P0, P1, R: ValueClassExtractor](f: (P0, P1) => R): Stubber =
+  def doAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper, R: ValueClassExtractor](f: (P0, P1) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, R: ValueClassExtractor](f: (P0, P1, P2) => R): Stubber =
+
+  def doAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper, P2: ValueClassWrapper, R: ValueClassExtractor](f: (P0, P1, P2) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, R: ValueClassExtractor](f: (P0, P1, P2, P3) => R): Stubber =
+
+  def doAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper, P2: ValueClassWrapper, P3: ValueClassWrapper, R: ValueClassExtractor](f: (P0, P1, P2, P3) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4) => R): Stubber =
+
+  def doAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper, P2: ValueClassWrapper, P3: ValueClassWrapper, P4: ValueClassWrapper, R: ValueClassExtractor](
+      f: (P0, P1, P2, P3, P4) => R
+  ): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5) => R): Stubber =
+
+  def doAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper, P2: ValueClassWrapper, P3: ValueClassWrapper, P4: ValueClassWrapper, P5: ValueClassWrapper, R: ValueClassExtractor](
+      f: (P0, P1, P2, P3, P4, P5) => R
+  ): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6) => R): Stubber =
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7) => R): Stubber =
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R): Stubber =
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
-  def doAnswer[P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R: ValueClassExtractor](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      P14: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      P14: ValueClassWrapper,
+      P15: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      P14: ValueClassWrapper,
+      P15: ValueClassWrapper,
+      P16: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      P14: ValueClassWrapper,
+      P15: ValueClassWrapper,
+      P16: ValueClassWrapper,
+      P17: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      P14: ValueClassWrapper,
+      P15: ValueClassWrapper,
+      P16: ValueClassWrapper,
+      P17: ValueClassWrapper,
+      P18: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      P14: ValueClassWrapper,
+      P15: ValueClassWrapper,
+      P16: ValueClassWrapper,
+      P17: ValueClassWrapper,
+      P18: ValueClassWrapper,
+      P19: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      P14: ValueClassWrapper,
+      P15: ValueClassWrapper,
+      P16: ValueClassWrapper,
+      P17: ValueClassWrapper,
+      P18: ValueClassWrapper,
+      P19: ValueClassWrapper,
+      P20: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+  def doAnswer[
+      P0: ValueClassWrapper,
+      P1: ValueClassWrapper,
+      P2: ValueClassWrapper,
+      P3: ValueClassWrapper,
+      P4: ValueClassWrapper,
+      P5: ValueClassWrapper,
+      P6: ValueClassWrapper,
+      P7: ValueClassWrapper,
+      P8: ValueClassWrapper,
+      P9: ValueClassWrapper,
+      P10: ValueClassWrapper,
+      P11: ValueClassWrapper,
+      P12: ValueClassWrapper,
+      P13: ValueClassWrapper,
+      P14: ValueClassWrapper,
+      P15: ValueClassWrapper,
+      P16: ValueClassWrapper,
+      P17: ValueClassWrapper,
+      P18: ValueClassWrapper,
+      P19: ValueClassWrapper,
+      P20: ValueClassWrapper,
+      P21: ValueClassWrapper,
+      R: ValueClassExtractor
+  ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21) => R): Stubber =
+    Mockito.doAnswer(functionToAnswer(f))
+
+//  (2 to 22).foreach { fn =>
+//    val args = (0 until fn)
+//    print(s"""
+//      |def doAnswer[${args.map(a => s"P$a: ValueClassWrapper").mkString(",")}, R: ValueClassExtractor](f: (${args.map(a => s"P$a").mkString(",")}) => R): Stubber =
+//      |    Mockito.doAnswer(functionToAnswer(f))
+//      |""".stripMargin)
+//  }
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {

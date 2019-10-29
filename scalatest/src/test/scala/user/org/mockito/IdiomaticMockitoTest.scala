@@ -192,6 +192,16 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.returnsValueCaseClassInt shouldBe ValueCaseClassInt(100)
       }
 
+      "doStub a takes value classes" in {
+        val org = orgDouble()
+
+        { (v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString) =>
+          s"$v-$v1-$v2"
+        } willBe answered by org.takesManyValueClasses(any[ValueClass], any[ValueCaseClassInt], any[ValueCaseClassString])
+
+        org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3")) shouldBe "ValueClass(1)-ValueCaseClassInt(2)-ValueCaseClassString(3)"
+      }
+
       "doStub return value should be type safe" in {
         val org = orgDouble()
 
@@ -695,14 +705,24 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.valueCaseClass(2, any[ValueCaseClassInt]) was called
       }
 
+      "works with arg value classes" in {
+        val org = orgDouble()
+
+        org.takesManyValueClasses(any[ValueClass], any[ValueCaseClassInt], any[ValueCaseClassString]) answers { (v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString) =>
+          s"$v-$v1-$v2"
+        }
+
+        org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3")) shouldBe "ValueClass(1)-ValueCaseClassInt(2)-ValueCaseClassString(3)"
+      }
+
       "use Prettifier for the arguments" in {
         val aMock = orgDouble()
 
         aMock.baz(42, Baz2(69, "hola"))
 
         val e = the[ArgumentsAreDifferent] thrownBy {
-            aMock.baz(42, Baz2(69, "chau")) was called
-          }
+          aMock.baz(42, Baz2(69, "chau")) was called
+        }
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("org.baz(42, PrettifiedBaz(hola));")

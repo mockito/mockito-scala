@@ -1,7 +1,9 @@
 package user.org.mockito
 
 package object matchers {
-  class ValueClass(private val v: String)             extends AnyVal
+  class ValueClass(private val v: String) extends AnyVal {
+    override def toString = s"ValueClass($v)"
+  }
   case class ValueCaseClassInt private (v: Int)       extends AnyVal
   case class ValueCaseClassString private (v: String) extends AnyVal
 

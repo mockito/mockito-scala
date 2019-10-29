@@ -12,7 +12,7 @@ import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
-import user.org.mockito.matchers.ValueCaseClassInt
+import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import user.org.mockito.model.JavaFoo
 
 import scala.reflect.io.AbstractFile
@@ -297,8 +297,8 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
         aMock.baz(42, Baz2(69, "hola"))
 
         val e = the[ArgumentsAreDifferent] thrownBy {
-            verify(aMock).baz(42, Baz2(69, "chau"))
-          }
+          verify(aMock).baz(42, Baz2(69, "chau"))
+        }
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("foo.baz(42, PrettifiedBaz(hola));")
@@ -309,6 +309,17 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
   }
 
   "mock[T]" should {
+
+    "thenAnswer works with arg value classes" in {
+      val org = mock[Org]
+
+      when(org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3"))) thenAnswer {
+        (v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString) =>
+          s"$v-$v1-$v2"
+      }
+
+      org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3")) shouldBe "ValueClass(1)-ValueCaseClassInt(2)-ValueCaseClassString(3)"
+    }
 
     "not mock final methods" in {
       val abstractFile = mock[AbstractFile]

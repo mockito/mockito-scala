@@ -94,6 +94,8 @@ class Org {
   def returnsValueCaseClassInt: ValueCaseClassInt       = ValueCaseClassInt(-1)
   def returnsValueCaseClassString: ValueCaseClassString = ValueCaseClassString("not mocked")
 
+  def takesManyValueClasses(v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString): String = "not mocked"
+
   def baz(i: Int, b: Baz2): String = "not mocked"
 
   def fooWithVarArg(bells: String*): Unit                                                  = ()

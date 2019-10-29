@@ -30,7 +30,7 @@ lazy val commonSettings =
       "-encoding", "UTF-8",
       "-Xfatal-warnings",
       "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds",
-//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-lenient"
+//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-wrapper,mockito-print-lenient"
     ),
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {

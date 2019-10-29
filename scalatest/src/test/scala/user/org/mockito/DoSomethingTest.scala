@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
-import user.org.mockito.matchers.ValueCaseClassInt
+import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 
 class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
 
@@ -86,6 +86,16 @@ class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers 
         .doSomethingWithThisIntAndString(*, *)
 
       aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClassInt(42)
+    }
+
+    "works with arg value classes" in {
+      val org = mock[Org]
+
+      doAnswer { (v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString) =>
+        s"$v-$v1-$v2"
+      }.when(org).takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3"))
+
+      org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3")) shouldBe "ValueClass(1)-ValueCaseClassInt(2)-ValueCaseClassString(3)"
     }
   }
 

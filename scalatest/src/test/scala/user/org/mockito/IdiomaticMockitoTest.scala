@@ -715,6 +715,14 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
         org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3")) shouldBe "ValueClass(1)-ValueCaseClassInt(2)-ValueCaseClassString(3)"
       }
 
+      "works with tagged value classes" in {
+        val org = orgDouble()
+
+        org.printTaggedValue(any[TaggedValue[String]]) returns "hello"
+
+        org.printTaggedValue(TaggedValue[String](1)) shouldBe "hello"
+      }
+
       "use Prettifier for the arguments" in {
         val aMock = orgDouble()
 

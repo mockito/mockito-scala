@@ -11,7 +11,10 @@ class NestedReproSpec extends FlatSpec with Matchers with IdiomaticMockito with 
   val exampler = mock[Exampler]
 
   it should "compile a nested value class with direct symbolic reference" in {
-    "exampler(any[NestedValueClass]) returns ???" should compile
+    """
+      |import Nesting.NestedValueClass
+      |exampler(any[NestedValueClass]) returns ???
+      |""".stripMargin should compile
   }
 
   it should "compile a nested value class with reference to enclosing object" in {

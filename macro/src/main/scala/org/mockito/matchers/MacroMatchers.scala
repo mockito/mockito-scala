@@ -18,10 +18,9 @@ object AnyMatcher {
 object MacroMatchers {
   def anyValMatcher[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[AnyMatcher[T]] = {
     import c.universe._
-    val tpe              = weakTypeOf[T]
-    val typeSymbol       = tpe.typeSymbol
-    val isValueClass     = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
-    val isCaseValueClass = isValueClass && typeSymbol.asClass.isCaseClass
+    val tpe          = weakTypeOf[T]
+    val typeSymbol   = tpe.typeSymbol
+    val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
 
     lazy val innerType =
       tpe.members
@@ -30,23 +29,15 @@ object MacroMatchers {
         .flatMap(_.map(_.typeSignature))
         .head
 
-    val r = if (isCaseValueClass) c.Expr[AnyMatcher[T]] {
-      val companion     = tpe.companion
-      val apply         = companion.decl(TermName("apply"))
-      val companionTerm = companion.typeSymbol.name.toTermName
-      q"""
-      new _root_.org.mockito.matchers.AnyMatcher[$tpe] {
-        override def any: $tpe = $companionTerm.$apply(_root_.org.mockito.ArgumentMatchers.any[$innerType]())
-      }
-    """
-    } else if (isValueClass) c.Expr[AnyMatcher[T]] {
-      q"""
-      new _root_.org.mockito.matchers.AnyMatcher[$tpe] {
-        override def any: $tpe = new $tpe(_root_.org.mockito.ArgumentMatchers.any[$innerType]())
-      }
-    """
-    } else
-      c.Expr[AnyMatcher[T]](q"new _root_.org.mockito.matchers.AnyMatcherStandard[$tpe]")
+    val r =
+      if (isValueClass) c.Expr[AnyMatcher[T]] {
+        q"""
+          new _root_.org.mockito.matchers.AnyMatcher[$tpe] {
+            override def any: $tpe = new $tpe(_root_.org.mockito.ArgumentMatchers.any[$innerType]())
+          }
+        """
+      } else
+        c.Expr[AnyMatcher[T]](q"new _root_.org.mockito.matchers.AnyMatcherStandard[$tpe]")
 
     if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
     r

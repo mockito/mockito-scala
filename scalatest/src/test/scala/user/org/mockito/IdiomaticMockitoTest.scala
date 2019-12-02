@@ -9,15 +9,16 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar }
 import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{ FixtureContext, Matchers, WordSpec }
+import org.scalatest.FixtureContext
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import user.org.mockito.model.JavaFoo
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
 
-class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with TableDrivenPropertyChecks {
-
+class IdiomaticMockitoTest extends AnyWordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with TableDrivenPropertyChecks {
   implicit val prettifier: Prettifier = new Prettifier {
     override def apply(o: Any): String = o match {
       case Baz2(_, s) => s"PrettifiedBaz($s)"
@@ -903,7 +904,6 @@ class IdiomaticMockitoTest extends WordSpec with Matchers with IdiomaticMockito 
 
         myService.curriedDefaultParams("hello")() was called
       }
-
     }
   }
 

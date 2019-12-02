@@ -1,13 +1,13 @@
 package user.org.mockito
 
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
-import org.scalatest.{ FlatSpec, Matchers }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
  * Test provided in https://github.com/mockito/mockito-scala/issues/171
  */
-class NestedReproSpec extends FlatSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar {
-
+class NestedReproSpec extends AnyFlatSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar {
   val exampler = mock[Exampler]
 
   it should "compile a nested value class with direct symbolic reference" in {

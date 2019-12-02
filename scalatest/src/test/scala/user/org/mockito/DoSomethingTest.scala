@@ -4,11 +4,12 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
-import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
+import org.scalatest.{ Matchers => ScalaTestMatchers }
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class DoSomethingTest extends WordSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
-
+class DoSomethingTest extends AnyWordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
   class Foo {
     def bar = "not mocked"
 

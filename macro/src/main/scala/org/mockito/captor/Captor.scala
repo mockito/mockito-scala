@@ -11,7 +11,6 @@ import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
 
 trait Captor[T] {
-
   def capture: T
 
   def value: T
@@ -23,7 +22,6 @@ trait Captor[T] {
 }
 
 class WrapperCaptor[T: ClassTag] extends Captor[T] {
-
   private val argumentCaptor: ArgumentCaptor[T] = ArgumentCaptor.forClass(clazz)
 
   override def capture: T = argumentCaptor.capture()
@@ -34,7 +32,6 @@ class WrapperCaptor[T: ClassTag] extends Captor[T] {
 }
 
 object Captor {
-
   implicit def asCapture[T](c: Captor[T]): T = c.capture
 
   implicit def materializeValueClassCaptor[T]: Captor[T] = macro materializeValueClassCaptorMacro[T]

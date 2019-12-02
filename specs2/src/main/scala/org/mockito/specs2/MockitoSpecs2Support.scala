@@ -11,7 +11,6 @@ trait ArgThat {
 }
 
 trait FunctionArgumentsLowImplicits extends ArgThat with Expectations {
-
   def partialCallMatching[A, R](a: A, m: Matcher[R]): PartialFunction[A, R] = {
     val partialMatcher: Matcher[PartialFunction[A, R]] = (f: PartialFunction[A, R]) => {
       try {
@@ -27,7 +26,6 @@ trait FunctionArgumentsLowImplicits extends ArgThat with Expectations {
   implicit def toPartialFunctionCall[A, R](values: (A, R)): PartialFunction[A, R] = partialFunctionCall(values._1, values._2)
   implicit def matcherToPartialFunctionCall[A, R](values: (A, Matcher[R])): PartialFunction[A, R] =
     partialCallMatching(values._1, values._2)
-
 }
 
 trait FunctionArguments extends FunctionArgumentsLowImplicits {
@@ -1188,7 +1186,6 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
       values._1._22,
       values._2
     )
-
 }
 
 trait MockitoSpecs2Support extends FunctionArguments

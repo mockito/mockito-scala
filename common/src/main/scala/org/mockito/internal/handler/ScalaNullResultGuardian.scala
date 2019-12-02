@@ -6,7 +6,6 @@ import org.mockito.invocation.{ Invocation, InvocationContainer, MockHandler }
 import org.mockito.mock.MockCreationSettings
 
 class ScalaNullResultGuardian[T](delegate: MockHandler[T]) extends MockHandler[T] {
-
   override def handle(invocation: Invocation): AnyRef = {
     val result = delegate.handle(invocation)
 

@@ -3,16 +3,17 @@ package user.org.mockito.stubbing
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.{ DefaultAnswers, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ Matchers, OptionValues, TryValues, WordSpec }
+import org.scalatest.{ OptionValues, TryValues }
 import user.org.mockito.stubbing.DefaultAnswerTest._
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.util.{ Success, Try }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ReturnsEmptyValuesTest extends WordSpec with Matchers with IdiomaticMockito with TryValues with OptionValues with ScalaFutures {
-
+class ReturnsEmptyValuesTest extends AnyWordSpec with Matchers with IdiomaticMockito with TryValues with OptionValues with ScalaFutures {
   class KnownTypes {
     def returnsOption: Option[String]          = Some("not mocked!")
     def returnsList: List[String]              = List("not mocked!")

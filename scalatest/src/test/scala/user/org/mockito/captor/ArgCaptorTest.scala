@@ -3,8 +3,9 @@ package user.org.mockito.captor
 import org.mockito.captor.{ ArgCaptor, ValCaptor }
 import org.mockito.{ IdiomaticMockito, MockitoSugar }
 import org.scalactic.{ Equality, StringNormalizations }
-import org.scalatest.{ Matchers, WordSpec }
 import user.org.mockito.captor.ArgCaptorTest._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 object ArgCaptorTest {
   case class Name(name: String) extends AnyVal
@@ -26,10 +27,8 @@ object ArgCaptorTest {
   }
 }
 
-class ArgCaptorTest extends WordSpec with MockitoSugar with Matchers {
-
+class ArgCaptorTest extends AnyWordSpec with MockitoSugar with Matchers {
   "Captor" should {
-
     "capture a simple AnyRef argument" in {
       val aMock  = mock[Foo]
       val captor = ArgCaptor[String]

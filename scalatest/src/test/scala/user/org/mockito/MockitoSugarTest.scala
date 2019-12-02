@@ -11,15 +11,16 @@ import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ScalaFirstStubbin
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
+import org.scalatest.{ EitherValues, OptionValues }
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import user.org.mockito.model.JavaFoo
 
 import scala.reflect.io.AbstractFile
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 //noinspection RedundantDefaultArgument
-class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with EitherValues with OptionValues with TableDrivenPropertyChecks {
-
+class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with EitherValues with OptionValues with TableDrivenPropertyChecks {
   implicit val prettifier: Prettifier = new Prettifier {
     override def apply(o: Any): String = o match {
       case Baz2(_, s) => s"PrettifiedBaz($s)"
@@ -309,7 +310,6 @@ class MockitoSugarTest extends WordSpec with MockitoSugar with Matchers with Arg
   }
 
   "mock[T]" should {
-
     "thenAnswer works with arg value classes" in {
       val org = mock[Org]
 

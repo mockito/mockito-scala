@@ -1,10 +1,11 @@
 package user.org.mockito.matchers
 
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
-import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
+import org.scalatest.{ Matchers => ScalaTestMatchers }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class AnyMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
-
+class AnyMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
   "any[Collection]" should "work with Scala types" in {
     val aMock = mock[Foo]
 

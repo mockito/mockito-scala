@@ -26,7 +26,6 @@ class ReflectionExtractor[VC] extends ValueClassExtractor[VC] {
 }
 
 object ValueClassExtractor {
-
   def apply[T: ValueClassExtractor]: ValueClassExtractor[T] = implicitly[ValueClassExtractor[T]]
 
   private val ScalaVersion = Properties.scalaPropOrElse("version.number", "unknown")
@@ -40,7 +39,6 @@ object ValueClassExtractor {
     val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
 
     val r = if (isValueClass) {
-
       if (ScalaVersion.startsWith("2.12") || ScalaVersion.startsWith("2.13"))
         c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
       else if (ScalaVersion.startsWith("2.11"))
@@ -56,7 +54,6 @@ object ValueClassExtractor {
           else
             q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]"
         } else throw new Exception(s"Unsupported scala version $ScalaVersion")
-
     } else
       c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")
 

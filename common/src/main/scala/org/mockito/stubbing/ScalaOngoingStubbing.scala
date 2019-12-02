@@ -11,7 +11,6 @@ object ScalaOngoingStubbing {
 }
 
 case class ScalaOngoingStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[T]) extends ScalaBaseStubbing[T] {
-
   /**
    * Sets consecutive return values to be returned when the method is called. E.g:
    * <pre class="code"><code class="java">

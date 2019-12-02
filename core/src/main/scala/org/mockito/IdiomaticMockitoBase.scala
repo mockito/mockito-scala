@@ -87,7 +87,6 @@ object IdiomaticMockitoBase {
 }
 
 trait IdiomaticMockitoBase extends MockitoEnhancer with ScalacticSerialisableHack {
-
   import org.mockito.IdiomaticMockitoBase._
 
   type Verification
@@ -95,7 +94,6 @@ trait IdiomaticMockitoBase extends MockitoEnhancer with ScalacticSerialisableHac
   def verification(v: => Any): Verification
 
   implicit class StubbingOps[T](stubbing: T) {
-
     def shouldReturn: ReturnActions[T] = macro WhenMacro.shouldReturn[T]
     def mustReturn: ReturnActions[T] = macro WhenMacro.shouldReturn[T]
     def returns: ReturnActions[T] = macro WhenMacro.shouldReturn[T]

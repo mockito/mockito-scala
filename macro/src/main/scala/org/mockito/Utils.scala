@@ -73,7 +73,6 @@ object Utils {
       }
       methodName.exists(mn => MockitoMatchers.contains(mn) || isSpecs2Matcher(mn))
     }
-
   }
 
   private[mockito] def transformArgs(c: blackbox.Context)(args: List[c.Tree]): List[c.Tree] =
@@ -99,5 +98,4 @@ object Utils {
     import c.universe._
     if (cls.toString.contains("Scalaz")) TermName(start + "Scalaz") else TermName(start + "Cats")
   }
-
 }

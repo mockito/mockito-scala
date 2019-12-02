@@ -2,15 +2,17 @@ package org.mockito.scalaz
 
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
+import org.scalatest.{ EitherValues, OptionValues }
 import _root_.scalaz._
 import Scalaz._
 import org.mockito.invocation.InvocationOnMock
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class DoSomethingScalazTest
-    extends WordSpec
+    extends AnyWordSpec
     with Matchers
     with IdiomaticMockito
     with ArgumentMatchersSugar
@@ -18,7 +20,6 @@ class DoSomethingScalazTest
     with EitherValues
     with OptionValues
     with ScalaFutures {
-
   "willBe returnedF by" should {
     "stub full applicative" in {
       val aMock = mock[Foo]

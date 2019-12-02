@@ -26,7 +26,6 @@ class ReflectionWrapper[VC: ClassTag] extends ValueClassWrapper[VC] {
 }
 
 object ValueClassWrapper {
-
   def apply[T: ValueClassWrapper]: ValueClassWrapper[T] = implicitly[ValueClassWrapper[T]]
 
   implicit def instance[VC]: ValueClassWrapper[VC] = macro materialise[VC]

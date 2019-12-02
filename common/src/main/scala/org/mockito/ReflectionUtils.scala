@@ -12,7 +12,6 @@ import scala.reflect.internal.Symbols
 import scala.util.control.NonFatal
 
 object ReflectionUtils {
-
   import scala.reflect.runtime.{ universe => ru }
   import ru._
 

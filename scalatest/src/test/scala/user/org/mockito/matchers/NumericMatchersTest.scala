@@ -2,10 +2,10 @@ package user.org.mockito.matchers
 
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.mockito.exceptions.verification.WantedButNotInvoked
-import org.scalatest.{ FlatSpec, Matchers }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class NumericMatchersTest extends FlatSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar {
-
+class NumericMatchersTest extends AnyFlatSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar {
   ">" should "work with any Numeric" in {
     val aMock = mock[Foo]
 
@@ -79,7 +79,7 @@ class NumericMatchersTest extends FlatSpec with IdiomaticMockito with Matchers w
   }
 }
 
-class NumericMatchersTestNoMatchers extends FlatSpec with IdiomaticMockito with ArgumentMatchersSugar {
+class NumericMatchersTestNoMatchers extends AnyFlatSpec with IdiomaticMockito with ArgumentMatchersSugar {
   "=~" should "work without Scalatest Matchers" in {
     val aMock = mock[Foo]
 

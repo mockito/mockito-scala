@@ -1,7 +1,6 @@
 package org.mockito.matchers
 
 private[mockito] trait StringThatMatchers {
-
   import ThatMatchers.argThat
 
   /**

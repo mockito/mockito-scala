@@ -10,7 +10,6 @@ object Called {
 }
 
 object VerifyMacro {
-
   def wasMacro[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree)(order: c.Expr[VerifyOrder]): c.Expr[R] = {
     import c.universe._
 

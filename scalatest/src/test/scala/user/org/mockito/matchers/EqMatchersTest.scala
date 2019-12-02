@@ -2,10 +2,11 @@ package user.org.mockito.matchers
 
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalactic.{ Equality, StringNormalizations }
-import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
+import org.scalatest.{ Matchers => ScalaTestMatchers }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class EqMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
-
+class EqMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
   "eqTo[T]" should "work with value classes" in {
     val aMock = mock[Foo]
 

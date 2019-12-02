@@ -1,12 +1,12 @@
 package user.org.mockito.scalatest
 
 import org.mockito.scalatest.AsyncIdiomaticMockito
-import org.scalatest.{ AsyncWordSpec, Matchers }
 
 import scala.concurrent.Future
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
 class AsyncIdiomaticMockitoTest_213 extends AsyncWordSpec with Matchers with AsyncIdiomaticMockito {
-
   "AsyncMockito" should {
     "work with specialised methods" in {
       val mockFunction = mock[() => Int]

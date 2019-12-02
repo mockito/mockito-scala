@@ -14,7 +14,6 @@ import org.specs2.matcher.{ Expectable, MatchFailure, MatchResult, MatchSuccess,
 import scala.reflect.ClassTag
 
 trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSpecs2Support {
-
   def checkCalls[Any] = new Matcher[Any] {
     def apply[S <: Any](s: Expectable[S]) =
       catchAll { s.value } { identity } match {

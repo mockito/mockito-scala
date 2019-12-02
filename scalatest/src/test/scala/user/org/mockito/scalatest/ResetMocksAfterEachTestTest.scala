@@ -2,10 +2,10 @@ package user.org.mockito.scalatest
 
 import org.mockito.MockitoSugar
 import org.mockito.scalatest.ResetMocksAfterEachTest
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetMocksAfterEachTest with Matchers {
-
+class ResetMocksAfterEachTestTest extends AnyWordSpec with MockitoSugar with ResetMocksAfterEachTest with Matchers {
   trait Foo {
     def bar(a: String) = "bar"
   }
@@ -18,9 +18,7 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
   val baz: Baz = mock[Baz]
 
   "ResetMocksAfterEachTest" should {
-
     "have clean state for test 1" in {
-
       verifyZeroInteractions(foo)
 
       when(foo.bar("pepe")) thenReturn "mocked"
@@ -29,7 +27,6 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
     }
 
     "have clean state for test 2" in {
-
       verifyZeroInteractions(foo)
 
       when(foo.bar("pepe")) thenReturn "mocked2"
@@ -38,7 +35,6 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
     }
 
     "have clean state for all mocks test 1" in {
-
       verifyZeroInteractions(foo, baz)
 
       when(foo.bar("pepe")) thenReturn "mocked3"
@@ -49,7 +45,6 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
     }
 
     "have clean state for all mocks test 2" in {
-
       verifyZeroInteractions(foo, baz)
 
       when(foo.bar("pepe")) thenReturn "mocked5"
@@ -58,7 +53,5 @@ class ResetMocksAfterEachTestTest extends WordSpec with MockitoSugar with ResetM
       foo.bar("pepe") shouldBe "mocked5"
       baz.qux("epep") shouldBe "mocked6"
     }
-
   }
-
 }

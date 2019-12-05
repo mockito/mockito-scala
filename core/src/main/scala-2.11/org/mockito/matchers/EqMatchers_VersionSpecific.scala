@@ -1,7 +1,6 @@
 package org.mockito.matchers
 
 trait EqMatchers_VersionSpecific {
-
   /**
    * Creates a matcher that delegates on {{org.scalactic.Equality}} so you can always customise how the values are compared
    * Also works with value classes
@@ -14,5 +13,4 @@ trait EqMatchers_VersionSpecific {
    */
   @deprecated("Use 'eqTo' instead", since = "1.0.2")
   def eqToVal[T](value: T): T = macro MacroMatchers_211.eqToValMatcher[T]
-
 }

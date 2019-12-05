@@ -5,6 +5,25 @@ import org.mockito.Utils._
 import scala.reflect.macros.blackbox
 
 object DoSomethingMacro {
+  def doesNothing(c: blackbox.Context)(): c.Tree = {
+    import c.universe._
+
+    val r = c.macroApplication match {
+      case q"$_.StubbingOps[$_]($invocation).shouldDoNothing()" =>
+        transformInvocation(c)(invocation, q"_root_.org.mockito.MockitoSugar.doNothing")
+      case q"$_.StubbingOps[$_]($invocation).mustDoNothing()" =>
+        transformInvocation(c)(invocation, q"_root_.org.mockito.MockitoSugar.doNothing")
+      case q"$_.StubbingOps[$_]($invocation).doesNothing()" =>
+        transformInvocation(c)(invocation, q"_root_.org.mockito.MockitoSugar.doNothing")
+      case q"$_.StubbingOps[$_]($invocation).shouldReturnUnit()" =>
+        transformInvocation(c)(invocation, q"_root_.org.mockito.MockitoSugar.doNothing")
+
+      case o => throw new Exception(s"Couldn't recognize '${show(o)}'")
+    }
+    if (c.settings.contains("mockito-print-when")) println(show(r))
+    r
+  }
+
   def returnedBy[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Expr[S]): c.Expr[S] = {
     import c.universe._
 

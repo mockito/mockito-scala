@@ -323,6 +323,8 @@ doAnswer(_ => "mocked!").when(aMock).bar                        <=> "mocked!" wi
 doAnswer(_.getArgument[Int](0) * 10).when(aMock).bar(any)       <=> ((i: Int) => i * 10) willBe answered by aMock.bar(*)
 doCallRealMethod.when(aMock).bar                                <=> theRealMethod willBe called by aMock.bar
 doThrow(new IllegalArgumentException).when(aMock).bar           <=> new IllegalArgumentException willBe thrown by aMock.bar
+
+doNothing().when(aMock).bar                                     <=> aMock.bar.doesNothing()
   
 verifyZeroInteractions(aMock)                                   <=> aMock wasNever called
 verify(aMock).bar                                               <=> aMock.bar was called

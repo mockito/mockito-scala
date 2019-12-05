@@ -113,6 +113,8 @@ class Org {
   def option(a: String, b: Int): Option[String] = None
 
   def printTaggedValue(value: TaggedValue[String]): String = "not mocked"
+
+  def unit(): Unit = ???
 }
 
 case class Baz2(param1: Int, param2: String)

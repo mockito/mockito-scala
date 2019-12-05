@@ -9,7 +9,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class IdiomaticMockitoTest_212 extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with ScalaFutures {
-
   class Foo {
     def valueClass(n: Int, v: ValueClass): String = ???
 
@@ -17,7 +16,6 @@ class IdiomaticMockitoTest_212 extends WordSpec with Matchers with IdiomaticMock
   }
 
   "value class matchers" should {
-
     "eqTo macro works with new syntax" in {
       val aMock = mock[Foo]
 

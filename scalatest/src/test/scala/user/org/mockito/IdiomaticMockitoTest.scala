@@ -908,6 +908,14 @@ class IdiomaticMockitoTest extends AnyWordSpec with Matchers with IdiomaticMocki
   }
 
   "mock" should {
+    "stub a no op call" in {
+      val org = mock[Org]
+
+      org.unit().doesNothing()
+
+      org.unit() shouldBe ()
+    }
+
     "stub a real call" in {
       val org: Org = mock[Org].bar shouldCall realMethod
       org.bar shouldBe "not mocked"

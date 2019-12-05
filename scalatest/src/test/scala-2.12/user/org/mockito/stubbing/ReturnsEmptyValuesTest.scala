@@ -12,7 +12,6 @@ import scala.concurrent.Future
 import scala.util.{ Success, Try }
 
 class ReturnsEmptyValuesTest extends WordSpec with Matchers with IdiomaticMockito with TryValues with OptionValues with ScalaFutures {
-
   class KnownTypes {
     def returnsOption: Option[String]           = Some("not mocked!")
     def returnsList: List[String]               = List("not mocked!")

@@ -42,6 +42,8 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
     def userClassFinal: BarFinal = new BarFinal
 
     def finalFinalEqualsAndHashcode: FinalEqualsAndHashcode = ???
+
+    def unit(): Unit = ()
   }
 
   class Bar {
@@ -108,6 +110,14 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
             aFoo.bar(*) returns "mocked"
           }
         }
+
+        an[UnnecessaryStubbingException] should be thrownBy {
+          MockitoScalaSession().run {
+            val aFoo = foo()
+
+            aFoo.unit().doesNothing()
+          }
+        }
       }
 
       "check incorrect stubs" in {
@@ -139,15 +149,21 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
       }
 
       "check unexpected invocations" in {
-        val thrown = the[UnexpectedInvocationException] thrownBy {
+        (the[UnexpectedInvocationException] thrownBy {
           MockitoScalaSession().run {
             val aFoo = foo()
 
             aFoo.bar("pepe")
           }
-        }
+        }).getMessage should startWith("Unexpected invocations found")
 
-        thrown.getMessage should startWith("Unexpected invocations found")
+        (the[UnexpectedInvocationException] thrownBy {
+          MockitoScalaSession().run {
+            val aFoo = foo()
+
+            aFoo.unit()
+          }
+        }).getMessage should startWith("Unexpected invocations found")
       }
 
       "not check unexpected invocations if the call was verified" in {

@@ -10,7 +10,6 @@ import scala.concurrent.Future
 
 //noinspection RedundantDefaultArgument
 class MockitoSugarTest_212 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with TableDrivenPropertyChecks with ScalaFutures {
-
   val scenarios = Table(
     ("testDouble", "foo", "baz"),
     ("mock", () => mock[Foo], () => mock[Baz]),
@@ -19,7 +18,6 @@ class MockitoSugarTest_212 extends WordSpec with MockitoSugar with Matchers with
 
   forAll(scenarios) { (testDouble, foo, baz) =>
     testDouble should {
-
       "work with default arguments in traits" in {
         val testDouble = baz()
 

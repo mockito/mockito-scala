@@ -7,7 +7,6 @@ import org.scalactic.{ Equality, Prettifier }
 import scala.reflect.macros.blackbox
 
 object MacroMatchers_211 {
-
   def eqTo[T: Equality: ValueClassExtractor](value: T)(implicit $pt: Prettifier): T = {
     JavaMatchers.argThat(new EqTo[T](value))
     value

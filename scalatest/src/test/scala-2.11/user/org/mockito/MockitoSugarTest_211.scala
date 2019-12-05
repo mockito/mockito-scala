@@ -4,7 +4,6 @@ import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.{ Matchers, WordSpec }
 
 class MockitoSugarTest_211 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
-
   trait Baz {
     def traitMethod(defaultArg: Int = 30, anotherDefault: String = "hola"): Int = ???
   }

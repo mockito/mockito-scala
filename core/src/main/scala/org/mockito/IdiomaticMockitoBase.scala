@@ -112,6 +112,10 @@ trait IdiomaticMockitoBase extends MockitoEnhancer with ScalacticSerialisableHac
 
     //noinspection AccessorLikeMethodIsUnit
     def isLenient(): Unit = macro WhenMacro.isLenient[T]
+
+    def shouldDoNothing(): Unit = macro DoSomethingMacro.doesNothing
+    def mustDoNothing(): Unit = macro DoSomethingMacro.doesNothing
+    def doesNothing(): Unit = macro DoSomethingMacro.doesNothing
   }
 
   implicit class VerifyingOps[T](stubbing: T) {

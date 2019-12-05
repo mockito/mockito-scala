@@ -15,8 +15,6 @@ object DoSomethingMacro {
         transformInvocation(c)(invocation, q"_root_.org.mockito.MockitoSugar.doNothing")
       case q"$_.StubbingOps[$_]($invocation).doesNothing()" =>
         transformInvocation(c)(invocation, q"_root_.org.mockito.MockitoSugar.doNothing")
-      case q"$_.StubbingOps[$_]($invocation).shouldReturnUnit()" =>
-        transformInvocation(c)(invocation, q"_root_.org.mockito.MockitoSugar.doNothing")
 
       case o => throw new Exception(s"Couldn't recognize '${show(o)}'")
     }

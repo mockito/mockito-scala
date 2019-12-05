@@ -1,10 +1,10 @@
 package user.org.mockito.scalatest
 
 import org.mockito.scalatest.IdiomaticMockito
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class IdiomaticMockitoTest extends WordSpec with IdiomaticMockito with Matchers {
-
+class IdiomaticMockitoTest extends AnyWordSpec with IdiomaticMockito with Matchers {
   class Foo {
     def bar(a: String) = "bar"
   }
@@ -32,5 +32,4 @@ class IdiomaticMockitoTest extends WordSpec with IdiomaticMockito with Matchers 
       foo.bar("pepe") was called
     }
   }
-
 }

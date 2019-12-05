@@ -7,11 +7,9 @@ import org.scalactic.Equality
 import scala.reflect.ClassTag
 
 trait IdiomaticMockitoScalaz extends ScalacticSerialisableHack {
-
   import org.mockito.scalaz.IdiomaticMockitoScalaz._
 
   implicit class StubbingOpsScalaz[F[_], T](stubbing: F[T]) {
-
     def shouldReturnF: ReturnActions[F, T] = macro WhenMacro.shouldReturn[T]
     def mustReturnF: ReturnActions[F, T] = macro WhenMacro.shouldReturn[T]
     def returnsF: ReturnActions[F, T] = macro WhenMacro.shouldReturn[T]
@@ -27,7 +25,6 @@ trait IdiomaticMockitoScalaz extends ScalacticSerialisableHack {
   }
 
   implicit class StubbingOps2Scalaz[F[_], G[_], T](stubbing: F[G[T]]) {
-
     def shouldReturnFG: ReturnActions2[F, G, T] = macro WhenMacro.shouldReturn[T]
     def mustReturnFG: ReturnActions2[F, G, T] = macro WhenMacro.shouldReturn[T]
     def returnsFG: ReturnActions2[F, G, T] = macro WhenMacro.shouldReturn[T]

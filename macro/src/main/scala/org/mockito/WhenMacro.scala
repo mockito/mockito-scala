@@ -8,7 +8,6 @@ import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
 
 object WhenMacro {
-
   private def transformInvocation(c: blackbox.Context)(invocation: c.Tree): c.Tree = {
     import c.universe._
 

@@ -2,14 +2,14 @@ package user.org.mockito
 
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ Matchers, WordSpec }
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueClass }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class IdiomaticMockitoTest_213 extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with ScalaFutures {
-
+class IdiomaticMockitoTest_213 extends AnyWordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with ScalaFutures {
   class Foo {
     def valueClass(n: Int, v: ValueClass): String = ???
 
@@ -17,7 +17,6 @@ class IdiomaticMockitoTest_213 extends WordSpec with Matchers with IdiomaticMock
   }
 
   "value class matchers" should {
-
     "eqTo macro works with new syntax" in {
       val aMock = mock[Foo]
 

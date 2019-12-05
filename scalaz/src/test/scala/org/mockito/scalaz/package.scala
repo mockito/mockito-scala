@@ -5,7 +5,6 @@ import _root_.scalaz._
 import scala.concurrent.Future
 
 package object scalaz {
-
   type ErrorOr[A] = Either[Error, A]
 
   case class Error(e: String)
@@ -33,5 +32,4 @@ package object scalaz {
 
     def returnsFutureOptionFrom[A, B](a: A, b: B): Future[Option[String]]
   }
-
 }

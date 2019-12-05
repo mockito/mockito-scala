@@ -3,10 +3,11 @@ package user.org.mockito.matchers
 import org.mockito.exceptions.verification.WantedButNotInvoked
 import org.mockito.matchers.EqTo
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
-import org.scalatest.{ FlatSpec, Matchers => ScalaTestMatchers }
+import org.scalatest.{ Matchers => ScalaTestMatchers }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ThatMatchersTest extends FlatSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
-
+class ThatMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
   "argMatching[T]" should "work in various scenarios" in {
     val aMock = mock[Foo]
 

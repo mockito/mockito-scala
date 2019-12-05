@@ -5,7 +5,6 @@ import org.mockito.Utils._
 import scala.reflect.macros.blackbox
 
 object DoSomethingMacro {
-
   def returnedBy[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Expr[S]): c.Expr[S] = {
     import c.universe._
 

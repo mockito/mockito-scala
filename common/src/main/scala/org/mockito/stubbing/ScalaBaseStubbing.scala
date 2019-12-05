@@ -9,7 +9,6 @@ import org.objenesis.ObjenesisStd
 import scala.reflect.ClassTag
 
 abstract class ScalaBaseStubbing[T: ValueClassExtractor] {
-
   protected def delegate: OngoingStubbing[T]
 
   protected def _thenReturn(value: T, values: Seq[T]): ScalaOngoingStubbing[T] =

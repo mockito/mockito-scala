@@ -5,7 +5,6 @@ import org.mockito.Utils._
 import scala.reflect.macros.blackbox
 
 object Specs2VerifyMacro {
-
   private val WordsToNumbers = Map(
     "no"    -> 0,
     "one"   -> 1,
@@ -42,7 +41,6 @@ object Specs2VerifyMacro {
 
     val r = c.Expr[R] {
       c.macroApplication match {
-
         case q"$_.there.$w[$_]($t)($order)" if WasWere.matcher(w.toString).matches && transformSpecs2Verification.isDefinedAt(t) =>
           transformSpecs2Verification(t)
 

@@ -6,11 +6,12 @@ import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.internal.creation.settings.CreationSettings
 import org.mockito.quality.Strictness
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{ Matchers, OptionValues, WordSpec }
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 //noinspection RedundantDefaultArgument
-class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar with OptionValues with TableDrivenPropertyChecks {
-
+class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Matchers with ArgumentMatchersSugar with OptionValues with TableDrivenPropertyChecks {
   val scenarios = Table(
     ("testDouble", "foo", "parametrisedFoo", "fooBar"),
     ("mock", () => mock[Foo], (mockSettings: MockSettings) => mock[Foo](mockSettings), ""),
@@ -59,7 +60,6 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with Matche
 
   forAll(scenarios) { (testDouble, foo, parametrisedFoo, fooBar) =>
     s"MockitoScalaSession - $testDouble" should {
-
       "don't check unexpected calls for lenient methods (set at the beginning)" in {
         MockitoScalaSession().run {
           val aFoo = foo()
@@ -321,7 +321,6 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with Matche
         aFoo.userClass.callMeMaybe.callMe.value shouldBe "my number"
 
         aFoo.userClass.callMeMaybe.dontCallMe
-
       }
     }
 
@@ -334,7 +333,6 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with Matche
         aFoo.userClass.callMeMaybe.callMe.value shouldBe "my number"
 
         aFoo.userClass.dontCallMe
-
       }
     }
 
@@ -344,7 +342,6 @@ class MockitoScalaSessionTest extends WordSpec with IdiomaticMockito with Matche
           val aFoo = mock[Foo](DefaultAnswers.ReturnsDeepStubs)
 
           aFoo.userClass.callMeMaybe.callMe returns Some("my number")
-
         }
       }
 

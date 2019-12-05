@@ -5,8 +5,10 @@ import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.stubbing.DefaultAnswer
 import org.scalatest
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ OptionValues, TryValues, WordSpec }
+import org.scalatest.{ OptionValues, TryValues }
 import user.org.mockito.stubbing.DefaultAnswerTest._
+import org.scalatest.matchers.should
+import org.scalatest.wordspec.AnyWordSpec
 
 object DefaultAnswerTest {
   class Foo {
@@ -39,8 +41,7 @@ object DefaultAnswerTest {
   }
 }
 
-class DefaultAnswerTest extends WordSpec with scalatest.Matchers with IdiomaticMockito with TryValues with OptionValues with ScalaFutures {
-
+class DefaultAnswerTest extends AnyWordSpec with should.Matchers with IdiomaticMockito with TryValues with OptionValues with ScalaFutures {
   "DefaultAnswer.defaultAnswer" should {
     val aMock: Foo = mock[Foo](DefaultAnswer.defaultAnswer)
 

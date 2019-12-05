@@ -6,13 +6,14 @@ import cats.implicits._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ EitherValues, Matchers, OptionValues, WordSpec }
+import org.scalatest.{ EitherValues, OptionValues }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class MockitoCatsTest extends WordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with MockitoCats with EitherValues with OptionValues with ScalaFutures {
-
+class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with MockitoCats with EitherValues with OptionValues with ScalaFutures {
   "when - return" should {
     "stub full applicative" in {
       val aMock = mock[Foo]

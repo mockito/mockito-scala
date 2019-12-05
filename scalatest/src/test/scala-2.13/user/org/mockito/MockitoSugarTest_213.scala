@@ -3,14 +3,14 @@ package user.org.mockito
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{ Matchers, WordSpec }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 //noinspection RedundantDefaultArgument
-class MockitoSugarTest_213 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with TableDrivenPropertyChecks with ScalaFutures {
-
+class MockitoSugarTest_213 extends AnyWordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with TableDrivenPropertyChecks with ScalaFutures {
   val scenarios = Table(
     ("testDouble", "foo", "baz"),
     ("mock", () => mock[Foo], () => mock[Baz]),
@@ -19,7 +19,6 @@ class MockitoSugarTest_213 extends WordSpec with MockitoSugar with Matchers with
 
   forAll(scenarios) { (testDouble, foo, baz) =>
     testDouble should {
-
       "work with default arguments in traits" in {
         val testDouble = baz()
 

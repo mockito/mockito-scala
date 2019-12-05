@@ -10,7 +10,6 @@ import org.mockito.internal.util.ObjectMethodsGuru.isToStringMethod
 import org.mockito.invocation.{ InvocationOnMock, Location }
 
 object ReturnsSmartNulls extends DefaultAnswer {
-
   val delegate = new ReturnsMoreEmptyValues
 
   override def apply(invocation: InvocationOnMock): Option[Any] = Option(delegate.answer(invocation)).orElse {

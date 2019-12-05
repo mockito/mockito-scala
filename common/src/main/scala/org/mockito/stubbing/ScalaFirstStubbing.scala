@@ -15,7 +15,6 @@ object ScalaFirstStubbing {
 }
 
 case class ScalaFirstStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[T]) extends ScalaBaseStubbing[T] {
-
   //noinspection AccessorLikeMethodIsUnit
   def isLenient(): Unit = {
     delegate.asInstanceOf[OngoingStubbingImpl[T]].setStrictness(LENIENT)

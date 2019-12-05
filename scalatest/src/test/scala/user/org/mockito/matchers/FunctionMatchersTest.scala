@@ -2,12 +2,12 @@ package user.org.mockito.matchers
 
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
-import org.scalatest.{ WordSpec, Matchers => ScalaTestMatchers }
+import org.scalatest.{ Matchers => ScalaTestMatchers }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class FunctionMatchersTest extends WordSpec with MockitoSugar with ScalaTestMatchers with ArgumentMatchersSugar {
-
+class FunctionMatchersTest extends AnyWordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
   "function0[T]" should {
-
     "pass if return value matches" in {
       val aMock = mock[Foo]
 
@@ -24,5 +24,4 @@ class FunctionMatchersTest extends WordSpec with MockitoSugar with ScalaTestMatc
       an[ArgumentsAreDifferent] should be thrownBy verify(aMock).iHaveFunction0(function0("meh"))
     }
   }
-
 }

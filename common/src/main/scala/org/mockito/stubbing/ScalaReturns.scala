@@ -7,7 +7,6 @@ import org.mockito.internal.stubbing.answers.InvocationInfo
 import org.mockito.invocation.InvocationOnMock
 
 case class ScalaReturns[T: ValueClassExtractor](value: T) extends ScalaAnswer[T] with ValidableAnswer with Serializable {
-
   override def answer(invocation: InvocationOnMock): T =
     if (ValueClassExtractor[T].isValueClass) {
       if (invocation.returnType == classOf[Object])

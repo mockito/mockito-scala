@@ -9,7 +9,6 @@ import org.mockito.stubbing.OngoingStubbing
 import scala.reflect.ClassTag
 
 case class ScalazStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
-
   def thenReturn(value: T)(implicit a: Applicative[F]): ScalazStubbing[F, T] = delegate thenReturn a.pure(value)
   def andThen(value: T)(implicit a: Applicative[F]): ScalazStubbing[F, T]    = thenReturn(value)
   def andThen(value: F[T]): ScalazStubbing[F, T]                             = delegate thenReturn value
@@ -353,7 +352,6 @@ object ScalazStubbing {
 }
 
 case class ScalazStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
-
   def thenReturn(value: T)(implicit af: Applicative[F], ag: Applicative[G]): ScalazStubbing2[F, G, T] =
     delegate thenReturn af.compose[G].pure(value)
   def andThen(value: T)(implicit af: Applicative[F], ag: Applicative[G]): ScalazStubbing2[F, G, T] = thenReturn(value)

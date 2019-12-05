@@ -56,7 +56,6 @@ private[mockito] trait MockCreator {
 
 //noinspection MutatorLikeMethodIsParameterless
 private[mockito] trait DoSomething {
-
   /**
    * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code>
    * but fixes the following compiler issue that happens because the overloaded vararg on the Java side
@@ -452,7 +451,6 @@ private[mockito] trait DoSomething {
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {
-
   implicit val invocationOps: InvocationOnMock => InvocationOnMockOps = InvocationOps
 
   /**
@@ -587,7 +585,6 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * deal with default argument values
    */
   def verifyNoMoreInteractions(mocks: AnyRef*): Unit = {
-
     def ignoreDefaultArguments(m: AnyRef): Unit =
       mockingDetails(m).getInvocations.asScala
         .filter(_.getMethod.getName.contains("$default$"))
@@ -615,7 +612,6 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 }
 
 private[mockito] trait Verifications {
-
   /**
    * Delegates to <code>Mockito.atLeastOnce()</code>, it removes the parenthesis to have a cleaner API
    */
@@ -673,7 +669,6 @@ private[mockito] trait Verifications {
  * @author Bruno Bonanno
  */
 private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifications {
-
   /**
    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
    */
@@ -703,5 +698,4 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
    * Delegates to <code>Mockito.verify()</code>, it's only here to expose the full Mockito API
    */
   def verify[T](mock: T, mode: VerificationMode): T = Mockito.verify(mock, mode)
-
 }

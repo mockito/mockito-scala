@@ -1,12 +1,12 @@
 package user.org.mockito.scalatest
 
 import org.mockito.scalatest.AsyncIdiomaticMockito
-import org.scalatest.{ AsyncWordSpec, Matchers }
 
 import scala.concurrent.Future
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
 class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncIdiomaticMockito {
-
   class Foo {
     def bar(a: String) = "bar"
   }

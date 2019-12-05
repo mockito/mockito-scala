@@ -9,7 +9,6 @@ import org.scalactic.Equality
 import scala.reflect.ClassTag
 
 trait MockitoScalaz extends ScalacticSerialisableHack {
-
   def whenF[F[_], T](methodCall: F[T]): ScalazStubbing[F, T] = Mockito.when(methodCall)
 
   def whenFG[F[_], G[_], T](methodCall: F[G[T]]): ScalazStubbing2[F, G, T] = Mockito.when(methodCall)

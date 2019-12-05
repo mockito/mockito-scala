@@ -26,7 +26,6 @@ class ScalaInvocation(
 )(implicit $pt: Prettifier)
     extends Invocation
     with VerificationAwareInvocation {
-
   private var verified: Boolean                  = false
   private var _isIgnoredForVerification: Boolean = false
   private var _stubInfo: StubInfo                = _

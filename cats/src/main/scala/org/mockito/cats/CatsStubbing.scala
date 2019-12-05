@@ -9,7 +9,6 @@ import org.mockito.stubbing.OngoingStubbing
 import scala.reflect.ClassTag
 
 case class CatsStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
-
   def thenReturn(value: T)(implicit F: Applicative[F]): CatsStubbing[F, T] = delegate thenReturn F.pure(value)
   def andThen(value: T)(implicit F: Applicative[F]): CatsStubbing[F, T]    = thenReturn(value)
   def andThen(value: F[T]): CatsStubbing[F, T]                             = delegate thenReturn value
@@ -352,7 +351,6 @@ object CatsStubbing {
 }
 
 case class CatsStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
-
   def thenReturn(value: T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] =
     delegate thenReturn F.compose[G].pure(value)
   def andThen(value: T)(implicit F: Applicative[F], G: Applicative[G]): CatsStubbing2[F, G, T] = thenReturn(value)

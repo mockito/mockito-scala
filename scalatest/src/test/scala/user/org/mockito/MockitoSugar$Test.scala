@@ -2,11 +2,12 @@ package user.org.mockito
 
 import org.mockito.MockitoSugar
 import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ReturnsDefaults }
-import org.scalatest.{ WordSpec, Matchers => ScalatestMatchers }
+import org.scalatest.{ Matchers => ScalatestMatchers }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 //noinspection RedundantDefaultArgument
-class MockitoSugar$Test extends WordSpec with ScalatestMatchers {
-
+class MockitoSugar$Test extends AnyWordSpec with Matchers {
   class Foo {
     def bar = "not mocked"
   }

@@ -8,12 +8,12 @@ import org.mockito.exceptions.verification._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar }
 import org.scalactic.Prettifier
-import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.FixtureContext
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.wordspec.AnyWordSpec
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import user.org.mockito.model.JavaFoo
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
 case class Bread(name: String) extends AnyVal
 case class Cheese(name: String)
@@ -904,10 +904,31 @@ class IdiomaticMockitoTest extends AnyWordSpec with Matchers with IdiomaticMocki
 
         myService.curriedDefaultParams("hello")() was called
       }
+
+      "answersPF" in {
+        val org = orgDouble()
+
+        org.doSomethingWithThisInt(*) answersPF {
+          case i: Int => i * 10 + 2
+        }
+        org.doSomethingWithThisIntAndString(*, *) answersPF {
+          case (i: Int, s: String) => (i * 10 + s.toInt).toString
+        }
+        org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) answersPF {
+          case (i: Int, s: String, true)  => (i * 10 + s.toInt).toString + " verdadero"
+          case (i: Int, s: String, false) => (i * 10 + s.toInt).toString + " falso"
+        }
+
+        org.doSomethingWithThisInt(4) shouldBe 42
+        org.doSomethingWithThisIntAndString(4, "2") shouldBe "42"
+        org.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = true) shouldBe "42 verdadero"
+        org.doSomethingWithThisIntAndStringAndBoolean(4, "2", v3 = false) shouldBe "42 falso"
+      }
     }
   }
 
   "mock" should {
+
     "stub a no op call" in {
       val org = mock[Org]
 

@@ -64,6 +64,7 @@ class N {
 }
 
 private[mockito] trait NumericMatchers extends Tolerance {
+
   /**
    * Provides a starting point to write expressions like n > 3, etc
    */

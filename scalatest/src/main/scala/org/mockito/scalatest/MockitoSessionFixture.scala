@@ -27,13 +27,14 @@ private[mockito] trait MockitoSessionAsyncFixture extends AsyncTestSuite { this:
 
     // if the test has thrown an exception, the session will check first if the exception could be related to a mis-use
     // of mockito, if not, it will throw nothing so the real test failure can be reported by the ScalaTest
-    val result = try {
-      super.withFixture(test)
-    } catch {
-      case NonFatal(ex) =>
-        session.finishMocking(Some(ex))
-        throw ex
-    }
+    val result =
+      try {
+        super.withFixture(test)
+      } catch {
+        case NonFatal(ex) =>
+          session.finishMocking(Some(ex))
+          throw ex
+      }
 
     result.onOutcomeThen(o => session.finishMocking(o.toOption))
   }

@@ -56,6 +56,7 @@ private[mockito] trait MockCreator {
 
 //noinspection MutatorLikeMethodIsParameterless
 private[mockito] trait DoSomething {
+
   /**
    * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code>
    * but fixes the following compiler issue that happens because the overloaded vararg on the Java side
@@ -98,14 +99,14 @@ private[mockito] trait DoSomething {
    * Delegates to <code>Mockito.doAnswer()</code>, it's only here to expose the full Mockito API
    */
   def doAnswer[R: ValueClassExtractor](l: => R): Stubber =
-    Mockito.doAnswer(invocationToAnswer(_ => {
+    Mockito.doAnswer(invocationToAnswer { _ =>
       // Store the param so we don't evaluate the by-name twice
       val _l = l
       _l match {
         case f: Function0[_] => f()
         case _               => _l
       }
-    }))
+    })
   def doAnswer[P0: ValueClassWrapper, R: ValueClassExtractor](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber = clazz[P0] match {
     case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
     case _                                   => Mockito.doAnswer(functionToAnswer(f))
@@ -612,6 +613,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 }
 
 private[mockito] trait Verifications {
+
   /**
    * Delegates to <code>Mockito.atLeastOnce()</code>, it removes the parenthesis to have a cleaner API
    */
@@ -669,6 +671,7 @@ private[mockito] trait Verifications {
  * @author Bruno Bonanno
  */
 private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifications {
+
   /**
    * Delegates to <code>Mockito.when()</code>, it's only here to expose the full Mockito API
    */

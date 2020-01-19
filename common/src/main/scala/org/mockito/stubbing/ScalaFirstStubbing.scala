@@ -118,6 +118,14 @@ case class ScalaFirstStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[
    */
   def thenCallRealMethod(): ScalaOngoingStubbing[T] = _thenCallRealMethod()
 
+  def thenAnswer(pf: PartialFunction[Any, T]): ScalaOngoingStubbing[T] = delegate thenAnswer new ScalaAnswer[T] {
+    override def answer(invocation: InvocationOnMock): T = {
+      val args = invocation.argsAsTuple
+      if (pf.isDefinedAt(args)) pf(args)
+      else getMockSettings(getMock).getDefaultAnswer.answer(invocation).asInstanceOf[T]
+    }
+  }
+
   def thenAnswer(f: => T): ScalaOngoingStubbing[T] = _thenAnswer(f)
   def thenAnswer[P0: ValueClassWrapper](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): ScalaOngoingStubbing[T] =
     _thenAnswer(f)

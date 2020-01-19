@@ -38,14 +38,14 @@ trait MockitoCats extends ScalacticSerialisableHack {
     )
 
   def doAnswerF[F[_]: Applicative, R](l: => R): Stubber =
-    Mockito.doAnswer(invocationToAnswer(_ => {
+    Mockito.doAnswer(invocationToAnswer { _ =>
       // Store the param so we don't evaluate the by-name twice
       val _l = l
       _l match {
         case f: Function0[_] => f()
         case _               => _l
       }
-    }).andThen(Applicative[F].pure))
+    }.andThen(Applicative[F].pure))
   def doAnswerF[F[_]: Applicative, P0, R](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber = clazz[P0] match {
     case c if c == classOf[InvocationOnMock] =>
       Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])).andThen(Applicative[F].pure))
@@ -74,14 +74,14 @@ trait MockitoCats extends ScalacticSerialisableHack {
     Mockito.doAnswer(functionToAnswer(f).andThen(Applicative[F].pure))
 
   def doAnswerFG[F[_]: Applicative, G[_]: Applicative, R](l: => R): Stubber =
-    Mockito.doAnswer(invocationToAnswer(_ => {
+    Mockito.doAnswer(invocationToAnswer { _ =>
       // Store the param so we don't evaluate the by-name twice
       val _l = l
       _l match {
         case f: Function0[_] => f()
         case _               => _l
       }
-    }).andThen(Applicative[F].compose[G].pure))
+    }.andThen(Applicative[F].compose[G].pure))
   def doAnswerFG[F[_]: Applicative, G[_]: Applicative, P0, R](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber =
     clazz[P0] match {
       case c if c == classOf[InvocationOnMock] =>

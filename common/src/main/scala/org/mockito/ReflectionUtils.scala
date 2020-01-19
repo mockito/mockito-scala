@@ -23,12 +23,20 @@ object ReflectionUtils {
     }
   ]
 
+  def listToTuple(l: List[Object]): Any =
+    l match {
+      case Nil      => Nil
+      case h :: Nil => h
+      case _        => Class.forName(s"scala.Tuple${l.size}").getDeclaredConstructors.head.newInstance(l: _*)
+    }
+
   implicit class InvocationOnMockOps(val invocation: InvocationOnMock) extends AnyVal {
     def mock[M]: M                               = invocation.getMock.asInstanceOf[M]
     def method: Method                           = invocation.getMethod
     def arg[A: ValueClassWrapper](index: Int): A = ValueClassWrapper[A].wrapAs[A](invocation.getArgument(index))
     def args: List[Any]                          = invocation.getArguments.toList
-    def callRealMethod[A](): A                   = invocation.callRealMethod.asInstanceOf[A]
+    def callRealMethod[R](): R                   = invocation.callRealMethod.asInstanceOf[R]
+    def argsAsTuple: Any                         = listToTuple(args.map(_.asInstanceOf[Object]))
 
     def returnType: Class[_] = {
       val javaReturnType = method.getReturnType

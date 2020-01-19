@@ -6,6 +6,7 @@ import org.mockito.{ ArgumentMatchers => JavaMatchers }
 import scala.reflect.ClassTag
 
 private[mockito] trait EqMatchers {
+
   /**
    * Delegates to <code>ArgumentMatchers.same()</code>, it's only here so we expose all the `ArgumentMatchers`
    * on a single place

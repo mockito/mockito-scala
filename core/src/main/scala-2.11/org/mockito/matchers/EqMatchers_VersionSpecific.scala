@@ -1,6 +1,7 @@
 package org.mockito.matchers
 
 trait EqMatchers_VersionSpecific {
+
   /**
    * Creates a matcher that delegates on {{org.scalactic.Equality}} so you can always customise how the values are compared
    * Also works with value classes

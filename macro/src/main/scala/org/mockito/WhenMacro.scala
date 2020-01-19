@@ -469,4 +469,22 @@ object WhenMacro {
     if (c.settings.contains("mockito-print-when")) println(show(r))
     r
   }
+
+  class AnswerPFActions[T](os: ScalaFirstStubbing[T]) {
+    def apply(pf: PartialFunction[Any, T]): ScalaOngoingStubbing[T] = os thenAnswer pf
+  }
+
+  private val ShouldAnswerPFOptions = Set("shouldAnswerPF", "mustAnswerPF", "answersPF")
+  def shouldAnswerPF[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
+    import c.universe._
+
+    val r = c.macroApplication match {
+      case q"$_.StubbingOps[$t]($invocation).$m" if ShouldAnswerPFOptions.contains(m.toString) =>
+        q"new _root_.org.mockito.WhenMacro.AnswerPFActions(_root_.org.mockito.Mockito.when[$t](${transformInvocation(c)(invocation)}))"
+
+      case o => throw new Exception(s"Couldn't recognize ${show(o)}")
+    }
+    if (c.settings.contains("mockito-print-when")) println(show(r))
+    r
+  }
 }

@@ -1,6 +1,7 @@
 package org.mockito.matchers
 
 trait MacroBasedMatchers {
+
   /**
    * It was intended to be used instead of any when the argument is a value class,
    * but any now supports value classes so it is not needed anymore

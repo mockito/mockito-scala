@@ -12,6 +12,7 @@ import org.scalactic.TripleEquals._
 import scala.reflect.ClassTag
 
 package object mockito {
+
   /** Some forms of tagged types don't provide a ClassTag, given that sometimes we only use it to differentiate
    *  an InvocationOnMock from anything else, this is a safe default for those methods
    */
@@ -122,8 +123,8 @@ package object mockito {
       P9: ValueClassWrapper,
       P10: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i => f(i.arg[P0](0), i.arg[P1](1), i.arg[P2](2), i.arg[P3](3), i.arg[P4](4), i.arg[P5](5), i.arg[P6](6), i.arg[P7](7), i.arg[P8](8), i.arg[P9](9), i.arg[P10](10))
+    invocationToAnswer(i =>
+      f(i.arg[P0](0), i.arg[P1](1), i.arg[P2](2), i.arg[P3](3), i.arg[P4](4), i.arg[P5](5), i.arg[P6](6), i.arg[P7](7), i.arg[P8](8), i.arg[P9](9), i.arg[P10](10))
     )
 
   def functionToAnswer[
@@ -141,22 +142,21 @@ package object mockito {
       P10: ValueClassWrapper,
       P11: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11)
+      )
     )
 
   def functionToAnswer[
@@ -175,23 +175,22 @@ package object mockito {
       P11: ValueClassWrapper,
       P12: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12)
+      )
     )
 
   def functionToAnswer[
@@ -211,24 +210,23 @@ package object mockito {
       P12: ValueClassWrapper,
       P13: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13)
+      )
     )
 
   def functionToAnswer[
@@ -249,25 +247,24 @@ package object mockito {
       P13: ValueClassWrapper,
       P14: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13),
-          i.arg[P14](14)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13),
+        i.arg[P14](14)
+      )
     )
 
   def functionToAnswer[
@@ -289,26 +286,25 @@ package object mockito {
       P14: ValueClassWrapper,
       P15: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13),
-          i.arg[P14](14),
-          i.arg[P15](15)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13),
+        i.arg[P14](14),
+        i.arg[P15](15)
+      )
     )
 
   def functionToAnswer[
@@ -331,27 +327,26 @@ package object mockito {
       P15: ValueClassWrapper,
       P16: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13),
-          i.arg[P14](14),
-          i.arg[P15](15),
-          i.arg[P16](16)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13),
+        i.arg[P14](14),
+        i.arg[P15](15),
+        i.arg[P16](16)
+      )
     )
 
   def functionToAnswer[
@@ -375,28 +370,27 @@ package object mockito {
       P16: ValueClassWrapper,
       P17: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13),
-          i.arg[P14](14),
-          i.arg[P15](15),
-          i.arg[P16](16),
-          i.arg[P17](17)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13),
+        i.arg[P14](14),
+        i.arg[P15](15),
+        i.arg[P16](16),
+        i.arg[P17](17)
+      )
     )
 
   def functionToAnswer[
@@ -421,29 +415,28 @@ package object mockito {
       P17: ValueClassWrapper,
       P18: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13),
-          i.arg[P14](14),
-          i.arg[P15](15),
-          i.arg[P16](16),
-          i.arg[P17](17),
-          i.arg[P18](18)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13),
+        i.arg[P14](14),
+        i.arg[P15](15),
+        i.arg[P16](16),
+        i.arg[P17](17),
+        i.arg[P18](18)
+      )
     )
 
   def functionToAnswer[
@@ -469,30 +462,29 @@ package object mockito {
       P18: ValueClassWrapper,
       P19: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13),
-          i.arg[P14](14),
-          i.arg[P15](15),
-          i.arg[P16](16),
-          i.arg[P17](17),
-          i.arg[P18](18),
-          i.arg[P19](19)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13),
+        i.arg[P14](14),
+        i.arg[P15](15),
+        i.arg[P16](16),
+        i.arg[P17](17),
+        i.arg[P18](18),
+        i.arg[P19](19)
+      )
     )
 
   def functionToAnswer[
@@ -519,31 +511,30 @@ package object mockito {
       P19: ValueClassWrapper,
       P20: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13),
-          i.arg[P14](14),
-          i.arg[P15](15),
-          i.arg[P16](16),
-          i.arg[P17](17),
-          i.arg[P18](18),
-          i.arg[P19](19),
-          i.arg[P20](20)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13),
+        i.arg[P14](14),
+        i.arg[P15](15),
+        i.arg[P16](16),
+        i.arg[P17](17),
+        i.arg[P18](18),
+        i.arg[P19](19),
+        i.arg[P20](20)
+      )
     )
 
   def functionToAnswer[
@@ -571,32 +562,31 @@ package object mockito {
       P20: ValueClassWrapper,
       P21: ValueClassWrapper
   ](f: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21) => T): ScalaAnswer[T] =
-    invocationToAnswer(
-      i =>
-        f(
-          i.arg[P0](0),
-          i.arg[P1](1),
-          i.arg[P2](2),
-          i.arg[P3](3),
-          i.arg[P4](4),
-          i.arg[P5](5),
-          i.arg[P6](6),
-          i.arg[P7](7),
-          i.arg[P8](8),
-          i.arg[P9](9),
-          i.arg[P10](10),
-          i.arg[P11](11),
-          i.arg[P12](12),
-          i.arg[P13](13),
-          i.arg[P14](14),
-          i.arg[P15](15),
-          i.arg[P16](16),
-          i.arg[P17](17),
-          i.arg[P18](18),
-          i.arg[P19](19),
-          i.arg[P20](20),
-          i.arg[P21](21)
-        )
+    invocationToAnswer(i =>
+      f(
+        i.arg[P0](0),
+        i.arg[P1](1),
+        i.arg[P2](2),
+        i.arg[P3](3),
+        i.arg[P4](4),
+        i.arg[P5](5),
+        i.arg[P6](6),
+        i.arg[P7](7),
+        i.arg[P8](8),
+        i.arg[P9](9),
+        i.arg[P10](10),
+        i.arg[P11](11),
+        i.arg[P12](12),
+        i.arg[P13](13),
+        i.arg[P14](14),
+        i.arg[P15](15),
+        i.arg[P16](16),
+        i.arg[P17](17),
+        i.arg[P18](18),
+        i.arg[P19](19),
+        i.arg[P20](20),
+        i.arg[P21](21)
+      )
     )
 
 //  (1 to 22).foreach { fn =>

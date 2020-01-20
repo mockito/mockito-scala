@@ -272,10 +272,10 @@ class MySpec extends WordSpec with Mockito {
 This will give you a fresh new instance of `myMock` for each test but at the same time you only declare the creation/common stubbing once.
 
 
-## `org.mockito.integrations.scalatest.ResetMocksAfterEachTest`
+## `org.mockito.integrations.scalatest.ResetMocksAfterEachTest` | `org.mockito.integrations.scalatest.ResetMocksAfterEachAsyncTest`
 
 Inspired by [this](https://stackoverflow.com/questions/51387234/is-there-a-per-test-non-specific-mock-reset-pattern-using-scalaplayspecmockito) StackOverflow question,
-mockito-scala provides this trait that helps to automatically reset any existent mock after each test is run
+mockito-scala provides these traits that helps to automatically reset any existent mock after each test is run
 The trait has to be mixed **after** `org.mockito.MockitoSugar` in order to work, otherwise your test will not compile
 The code shown in the StackOverflow question would look like this if using this mechanism
 

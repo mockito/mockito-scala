@@ -1,6 +1,7 @@
 package org.mockito
 
 import org.mockito.Utils._
+import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.verification.VerificationMode
 
 import scala.reflect.macros.blackbox
@@ -9,7 +10,7 @@ object Called {
   def by[T](stubbing: T): T = macro DoSomethingMacro.calledBy[T]
 }
 
-object VerifyMacro {
+object VerifyMacro extends VerificationMacroTransformer {
   def wasMacro[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree)(order: c.Expr[VerifyOrder]): c.Expr[R] = {
     import c.universe._
 
@@ -30,11 +31,28 @@ object VerifyMacro {
     override def verificationMode: VerificationMode = Mockito.never
   }
 
+  object NeverAgain extends ScalaVerificationMode {
+    override def verificationMode: VerificationMode = VerificationModeFactory.noMoreInteractions()
+  }
+
   object Once extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.times(1)
   }
 
-  private def transformInvocation(c: blackbox.Context)(invocation: c.Tree, order: c.Tree, times: c.Tree): c.Tree = {
+}
+
+private[mockito] trait VerificationMacroTransformer {
+  protected def transformInvocation(c: blackbox.Context)(invocation: c.Tree, order: c.Tree, times: c.Tree): c.Tree = {
+    import c.universe._
+
+    try {
+      doTransformInvocation(c)(invocation, order, times)
+    } catch {
+      case e: Exception => throw new Exception(s"Error when transforming invocation ${show(invocation)}", e)
+    }
+  }
+
+  protected def doTransformInvocation(c: blackbox.Context)(invocation: c.Tree, order: c.Tree, times: c.Tree): c.Tree = {
     import c.universe._
 
     val pf: PartialFunction[c.Tree, c.Tree] = {
@@ -45,9 +63,9 @@ object VerifyMacro {
         q"verification($order.verifyWithMode($obj, $times).$method[..$targs])"
     }
 
-    if (pf.isDefinedAt(invocation))
+    if (pf.isDefinedAt(invocation)) {
       pf(invocation)
-    else if (pf.isDefinedAt(invocation.children.last)) {
+    } else if (invocation.children.nonEmpty && pf.isDefinedAt(invocation.children.last)) {
       val values = invocation.children
         .dropRight(1)
         .collect {
@@ -72,7 +90,7 @@ object VerifyMacro {
     } else throw new Exception(s"Couldn't recognize invocation ${show(invocation)}")
   }
 
-  def transformVerification[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree): c.Tree = {
+  protected def transformVerification[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree): c.Tree = {
     import c.universe._
 
     called match {

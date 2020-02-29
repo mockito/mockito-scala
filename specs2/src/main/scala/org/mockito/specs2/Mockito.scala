@@ -5,7 +5,7 @@ import org.mockito.hamcrest.MockitoHamcrest
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.matchers.DefaultMatcher
 import org.mockito.stubbing.ScalaOngoingStubbing
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockitoBase, Specs2VerifyMacro, VerifyInOrder, VerifyOrder }
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticStubbing, PostfixVerifications, Specs2VerifyMacro, VerifyInOrder, VerifyOrder }
 import org.scalactic.{ Equality, Prettifier }
 import org.specs2.control.Exceptions.catchAll
 import org.specs2.control.Throwablex._
@@ -13,7 +13,7 @@ import org.specs2.matcher.{ Expectable, MatchFailure, MatchResult, MatchSuccess,
 
 import scala.reflect.ClassTag
 
-trait Mockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSpecs2Support {
+trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoSpecs2Support {
   def checkCalls[Any] = new Matcher[Any] {
     def apply[S <: Any](s: Expectable[S]) =
       catchAll { s.value } { identity } match {

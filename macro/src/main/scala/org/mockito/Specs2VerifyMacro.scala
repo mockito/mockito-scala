@@ -4,7 +4,7 @@ import org.mockito.Utils._
 
 import scala.reflect.macros.blackbox
 
-object Specs2VerifyMacro {
+object Specs2VerifyMacro extends VerificationMacroTransformer {
   private val WordsToNumbers = Map(
     "no"    -> 0,
     "one"   -> 1,
@@ -46,7 +46,7 @@ object Specs2VerifyMacro {
 
         case q"$_.MatchResultOps[$_]($prev).andThen[$_]($t)($_)" =>
           def transform(tree: c.Tree): c.Tree = tree match {
-            case q"$_.VerifyingOps[$_]($_).$_($_)($_)"              => VerifyMacro.transformVerification(c)(tree)
+            case q"$_.VerifyingOps[$_]($_).$_($_)($_)"              => transformVerification(c)(tree)
             case _ if transformSpecs2Verification.isDefinedAt(tree) => transformSpecs2Verification(tree)
             case other                                              => other
           }

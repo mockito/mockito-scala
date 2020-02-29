@@ -1,10 +1,13 @@
 package org.mockito.scalatest
 
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockitoBase }
+import org.mockito.IdiomaticStubbing
+import org.mockito.PostfixVerifications
+import org.mockito.PrefixExpectations
+import org.mockito.ArgumentMatchersSugar
 import org.scalatest.Succeeded
 import org.scalatest.compatible.Assertion
 
-trait IdiomaticMockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSessionFixture {
+trait IdiomaticMockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoSessionFixture {
   override type Verification = Assertion
   override def verification(v: => Any): Verification = {
     v
@@ -12,7 +15,23 @@ trait IdiomaticMockito extends IdiomaticMockitoBase with ArgumentMatchersSugar w
   }
 }
 
-trait AsyncIdiomaticMockito extends IdiomaticMockitoBase with ArgumentMatchersSugar with MockitoSessionAsyncFixture {
+trait IdiomaticMockito2 extends IdiomaticStubbing with PrefixExpectations with ArgumentMatchersSugar with MockitoSessionFixture {
+  override type Verification = Assertion
+  override def verification(v: => Any): Verification = {
+    v
+    Succeeded
+  }
+}
+
+trait AsyncIdiomaticMockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoSessionAsyncFixture {
+  override type Verification = Assertion
+  override def verification(v: => Any): Verification = {
+    v
+    Succeeded
+  }
+}
+
+trait AsyncIdiomaticMockito2 extends IdiomaticStubbing with PrefixExpectations with ArgumentMatchersSugar with MockitoSessionAsyncFixture {
   override type Verification = Assertion
   override def verification(v: => Any): Verification = {
     v

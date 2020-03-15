@@ -1,12 +1,16 @@
 package org.mockito
 
-trait PostfixVerifications {
-
-  import org.mockito.IdiomaticMockitoBase._
+trait IdiomaticVerifications {
 
   type Verification
 
   def verification(v: => Any): Verification
+
+}
+
+trait PostfixVerifications extends IdiomaticVerifications {
+
+  import org.mockito.IdiomaticMockitoBase._
 
   implicit class VerifyingOps[T](stubbing: T) {
     def was(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]
@@ -63,7 +67,7 @@ trait PostfixVerifications {
   def atLeast(t: Times): AtLeast = AtLeast(t.times)
   def atMost(t: Times): AtMost   = AtMost(t.times)
 
-  implicit class IntOps(i: Int) {
+  implicit class VerificationsIntOps(i: Int) {
     def times: Times = Times(i)
   }
 

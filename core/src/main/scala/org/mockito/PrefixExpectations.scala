@@ -1,11 +1,8 @@
 package org.mockito
 
-trait PrefixExpectations {
+trait PrefixExpectations extends IdiomaticVerifications {
 
   import org.mockito.IdiomaticMockitoBase._
-
-  type Verification
-  def verification(v: => Any): Verification
 
   type Calls = Times
 
@@ -64,7 +61,7 @@ trait PrefixExpectations {
   def expect(mode: ScalaVerificationMode): ExpectationOps = new ExpectationOps(mode)
 
   class ExpectationOps(val mode: ScalaVerificationMode) {
-    def to(invocationOnMock: Any)(implicit order: VerifyOrder): Unit =
+    def to(invocationOnMock: Any)(implicit order: VerifyOrder): Verification =
       macro ExpectMacro.to[Verification]
   }
 
@@ -72,5 +69,6 @@ trait PrefixExpectations {
 
   implicit class IntOps(i: Int) {
     def calls: Calls = Times(i)
+    def call: Calls  = Times(i)
   }
 }

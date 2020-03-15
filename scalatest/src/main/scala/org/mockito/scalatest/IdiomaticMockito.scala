@@ -1,13 +1,12 @@
 package org.mockito.scalatest
 
-import org.mockito.IdiomaticStubbing
 import org.mockito.PostfixVerifications
-import org.mockito.PrefixExpectations
 import org.mockito.ArgumentMatchersSugar
+import org.mockito.IdiomaticVerifications
 import org.scalatest.Succeeded
 import org.scalatest.compatible.Assertion
 
-trait IdiomaticMockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoSessionFixture {
+trait IdiomaticMockitoBase extends org.mockito.IdiomaticStubbing with ArgumentMatchersSugar with MockitoSessionFixture { this: IdiomaticVerifications =>
   override type Verification = Assertion
   override def verification(v: => Any): Verification = {
     v
@@ -15,7 +14,7 @@ trait IdiomaticMockito extends IdiomaticStubbing with PostfixVerifications with 
   }
 }
 
-trait IdiomaticMockito2 extends IdiomaticStubbing with PrefixExpectations with ArgumentMatchersSugar with MockitoSessionFixture {
+trait IdiomaticMockito extends IdiomaticMockitoBase with PostfixVerifications {
   override type Verification = Assertion
   override def verification(v: => Any): Verification = {
     v
@@ -23,7 +22,7 @@ trait IdiomaticMockito2 extends IdiomaticStubbing with PrefixExpectations with A
   }
 }
 
-trait AsyncIdiomaticMockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoSessionAsyncFixture {
+trait AsyncIdiomaticMockitoBase extends org.mockito.IdiomaticStubbing with ArgumentMatchersSugar with MockitoSessionAsyncFixture { this: IdiomaticVerifications =>
   override type Verification = Assertion
   override def verification(v: => Any): Verification = {
     v
@@ -31,7 +30,7 @@ trait AsyncIdiomaticMockito extends IdiomaticStubbing with PostfixVerifications 
   }
 }
 
-trait AsyncIdiomaticMockito2 extends IdiomaticStubbing with PrefixExpectations with ArgumentMatchersSugar with MockitoSessionAsyncFixture {
+trait AsyncIdiomaticMockito extends AsyncIdiomaticMockitoBase with PostfixVerifications {
   override type Verification = Assertion
   override def verification(v: => Any): Verification = {
     v

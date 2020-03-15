@@ -41,6 +41,20 @@ The library has independent developers, release cycle and versioning from core m
 ## Partial unification
 If you're in Scala 2.11 or 2.12 you'll probably want to add the compiler flag "-Ypartial-unification", if you don't you risk some compile errors when trying to stub complex types using the idiomatic syntax
 
+## Notes for 1.13.0
+
+We added a new experimental Expectations DSL for idiomatic syntax. It behaves differently from the original idiomatic verifications: 
+the user declares intent to verify by using `expect` at the beginning of the line rather than at the end of it - similar to "verify" in Mockito Java.
+
+Now, you can do `expect a call to aMock.bar(*)` where previously you did `aMock.bar(*) was called`. More examples in [Expect DSL](#expect-dsl)
+
+Note that since this DSL is currently experimental, it's not stable - the DSL itself may evolve, components and base traits may move or be renamed, and incompatible changes may be introduced between minor/patch versions.
+
+In order to use it...
+* with Scalatest base traits, mix in `org.mockito.scalatest.IdiomaticMockitoBase with org.mockito.PrefixExpectations` instead of `org.mockito.scalatest.IdiomaticMockito` (or `org.mockito.scalatest.AsyncIdiomaticMockitoBase`)
+* with another test framework, mix in trait `org.mockito.IdiomaticMockito.WithExpect` or use its companion object
+
+
 ## Notes for v1.4.0
 As Specs2 support was added, now the library has been split in 3 different artifacts
 - **mockito-scala** being the core
@@ -298,7 +312,7 @@ created via the companion object of `org.mockito.MockitoSugar` so is not tracked
 
 By adding the trait `org.mockito.IdiomaticMockito` you get access to some improved methods in the API
 
-This API is heavily inspired on Scalatest's Matchers, so if have used them, you'll find it very familiar
+This API is heavily inspired on Scalatest's Matchers, so if you have used them, you'll find it very familiar
 
 Here we can see the old syntax on the left and the new one on the right
 
@@ -366,6 +380,56 @@ type inference. If for some reason you have to do that (ideally all functions sh
 use the traditional syntax via the MockitoSugar companion object `MockitoSugar.doReturn("meh").when(myMock).foo` or you
 can use an answer that can decide what to return given whatever condition you need to simulate 
 `{ (args) => if(<condition>) something else somethingElse } willBe answered by myMock.foo`
+
+## Expect DSL
+
+**NOTE**: This DSL is experimental, may be unstable and may introduce incompatible changes between minor/patch versions
+
+This DSL is available as a prefix alternative to `aMock.bar was called` DSL provided by [Idiomatic Mockito](#idiomatic-mockito)
+while keeping the original mocking and stubbing functionality. As you can see, with the new syntax you declare the
+intent of verification before describing the called pattern, so it reads even more naturally then before.
+
+It is available via `org.mockito.IdiomaticMockito.WithExpect` mix-in (or its companion object). Mocking and stubbing works the same as before, and below are the examples of how verifications should be done.
+
+```scala
+trait Foo {
+  def bar: String
+  def bar(v: Int): Int
+}
+  
+val aMock = mock[Foo]  
+  
+verifyZeroInteractions(aMock)                     <=> expect no calls to aMock
+verify(aMock).bar                                 <=> expect a call to aMock.bar
+verify(aMock).bar(any)                            <=> expect a call to aMock.bar(*)
+
+verify(aMock, only).bar                           <=> expect only call to aMock.bar
+verify(aMock, never).bar                          <=> expect no calls to aMock.bar
+
+verify(aMock, times(2)).bar                       <=> expect exactly 2.calls to aMock.bar
+verify(aMock, times(2)).bar                       <=> expect two calls to aMock.bar
+verify(aMock, times(2)).bar                       <=> expect (2.calls) to aMock.bar
+
+verify(aMock, times(6)).bar                       <=> expect exactly 6.calls to aMock.bar
+verify(aMock, times(6)).bar                       <=> expect six calls to aMock.bar
+verify(aMock, times(6)).bar                       <=> expect (6.calls) to aMock.bar
+
+verify(aMock, atLeast(6)).bar                     <=> expect atLeast 6.calls to aMock.bar
+verify(aMock, atLeast(6)).bar                     <=> expect atLeastSix calls to aMock.bar
+
+verify(aMock, atMost(6)).bar                      <=> expect atMost 6.calls to aMock.bar
+verify(aMock, atMost(6)).bar                      <=> expect atMostSix calls to aMock.bar
+
+verify(aMock, timeout(2000).times(2)).bar         <=> expect (2.calls within 2.seconds) to aMock.bar
+verify(aMock, timeout(2000).atLeast(6)).bar       <=> expect (atLeast(6.calls) within 2.seconds) to aMock.bar
+
+verifyNoMoreInteractions(aMock)                   <=> expect noMore calls to aMock
+
+val order = inOrder(mock1, mock2)                 <=> InOrder(mock1, mock2) { implicit order =>
+order.verify(mock2).someMethod()                  <=>   expect a call to mock2.someMethod()
+order.verify(mock1).anotherMethod()               <=>   expect a call to mock1.anotherMethod()
+                                                  <=> }
+```
 
 ## Default Answers
 We defined a new type `org.mockito.stubbing.DefaultAnswer` which is used to configure the default behaviour of a mock when a non-stubbed invocation

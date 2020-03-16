@@ -1,11 +1,20 @@
 package org.mockito
 
-trait IdiomaticMockito extends IdiomaticMockitoBase {
+trait IdiomaticMockito extends IdiomaticStubbing with PostfixVerifications {
   override type Verification = Unit
   override def verification(v: => Any): Verification = v
 }
 
-/**
- * Simple object to allow the usage of the trait without mixing it in
- */
-object IdiomaticMockito extends IdiomaticMockito
+object IdiomaticMockito extends IdiomaticMockito {
+
+  /**
+   * EXPERIMENTAL base trait using new prefix DSL for verifications.
+   * Use with care: API may change between minor versions.
+   */
+  trait WithExpect extends IdiomaticStubbing with PrefixExpectations {
+    override type Verification = Unit
+    override def verification(v: => Any): Verification = v
+  }
+
+  object WithExpect extends WithExpect
+}

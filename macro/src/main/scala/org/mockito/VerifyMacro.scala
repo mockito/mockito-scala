@@ -97,13 +97,16 @@ private[mockito] trait VerificationMacroTransformer {
       case q"$_.VerifyingOps[$_]($invocation).was($_.called)($order)" =>
         transformInvocation(c)(invocation, order, q"_root_.org.mockito.VerifyMacro.Once")
 
-      case q"$_.VerifyingOps[$_]($_.this.$obj).wasNever($called)($_)" =>
-        called match {
-          case q"$_.called"      => q"verification(_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj))"
-          case q"$_.calledAgain" => q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions($obj))"
+      case q"$_.VerifyingOps[$_]($a.$b).wasNever($called)($order)" =>
+        q"""
+           if (_root_.org.mockito.MockitoSugar.mockingDetails($a).isMock) ${transformInvocation(c)(q"$a.$b", order, q"_root_.org.mockito.VerifyMacro.Never")}
+           else ${called match {
+          case q"$_.called"      => q"verification(_root_.org.mockito.MockitoSugar.verifyZeroInteractions($a.$b))"
+          case q"$_.calledAgain" => q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions($a.$b))"
           case q"$_.calledAgain.apply($_.ignoringStubs)" =>
-            q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($obj): _*))"
-        }
+            q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($a.$b): _*))"
+        }}
+         """
 
       case q"$_.VerifyingOps[$_]($obj.$method[..$targs](...$args)).wasNever($_.called)($order)" =>
         transformInvocation(c)(q"$obj.$method[..$targs](...$args)", order, q"_root_.org.mockito.VerifyMacro.Never")

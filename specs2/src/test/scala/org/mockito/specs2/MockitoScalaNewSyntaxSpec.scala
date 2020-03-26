@@ -443,9 +443,7 @@ The Mockito trait is reusable in other contexts
 
   def makeCalls(list: java.util.List[String], list2: java.util.List[String]) = {
     list.add("one")
-    1 to 2 foreach { _ =>
-      list.add("two")
-    }
+    1 to 2 foreach { _ => list.add("two") }
     list2.add("one")
   }
 
@@ -530,9 +528,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list2.get(0)
 
-    InOrder(list1, list2) { implicit order =>
-      ((list1.get(0) was called) andThen list2.get(0).was(called)).message must_== "The mock was called as expected"
-    }
+    InOrder(list1, list2)(implicit order => ((list1.get(0) was called) andThen list2.get(0).was(called)).message must_== "The mock was called as expected")
   }
 
   def order2 = {
@@ -591,9 +587,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list2.get(0)
 
-    InOrder(list1, list2) { implicit order =>
-      (list2.get(0).was(called) andThen list1.get(0).was(called)).message must startWith("The mock was not called as expected")
-    }
+    InOrder(list1, list2)(implicit order => (list2.get(0).was(called) andThen list1.get(0).was(called)).message must startWith("The mock was not called as expected"))
   }
 
   def order6 = {
@@ -616,26 +610,20 @@ The Mockito trait is reusable in other contexts
 
   def callbacks1 = {
     val list = mock[java.util.List[String]]("list")
-    list.get(*) answers { i: Int =>
-      s"The parameter is ${i.toString}"
-    }
+    list.get(*) answers { i: Int => s"The parameter is ${i.toString}" }
     list.get(2) must_== "The parameter is 2"
   }
 
   def callbacks2 = {
     val list = mock[java.util.List[String]]("list")
-    list.get(*) answers { i: Int =>
-      (i + 1).toString
-    }
+    list.get(*) answers { i: Int => (i + 1).toString }
     list.get(1) must_== "2"
     list.get(5) must_== "6"
   }
 
   def callbacks3 = {
     val list = mock[java.util.List[String]]("list")
-    list.set(*, *) answers { (i: Int, s: String) =>
-      s"The parameters are ($i,$s)"
-    }
+    list.set(*, *) answers { (i: Int, s: String) => s"The parameters are ($i,$s)" }
     list.set(1, "foo") must_== "The parameters are (1,foo)"
   }
 

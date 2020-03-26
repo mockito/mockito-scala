@@ -124,5 +124,5 @@ class ParametrisedTraitInt extends ParametrisedTrait[Int] { def m() = -1 }
 
 class TestController(org: Org) {
   def async(f: => Int): Int = f
-  def test(id: Int)         = async { org.doSomethingWithThisInt(id) }
+  def test(id: Int)         = async(org.doSomethingWithThisInt(id))
 }

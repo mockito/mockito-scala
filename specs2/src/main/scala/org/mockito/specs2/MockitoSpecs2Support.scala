@@ -30,16 +30,12 @@ trait FunctionArgumentsLowImplicits extends ArgThat with Expectations {
 
 trait FunctionArguments extends FunctionArgumentsLowImplicits {
   def callMatching[A, R](a: A, m: Matcher[R]): A => R =
-    argThat(m ^^ { (f: A => R) =>
-      f(a)
-    })
+    argThat(m ^^ { (f: A => R) => f(a) })
   def functionCall[A, R](a: A, r: R): A => R                                = callMatching(a, new BeEqualTo(r))
   implicit def toFunctionCall[A, R](values: (A, R)): A => R                 = functionCall(values._1, values._2)
   implicit def matcherToFunctionCall[A, R](values: (A, Matcher[R])): A => R = callMatching(values._1, values._2)
   def callMatching2[T1, T2, R](t1: T1, t2: T2, m: Matcher[R]): Function2[T1, T2, R] =
-    argThat(m ^^ { (f: Function2[T1, T2, R]) =>
-      f(t1, t2)
-    })
+    argThat(m ^^ { (f: Function2[T1, T2, R]) => f(t1, t2) })
   def functionCall2[T1, T2, R](t1: T1, t2: T2, r: R): Function2[T1, T2, R] = callMatching2(t1, t2, new BeEqualTo(r))
   implicit def toFunctionCall2[T1, T2, R](values: ((T1, T2), R)): Function2[T1, T2, R] =
     functionCall2(values._1._1, values._1._2, values._2)
@@ -47,9 +43,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
     callMatching2(values._1._1, values._1._2, values._2)
 
   def callMatching3[T1, T2, T3, R](t1: T1, t2: T2, t3: T3, m: Matcher[R]): Function3[T1, T2, T3, R] =
-    argThat(m ^^ { (f: Function3[T1, T2, T3, R]) =>
-      f(t1, t2, t3)
-    })
+    argThat(m ^^ { (f: Function3[T1, T2, T3, R]) => f(t1, t2, t3) })
   def functionCall3[T1, T2, T3, R](t1: T1, t2: T2, t3: T3, r: R): Function3[T1, T2, T3, R] = callMatching3(t1, t2, t3, new BeEqualTo(r))
   implicit def toFunctionCall3[T1, T2, T3, R](values: ((T1, T2, T3), R)): Function3[T1, T2, T3, R] =
     functionCall3(values._1._1, values._1._2, values._1._3, values._2)
@@ -57,9 +51,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
     callMatching3(values._1._1, values._1._2, values._1._3, values._2)
 
   def callMatching4[T1, T2, T3, T4, R](t1: T1, t2: T2, t3: T3, t4: T4, m: Matcher[R]): Function4[T1, T2, T3, T4, R] =
-    argThat(m ^^ { (f: Function4[T1, T2, T3, T4, R]) =>
-      f(t1, t2, t3, t4)
-    })
+    argThat(m ^^ { (f: Function4[T1, T2, T3, T4, R]) => f(t1, t2, t3, t4) })
   def functionCall4[T1, T2, T3, T4, R](t1: T1, t2: T2, t3: T3, t4: T4, r: R): Function4[T1, T2, T3, T4, R] =
     callMatching4(t1, t2, t3, t4, new BeEqualTo(r))
   implicit def toFunctionCall4[T1, T2, T3, T4, R](values: ((T1, T2, T3, T4), R)): Function4[T1, T2, T3, T4, R] =
@@ -68,9 +60,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
     callMatching4(values._1._1, values._1._2, values._1._3, values._1._4, values._2)
 
   def callMatching5[T1, T2, T3, T4, T5, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, m: Matcher[R]): Function5[T1, T2, T3, T4, T5, R] =
-    argThat(m ^^ { (f: Function5[T1, T2, T3, T4, T5, R]) =>
-      f(t1, t2, t3, t4, t5)
-    })
+    argThat(m ^^ { (f: Function5[T1, T2, T3, T4, T5, R]) => f(t1, t2, t3, t4, t5) })
   def functionCall5[T1, T2, T3, T4, T5, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, r: R): Function5[T1, T2, T3, T4, T5, R] =
     callMatching5(t1, t2, t3, t4, t5, new BeEqualTo(r))
   implicit def toFunctionCall5[T1, T2, T3, T4, T5, R](values: ((T1, T2, T3, T4, T5), R)): Function5[T1, T2, T3, T4, T5, R] =
@@ -79,9 +69,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
     callMatching5(values._1._1, values._1._2, values._1._3, values._1._4, values._1._5, values._2)
 
   def callMatching6[T1, T2, T3, T4, T5, T6, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, m: Matcher[R]): Function6[T1, T2, T3, T4, T5, T6, R] =
-    argThat(m ^^ { (f: Function6[T1, T2, T3, T4, T5, T6, R]) =>
-      f(t1, t2, t3, t4, t5, t6)
-    })
+    argThat(m ^^ { (f: Function6[T1, T2, T3, T4, T5, T6, R]) => f(t1, t2, t3, t4, t5, t6) })
   def functionCall6[T1, T2, T3, T4, T5, T6, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, r: R): Function6[T1, T2, T3, T4, T5, T6, R] =
     callMatching6(t1, t2, t3, t4, t5, t6, new BeEqualTo(r))
   implicit def toFunctionCall6[T1, T2, T3, T4, T5, T6, R](values: ((T1, T2, T3, T4, T5, T6), R)): Function6[T1, T2, T3, T4, T5, T6, R] =
@@ -90,9 +78,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
     callMatching6(values._1._1, values._1._2, values._1._3, values._1._4, values._1._5, values._1._6, values._2)
 
   def callMatching7[T1, T2, T3, T4, T5, T6, T7, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, m: Matcher[R]): Function7[T1, T2, T3, T4, T5, T6, T7, R] =
-    argThat(m ^^ { (f: Function7[T1, T2, T3, T4, T5, T6, T7, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7)
-    })
+    argThat(m ^^ { (f: Function7[T1, T2, T3, T4, T5, T6, T7, R]) => f(t1, t2, t3, t4, t5, t6, t7) })
   def functionCall7[T1, T2, T3, T4, T5, T6, T7, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, r: R): Function7[T1, T2, T3, T4, T5, T6, T7, R] =
     callMatching7(t1, t2, t3, t4, t5, t6, t7, new BeEqualTo(r))
   implicit def toFunctionCall7[T1, T2, T3, T4, T5, T6, T7, R](values: ((T1, T2, T3, T4, T5, T6, T7), R)): Function7[T1, T2, T3, T4, T5, T6, T7, R] =
@@ -102,9 +88,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
 
   def callMatching8[T1, T2, T3, T4, T5, T6, T7, T8, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, m: Matcher[R])
       : Function8[T1, T2, T3, T4, T5, T6, T7, T8, R] =
-    argThat(m ^^ { (f: Function8[T1, T2, T3, T4, T5, T6, T7, T8, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7, t8)
-    })
+    argThat(m ^^ { (f: Function8[T1, T2, T3, T4, T5, T6, T7, T8, R]) => f(t1, t2, t3, t4, t5, t6, t7, t8) })
   def functionCall8[T1, T2, T3, T4, T5, T6, T7, T8, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, r: R): Function8[T1, T2, T3, T4, T5, T6, T7, T8, R] =
     callMatching8(t1, t2, t3, t4, t5, t6, t7, t8, new BeEqualTo(r))
   implicit def toFunctionCall8[T1, T2, T3, T4, T5, T6, T7, T8, R](values: ((T1, T2, T3, T4, T5, T6, T7, T8), R)): Function8[T1, T2, T3, T4, T5, T6, T7, T8, R] =
@@ -114,9 +98,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
 
   def callMatching9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, t9: T9, m: Matcher[R])
       : Function9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R] =
-    argThat(m ^^ { (f: Function9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7, t8, t9)
-    })
+    argThat(m ^^ { (f: Function9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R]) => f(t1, t2, t3, t4, t5, t6, t7, t8, t9) })
   def functionCall9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, t9: T9, r: R)
       : Function9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R] = callMatching9(t1, t2, t3, t4, t5, t6, t7, t8, t9, new BeEqualTo(r))
   implicit def toFunctionCall9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R](values: ((T1, T2, T3, T4, T5, T6, T7, T8, T9), R)): Function9[T1, T2, T3, T4, T5, T6, T7, T8, T9, R] =
@@ -128,9 +110,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
 
   def callMatching10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, t9: T9, t10: T10, m: Matcher[R])
       : Function10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R] =
-    argThat(m ^^ { (f: Function10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10)
-    })
+    argThat(m ^^ { (f: Function10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R]) => f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) })
   def functionCall10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, t9: T9, t10: T10, r: R)
       : Function10[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R] =
     callMatching10(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, new BeEqualTo(r))
@@ -145,9 +125,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
 
   def callMatching11[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, t9: T9, t10: T10, t11: T11, m: Matcher[R])
       : Function11[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R] =
-    argThat(m ^^ { (f: Function11[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11)
-    })
+    argThat(m ^^ { (f: Function11[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R]) => f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) })
   def functionCall11[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R](t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, t9: T9, t10: T10, t11: T11, r: R)
       : Function11[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, R] =
     callMatching11(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, new BeEqualTo(r))
@@ -201,9 +179,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
       t12: T12,
       m: Matcher[R]
   ): Function12[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R] =
-    argThat(m ^^ { (f: Function12[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12)
-    })
+    argThat(m ^^ { (f: Function12[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R]) => f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) })
   def functionCall12[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R](
       t1: T1,
       t2: T2,
@@ -273,9 +249,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
       t13: T13,
       m: Matcher[R]
   ): Function13[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R] =
-    argThat(m ^^ { (f: Function13[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13)
-    })
+    argThat(m ^^ { (f: Function13[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R]) => f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) })
   def functionCall13[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, R](
       t1: T1,
       t2: T2,
@@ -349,9 +323,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
       t14: T14,
       m: Matcher[R]
   ): Function14[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R] =
-    argThat(m ^^ { (f: Function14[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14)
-    })
+    argThat(m ^^ { (f: Function14[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R]) => f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) })
   def functionCall14[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R](
       t1: T1,
       t2: T2,
@@ -429,9 +401,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
       t15: T15,
       m: Matcher[R]
   ): Function15[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, R] =
-    argThat(m ^^ { (f: Function15[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, R]) =>
-      f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15)
-    })
+    argThat(m ^^ { (f: Function15[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, R]) => f(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) })
   def functionCall15[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, R](
       t1: T1,
       t2: T2,

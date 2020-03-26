@@ -67,7 +67,8 @@ object Captor {
         override def values: List[$tpe] = argumentCaptor.getAllValues.asScala.map(v => new $tpe(v)).toList
       }
     """
-    } else
+    }
+    else
       c.Expr[Captor[T]](q"new _root_.org.mockito.captor.WrapperCaptor[$tpe]")
 
     if (c.settings.contains("mockito-print-captor")) println(show(r.tree))

@@ -252,9 +252,8 @@ class MockitoScalazTest extends AnyWordSpec with Matchers with MockitoSugar with
 
       doAnswerFG[Future, ErrorOr, ValueClass](ValueClass("mocked!")).when(aMock).returnsFutureEither("hello")
       doAnswerFG[Future, ErrorOr, String, ValueClass]((s: String) => ValueClass(s + " mocked!")).when(aMock).returnsFutureEither("hi")
-      doAnswerFG[Future, ErrorOr, InvocationOnMock, ValueClass] { i: InvocationOnMock =>
-        ValueClass(i.arg[String](0) + " invocation mocked!")
-      }.when(aMock)
+      doAnswerFG[Future, ErrorOr, InvocationOnMock, ValueClass] { i: InvocationOnMock => ValueClass(i.arg[String](0) + " invocation mocked!") }
+        .when(aMock)
         .returnsFutureEither("hola")
       doAnswerFG[Future, Option, Int, Boolean, String]((i: Int, b: Boolean) => s"$i, $b").when(aMock).returnsFutureOptionFrom(42, true)
 

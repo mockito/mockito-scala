@@ -53,7 +53,8 @@ object ValueClassExtractor {
            """
           else
             q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]"
-        } else throw new Exception(s"Unsupported scala version $ScalaVersion")
+        }
+      else throw new Exception(s"Unsupported scala version $ScalaVersion")
     } else
       c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")
 

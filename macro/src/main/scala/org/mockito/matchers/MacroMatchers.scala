@@ -36,7 +36,8 @@ object MacroMatchers {
             override def any: $tpe = new $tpe(_root_.org.mockito.ArgumentMatchers.any[$innerType]())
           }
         """
-      } else
+      }
+      else
         c.Expr[AnyMatcher[T]](q"new _root_.org.mockito.matchers.AnyMatcherStandard[$tpe]")
 
     if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))

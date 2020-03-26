@@ -81,11 +81,8 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
       "create a mock with nice answer API (multiple params)" in {
         val aMock = foo()
 
-        when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClassInt(i * 10 + s.toInt)) andThenAnswer (
-            (
-                i: Int,
-                _: String
-            ) => ValueCaseClassInt(i)
+        when(aMock.doSomethingWithThisIntAndString(*, *)) thenAnswer ((i: Int, s: String) => ValueCaseClassInt(i * 10 + s.toInt)) andThenAnswer ((i: Int, _: String) =>
+          ValueCaseClassInt(i)
         )
 
         aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClassInt(42)
@@ -284,8 +281,8 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
       "create a mock with nice answer API (invocation usage)" in {
         val aMock = baz()
 
-        when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClassInt(i.arg[Int](0) * 10 + 2)) andThenAnswer (
-            (i: InvocationOnMock) => ValueCaseClassInt(i.arg[Int](0) * 10 + 3)
+        when(aMock.traitMethod(*)) thenAnswer ((i: InvocationOnMock) => ValueCaseClassInt(i.arg[Int](0) * 10 + 2)) andThenAnswer ((i: InvocationOnMock) =>
+          ValueCaseClassInt(i.arg[Int](0) * 10 + 3)
         )
 
         aMock.traitMethod(4) shouldBe ValueCaseClassInt(42)
@@ -314,8 +311,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
       val org = mock[Org]
 
       when(org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3"))) thenAnswer {
-        (v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString) =>
-          s"$v-$v1-$v2"
+        (v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString) => s"$v-$v1-$v2"
       }
 
       org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3")) shouldBe "ValueClass(1)-ValueCaseClassInt(2)-ValueCaseClassString(3)"

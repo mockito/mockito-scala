@@ -16,7 +16,7 @@ import scala.reflect.ClassTag
 trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoSpecs2Support {
   def checkCalls[Any] = new Matcher[Any] {
     def apply[S <: Any](s: Expectable[S]) =
-      catchAll { s.value } { identity } match {
+      catchAll(s.value)(identity) match {
         case Right(v) =>
           MatchSuccess("The mock was called as expected", "The mock was not called as expected", createExpectable(v))
         case Left(e: AssertionError) =>

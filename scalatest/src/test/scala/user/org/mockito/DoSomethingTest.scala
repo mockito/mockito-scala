@@ -92,9 +92,9 @@ class DoSomethingTest extends AnyWordSpec with MockitoSugar with Matchers with A
     "works with arg value classes" in {
       val org = mock[Org]
 
-      doAnswer { (v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString) =>
-        s"$v-$v1-$v2"
-      }.when(org).takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3"))
+      doAnswer((v: ValueClass, v1: ValueCaseClassInt, v2: ValueCaseClassString) => s"$v-$v1-$v2")
+        .when(org)
+        .takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3"))
 
       org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3")) shouldBe "ValueClass(1)-ValueCaseClassInt(2)-ValueCaseClassString(3)"
     }

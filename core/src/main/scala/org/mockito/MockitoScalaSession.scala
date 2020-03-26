@@ -20,6 +20,12 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
 
   Mockito.framework().addListener(listener)
 
+  /**
+   * If the test has thrown an exception, the session will check first if the exception could be related to a misuse
+   * of mockito. If not, it will rethrow the original error so the real test failure can be reported by the testing framework
+   *
+   * @param t exception thrown by the test framework
+   */
   def finishMocking(t: Option[Throwable] = None): Unit = {
     listener.cleanLenientStubs()
     try t.fold {

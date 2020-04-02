@@ -90,18 +90,16 @@ private[mockito] trait VerificationMacroTransformer {
     } else throw new Exception(s"Couldn't recognize invocation ${show(invocation)}")
   }
 
-  protected def transformMockWasNeverCalled[T: c.WeakTypeTag, R](c: blackbox.Context)(obj: c.Tree, called: c.Tree): c.Tree = {
-    import c.universe._
-    called match {
-      case q"$_.called"      => q"verification(_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj))"
-      case q"$_.calledAgain" => q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions($obj))"
-      case q"$_.calledAgain.apply($_.ignoringStubs)" =>
-        q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($obj): _*))"
-    }
-  }
-
   protected def transformVerification[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree): c.Tree = {
     import c.universe._
+
+    def transformMockWasNeverCalled(obj: c.Tree, called: c.Tree): c.Tree =
+      called match {
+        case q"$_.called"      => q"verification(_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj))"
+        case q"$_.calledAgain" => q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions($obj))"
+        case q"$_.calledAgain.apply($_.ignoringStubs)" =>
+          q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($obj): _*))"
+      }
 
     called match {
       case q"$_.VerifyingOps[$_]($invocation).was($_.called)($order)" =>
@@ -109,15 +107,21 @@ private[mockito] trait VerificationMacroTransformer {
 
       case q"$_.VerifyingOps[$_]($a.$b).wasNever($called)($order)" =>
         q"""
-           if (_root_.org.mockito.MockitoSugar.mockingDetails($a).isMock) ${transformInvocation(c)(q"$a.$b", order, q"_root_.org.mockito.VerifyMacro.Never")}
-           else ${transformMockWasNeverCalled(c)(q"$a.$b", called)}
+           if (_root_.org.mockito.MockitoSugar.mockingDetails($a).isMock) {
+            ${called match {
+          case q"$_.calledAgain" => q"throw _root_.org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions"
+          case _                 => transformInvocation(c)(q"$a.$b", order, q"_root_.org.mockito.VerifyMacro.Never")
+        }}
+          } else { 
+            ${transformMockWasNeverCalled(q"$a.$b", called)}
+          }
          """
 
       case q"$_.VerifyingOps[$_]($obj.$method[..$targs](...$args)).wasNever($_.called)($order)" =>
         transformInvocation(c)(q"$obj.$method[..$targs](...$args)", order, q"_root_.org.mockito.VerifyMacro.Never")
 
       case q"$_.VerifyingOps[$_]($obj).wasNever($called)($_)" =>
-        transformMockWasNeverCalled(c)(obj, called)
+        transformMockWasNeverCalled(obj, called)
 
       case q"$_.VerifyingOps[$_]($invocation).wasCalled($times)($order)" =>
         transformInvocation(c)(invocation, order, times)

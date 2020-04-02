@@ -5,6 +5,7 @@ import java.io.{ File, FileOutputStream, ObjectOutputStream }
 import org.mockito.IdiomaticMockito
 import org.mockito.IdiomaticStubbing
 import org.mockito.captor.ArgCaptor
+import org.mockito.exceptions.misusing.NotAMockException
 import org.mockito.exceptions.verification._
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalactic.Prettifier
@@ -781,6 +782,22 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
       // the arguments, hence make a mock call, to register matchers
       controller.test(1)
       org.doSomethingWithThisInt(1) wasCalled once
+    }
+  }
+
+  val foo: Foo = mock[Foo]
+
+  "mock" should {
+    "verify number of interactions with shared mocks appropriately" in {
+      foo wasNever called
+      foo wasNever calledAgain
+    }
+
+    "prevent users using 'calledAgain' on methods" in {
+      foo.bar wasNever called
+      a[NotAMockException] should be thrownBy {
+        foo.bar wasNever calledAgain
+      }
     }
   }
 

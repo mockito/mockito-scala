@@ -595,8 +595,10 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       case m: AnyRef if MockUtil.isMock(m) =>
         ignoreDefaultArguments(m)
         Mockito.verifyNoMoreInteractions(m)
-      case t: Iterable[_] => verifyNoMoreInteractions(t)
-      case _              => notAMockPassedToVerifyNoMoreInteractions
+      case t: Array[AnyRef] =>
+        verifyNoMoreInteractions(t: _*)
+      case _ =>
+        throw notAMockPassedToVerifyNoMoreInteractions
     }
   }
 

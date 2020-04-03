@@ -247,14 +247,14 @@ when(aMock.myMethod(*)).isLenient()
 
 For a more detailed explanation read [this](https://medium.com/@bbonanno_83496/introduction-to-mockito-scala-part-3-383c3b2ed55f)
 
-When using Scalatest and `org.mockito.scalatest.Mockito` this is the default mode, you can override the strictness to be lenient by doing `val strictness: Strictness = Strictness.Lenient`
+When using Scalatest and `org.mockito.scalatest.IdiomaticMockito` this is the default mode, you can override the strictness to be lenient by doing `val strictness: Strictness = Strictness.Lenient`
 The implication under the hood is that every test will run inside a `MockitoScalaSession`, so **all** of them will run in **Strict Stub** mode.
 
-`org.mockito.scalatest.Mockito` also includes `org.mockito.IdiomaticMockito` and `org.mockito.ArgumentMatchersSugar` so you have pretty much all 
+`org.mockito.scalatest.IdiomaticMockito` also includes `org.mockito.IdiomaticMockito` and `org.mockito.ArgumentMatchersSugar` so you have pretty much all
 the mockito-scala API available in one go, i.e.
 
 ```scala
-class MyTest extends WordSpec with Mockito
+class MyTest extends WordSpec with IdiomaticMockito
 ```
 
 IMPORTANT: A session is defined on a per-test basis, and only the mocks created within the scope of the session are 

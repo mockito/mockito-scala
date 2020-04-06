@@ -3,7 +3,7 @@ package org.mockito
 import org.mockito.Utils._
 import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.ValueClassWrapper
-import org.mockito.stubbing.{ScalaFirstStubbing, ScalaOngoingStubbing}
+import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
 
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox

@@ -2,12 +2,10 @@ package user.org.mockito
 
 import java.io.{ File, FileOutputStream, ObjectOutputStream }
 
-import org.mockito.IdiomaticMockito
-import org.mockito.IdiomaticStubbing
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.misusing.NotAMockException
 import org.mockito.exceptions.verification._
-import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, IdiomaticStubbing, MockitoSugar }
 import org.scalactic.Prettifier
 import org.scalatest.FixtureContext
 import org.scalatest.matchers.should.Matchers
@@ -795,9 +793,14 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
 
     "prevent users using 'calledAgain' on methods" in {
       foo.bar wasNever called
-      a[NotAMockException] should be thrownBy {
+
+      the[NotAMockException] thrownBy {
         foo.bar wasNever calledAgain
-      }
+      } should have message
+      """|[PostfixVerificationsTest.this.foo.bar] is not a mock!
+           |Example of correct verification:
+           |    myMock wasNever called
+           |""".stripMargin
     }
   }
 

@@ -1,7 +1,7 @@
 package user.org.mockito.scalatest
 
 import org.mockito.PrefixExpectations
-import org.mockito.exceptions.misusing.MissingMethodInvocationException
+import org.mockito.exceptions.misusing.NotAMockException
 import org.mockito.exceptions.verification.{ NeverWantedButInvoked, NoInteractionsWanted }
 import org.mockito.scalatest.IdiomaticMockitoBase
 import org.scalatest.matchers.should.Matchers
@@ -50,7 +50,7 @@ class IdiomaticMockitoWithExpectFixtureClassTest extends fixture.FlatSpec with I
   }
 
   it should "prevent usage of 'no calls to' when 'no calls on' is intended" in { f: FixtureParam =>
-    val exception = intercept[MissingMethodInvocationException] {
+    val exception = intercept[NotAMockException] {
       expect no calls to f.foo
     }
 

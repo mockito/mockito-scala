@@ -31,6 +31,8 @@ class IdiomaticMockitoWithExpectFixtureClassTest extends fixture.FlatSpec with I
 
     a[NeverWantedButInvoked] should be thrownBy {
       expect no calls to f.foo.bar(*)
+    }
+    a[NeverWantedButInvoked] should be thrownBy {
       expect no calls to f.foo.baz
     }
   }

@@ -41,6 +41,8 @@ class IdiomaticMockitoFixtureClassTest extends fixture.FlatSpec with IdiomaticMo
 
     a[NeverWantedButInvoked] should be thrownBy {
       f.foo.bar(*) wasNever called
+    }
+    a[NeverWantedButInvoked] should be thrownBy {
       f.foo.baz wasNever called
     }
   }

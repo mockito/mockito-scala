@@ -1,5 +1,7 @@
 package org.mockito.internal
 
+import org.mockito.internal.MacroDebug.debugResult
+
 import scala.reflect.macros.blackbox
 import scala.util.Properties
 
@@ -58,7 +60,7 @@ object ValueClassExtractor {
     } else
       c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")
 
-    if (c.settings.contains("mockito-print-extractor")) println(show(r.tree))
+    debugResult(c)("mockito-print-extractor")(r.tree)
 
     r
   }

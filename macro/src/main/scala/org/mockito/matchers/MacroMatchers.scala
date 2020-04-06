@@ -1,7 +1,8 @@
 package org.mockito.matchers
 
+import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.matchers.MacroMatchers.anyValMatcher
-import org.mockito.{ ArgumentMatchers => JavaMatchers }
+import org.mockito.{ArgumentMatchers => JavaMatchers}
 
 import scala.reflect.macros.blackbox
 
@@ -40,7 +41,7 @@ object MacroMatchers {
       else
         c.Expr[AnyMatcher[T]](q"new _root_.org.mockito.matchers.AnyMatcherStandard[$tpe]")
 
-    if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
+    debugResult(c)("mockito-print-matcher")(r.tree)
     r
   }
 }

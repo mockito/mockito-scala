@@ -87,6 +87,8 @@ object IdiomaticMockitoBase {
   // types for postfix verifications
   object CallWord
   object CallsWord {
+    // No special logic here - the pattern "calls(ignoringStubs)" is detected by Expect macro
+    // and transformed into the right Mockito call
     def apply(ignoringStubsWord: IgnoringStubs.type): CallsWord.type = this
   }
 }

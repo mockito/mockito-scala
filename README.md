@@ -39,7 +39,19 @@ The library has independent developers, release cycle and versioning from core m
 - [Scalaz](/scalaz/src/test)
 
 ## Partial unification
-If you're in Scala 2.11 or 2.12 you'll probably want to add the compiler flag "-Ypartial-unification", if you don't you risk some compile errors when trying to stub complex types using the idiomatic syntax
+If you're in Scala 2.11 or 2.12 you'll probably want to add the compiler flag `-Ypartial-unification`, if you don't you risk some compile errors when trying to stub complex types using the idiomatic syntax
+
+## Notes for 1.13.6
+
+We slightly changed the way one would expect no/no more interactions with a mock object in Expectations DSL.
+From now on, `expect (...) to` should only be used on stubbed methods, and can't express expectations about interactions with the mock objects itself.
+
+In order to express expectations on a mock, one would use `expect (...) on` (note the use of `on` vs `to`) where such expectations are supported.
+
+* Instead of `expect no calls to aMock`, use `expect no calls on aMock`.
+* Instead of `expect noMore calls to aMock`, use `expect noMore calls on aMock`.
+
+Expectations about no _method_ calls stay the same: `expect no calls to aMock.bar(*)`.  
 
 ## Notes for 1.13.0
 
@@ -399,7 +411,8 @@ trait Foo {
   
 val aMock = mock[Foo]  
   
-verifyZeroInteractions(aMock)                     <=> expect no calls to aMock
+verifyZeroInteractions(aMock)                     <=> expect no calls on aMock
+
 verify(aMock).bar                                 <=> expect a call to aMock.bar
 verify(aMock).bar(any)                            <=> expect a call to aMock.bar(*)
 
@@ -423,7 +436,8 @@ verify(aMock, atMost(6)).bar                      <=> expect atMostSix calls to 
 verify(aMock, timeout(2000).times(2)).bar         <=> expect (2.calls within 2.seconds) to aMock.bar
 verify(aMock, timeout(2000).atLeast(6)).bar       <=> expect (atLeast(6.calls) within 2.seconds) to aMock.bar
 
-verifyNoMoreInteractions(aMock)                   <=> expect noMore calls to aMock
+verifyNoMoreInteractions(aMock)                   <=> expect noMore calls on aMock
+verifyNoMoreInteractions(ignoreStubs(aMock))      <=> expect noMore calls(ignoringStubs) on aMock
 
 val order = inOrder(mock1, mock2)                 <=> InOrder(mock1, mock2) { implicit order =>
 order.verify(mock2).someMethod()                  <=>   expect a call to mock2.someMethod()

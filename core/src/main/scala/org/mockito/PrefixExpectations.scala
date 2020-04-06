@@ -52,17 +52,33 @@ trait PrefixExpectations extends IdiomaticVerifications {
 
     def atMost(calls: Calls): ExpectationOps = new ExpectationOps(AtMost(calls.times))
 
-    def no(callsWord: CallsWord.type): ExpectationOps = new ExpectationOps(VerifyMacro.Never)
+    def no(callsWord: CallsWord.type): ExpectationOps with ExpectationOpsNoUsages =
+      new ExpectationOps(VerifyMacro.Never) with ExpectationOpsNoUsages
 
-    def noMore(callsWord: CallsWord.type): ExpectationOps = new ExpectationOps(VerifyMacro.NeverAgain)
+    def noMore(callsWord: CallsWord.type): ExpectationOpsNoUsages = new ExpectationOpsNoUsages {}
 
     def only(callWord: CallWord.type): ExpectationOps = new ExpectationOps(OnlyOn)
   }
   def expect(mode: ScalaVerificationMode): ExpectationOps = new ExpectationOps(mode)
 
   class ExpectationOps(val mode: ScalaVerificationMode) {
-    def to(invocationOnMock: Any)(implicit order: VerifyOrder): Verification =
-      macro ExpectMacro.to[Verification]
+
+    /**
+     * Use `calls to` to describe expectations about a _stubbed method call_.
+     *
+     * If you need to describe expectations about a mocked object itself (i.e. zero interactions), use `calls on`.
+     */
+    def to(stubbedMethodCall: Any)(implicit order: VerifyOrder): Verification = macro ExpectMacro.callsTo[Verification]
+  }
+
+  trait ExpectationOpsNoUsages {
+
+    /**
+     * Use `calls on` to describe expectations about a _mock object_.
+     *
+     * If you need to describe expectations about a stubbed method call, use `calls to`.
+     */
+    def on(mock: AnyRef): Verification = macro ExpectMacro.callsOn[Verification]
   }
 
   def InOrder(mocks: AnyRef*)(verifications: VerifyInOrder => Verification): Verification = verifications(VerifyInOrder(mocks))

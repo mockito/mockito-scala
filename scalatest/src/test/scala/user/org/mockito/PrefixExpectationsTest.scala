@@ -8,6 +8,7 @@ import org.mockito.ArgumentMatchersSugar
 import org.mockito.IdiomaticMockito
 import org.mockito.MockitoSugar
 import org.mockito.captor.ArgCaptor
+import org.mockito.exceptions.misusing.MissingMethodInvocationException
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
 import org.mockito.exceptions.verification.MoreThanAllowedActualInvocations
 import org.mockito.exceptions.verification.NeverWantedButInvoked
@@ -31,13 +32,13 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
       "check a mock was not used" in {
         val org = orgDouble()
 
-        expect no calls to org
-        expect no calls to org
+        expect no calls on org
+        expect no calls on org
 
         a[NoInteractionsWanted] should be thrownBy {
           org.baz
 
-          expect no calls to org
+          expect no calls on org
         }
       }
 
@@ -46,13 +47,40 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
       }
 
       "check a mock was not used (with setup)" in new SetupNeverUsed with FixtureContext {
-        expect no calls to org
+        expect no calls on org
 
         a[NoInteractionsWanted] should be thrownBy {
           org.baz
 
-          expect no calls to org
+          expect no calls on org
         }
+      }
+
+      val fixture = new SetupNeverUsed {}
+
+      "check a mock was not used (with fixture object)" in {
+        expect no calls on fixture.org
+
+        a[NoInteractionsWanted] should be thrownBy {
+          fixture.org.baz
+
+          expect no calls on fixture.org
+        }
+      }
+
+      "prevent misuse of 'expect no calls _to_' instead of 'on' when mock object access looks like a method call" in {
+        val exception = intercept[MissingMethodInvocationException] {
+          expect no calls to fixture.org
+        }
+
+        exception.getMessage shouldBe
+        """'expect no calls to <?>' requires an argument which is 'a method call on a mock',
+            |  but [fixture.org] is a mock object.
+            |
+            |The following would be correct (note the usage of 'calls to' vs 'calls on'):
+            |    expect no calls to fixture.org.bar(*)
+            |    expect no calls on fixture.org
+            |""".stripMargin
       }
 
       "check a method was called once" in {
@@ -62,8 +90,8 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
         expect a call to org.bar
         expect one call to org.bar
-        expect exactly 1.calls to org.bar
-        expect(1.calls) to org.bar
+        expect exactly 1.call to org.bar
+        expect(1.call) to org.bar
 
         a[WantedButNotInvoked] should be thrownBy {
           expect a call to org.baz
@@ -72,10 +100,10 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
           expect one call to org.baz
         }
         a[WantedButNotInvoked] should be thrownBy {
-          expect exactly 1.calls to org.baz
+          expect exactly 1.call to org.baz
         }
         a[WantedButNotInvoked] should be thrownBy {
-          expect(1.calls) to org.baz
+          expect(1.call) to org.baz
         }
       }
 
@@ -197,12 +225,12 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
         expect a call to org.bar
 
-        expect noMore calls to org
+        expect noMore calls on org
 
         a[NoInteractionsWanted] should be thrownBy {
           org.bar
 
-          expect noMore calls to org
+          expect noMore calls on org
         }
       }
 
@@ -216,12 +244,12 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
         expect a call to org.bar
 
-        expect noMore calls(ignoringStubs) to org
+        expect noMore calls(ignoringStubs) on org
 
         a[NoInteractionsWanted] should be thrownBy {
           org.bar
 
-          expect noMore calls(ignoringStubs) to org
+          expect noMore calls(ignoringStubs) on org
         }
       }
 

@@ -54,11 +54,11 @@ class IdiomaticMockitoWithExpectFixtureClassTest extends fixture.FlatSpec with I
 
     exception.getMessage shouldBe
     """'expect no calls to <?>' requires an argument which is 'a method call on a mock',
-        |  but [f.foo] is a mock object.
+        |  but looks like [f.foo] is not a method call on a mock. Is it a mock object?
         |
         |The following would be correct (note the usage of 'calls to' vs 'calls on'):
-        |    expect no calls to f.foo.bar(*)
-        |    expect no calls on f.foo
+        |    expect no calls to aMock.bar(*)
+        |    expect no calls on aMock
         |""".stripMargin
   }
 

@@ -75,11 +75,11 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
         exception.getMessage shouldBe
         """'expect no calls to <?>' requires an argument which is 'a method call on a mock',
-            |  but [fixture.org] is a mock object.
+            |  but looks like [fixture.org] is not a method call on a mock. Is it a mock object?
             |
             |The following would be correct (note the usage of 'calls to' vs 'calls on'):
-            |    expect no calls to fixture.org.bar(*)
-            |    expect no calls on fixture.org
+            |    expect no calls to aMock.bar(*)
+            |    expect no calls on aMock
             |""".stripMargin
       }
 

@@ -25,11 +25,11 @@ object ExpectMacro extends VerificationMacroTransformer {
         q"""if (!_root_.org.mockito.MockitoSugar.mockingDetails($obj).isMock)
               throw new _root_.org.mockito.exceptions.misusing.MissingMethodInvocationException(Seq(
                 "'expect no calls to <?>' requires an argument which is 'a method call on a mock',",
-                "  but [" + $calledPattern + "] is a mock object.",
+                "  but looks like [" + $calledPattern + "] is not a method call on a mock. Is it a mock object?",
                 "",
                 "The following would be correct (note the usage of 'calls to' vs 'calls on'):",
-                "    expect no calls to " + $calledPattern + ".bar(*)",
-                "    expect no calls on " + $calledPattern,
+                "    expect no calls to aMock.bar(*)",
+                "    expect no calls on aMock",
                 ""
               ).mkString("\n"))
             else ${transformInvocation(c)(q"$obj.$methodOrField", order, q"${c.prefix}.mode")}

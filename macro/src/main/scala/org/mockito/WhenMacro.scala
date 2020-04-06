@@ -1,8 +1,9 @@
 package org.mockito
 
 import org.mockito.Utils._
+import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.ValueClassWrapper
-import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
+import org.mockito.stubbing.{ScalaFirstStubbing, ScalaOngoingStubbing}
 
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
@@ -63,7 +64,7 @@ object WhenMacro {
 
       case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r))
+    debugResult(c)("mockito-print-when")(r)
     r
   }
 
@@ -78,7 +79,7 @@ object WhenMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-lenient")) println(show(r.tree))
+    debugResult(c)("mockito-print-lenient")(r.tree)
     r
   }
 
@@ -98,7 +99,7 @@ object WhenMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r.tree))
+    debugResult(c)("mockito-print-when")(r.tree)
     r
   }
 
@@ -120,7 +121,7 @@ object WhenMacro {
 
       case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r))
+    debugResult(c)("mockito-print-when")(r)
     r
   }
 
@@ -466,7 +467,7 @@ object WhenMacro {
 
       case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r))
+    debugResult(c)("mockito-print-when")(r)
     r
   }
 
@@ -484,7 +485,7 @@ object WhenMacro {
 
       case o => throw new Exception(s"Couldn't recognize ${show(o)}")
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r))
+    debugResult(c)("mockito-print-when")(r)
     r
   }
 }

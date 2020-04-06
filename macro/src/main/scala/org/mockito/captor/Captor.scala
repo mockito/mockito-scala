@@ -1,12 +1,12 @@
 package org.mockito.captor
 
+import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
-import org.mockito.{ clazz, ArgumentCaptor }
+import org.mockito.{ArgumentCaptor, clazz}
 import org.scalactic.Equality
 import org.scalactic.TripleEquals._
 
 import scala.collection.JavaConverters._
-
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
 
@@ -71,7 +71,7 @@ object Captor {
     else
       c.Expr[Captor[T]](q"new _root_.org.mockito.captor.WrapperCaptor[$tpe]")
 
-    if (c.settings.contains("mockito-print-captor")) println(show(r.tree))
+    debugResult(c)("mockito-print-captor")(r.tree)
     r
   }
 }

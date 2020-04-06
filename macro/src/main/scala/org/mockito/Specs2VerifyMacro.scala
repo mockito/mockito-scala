@@ -1,6 +1,7 @@
 package org.mockito
 
 import org.mockito.Utils._
+import org.mockito.internal.MacroDebug.debugResult
 
 import scala.reflect.macros.blackbox
 
@@ -63,7 +64,7 @@ object Specs2VerifyMacro extends VerificationMacroTransformer {
         case o => throw new Exception(s"Specs2VerifyMacro: Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    debugResult(c)("mockito-print-verify")(r.tree)
     r
   }
 }

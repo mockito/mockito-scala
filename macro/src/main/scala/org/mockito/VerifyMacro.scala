@@ -1,6 +1,7 @@
 package org.mockito
 
 import org.mockito.Utils._
+import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.verification.VerificationMode
 
@@ -12,18 +13,14 @@ object Called {
 
 object VerifyMacro extends VerificationMacroTransformer {
   def wasMacro[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree)(order: c.Expr[VerifyOrder]): c.Expr[R] = {
-    import c.universe._
-
     val r = c.Expr[R](transformVerification(c)(c.macroApplication))
-    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    debugResult(c)("mockito-print-verify")(r.tree)
     r
   }
 
   def wasNeverCalledAgainMacro[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree)($ev: c.Tree): c.Expr[R] = {
-    import c.universe._
-
     val r = c.Expr[R](transformVerification(c)(c.macroApplication))
-    if (c.settings.contains("mockito-print-verify")) println(show(r.tree))
+    debugResult(c)("mockito-print-verify")(r.tree)
     r
   }
 

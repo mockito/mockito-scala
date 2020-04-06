@@ -1,8 +1,9 @@
 package org.mockito.matchers
 
+import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.ValueClassExtractor
-import org.mockito.{ ArgumentMatchers => JavaMatchers }
-import org.scalactic.{ Equality, Prettifier }
+import org.mockito.{ArgumentMatchers => JavaMatchers}
+import org.scalactic.{Equality, Prettifier}
 
 import scala.reflect.macros.blackbox
 
@@ -28,7 +29,7 @@ object MacroMatchers_211 {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
+    debugResult(c)("mockito-print-matcher")(r.tree)
     r
   }
 
@@ -45,7 +46,7 @@ object MacroMatchers_211 {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-matcher")) println(show(r.tree))
+    debugResult(c)("mockito-print-matcher")(r.tree)
     r
   }
 }

@@ -1,6 +1,7 @@
 package org.mockito
 
 import org.mockito.Utils._
+import org.mockito.internal.MacroDebug.debugResult
 
 import scala.reflect.macros.blackbox
 
@@ -18,7 +19,7 @@ object DoSomethingMacro {
 
       case o => throw new Exception(s"Couldn't recognize '${show(o)}'")
     }
-    if (c.settings.contains("mockito-print-when")) println(show(r))
+    debugResult(c)("mockito-print-when")(r)
     r
   }
 
@@ -33,7 +34,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -48,7 +49,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -63,7 +64,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -78,7 +79,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -93,7 +94,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -108,7 +109,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize answeredFG ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -123,7 +124,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -138,7 +139,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -153,7 +154,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 
@@ -168,7 +169,7 @@ object DoSomethingMacro {
         case o => throw new Exception(s"Couldn't recognize ${show(o)}")
       }
     }
-    if (c.settings.contains("mockito-print-do-something")) println(show(r.tree))
+    debugResult(c)("mockito-print-do-something")(r.tree)
     r
   }
 

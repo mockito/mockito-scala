@@ -1,18 +1,14 @@
 package org.mockito
 
+import org.mockito.internal.MacroDebug.debugResult
+
 import scala.reflect.macros.blackbox
 
 object ExpectMacro extends VerificationMacroTransformer {
 
   def callsTo[R](c: blackbox.Context)(stubbedMethodCall: c.Tree)(order: c.Expr[VerifyOrder]): c.Expr[R] = {
-    import c.universe._
-
     val r = c.Expr[R](transformExpectation(c)(c.macroApplication))
-    if (c.settings.contains("mockito-print-expect")) {
-      val pos = s"${c.enclosingPosition.source.file.name}:${c.enclosingPosition.line}"
-      println(pos + " " + show(r.tree))
-    }
-
+    debugResult(c)("mockito-print-expect")(r.tree)
     r
   }
 
@@ -49,14 +45,8 @@ object ExpectMacro extends VerificationMacroTransformer {
   }
 
   def callsOn[R](c: blackbox.Context)(mock: c.Tree): c.Expr[R] = {
-    import c.universe._
-
     val r = c.Expr[R](transformNoInteractionsExpectation(c)(c.macroApplication))
-    if (c.settings.contains("mockito-print-expect")) {
-      val pos = s"${c.enclosingPosition.source.file.name}:${c.enclosingPosition.line}"
-      println(pos + " " + show(r.tree))
-    }
-
+    debugResult(c)("mockito-print-expect")(r.tree)
     r
   }
 

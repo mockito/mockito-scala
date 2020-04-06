@@ -1,5 +1,7 @@
 package org.mockito.internal
 
+import org.mockito.internal.MacroDebug.debugResult
+
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
 
@@ -42,7 +44,7 @@ object ValueClassWrapper {
       else
         c.Expr[ValueClassWrapper[VC]](q"new _root_.org.mockito.internal.NormalClassWrapper[$tpe]")
 
-    if (c.settings.contains("mockito-print-wrapper")) println(show(r.tree))
+    debugResult(c)("mockito-print-wrapper")(r.tree)
 
     r
   }

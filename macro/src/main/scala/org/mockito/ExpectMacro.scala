@@ -19,7 +19,7 @@ object ExpectMacro extends VerificationMacroTransformer {
       case q"$_.this.expect.no($_).to($obj.$methodOrField)($order)" =>
         val calledPattern = show(q"$obj.$methodOrField")
         q"""if (!_root_.org.mockito.MockitoSugar.mockingDetails($obj).isMock)
-              throw new _root_.org.mockito.exceptions.misusing.NotAMockException(Seq(
+              throw new _root_.org.mockito.exceptions.misusing.MissingMethodInvocationException(Seq(
                 "'expect no calls to <?>' requires an argument which is 'a method call on a mock',",
                 "  but looks like [" + $calledPattern + "] is not a method call on a mock. Is it a mock object?",
                 "",

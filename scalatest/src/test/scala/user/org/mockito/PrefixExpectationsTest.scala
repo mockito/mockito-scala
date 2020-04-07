@@ -3,7 +3,7 @@ package user.org.mockito
 import java.io.{ File, FileOutputStream, ObjectOutputStream }
 
 import org.mockito.captor.ArgCaptor
-import org.mockito.exceptions.misusing.NotAMockException
+import org.mockito.exceptions.misusing.MissingMethodInvocationException
 import org.mockito.exceptions.verification._
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar }
 import org.scalatest.FixtureContext
@@ -56,7 +56,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
       }
 
       "prevent misuse of 'expect no calls _to_' instead of 'on' when mock object access looks like a method call" in {
-        the[NotAMockException] thrownBy {
+        the[MissingMethodInvocationException] thrownBy {
           expect no calls to fixture.org
         } should have message
         """'expect no calls to <?>' requires an argument which is 'a method call on a mock',

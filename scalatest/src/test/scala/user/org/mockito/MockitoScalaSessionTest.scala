@@ -231,7 +231,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
       }
 
       "check unexpected invocations for normal mocks" in {
-        intercept[UnexpectedInvocationException] {
+        a[UnexpectedInvocationException] should be thrownBy {
           MockitoScalaSession().run {
             val aFoo = foo()
 
@@ -265,7 +265,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
       }
 
       "check unused stubs for not lenient mocks" in {
-        intercept[UnnecessaryStubbingException] {
+        a[UnnecessaryStubbingException] should be thrownBy {
           MockitoScalaSession().run {
             val aFoo = foo()
             aFoo.bar("pepe") returns "mocked"
@@ -281,7 +281,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
       }
 
       "check unused stubs in not lenient setting" in {
-        intercept[UnnecessaryStubbingException] {
+        a[UnnecessaryStubbingException] should be thrownBy {
           MockitoScalaSession(strictness = Strictness.STRICT_STUBS).run {
             val aFoo = foo()
             aFoo.bar("pepe") returns "mocked"

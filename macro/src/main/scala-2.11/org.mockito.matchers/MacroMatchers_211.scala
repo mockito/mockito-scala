@@ -2,8 +2,8 @@ package org.mockito.matchers
 
 import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.ValueClassExtractor
-import org.mockito.{ArgumentMatchers => JavaMatchers}
-import org.scalactic.{Equality, Prettifier}
+import org.mockito.{ ArgumentMatchers => JavaMatchers }
+import org.scalactic.{ Equality, Prettifier }
 
 import scala.reflect.macros.blackbox
 

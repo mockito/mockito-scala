@@ -50,11 +50,9 @@ class IdiomaticMockitoWithExpectFixtureClassTest extends fixture.FlatSpec with I
   }
 
   it should "prevent usage of 'no calls to' when 'no calls on' is intended" in { f: FixtureParam =>
-    val exception = intercept[MissingMethodInvocationException] {
+    the[MissingMethodInvocationException] thrownBy {
       expect no calls to f.foo
-    }
-
-    exception.getMessage shouldBe
+    } should have message
     """'expect no calls to <?>' requires an argument which is 'a method call on a mock',
         |  but looks like [f.foo] is not a method call on a mock. Is it a mock object?
         |

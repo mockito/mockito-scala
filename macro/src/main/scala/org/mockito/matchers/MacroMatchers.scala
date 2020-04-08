@@ -2,7 +2,7 @@ package org.mockito.matchers
 
 import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.matchers.MacroMatchers.anyValMatcher
-import org.mockito.{ArgumentMatchers => JavaMatchers}
+import org.mockito.{ ArgumentMatchers => JavaMatchers }
 
 import scala.reflect.macros.blackbox
 

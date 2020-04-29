@@ -4,7 +4,7 @@ import scala.io.Source
 import scala.language.postfixOps
 import scala.util.Try
 
-val currentScalaVersion = "2.13.0"
+val currentScalaVersion = "2.13.2"
 
 ThisBuild / scalaVersion := currentScalaVersion
 
@@ -21,7 +21,7 @@ lazy val commonSettings =
       source.close
       version.get
     },
-    crossScalaVersions := Seq("2.11.12", "2.12.9", currentScalaVersion),
+    crossScalaVersions := Seq("2.11.12", "2.12.11", currentScalaVersion),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
       "-unchecked",

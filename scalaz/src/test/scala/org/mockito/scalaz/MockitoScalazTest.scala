@@ -211,7 +211,7 @@ class MockitoScalazTest extends AnyWordSpec with Matchers with MockitoSugar with
 
     "work with EitherT" in {
       val aMock = mock[Foo]
-      type F[T] = EitherT[Future, Error, T]
+      type F[T] = EitherT[Error, Future, T]
 
       doFailWith[F, Error, ValueClass](Error("error")).when(aMock).returnsEitherT("bye")
       doReturnF[F, ValueClass](ValueClass("mocked!")).when(aMock).returnsEitherT("hello")

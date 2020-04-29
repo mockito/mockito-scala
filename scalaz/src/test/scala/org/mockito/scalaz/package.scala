@@ -24,7 +24,7 @@ package object scalaz {
 
     def returnsFutureEither(v: String): Future[ErrorOr[ValueClass]]
 
-    def returnsEitherT(v: String): EitherT[Future, Error, ValueClass]
+    def returnsEitherT(v: String): EitherT[Error, Future, ValueClass]
 
     def returnsOptionT(v: String): OptionT[List, ValueClass]
 

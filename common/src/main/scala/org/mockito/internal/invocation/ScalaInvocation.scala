@@ -49,14 +49,15 @@ class ScalaInvocation(
     if (realMethod.isInvokable) realMethod.invoke
     else throw cannotCallAbstractRealMethod
 
-  override def equals(other: Any): Boolean = other match {
-    case that: ScalaInvocation =>
-      super.equals(that) &&
-      getMock == that.getMock &&
-      mockitoMethod == that.mockitoMethod &&
-      (arguments sameElements that.arguments)
-    case _ => false
-  }
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: ScalaInvocation =>
+        super.equals(that) &&
+        getMock == that.getMock &&
+        mockitoMethod == that.mockitoMethod &&
+        (arguments sameElements that.arguments)
+      case _ => false
+    }
   override def hashCode(): Int = {
     val state = Seq(super.hashCode(), getMock, mockitoMethod, arguments.toSeq)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)

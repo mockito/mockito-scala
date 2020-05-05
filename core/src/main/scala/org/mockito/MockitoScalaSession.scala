@@ -175,17 +175,20 @@ object Strictness {
 
   //implicit conversions for backward compatibility
   implicit def scalaToJava(s: Strictness): JavaStrictness = s.toJava
-  implicit def javaToScala(s: JavaStrictness): Strictness = s match {
-    case JavaStrictness.LENIENT      => Lenient
-    case JavaStrictness.WARN         => Warn
-    case JavaStrictness.STRICT_STUBS => StrictStubs
-  }
-
-  implicit def StrictnessEquality[S <: Strictness]: Equality[S] = new Equality[S] {
-    override def areEqual(a: S, b: Any): Boolean = b match {
-      case s: Strictness     => a == s
-      case s: JavaStrictness => a.toJava == s
-      case _                 => false
+  implicit def javaToScala(s: JavaStrictness): Strictness =
+    s match {
+      case JavaStrictness.LENIENT      => Lenient
+      case JavaStrictness.WARN         => Warn
+      case JavaStrictness.STRICT_STUBS => StrictStubs
     }
-  }
+
+  implicit def StrictnessEquality[S <: Strictness]: Equality[S] =
+    new Equality[S] {
+      override def areEqual(a: S, b: Any): Boolean =
+        b match {
+          case s: Strictness     => a == s
+          case s: JavaStrictness => a.toJava == s
+          case _                 => false
+        }
+    }
 }

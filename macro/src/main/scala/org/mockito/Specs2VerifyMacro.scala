@@ -46,11 +46,12 @@ object Specs2VerifyMacro extends VerificationMacroTransformer {
           transformSpecs2Verification(t)
 
         case q"$_.MatchResultOps[$_]($prev).andThen[$_]($t)($_)" =>
-          def transform(tree: c.Tree): c.Tree = tree match {
-            case q"$_.VerifyingOps[$_]($_).$_($_)($_)"              => transformVerification(c)(tree)
-            case _ if transformSpecs2Verification.isDefinedAt(tree) => transformSpecs2Verification(tree)
-            case other                                              => other
-          }
+          def transform(tree: c.Tree): c.Tree =
+            tree match {
+              case q"$_.VerifyingOps[$_]($_).$_($_)($_)"              => transformVerification(c)(tree)
+              case _ if transformSpecs2Verification.isDefinedAt(tree) => transformSpecs2Verification(tree)
+              case other                                              => other
+            }
 
           q"${transform(prev)} and ${transform(t)}"
 

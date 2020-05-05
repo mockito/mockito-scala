@@ -22,10 +22,11 @@ import org.scalatest.wordspec.AnyWordSpec
 //noinspection RedundantDefaultArgument
 class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar with EitherValues with OptionValues with TableDrivenPropertyChecks {
   implicit val prettifier: Prettifier = new Prettifier {
-    override def apply(o: Any): String = o match {
-      case Baz2(_, s) => s"PrettifiedBaz($s)"
-      case other      => Prettifier.default(other)
-    }
+    override def apply(o: Any): String =
+      o match {
+        case Baz2(_, s) => s"PrettifiedBaz($s)"
+        case other      => Prettifier.default(other)
+      }
   }
 
   val scenarios = Table(

@@ -9,9 +9,10 @@ trait DefaultMatcher[T] {
 }
 
 object DefaultMatcher {
-  implicit def default[T: Equality: ValueClassExtractor](implicit prettifier: Prettifier): DefaultMatcher[T] = new DefaultMatcher[T] {
-    override def registerDefaultMatcher(value: T): T = ArgumentMatchersSugar.eqTo(value)
-  }
+  implicit def default[T: Equality: ValueClassExtractor](implicit prettifier: Prettifier): DefaultMatcher[T] =
+    new DefaultMatcher[T] {
+      override def registerDefaultMatcher(value: T): T = ArgumentMatchersSugar.eqTo(value)
+    }
 
   def apply[T: Equality: ValueClassExtractor: DefaultMatcher](value: T): T =
     implicitly[DefaultMatcher[T]].registerDefaultMatcher(value)

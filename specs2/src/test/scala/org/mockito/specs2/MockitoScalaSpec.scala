@@ -767,8 +767,8 @@ The Mockito trait is reusable in other contexts
 }
 
 trait WithFunctionNothing { def call(f: Int => Nothing) = 1 }
-trait WithFunctionAny     { def call(f: () => Any)      = 1 }
-trait WithFunctionInt     { def call(f: Int => Any)     = 1 }
+trait WithFunctionAny     { def call(f: () => Any) = 1      }
+trait WithFunctionInt     { def call(f: Int => Any) = 1     }
 
 // this example comes from https://github.com/etorreborre/specs2/issues/428
 class FooComponent {

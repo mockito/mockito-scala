@@ -14,22 +14,23 @@ import org.specs2.matcher.{ Expectable, MatchFailure, MatchResult, MatchSuccess,
 import scala.reflect.ClassTag
 
 trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoSpecs2Support {
-  def checkCalls[Any] = new Matcher[Any] {
-    def apply[S <: Any](s: Expectable[S]) =
-      catchAll(s.value)(identity) match {
-        case Right(v) =>
-          MatchSuccess("The mock was called as expected", "The mock was not called as expected", createExpectable(v))
-        case Left(e: AssertionError) =>
-          MatchFailure(
-            "The mock was called as expected",
-            s"The mock was not called as expected: ${e.messageAndCause}",
-            createExpectable(s.value, e.messageAndCause)
-          )
-        // unexpected error from inside Mockito itself
-        case Left(e) =>
-          throw e
-      }
-  }
+  def checkCalls[Any] =
+    new Matcher[Any] {
+      def apply[S <: Any](s: Expectable[S]) =
+        catchAll(s.value)(identity) match {
+          case Right(v) =>
+            MatchSuccess("The mock was called as expected", "The mock was not called as expected", createExpectable(v))
+          case Left(e: AssertionError) =>
+            MatchFailure(
+              "The mock was called as expected",
+              s"The mock was not called as expected: ${e.messageAndCause}",
+              createExpectable(s.value, e.messageAndCause)
+            )
+          // unexpected error from inside Mockito itself
+          case Left(e) =>
+            throw e
+        }
+    }
 
   override type Verification = MatchResult[Any]
   override def verification(v: => Any): Verification = createExpectable(v).applyMatcher(checkCalls)

@@ -107,10 +107,11 @@ private[mockito] trait DoSomething {
         case _               => _l
       }
     })
-  def doAnswer[P0: ValueClassWrapper, R: ValueClassExtractor](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber = clazz[P0] match {
-    case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
-    case _                                   => Mockito.doAnswer(functionToAnswer(f))
-  }
+  def doAnswer[P0: ValueClassWrapper, R: ValueClassExtractor](f: P0 => R)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): Stubber =
+    clazz[P0] match {
+      case c if c == classOf[InvocationOnMock] => Mockito.doAnswer(invocationToAnswer(i => f(i.asInstanceOf[P0])))
+      case _                                   => Mockito.doAnswer(functionToAnswer(f))
+    }
   def doAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper, R: ValueClassExtractor](f: (P0, P1) => R): Stubber =
     Mockito.doAnswer(functionToAnswer(f))
 

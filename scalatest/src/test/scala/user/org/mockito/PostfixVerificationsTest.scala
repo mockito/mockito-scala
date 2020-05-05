@@ -19,10 +19,11 @@ case class Cheese(name: String)
 
 trait IdiomaticMockitoTestSetup extends TableDrivenPropertyChecks { this: IdiomaticStubbing =>
   implicit val prettifier: Prettifier = new Prettifier {
-    override def apply(o: Any): String = o match {
-      case Baz2(_, s) => s"PrettifiedBaz($s)"
-      case other      => Prettifier.default(other)
-    }
+    override def apply(o: Any): String =
+      o match {
+        case Baz2(_, s) => s"PrettifiedBaz($s)"
+        case other      => Prettifier.default(other)
+      }
   }
 
   val scenarios = Table(

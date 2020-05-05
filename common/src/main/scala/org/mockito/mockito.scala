@@ -600,14 +600,16 @@ package object mockito {
 
   //Look at org.mockito.internal.invocation.InvocationMatcher#hasSameMethod
   implicit val JavaMethodEquality: Equality[Method] = new Equality[Method] {
-    override def areEqual(m1: Method, b: Any): Boolean = b match {
-      case m2: Method =>
-        m1.getName === m2.getName && m1.getParameterTypes === m2.getParameterTypes
-      case _ => false
-    }
+    override def areEqual(m1: Method, b: Any): Boolean =
+      b match {
+        case m2: Method =>
+          m1.getName === m2.getName && m1.getParameterTypes === m2.getParameterTypes
+        case _ => false
+      }
   }
 
-  def serialisableEquality[T]: Equality[T] = new Equality[T] with Serializable {
-    override def areEqual(a: T, b: Any): Boolean = Equality.default[T].areEqual(a, b)
-  }
+  def serialisableEquality[T]: Equality[T] =
+    new Equality[T] with Serializable {
+      override def areEqual(a: T, b: Any): Boolean = Equality.default[T].areEqual(a, b)
+    }
 }

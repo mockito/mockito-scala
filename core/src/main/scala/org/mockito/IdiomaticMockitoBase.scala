@@ -32,12 +32,14 @@ object IdiomaticMockitoBase {
 
   case class Times(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.times(times)
-    def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
-      override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).times(times)
-    }
-    def after(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
-      override def verificationMode: VerificationMode = Mockito.after(d.toMillis).times(times)
-    }
+    def within(d: Duration): ScalaVerificationMode =
+      new ScalaVerificationMode {
+        override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).times(times)
+      }
+    def after(d: Duration): ScalaVerificationMode =
+      new ScalaVerificationMode {
+        override def verificationMode: VerificationMode = Mockito.after(d.toMillis).times(times)
+      }
   }
 
   //Helper methods for the specs2 macro
@@ -51,29 +53,34 @@ object IdiomaticMockitoBase {
 
   case class AtLeast(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.atLeast(times)
-    def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
-      override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).atLeast(times)
-    }
-    def after(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
-      override def verificationMode: VerificationMode = Mockito.after(d.toMillis).atLeast(times)
-    }
+    def within(d: Duration): ScalaVerificationMode =
+      new ScalaVerificationMode {
+        override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).atLeast(times)
+      }
+    def after(d: Duration): ScalaVerificationMode =
+      new ScalaVerificationMode {
+        override def verificationMode: VerificationMode = Mockito.after(d.toMillis).atLeast(times)
+      }
   }
 
   case class AtMost(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.atMost(times)
-    def after(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
-      override def verificationMode: VerificationMode = Mockito.after(d.toMillis).atMost(times)
-    }
+    def after(d: Duration): ScalaVerificationMode =
+      new ScalaVerificationMode {
+        override def verificationMode: VerificationMode = Mockito.after(d.toMillis).atMost(times)
+      }
   }
 
   object OnlyOn extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.only
-    def within(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
-      override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).only
-    }
-    def after(d: Duration): ScalaVerificationMode = new ScalaVerificationMode {
-      override def verificationMode: VerificationMode = Mockito.after(d.toMillis).only
-    }
+    def within(d: Duration): ScalaVerificationMode =
+      new ScalaVerificationMode {
+        override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).only
+      }
+    def after(d: Duration): ScalaVerificationMode =
+      new ScalaVerificationMode {
+        override def verificationMode: VerificationMode = Mockito.after(d.toMillis).only
+      }
   }
 
   class ReturnActions[T](os: ScalaFirstStubbing[T]) {

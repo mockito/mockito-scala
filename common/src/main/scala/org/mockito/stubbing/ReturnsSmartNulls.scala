@@ -12,14 +12,15 @@ import org.mockito.invocation.{ InvocationOnMock, Location }
 object ReturnsSmartNulls extends DefaultAnswer {
   val delegate = new ReturnsMoreEmptyValues
 
-  override def apply(invocation: InvocationOnMock): Option[Any] = Option(delegate.answer(invocation)).orElse {
-    val returnType = invocation.returnType
+  override def apply(invocation: InvocationOnMock): Option[Any] =
+    Option(delegate.answer(invocation)).orElse {
+      val returnType = invocation.returnType
 
-    if (!returnType.isPrimitive && !isFinal(returnType.getModifiers) && classOf[Object] != returnType)
-      Some(mock(returnType, withSettings.defaultAnswer(ThrowsSmartNullPointer(invocation)).lenient()))
-    else
-      None
-  }
+      if (!returnType.isPrimitive && !isFinal(returnType.getModifiers) && classOf[Object] != returnType)
+        Some(mock(returnType, withSettings.defaultAnswer(ThrowsSmartNullPointer(invocation)).lenient()))
+      else
+        None
+    }
 
   case class ThrowsSmartNullPointer(unstubbedInvocation: InvocationOnMock, location: Location = new LocationImpl) extends Answer[AnyRef] {
     override def answer(invocation: InvocationOnMock): AnyRef =

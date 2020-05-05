@@ -11,9 +11,10 @@ import scala.util.{ Failure, Try }
 trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[Any]] with Serializable { self =>
   override def answer(invocation: InvocationOnMock): Any = apply(invocation).orNull
 
-  def orElse(next: DefaultAnswer): DefaultAnswer = new DefaultAnswer {
-    override def apply(invocation: InvocationOnMock): Option[Any] = self(invocation).orElse(next(invocation))
-  }
+  def orElse(next: DefaultAnswer): DefaultAnswer =
+    new DefaultAnswer {
+      override def apply(invocation: InvocationOnMock): Option[Any] = self(invocation).orElse(next(invocation))
+    }
 }
 
 object DefaultAnswer {
@@ -26,9 +27,10 @@ object DefaultAnswer {
       override def answer(invocation: InvocationOnMock): Any = a(invocation)
     })
 
-  def apply(value: Any): DefaultAnswer = new DefaultAnswer {
-    override def apply(i: InvocationOnMock): Option[Any] = Some(value)
-  }
+  def apply(value: Any): DefaultAnswer =
+    new DefaultAnswer {
+      override def apply(i: InvocationOnMock): Option[Any] = Some(value)
+    }
 }
 
 class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {

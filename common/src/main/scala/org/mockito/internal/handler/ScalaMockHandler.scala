@@ -46,17 +46,18 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
           val matchers               = argumentMatcherStorage.pullLocalizedMatchers().asScala.toIterator
           val matchersWereUsed       = matchers.nonEmpty
           def reportMatcher(): Unit  = if (matchers.nonEmpty) argumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
-          def reportMatchers(varargs: Iterable[_]): Unit = if (matchersWereUsed && varargs.nonEmpty) {
-            def reportAsEqTo(): Unit = varargs.map(EqTo(_)).foreach(argumentMatcherStorage.reportMatcher(_))
-            val matcher              = matchers.next().getMatcher
-            matcher match {
-              case EqTo(value: Array[_]) if varargs.sameElements(value) => reportAsEqTo()
-              case EqTo(value) if varargs == value                      => reportAsEqTo()
-              case other =>
-                argumentMatcherStorage.reportMatcher(other)
-                varargs.drop(1).foreach(_ => reportMatcher())
+          def reportMatchers(varargs: Iterable[_]): Unit =
+            if (matchersWereUsed && varargs.nonEmpty) {
+              def reportAsEqTo(): Unit = varargs.map(EqTo(_)).foreach(argumentMatcherStorage.reportMatcher(_))
+              val matcher              = matchers.next().getMatcher
+              matcher match {
+                case EqTo(value: Array[_]) if varargs.sameElements(value) => reportAsEqTo()
+                case EqTo(value) if varargs == value                      => reportAsEqTo()
+                case other =>
+                  argumentMatcherStorage.reportMatcher(other)
+                  varargs.drop(1).foreach(_ => reportMatcher())
+              }
             }
-          }
 
           args.zipWithIndex.flatMap {
             case (arg: Function0[_], idx) if indices.contains(idx) =>

@@ -12,10 +12,11 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
   }
 
   class Baz {
-    def fut(f: Foo) = Future {
-      Thread.sleep(500)
-      f.bar("in the future")
-    }
+    def fut(f: Foo) =
+      Future {
+        Thread.sleep(500)
+        f.bar("in the future")
+      }
   }
 
   class Setup {

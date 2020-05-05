@@ -40,25 +40,26 @@ object ValueClassExtractor {
     val typeSymbol   = tpe.typeSymbol
     val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
 
-    val r = if (isValueClass) {
-      if (ScalaVersion.startsWith("2.12") || ScalaVersion.startsWith("2.13"))
-        c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
-      else if (ScalaVersion.startsWith("2.11"))
-        c.Expr[ValueClassExtractor[VC]] {
-          val companion = typeSymbol.companion
+    val r =
+      if (isValueClass)
+        if (ScalaVersion.startsWith("2.12") || ScalaVersion.startsWith("2.13"))
+          c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
+        else if (ScalaVersion.startsWith("2.11"))
+          c.Expr[ValueClassExtractor[VC]] {
+            val companion = typeSymbol.companion
 
-          if (companion.info.decls.exists(_.name.toString == "unapply"))
-            q"""
+            if (companion.info.decls.exists(_.name.toString == "unapply"))
+              q"""
             new _root_.org.mockito.internal.ValueClassExtractor[$tpe] {
               override def extract(vc: $tpe): Any = $companion.unapply(vc).get
             }
            """
-          else
-            q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]"
-        }
-      else throw new Exception(s"Unsupported scala version $ScalaVersion")
-    } else
-      c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")
+            else
+              q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]"
+          }
+        else throw new Exception(s"Unsupported scala version $ScalaVersion")
+      else
+        c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")
 
     debugResult(c)("mockito-print-extractor")(r.tree)
 

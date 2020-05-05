@@ -11,9 +11,8 @@ private[mockito] trait MockitoSessionFixture extends TestSuite { this: Suite =>
     val session = MockitoScalaSession(name = s"${test.name} - session", strictness)
 
     val result =
-      try {
-        super.withFixture(test)
-      } catch {
+      try super.withFixture(test)
+      catch {
         case t: Throwable =>
           session.finishMocking(Some(t))
           throw t
@@ -32,9 +31,8 @@ private[mockito] trait MockitoSessionAsyncFixture extends AsyncTestSuite { this:
     val session = MockitoScalaSession(name = s"${test.name} - session", strictness)
 
     val result =
-      try {
-        super.withFixture(test)
-      } catch {
+      try super.withFixture(test)
+      catch {
         case t: Throwable =>
           session.finishMocking(Some(t))
           throw t

@@ -42,9 +42,8 @@ private[mockito] trait VerificationMacroTransformer {
   protected def transformInvocation(c: blackbox.Context)(invocation: c.Tree, order: c.Tree, times: c.Tree): c.Tree = {
     import c.universe._
 
-    try {
-      doTransformInvocation(c)(invocation, order, times)
-    } catch {
+    try doTransformInvocation(c)(invocation, order, times)
+    catch {
       case e: Exception => throw new Exception(s"Error when transforming invocation ${show(invocation)}", e)
     }
   }
@@ -60,9 +59,9 @@ private[mockito] trait VerificationMacroTransformer {
         q"verification($order.verifyWithMode($obj, $times).$method[..$targs])"
     }
 
-    if (pf.isDefinedAt(invocation)) {
+    if (pf.isDefinedAt(invocation))
       pf(invocation)
-    } else if (invocation.children.nonEmpty && pf.isDefinedAt(invocation.children.last)) {
+    else if (invocation.children.nonEmpty && pf.isDefinedAt(invocation.children.last)) {
       val values = invocation.children
         .dropRight(1)
         .collect {

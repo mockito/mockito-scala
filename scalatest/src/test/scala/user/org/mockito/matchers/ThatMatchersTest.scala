@@ -22,9 +22,9 @@ class ThatMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with 
 
     aMock.baz(Baz("Hello", "World"))
     verify(aMock).baz(argMatching({ case Baz("Hello", "World") => }))
-    verify(aMock).baz(argMatching({ case Baz(_, "World")       => }))
-    verify(aMock).baz(argMatching({ case Baz("Hello", _)       => }))
-    verify(aMock).baz(argMatching({ case Baz(_, _)             => }))
+    verify(aMock).baz(argMatching({ case Baz(_, "World") => }))
+    verify(aMock).baz(argMatching({ case Baz("Hello", _) => }))
+    verify(aMock).baz(argMatching({ case Baz(_, _) => }))
 
     an[WantedButNotInvoked] should be thrownBy {
       verify(aMock).baz(argMatching({ case Baz("", _) => }))

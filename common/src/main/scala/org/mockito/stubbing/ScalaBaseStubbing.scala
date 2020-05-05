@@ -30,10 +30,11 @@ abstract class ScalaBaseStubbing[T: ValueClassExtractor] {
   protected def _thenCallRealMethod(): ScalaOngoingStubbing[T] = delegate.thenCallRealMethod()
 
   protected def _thenAnswer(f: => T): ScalaOngoingStubbing[T] = delegate thenAnswer invocationToAnswer(_ => f)
-  protected def _thenAnswer[P0: ClassTag: ValueClassWrapper](f: P0 => T): ScalaOngoingStubbing[T] = clazz[P0] match {
-    case c if c == classOf[InvocationOnMock] => delegate thenAnswer invocationToAnswer(i => f(i.asInstanceOf[P0]))
-    case _                                   => delegate thenAnswer functionToAnswer(f)
-  }
+  protected def _thenAnswer[P0: ClassTag: ValueClassWrapper](f: P0 => T): ScalaOngoingStubbing[T] =
+    clazz[P0] match {
+      case c if c == classOf[InvocationOnMock] => delegate thenAnswer invocationToAnswer(i => f(i.asInstanceOf[P0]))
+      case _                                   => delegate thenAnswer functionToAnswer(f)
+    }
   protected def _thenAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper](f: (P0, P1) => T): ScalaOngoingStubbing[T] =
     delegate thenAnswer functionToAnswer(f)
 

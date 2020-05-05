@@ -21,10 +21,11 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
   class FinalEqualsAndHashcode {
     def id: String = ???
 
-    final override def equals(other: Any): Boolean = other match {
-      case that: FinalEqualsAndHashcode => id == that.id
-      case _                            => false
-    }
+    final override def equals(other: Any): Boolean =
+      other match {
+        case that: FinalEqualsAndHashcode => id == that.id
+        case _                            => false
+      }
 
     final override def hashCode(): Int = {
       val state = Seq(id)

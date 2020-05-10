@@ -73,10 +73,7 @@ object ReflectionUtils {
     private def resolveWithJavaGenerics: Option[Class[_]] =
       try Some(GenericsResolver.resolve(invocation.getMock.getClass).`type`(method.getDeclaringClass).method(method).resolveReturnClass())
       catch {
-        // HACK for JVM 8 due to java.lang.InternalError: Malformed class name being thrown when calling getSimpleName on objects nested in
-        // other objects
-        case e: InternalError if e.getMessage == "Malformed class name" => None
-        case NonFatal(_)                                                => None
+        case _: Throwable => None
       }
   }
 

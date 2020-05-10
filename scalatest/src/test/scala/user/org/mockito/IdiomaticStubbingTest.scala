@@ -295,4 +295,12 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false) shouldBe ""
     }
   }
+
+  "mock" should {
+    "stub a map" in {
+      val mocked = mock[Map[String, String]]
+      mocked(*) returns "123"
+      mocked("key") shouldBe "123"
+    }
+  }
 }

@@ -97,6 +97,7 @@ class ArgCaptorTest extends AnyWordSpec with MockitoSugar with Matchers {
       verify(aMock, times(2)).stringArgument(captor)
 
       captor.values should contain only ("it worked!", "it worked again!")
+      captor hasCaptured ("it worked!", "it worked again!")
     }
 
     "work with value case classes" in {

@@ -385,7 +385,7 @@ order.verify(mock1).anotherMethod()                             <=>   mock1.anot
 
 As you can see the new syntax reads a bit more natural, also notice you can use `*` instead of `any[T]`
 
-Check the [tests](/scalatest/src/test/scala/user/org/mockito/IdiomaticMockitoTest.scala) for more examples
+Check the [tests](/scalatest/src/test/scala/user/org/mockito/scalatest/IdiomaticMockitoTest.scala) for more examples
 
 NOTE: When using the willBe syntax for stubbing, you can only stub one value to be returned, this is due to a limitation of the 
 type inference. If for some reason you have to do that (ideally all functions should be referentially transparent, so you wouldn't have to), you can 

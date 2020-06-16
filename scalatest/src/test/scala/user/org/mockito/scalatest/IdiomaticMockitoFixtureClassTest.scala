@@ -15,7 +15,7 @@ class IdiomaticMockitoFixtureClassTest extends fixture.FlatSpec with IdiomaticMo
     val foo: Foo = mock[Foo]
   }
 
-  def withFixture(test: OneArgTest): Outcome = {
+  protected def withFixture(test: OneArgTest): Outcome = {
     val theFixture = new FixtureParam
     withFixture(test.toNoArgTest(theFixture))
   }

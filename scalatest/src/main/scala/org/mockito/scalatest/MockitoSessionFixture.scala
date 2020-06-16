@@ -7,7 +7,7 @@ private[mockito] trait MockitoSessionFixture extends TestSuite { this: Suite =>
 
   val strictness: Strictness = Strictness.StrictStubs
 
-  abstract override def withFixture(test: NoArgTest): Outcome = {
+  abstract override protected def withFixture(test: NoArgTest): Outcome = {
     val session = MockitoScalaSession(name = s"${test.name} - session", strictness)
 
     val result =

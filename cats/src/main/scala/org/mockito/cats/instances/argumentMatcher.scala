@@ -9,7 +9,7 @@ case class MappedArgumentMatcher[A, B](fa: ArgumentMatcher[A], f: B => A) extend
 }
 
 case class ProductArgumentMatcher[A, B](fa: ArgumentMatcher[A], fb: ArgumentMatcher[B]) extends ArgumentMatcher[(A, B)] {
-  override def matches(ab: (A, B)) = fa.matches(ab._1) && fb.matches(ab._2)
+  override def matches(ab: (A, B)) = ab match { case (a, b) => fa.matches(a) && fb.matches(b) }
 }
 
 trait ArgumentMatcherInstances {

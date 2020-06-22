@@ -31,5 +31,9 @@ package object cats {
     def returnsOptionFrom[A, B](a: A, b: B): Option[String]
 
     def returnsFutureOptionFrom[A, B](a: A, b: B): Future[Option[String]]
+
+    def takesDouble(d: Double): String
+
+    def takesTuple(t: (String, Integer)): String
   }
 }

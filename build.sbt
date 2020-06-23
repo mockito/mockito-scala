@@ -94,6 +94,8 @@ lazy val cats = (project in file("cats"))
     publishSettings,
     libraryDependencies ++= Seq(
       Dependencies.cats,
+      Dependencies.catsLaws % "test",
+      Dependencies.disciplineScalatest % "test",
       Dependencies.scalatest % "test"
     ),
   )

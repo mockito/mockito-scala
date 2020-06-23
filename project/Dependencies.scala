@@ -21,4 +21,7 @@ object Dependencies {
 
   val cats   = "org.typelevel" %% "cats-core"   % "2.0.0" % "provided"
   val scalaz = "org.scalaz"    %% "scalaz-core" % "7.3.1"   % "provided"
+
+  val catsLaws = "org.typelevel" %% "cats-laws" % "2.0.0"
+  val disciplineScalatest = "org.typelevel" %% "discipline-scalatest" % "1.0.1"
 }

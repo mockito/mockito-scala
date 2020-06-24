@@ -8,6 +8,7 @@ import cats.laws.discipline.arbitrary._
 import cats.laws.discipline.eq._
 import org.mockito.{ ArgumentMatcher, ArgumentMatchers, ArgumentMatchersSugar, IdiomaticMockito }
 import org.mockito.internal.matchers._
+import org.mockito.matchers.EqTo
 import org.scalacheck.Arbitrary
 import org.scalatest.Matchers
 import org.scalatest.funsuite.AnyFunSuiteLike
@@ -75,5 +76,14 @@ class ArgumentMatcherInstancesTest extends AnyFunSuiteLike with FunSuiteDiscipli
     aMock.returnsOptionString(argThat(matcher)) returns Some("mocked!")
 
     aMock.returnsOptionString("prefix-middle-suffix") shouldBe Some("mocked!")
+  }
+
+  test("EqTo works with cats syntax") {
+    val aMock = mock[Foo]
+
+    val matcher = (EqTo("foo"), EqTo(new Integer(42))).tupled
+    aMock.takesTuple(argThat(matcher)) returns "mocked!"
+
+    aMock.takesTuple("foo", 42) shouldBe "mocked!"
   }
 }

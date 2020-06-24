@@ -12,3 +12,9 @@ case class EqTo[T: Equality: ValueClassExtractor](value: T)(implicit $pt: Pretti
 
   override def toString: String = $pt(value)
 }
+
+object EqTo {
+  // Smart constructor to return ArgumentMatcher[T] rather than a subtype
+  def apply[T: Equality: ValueClassExtractor](value: T)(implicit $pt: Prettifier): ArgumentMatcher[T] =
+    new EqTo(value)
+}

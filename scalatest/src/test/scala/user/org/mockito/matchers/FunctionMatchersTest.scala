@@ -2,7 +2,6 @@ package user.org.mockito.matchers
 
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.mockito.exceptions.verification.ArgumentsAreDifferent
-import org.scalatest.{ Matchers => ScalaTestMatchers }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

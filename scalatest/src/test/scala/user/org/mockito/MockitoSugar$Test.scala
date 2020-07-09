@@ -2,7 +2,6 @@ package user.org.mockito
 
 import org.mockito.MockitoSugar
 import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ReturnsDefaults }
-import org.scalatest.{ Matchers => ScalatestMatchers }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

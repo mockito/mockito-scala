@@ -1,9 +1,10 @@
 package user.org.mockito
 
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class MockitoSugarTest_211 extends WordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
+class MockitoSugarTest_211 extends AnyWordSpec with MockitoSugar with Matchers with ArgumentMatchersSugar {
   trait Baz {
     def traitMethod(defaultArg: Int = 30, anotherDefault: String = "hola"): Int = ???
   }

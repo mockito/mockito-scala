@@ -84,7 +84,7 @@ object IdiomaticMockitoBase {
   }
 
   class ReturnActions[T](os: ScalaFirstStubbing[T]) {
-    def apply(value: T, values: T*): ScalaOngoingStubbing[T] = os thenReturn (value, values: _*)
+    def apply(value: T, values: T*): ScalaOngoingStubbing[T] = os.thenReturn(value, values: _*)
   }
 
   class ThrowActions[T](os: ScalaFirstStubbing[T]) {

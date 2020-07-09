@@ -5,9 +5,9 @@ import org.mockito.exceptions.misusing.MissingMethodInvocationException
 import org.mockito.exceptions.verification.{ NeverWantedButInvoked, NoInteractionsWanted }
 import org.mockito.scalatest.IdiomaticMockitoBase
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{ fixture, Outcome }
+import org.scalatest.{ flatspec, Outcome }
 
-class IdiomaticMockitoWithExpectFixtureClassTest extends fixture.FlatSpec with IdiomaticMockitoBase with PrefixExpectations with Matchers {
+class IdiomaticMockitoWithExpectFixtureClassTest extends flatspec.FixtureAnyFlatSpec with IdiomaticMockitoBase with PrefixExpectations with Matchers {
   class Foo {
     def bar(a: String) = "bar"
     def baz            = "baz"

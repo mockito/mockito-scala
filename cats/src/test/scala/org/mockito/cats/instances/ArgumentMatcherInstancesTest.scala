@@ -8,6 +8,7 @@ import cats.laws.discipline.arbitrary._
 import cats.laws.discipline.eq._
 import org.mockito.{ ArgumentMatcher, ArgumentMatchers, ArgumentMatchersSugar, IdiomaticMockito }
 import org.mockito.internal.matchers._
+import org.mockito.matchers.{ EqTo, Generators }
 import org.scalacheck.Arbitrary
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.funsuite.AnyFunSuiteLike
@@ -15,11 +16,10 @@ import org.scalatest.prop.Configuration
 import org.typelevel.discipline.scalatest.FunSuiteDiscipline
 
 class ArgumentMatcherInstancesTest extends AnyFunSuiteLike with FunSuiteDiscipline with Configuration with ArgumentMatchersSugar with IdiomaticMockito with Matchers {
+  import Generators._
+
   implicit def eqArgumentMatcherExhaustive[A: ExhaustiveCheck]: Eq[ArgumentMatcher[A]] =
     Eq.instance((f, g) => ExhaustiveCheck[A].allValues.forall(a => f.matches(a) == g.matches(a)))
-
-  implicit def arbArgumentMatcher[A](implicit a: Arbitrary[A => Boolean]): Arbitrary[ArgumentMatcher[A]] =
-    Arbitrary(a.arbitrary.map(p => new ArgumentMatcher[A] { def matches(a: A) = p(a) }))
 
   checkAll("ArgumentMatcher[MiniInt]", ContravariantMonoidalTests[ArgumentMatcher].contravariantMonoidal[MiniInt, MiniInt, MiniInt])
   checkAll("ArgumentMatcher[MiniInt]", MonoidKTests[ArgumentMatcher].monoidK[MiniInt])
@@ -75,5 +75,14 @@ class ArgumentMatcherInstancesTest extends AnyFunSuiteLike with FunSuiteDiscipli
     aMock.returnsOptionString(argThat(matcher)) returns Some("mocked!")
 
     aMock.returnsOptionString("prefix-middle-suffix") shouldBe Some("mocked!")
+  }
+
+  test("EqTo works with cats syntax") {
+    val aMock = mock[Foo]
+
+    val matcher = (EqTo("foo"), EqTo(new Integer(42))).tupled
+    aMock.takesTuple(argThat(matcher)) returns "mocked!"
+
+    aMock.takesTuple("foo", 42) shouldBe "mocked!"
   }
 }

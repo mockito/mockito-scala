@@ -34,7 +34,9 @@ lazy val commonSettings =
     ),
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, v)) if v <= 12 =>
+        case Some((2, 11)) =>
+          Seq("-Xsource:2.12", "-Ypartial-unification")
+        case Some((2, 12)) =>
           Seq("-Ypartial-unification")
         case _ =>
           Nil
@@ -86,7 +88,7 @@ lazy val specs2 = (project in file("specs2"))
 
 lazy val cats = (project in file("cats"))
   .dependsOn(core)
-  .dependsOn(common % "compile-internal, test-internal")
+  .dependsOn(common % "compile-internal, test-internal, test->test")
   .dependsOn(macroSub % "compile-internal, test-internal")
   .settings(
     name := "mockito-scala-cats",
@@ -118,8 +120,11 @@ lazy val common = (project in file("common"))
   .dependsOn(macroCommon)
   .settings(
     commonSettings,
-    libraryDependencies ++= Dependencies.commonLibraries,
-    libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
+    libraryDependencies ++= Dependencies.commonLibraries ++ Seq(
+      Dependencies.scalaReflection(scalaVersion.value),
+      Dependencies.catsLaws % "test",
+      Dependencies.scalacheck % "test"
+    ),
     publish := {},
     publishLocal := {},
     publishArtifact := false
@@ -186,4 +191,4 @@ lazy val root = (project in file("."))
   .settings(
     publish := {},
     publishLocal := {}
-  ) aggregate (core, scalatest, specs2, cats, scalaz)
+  ) aggregate (common, core, scalatest, specs2, cats, scalaz)

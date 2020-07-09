@@ -9,7 +9,7 @@ import cats.laws.discipline.eq._
 import org.mockito.{ ArgumentMatcher, ArgumentMatchers, ArgumentMatchersSugar, IdiomaticMockito }
 import org.mockito.internal.matchers._
 import org.scalacheck.Arbitrary
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.funsuite.AnyFunSuiteLike
 import org.scalatest.prop.Configuration
 import org.typelevel.discipline.scalatest.FunSuiteDiscipline

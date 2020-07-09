@@ -4,7 +4,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
-import org.scalatest.{ Matchers => ScalaTestMatchers }
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

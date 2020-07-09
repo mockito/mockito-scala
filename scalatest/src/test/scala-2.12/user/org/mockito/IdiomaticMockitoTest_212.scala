@@ -2,13 +2,14 @@ package user.org.mockito
 
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueClass }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class IdiomaticMockitoTest_212 extends WordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with ScalaFutures {
+class IdiomaticMockitoTest_212 extends AnyWordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with ScalaFutures {
   class Foo {
     def valueClass(n: Int, v: ValueClass): String = ???
 

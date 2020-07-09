@@ -3,9 +3,9 @@ package user.org.mockito.scalatest
 import org.mockito.exceptions.verification.{ NeverWantedButInvoked, NoInteractionsWanted }
 import org.mockito.scalatest.IdiomaticMockito
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{ fixture, Outcome }
+import org.scalatest.{ flatspec, Outcome }
 
-class IdiomaticMockitoFixtureClassTest extends fixture.FlatSpec with IdiomaticMockito with Matchers {
+class IdiomaticMockitoFixtureClassTest extends flatspec.FixtureAnyFlatSpec with IdiomaticMockito with Matchers {
   class Foo {
     def bar(a: String) = "bar"
     def baz            = "baz"

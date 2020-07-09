@@ -376,7 +376,7 @@ The Mockito trait is reusable in other contexts
 
   def stubs2 = {
     val list = mock[java.util.List[String]]
-    list.add("one") returns (true, false, true)
+    list.add("one").returns(true, false, true)
     (list.add("one"), list.add("one"), list.add("one")) must_== ((true, false, true))
   }
 
@@ -427,7 +427,7 @@ The Mockito trait is reusable in other contexts
 
   def stubs9 = {
     val list = mock[java.util.List[String]]
-    list.clear() throws (new RuntimeException, new IllegalArgumentException)
+    list.clear().throws(new RuntimeException, new IllegalArgumentException)
     tryo(list.clear())
     list.clear()
   } must throwAn[IllegalArgumentException]

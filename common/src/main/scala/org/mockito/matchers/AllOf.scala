@@ -1,7 +1,8 @@
 package org.mockito
 package matchers
 
-/** Combine multiple matchers using AND
+/**
+ * Combine multiple matchers using AND
  */
 case class AllOf[A] private (matchers: List[ArgumentMatcher[A]]) extends ArgumentMatcher[A] {
   override def matches(a: A) = matchers.forall(_.matches(a))

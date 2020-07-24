@@ -65,7 +65,6 @@ private[mockito] trait DoSomething {
    * both method doReturn in class Mockito of type (x$1: Any, x$2: Object*)org.mockito.stubbing.Stubber
    * and  method doReturn in class Mockito of type (x$1: Any)org.mockito.stubbing.Stubber
    * match argument types (`Type`)}}}
-   *
    */
   def doReturn[T: ValueClassExtractor](toBeReturned: T, toBeReturnedNext: T*): Stubber =
     toBeReturnedNext.foldLeft(Mockito.doAnswer(ScalaReturns(toBeReturned))) {
@@ -81,7 +80,6 @@ private[mockito] trait DoSomething {
   /**
    * Delegates to <code>Mockito.doThrow(type: Class[T])</code>
    * It provides a nicer API as you can, for instance, do doThrow[Throwable] instead of doThrow(classOf[Throwable])
-   *
    */
   def doThrow[T <: Throwable: ClassTag]: Stubber = Mockito.doThrow(clazz)
 

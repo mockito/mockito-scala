@@ -15,14 +15,14 @@ object Dependencies {
   val scalatest = "org.scalatest" %% "scalatest" % scalatestVersion
 
   val specs2 = Seq(
-    "org.specs2"   %% "specs2-core"  % "4.9.4" % "provided",
+    "org.specs2"   %% "specs2-core"  % "4.10.0" % "provided",
     "org.hamcrest" % "hamcrest-core" % "2.2"   % "provided"
   )
 
   def scalaReflection(scalaVersion: String) = "org.scala-lang" % "scala-reflect" % scalaVersion
 
   val cats   = "org.typelevel" %% "cats-core"   % "2.0.0" % "provided"
-  val scalaz = "org.scalaz"    %% "scalaz-core" % "7.3.1"   % "provided"
+  val scalaz = "org.scalaz"    %% "scalaz-core" % "7.3.2"   % "provided"
 
   val catsLaws = "org.typelevel" %% "cats-laws" % "2.0.0"
   val disciplineScalatest = "org.typelevel" %% "discipline-scalatest" % "1.0.1"

@@ -13,7 +13,8 @@ import scala.reflect.ClassTag
 
 package object mockito {
 
-  /** Some forms of tagged types don't provide a ClassTag, given that sometimes we only use it to differentiate
+  /**
+   * Some forms of tagged types don't provide a ClassTag, given that sometimes we only use it to differentiate
    *  an InvocationOnMock from anything else, this is a safe default for those methods
    */
   private[mockito] def defaultClassTag[T]: ClassTag[T] = ClassTag.AnyRef.asInstanceOf[ClassTag[T]]

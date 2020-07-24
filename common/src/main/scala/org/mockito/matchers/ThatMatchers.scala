@@ -7,7 +7,6 @@ private[mockito] trait ThatMatchers {
   /**
    * Delegates to <code>ArgumentMatchers.argThat(matcher)</code>, it's only here so we expose all the `ArgumentMatchers`
    * on a single place
-   *
    */
   def argThat[T](matcher: ArgumentMatcher[T]): T = argThat(matcher.matches, matcher.toString)
 
@@ -25,7 +24,6 @@ private[mockito] trait ThatMatchers {
    * Delegates the call to <code>argThat</code> but using the Scala "primitives", this
    * provides avoids an unnecessary implicit conversion that would be necessary if we used
    * the Java version
-   *
    */
   def byteThat(matcher: ArgumentMatcher[Byte]): Byte = argThat(matcher)
 
@@ -33,7 +31,6 @@ private[mockito] trait ThatMatchers {
    * Delegates the call to <code>argThat</code> but using the Scala "primitive", this
    * provides avoids an unnecessary implicit conversion that would be necessary if we used
    * the Java version
-   *
    */
   def booleanThat(matcher: ArgumentMatcher[Boolean]): Boolean = argThat(matcher)
 
@@ -41,7 +38,6 @@ private[mockito] trait ThatMatchers {
    * Delegates the call to <code>argThat</code> but using the Scala "primitive", this
    * provides avoids an unnecessary implicit conversion that would be necessary if we used
    * the Java version
-   *
    */
   def charThat(matcher: ArgumentMatcher[Char]): Char = argThat(matcher)
 
@@ -49,7 +45,6 @@ private[mockito] trait ThatMatchers {
    * Delegates the call to <code>argThat</code> but using the Scala "primitive", this
    * provides avoids an unnecessary implicit conversion that would be necessary if we used
    * the Java version
-   *
    */
   def doubleThat(matcher: ArgumentMatcher[Double]): Double = argThat(matcher)
 
@@ -57,7 +52,6 @@ private[mockito] trait ThatMatchers {
    * Delegates the call to <code>argThat</code> but using the Scala "primitive", this
    * provides avoids an unnecessary implicit conversion that would be necessary if we used
    * the Java version
-   *
    */
   def intThat(matcher: ArgumentMatcher[Int]): Int = argThat(matcher)
 
@@ -65,7 +59,6 @@ private[mockito] trait ThatMatchers {
    * Delegates the call to <code>argThat</code> but using the Scala "primitive", this
    * provides avoids an unnecessary implicit conversion that would be necessary if we used
    * the Java version
-   *
    */
   def floatThat(matcher: ArgumentMatcher[Float]): Float = argThat(matcher)
 
@@ -73,7 +66,6 @@ private[mockito] trait ThatMatchers {
    * Delegates the call to <code>argThat</code> but using the Scala "primitive", this
    * provides avoids an unnecessary implicit conversion that would be necessary if we used
    * the Java version
-   *
    */
   def shortThat(matcher: ArgumentMatcher[Short]): Short = argThat(matcher)
 
@@ -81,7 +73,6 @@ private[mockito] trait ThatMatchers {
    * Delegates the call to <code>argThat</code> but using the Scala "primitive", this
    * provides avoids an unnecessary conversion that would be necessary used
    * the Java version
-   *
    */
   def longThat(matcher: ArgumentMatcher[Long]): Long = argThat(matcher)
 
@@ -90,7 +81,6 @@ private[mockito] trait ThatMatchers {
    *
    *       foo.bar(argMatching({ case Baz(n, _) if n > 90 => })) returns "mocked!"
    *       foo.bar(argMatching({ case Baz(_, "pepe") => })) was called
-   *
    */
   def argMatching[T](pf: PartialFunction[Any, Unit]) = argThat[T](pf.isDefinedAt(_), "argMatching(...)")
 }

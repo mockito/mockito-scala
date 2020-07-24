@@ -19,7 +19,6 @@ trait MacroBasedMatchers {
    * when you try to something like ArgumentMatchers.any
    *
    * It also fixes the NullPointerException when used on an value class argument (IMPORTANT: YOU MUST PROVIDE THE TYPE FOR VALUE CLASSES)
-   *
    */
   def any[T](implicit $m: AnyMatcher[T]): T = $m.any
 

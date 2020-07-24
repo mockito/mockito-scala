@@ -15,7 +15,6 @@ import scala.reflect.runtime.universe.WeakTypeTag
  * once at the beginning of the test suite
  *
  * Just mix-in after your favourite suite, i.e. {{{class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest}}}
- *
  */
 trait ResetMocksAfterEachTestBase extends MockCreator { self: MockCreator =>
 

@@ -20,7 +20,6 @@ import org.mockito.matchers._
  * It also renames the "eq" matcher to "eqTo" as in Scala "eq" is a keyword used to do object identity equality
  *
  * @author Bruno Bonanno
- *
  */
 trait ArgumentMatchersSugar
     extends AnyMatchers
@@ -37,6 +36,5 @@ trait ArgumentMatchersSugar
  * Simple object to allow the usage of the trait without mixing it in
  *
  * @author Bruno Bonanno
- *
  */
 object ArgumentMatchersSugar extends ArgumentMatchersSugar

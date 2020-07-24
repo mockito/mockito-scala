@@ -7,7 +7,6 @@ import org.scalatest.{ AsyncTestSuite, FutureOutcome }
  * once at the beginning of the test suite
  *
  * Just mix-in after your favourite suite, i.e. {{{class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachAsyncTest}}}
- *
  */
 trait ResetMocksAfterEachAsyncTest extends AsyncTestSuite with ResetMocksAfterEachTestBase {
 

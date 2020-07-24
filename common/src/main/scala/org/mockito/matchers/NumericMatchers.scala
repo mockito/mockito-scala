@@ -21,7 +21,6 @@ class N {
    *
    *     aMock.pepe(4.1)
    *     aMock.pepe(n > 4) was called
-   *
    */
   def >[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, ">", _ > _))
 
@@ -30,7 +29,6 @@ class N {
    *
    *     aMock.pepe(4)
    *     aMock.pepe(n >= 4) was called
-   *
    */
   def >=[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, ">=", _ >= _))
 
@@ -39,7 +37,6 @@ class N {
    *
    *     aMock.pepe(3.1)
    *     aMock.pepe(n < 4) was called
-   *
    */
   def <[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, "<", _ < _))
 
@@ -48,7 +45,6 @@ class N {
    *
    *     aMock.pepe(4)
    *     aMock.pepe(n <= 4) was called
-   *
    */
   def <=[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, "<=", _ <= _))
 
@@ -58,7 +54,6 @@ class N {
    *
    *     aMock.barDouble(4.999)
    *     verify(aMock).barDouble(=~(5.0 +- 0.001))
-   *
    */
   def =~[T](spread: Spread[T]): T = ThatMatchers.argThat[T](spread.isWithin _, s"=~($spread)")
 }

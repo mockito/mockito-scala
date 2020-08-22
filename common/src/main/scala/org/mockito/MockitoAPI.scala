@@ -18,6 +18,7 @@ import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions
 import org.mockito.internal.handler.ScalaMockHandler
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
+import org.mockito.internal.stubbing.answers.ScalaThrowsException
 import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.internal.{ ValueClassExtractor, ValueClassWrapper }
@@ -75,13 +76,17 @@ private[mockito] trait DoSomething {
    * Delegates to <code>Mockito.doThrow</code>, it's only here so we expose all the Mockito API
    * on a single place
    */
-  def doThrow(toBeThrown: Throwable*): Stubber = Mockito.doThrow(toBeThrown: _*)
+  def doThrow(toBeThrown: Throwable*): Stubber = {
+    val stubber = Mockito.MOCKITO_CORE.stubber
+    toBeThrown.foreach(t => stubber.doAnswer(ScalaThrowsException(t)))
+    stubber
+  }
 
   /**
    * Delegates to <code>Mockito.doThrow(type: Class[T])</code>
    * It provides a nicer API as you can, for instance, do doThrow[Throwable] instead of doThrow(classOf[Throwable])
    */
-  def doThrow[T <: Throwable: ClassTag]: Stubber = Mockito.doThrow(clazz)
+  def doThrow[T <: Throwable: ClassTag]: Stubber = Mockito.doAnswer(ScalaThrowsException[T])
 
   /**
    * Delegates to <code>Mockito.doNothing()</code>, it removes the parenthesis to have a cleaner API

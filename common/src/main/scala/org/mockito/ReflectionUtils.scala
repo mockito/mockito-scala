@@ -51,10 +51,15 @@ object ReflectionUtils {
     def returnsValueClass: Boolean = findTypeSymbol.exists(_.returnType.typeSymbol.isDerivedValueClass)
 
     private def resolveWithScalaGenerics: Option[Class[_]] =
-      findTypeSymbol
-        .filter(_.returnType.typeSymbol.isClass)
-        .map(_.asMethod.returnType.typeSymbol.asClass)
-        .map(mirror.runtimeClass)
+      scala.util
+        .Try {
+          findTypeSymbol
+            .filter(_.returnType.typeSymbol.isClass)
+            .map(_.asMethod.returnType.typeSymbol.asClass)
+            .map(mirror.runtimeClass)
+        }
+        .toOption
+        .flatten
 
     private def findTypeSymbol =
       scala.util

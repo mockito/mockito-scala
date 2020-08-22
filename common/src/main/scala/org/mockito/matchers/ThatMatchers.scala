@@ -2,6 +2,8 @@ package org.mockito.matchers
 
 import org.mockito.{ ArgumentMatcher, ArgumentMatchers => JavaMatchers }
 
+import scala.util.Try
+
 private[mockito] trait ThatMatchers {
 
   /**
@@ -16,7 +18,7 @@ private[mockito] trait ThatMatchers {
    */
   def argThat[T](f: T => Boolean, desc: => String = "argThat(<condition>)"): T =
     JavaMatchers.argThat(new ArgumentMatcher[T] with Serializable {
-      override def matches(argument: T): Boolean = f(argument)
+      override def matches(argument: T): Boolean = Try(f(argument)).toOption.getOrElse(false)
       override def toString: String              = desc
     })
 

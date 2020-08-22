@@ -6,9 +6,7 @@ import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoScalaSessio
 import IdiomaticMockito._
 import ArgumentMatchersSugar._
 
-
-
-class Issue256 extends AnyWordSpec with Matchers{
+class Issue256 extends AnyWordSpec with Matchers {
 
   trait Foo {
     def test[A](a: A): A

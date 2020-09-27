@@ -748,6 +748,35 @@ val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) raises Error("er
 val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) returns Left(Error("error"))
 ```
 
+## Mocking Scala `object`
+
+Since version 1.16.0 it is possible to mock `object` methods, given that such definitions are global, the way to mock them is sligtly different in order to ensure we restore the real implementation of the object after we are done
+Example:
+
+```scala
+object FooObject {
+  def simpleMethod: String = "not mocked!"
+}
+
+"mock" should {
+    "stub an object method" in {
+      FooObject.simpleMethod shouldBe "not mocked!"
+
+      withObjectMocked[FooObject.type] {
+        FooObject.simpleMethod returns "mocked!"
+        //or
+        when(FooObject.simpleMethod) thenReturn "mocked!"
+
+        FooObject.simpleMethod shouldBe "mocked!"
+      }
+
+      FooObject.simpleMethod shouldBe "not mocked!"
+    }
+}
+```
+
+As you can see, the effect of the mocking is only available inside the code block passed to `withObjectMocked`, when such block ends the behavior of the object is restored to its original implementation
+
 
 ## Notes
 

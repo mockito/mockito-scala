@@ -432,6 +432,17 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
       verify(aMock).varargMethod("hola", 1, 2, 3)
     }
+
+    "stub an object method" in {
+      FooObject.simpleMethod shouldBe "not mocked!"
+
+      withObjectMocked[FooObject.type] {
+        when(FooObject.simpleMethod) thenReturn "mocked!"
+        FooObject.simpleMethod shouldBe "mocked!"
+      }
+
+      FooObject.simpleMethod shouldBe "not mocked!"
+    }
   }
 
   "spyLambda[T]" should {

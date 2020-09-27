@@ -126,3 +126,7 @@ class TestController(org: Org) {
   def async(f: => Int): Int = f
   def test(id: Int)         = async(org.doSomethingWithThisInt(id))
 }
+
+object FooObject {
+  def simpleMethod: String = "not mocked!"
+}

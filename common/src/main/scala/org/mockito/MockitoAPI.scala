@@ -616,6 +616,17 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * they are created as final classes by the compiler
    */
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
+
+  /**
+   * Mocks the specified object only for the context of the block
+   */
+  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any): Unit = {
+    val moduleField = clazz[O].getDeclaredField("MODULE$")
+    val realImpl    = moduleField.get(null)
+    ReflectionUtils.setFinalStatic(moduleField, mock[O])
+    try block
+    finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
+  }
 }
 
 private[mockito] trait Verifications {

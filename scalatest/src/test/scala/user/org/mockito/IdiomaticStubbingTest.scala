@@ -1,15 +1,15 @@
 package user.org.mockito
 
+import java.lang.reflect.{ Field, Modifier }
 import java.util.concurrent.atomic.AtomicInteger
 
-import org.mockito.ArgumentMatchersSugar
-import org.mockito.IdiomaticStubbing
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.{ clazz, ArgumentMatchersSugar, IdiomaticStubbing }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import user.org.mockito.matchers.ValueCaseClassInt
-import user.org.mockito.matchers.ValueCaseClassString
-import user.org.mockito.matchers.ValueClass
+import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
+
+import scala.reflect.ClassTag
 
 class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
@@ -301,6 +301,17 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       val mocked = mock[Map[String, String]]
       mocked(*) returns "123"
       mocked("key") shouldBe "123"
+    }
+
+    "stub an object method" in {
+      FooObject.simpleMethod shouldBe "not mocked!"
+
+      withObjectMocked[FooObject.type] {
+        FooObject.simpleMethod returns "mocked!"
+        FooObject.simpleMethod shouldBe "mocked!"
+      }
+
+      FooObject.simpleMethod shouldBe "not mocked!"
     }
   }
 }

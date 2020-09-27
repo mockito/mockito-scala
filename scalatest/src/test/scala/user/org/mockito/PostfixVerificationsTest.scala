@@ -683,11 +683,11 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
       "answersPF" in {
         val org = orgDouble()
 
-        org.doSomethingWithThisInt(*) answersPF {
-          case i: Int => i * 10 + 2
+        org.doSomethingWithThisInt(*) answersPF { case i: Int =>
+          i * 10 + 2
         }
-        org.doSomethingWithThisIntAndString(*, *) answersPF {
-          case (i: Int, s: String) => (i * 10 + s.toInt).toString
+        org.doSomethingWithThisIntAndString(*, *) answersPF { case (i: Int, s: String) =>
+          (i * 10 + s.toInt).toString
         }
         org.doSomethingWithThisIntAndStringAndBoolean(*, *, *) answersPF {
           case (i: Int, s: String, true)  => (i * 10 + s.toInt).toString + " verdadero"

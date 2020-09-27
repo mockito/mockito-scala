@@ -12,8 +12,8 @@ abstract class ScalaBaseStubbing[T: ValueClassExtractor] {
   protected def delegate: OngoingStubbing[T]
 
   protected def _thenReturn(value: T, values: Seq[T]): ScalaOngoingStubbing[T] =
-    values.foldLeft(delegate.thenAnswer(ScalaReturns(value))) {
-      case (s, v) => s.thenAnswer(ScalaReturns(v))
+    values.foldLeft(delegate.thenAnswer(ScalaReturns(value))) { case (s, v) =>
+      s.thenAnswer(ScalaReturns(v))
     }
 
   private def thenThrow(t: Throwable): ScalaOngoingStubbing[T] = delegate thenAnswer new ScalaThrowsException(t)
@@ -21,8 +21,8 @@ abstract class ScalaBaseStubbing[T: ValueClassExtractor] {
   protected def _thenThrow(throwables: Seq[Throwable]): ScalaOngoingStubbing[T] =
     if (throwables == null || throwables.isEmpty) thenThrow(null)
     else
-      throwables.tail.foldLeft(thenThrow(throwables.head)) {
-        case (os, t) => os andThenThrow t
+      throwables.tail.foldLeft(thenThrow(throwables.head)) { case (os, t) =>
+        os andThenThrow t
       }
 
   protected def _thenThrow[E <: Throwable: ClassTag]: ScalaOngoingStubbing[T] = thenThrow((new ObjenesisStd).newInstance(clazz))

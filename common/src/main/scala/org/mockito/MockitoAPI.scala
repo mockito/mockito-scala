@@ -68,8 +68,8 @@ private[mockito] trait DoSomething {
    * match argument types (`Type`)}}}
    */
   def doReturn[T: ValueClassExtractor](toBeReturned: T, toBeReturnedNext: T*): Stubber =
-    toBeReturnedNext.foldLeft(Mockito.doAnswer(ScalaReturns(toBeReturned))) {
-      case (s, v) => s.doAnswer(ScalaReturns(v))
+    toBeReturnedNext.foldLeft(Mockito.doAnswer(ScalaReturns(toBeReturned))) { case (s, v) =>
+      s.doAnswer(ScalaReturns(v))
     }
 
   /**

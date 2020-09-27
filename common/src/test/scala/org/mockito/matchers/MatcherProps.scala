@@ -14,20 +14,19 @@ class MatcherProps extends Properties("matchers") {
   import Generators._
 
   property("AllOf") = forAll(chooseNum(0, 8))(length =>
-    forAll(listOfN(length, arbitrary[ArgumentMatcher[MiniInt]]), arbitrary[MiniInt]) {
-      case (matchers, value) =>
-        val allOf     = AllOf(matchers: _*)
-        val stringRep = allOf.toString
+    forAll(listOfN(length, arbitrary[ArgumentMatcher[MiniInt]]), arbitrary[MiniInt]) { case (matchers, value) =>
+      val allOf     = AllOf(matchers: _*)
+      val stringRep = allOf.toString
 
-        classify(allOf.matches(value), "matches", "doesn't match") {
-          (allOf.matches(value) ?= matchers.forall(_.matches(value))) :| "matches all underlying" &&
-          matchers.iff {
-            case Nil            => stringRep ?= "<any>"
-            case matcher :: Nil => stringRep ?= matcher.toString()
-            case _              => stringRep ?= s"allOf(${matchers.mkString(", ")})"
-          } :| "renders to string correctly"
+      classify(allOf.matches(value), "matches", "doesn't match") {
+        (allOf.matches(value) ?= matchers.forall(_.matches(value))) :| "matches all underlying" &&
+        matchers.iff {
+          case Nil            => stringRep ?= "<any>"
+          case matcher :: Nil => stringRep ?= matcher.toString()
+          case _              => stringRep ?= s"allOf(${matchers.mkString(", ")})"
+        } :| "renders to string correctly"
 
-        }
+      }
     }
   )
 

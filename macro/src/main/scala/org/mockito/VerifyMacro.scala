@@ -64,8 +64,8 @@ private[mockito] trait VerificationMacroTransformer {
     else if (invocation.children.nonEmpty && pf.isDefinedAt(invocation.children.last)) {
       val values = invocation.children
         .dropRight(1)
-        .collect {
-          case q"$_ val $name:$_ = $value" => name.toString -> value.asInstanceOf[c.Tree]
+        .collect { case q"$_ val $name:$_ = $value" =>
+          name.toString -> value.asInstanceOf[c.Tree]
         }
         .toMap
 

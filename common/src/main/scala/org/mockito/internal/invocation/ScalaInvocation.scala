@@ -53,9 +53,9 @@ class ScalaInvocation(
     other match {
       case that: ScalaInvocation =>
         super.equals(that) &&
-        getMock == that.getMock &&
-        mockitoMethod == that.mockitoMethod &&
-        (arguments sameElements that.arguments)
+          getMock == that.getMock &&
+          mockitoMethod == that.mockitoMethod &&
+          (arguments sameElements that.arguments)
       case _ => false
     }
   override def hashCode(): Int = {

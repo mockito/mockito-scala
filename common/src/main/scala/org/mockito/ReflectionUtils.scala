@@ -1,6 +1,6 @@
 package org.mockito
 
-import java.lang.reflect.Method
+import java.lang.reflect.{ Field, Method, Modifier }
 
 import org.mockito.internal.ValueClassWrapper
 import org.mockito.invocation.InvocationOnMock
@@ -122,4 +122,12 @@ object ReflectionUtils {
         .toOption
         .getOrElse(Seq.empty)
     }
+
+  def setFinalStatic(field: Field, newValue: Any) = {
+    field.setAccessible(true)
+    val modifiersField = classOf[Field].getDeclaredField("modifiers")
+    modifiersField.setAccessible(true)
+    modifiersField.setInt(field, field.getModifiers & ~Modifier.FINAL)
+    field.set(null, newValue)
+  }
 }

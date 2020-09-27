@@ -18,8 +18,8 @@ trait Captor[T] {
   def values: List[T]
 
   def hasCaptured(expectations: T*)(implicit $eq: Equality[T]): Unit =
-    expectations.zip(values).foreach {
-      case (e, v) => if (e !== v) throw new ArgumentsAreDifferent(s"Got [$v] instead of [$e]")
+    expectations.zip(values).foreach { case (e, v) =>
+      if (e !== v) throw new ArgumentsAreDifferent(s"Got [$v] instead of [$e]")
     }
 }
 

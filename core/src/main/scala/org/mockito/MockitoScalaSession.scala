@@ -36,8 +36,11 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
         mockitoSession.finishMocking(e)
         listener.reportIssues().foreach {
           case unStubbedCalls: UnexpectedInvocations if unStubbedCalls.nonEmpty =>
-            throw new UnexpectedInvocationException(s"""A NullPointerException was thrown, check if maybe related to
-                   |$unStubbedCalls""".stripMargin, e)
+            throw new UnexpectedInvocationException(
+              s"""A NullPointerException was thrown, check if maybe related to
+                   |$unStubbedCalls""".stripMargin,
+              e
+            )
           case _ => throw e
         }
       case other =>
@@ -72,8 +75,8 @@ object MockitoScalaSession {
     override def toString: String =
       if (nonEmpty) {
         val locations = invocations.zipWithIndex
-          .map {
-            case (invocation, idx) => s"${idx + 1}. $invocation ${invocation.getLocation}"
+          .map { case (invocation, idx) =>
+            s"${idx + 1}. $invocation ${invocation.getLocation}"
           }
           .mkString("\n")
         s"""Unexpected invocations found
@@ -92,8 +95,8 @@ object MockitoScalaSession {
     override def toString: String =
       if (nonEmpty) {
         val locations = stubbings.zipWithIndex
-          .map {
-            case (stubbing, idx) => s"${idx + 1}. $stubbing ${stubbing.getLocation}"
+          .map { case (stubbing, idx) =>
+            s"${idx + 1}. $stubbing ${stubbing.getLocation}"
           }
           .mkString("\n")
         s"""Unnecessary stubbings detected.
@@ -113,8 +116,8 @@ object MockitoScalaSession {
     lazy val stubbings: Set[StubbedInvocationMatcher] =
       mockDetails
         .flatMap(_.getStubbings.asScala)
-        .collect {
-          case s: StubbedInvocationMatcher => s
+        .collect { case s: StubbedInvocationMatcher =>
+          s
         }
 
     lazy val invocations: Set[Invocation] = mockDetails.flatMap(_.getInvocations.asScala)
@@ -140,11 +143,10 @@ object MockitoScalaSession {
       stubbings
         .filterNot(_.wasUsed())
         .flatMap(s => lenientStubbings.find(_.getMethod === s.getMethod).map(s -> _))
-        .foreach {
-          case (stubbing, lenient) =>
-            stubbing.markStubUsed(new DescribedInvocation {
-              override def getLocation: Location = lenient.getLocation
-            })
+        .foreach { case (stubbing, lenient) =>
+          stubbing.markStubUsed(new DescribedInvocation {
+            override def getLocation: Location = lenient.getLocation
+          })
         }
     }
 

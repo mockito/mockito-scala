@@ -14,9 +14,9 @@ lazy val commonSettings =
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
     version := {
       val pattern = """^version=(.+)$""".r
-      val source = Source.fromFile("version.properties")
-      val version = Try(source.getLines.collectFirst {
-        case pattern(v) => v
+      val source  = Source.fromFile("version.properties")
+      val version = Try(source.getLines.collectFirst { case pattern(v) =>
+        v
       }.get)
       source.close
       version.get
@@ -27,9 +27,10 @@ lazy val commonSettings =
       "-unchecked",
       "-feature",
       "-deprecation:false",
-      "-encoding", "UTF-8",
+      "-encoding",
+      "UTF-8",
       "-Xfatal-warnings",
-      "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds",
+      "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds"
 //      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-expect,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-wrapper,mockito-print-lenient"
     ),
     scalacOptions ++= {
@@ -65,15 +66,15 @@ lazy val publishSettings = Seq(
 )
 
 lazy val scalatest = (project in file("scalatest"))
-    .dependsOn(core)
-    .dependsOn(common % "compile-internal, test-internal")
-    .dependsOn(macroSub % "compile-internal, test-internal")
-    .settings(
-      name := "mockito-scala-scalatest",
-      commonSettings,
-      publishSettings,
-      libraryDependencies += Dependencies.scalatest % "provided",
-    )
+  .dependsOn(core)
+  .dependsOn(common % "compile-internal, test-internal")
+  .dependsOn(macroSub % "compile-internal, test-internal")
+  .settings(
+    name := "mockito-scala-scalatest",
+    commonSettings,
+    publishSettings,
+    libraryDependencies += Dependencies.scalatest % "provided"
+  )
 
 lazy val specs2 = (project in file("specs2"))
   .dependsOn(core)
@@ -96,10 +97,10 @@ lazy val cats = (project in file("cats"))
     publishSettings,
     libraryDependencies ++= Seq(
       Dependencies.cats,
-      Dependencies.catsLaws % "test",
+      Dependencies.catsLaws            % "test",
       Dependencies.disciplineScalatest % "test",
-      Dependencies.scalatest % "test"
-    ),
+      Dependencies.scalatest           % "test"
+    )
   )
 
 lazy val scalaz = (project in file("scalaz"))
@@ -113,7 +114,7 @@ lazy val scalaz = (project in file("scalaz"))
     libraryDependencies ++= Seq(
       Dependencies.scalaz,
       Dependencies.scalatest % "test"
-    ),
+    )
   )
 
 lazy val common = (project in file("common"))
@@ -122,7 +123,7 @@ lazy val common = (project in file("common"))
     commonSettings,
     libraryDependencies ++= Dependencies.commonLibraries ++ Seq(
       Dependencies.scalaReflection(scalaVersion.value),
-      Dependencies.catsLaws % "test",
+      Dependencies.catsLaws   % "test",
       Dependencies.scalacheck % "test"
     ),
     publish := {},

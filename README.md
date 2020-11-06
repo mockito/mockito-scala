@@ -758,7 +758,6 @@ To enable `withObjectMocked` feature, it is mandatory to create the file `src/te
  mock-maker-inline
 ```
 
-
 Example:
 
 ```scala

@@ -1,15 +1,14 @@
 package user.org.mockito
 
-import java.lang.reflect.{ Field, Modifier }
 import java.util.concurrent.atomic.AtomicInteger
 
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ clazz, ArgumentMatchersSugar, IdiomaticStubbing }
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticStubbing }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 
-import scala.reflect.ClassTag
+import scala.collection.parallel.immutable
 
 class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
@@ -312,6 +311,15 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       }
 
       FooObject.simpleMethod shouldBe "not mocked!"
+    }
+
+    "object stubbing should be thread safe" in {
+      immutable.ParSeq.range(1, 100).foreach { i =>
+        withObjectMocked[FooObject.type] {
+          FooObject.simpleMethod returns s"mocked!-$i"
+          FooObject.simpleMethod shouldBe s"mocked!-$i"
+        }
+      }
     }
   }
 }

@@ -621,11 +621,14 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * Mocks the specified object only for the context of the block
    */
   def withObjectMocked[O <: AnyRef: ClassTag](block: => Any): Unit = {
-    val moduleField = clazz[O].getDeclaredField("MODULE$")
-    val realImpl    = moduleField.get(null)
-    ReflectionUtils.setFinalStatic(moduleField, mock[O])
-    try block
-    finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
+    val objectClass = clazz[O]
+    objectClass.synchronized {
+      val moduleField = objectClass.getDeclaredField("MODULE$")
+      val realImpl    = moduleField.get(null)
+      ReflectionUtils.setFinalStatic(moduleField, mock[O])
+      try block
+      finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
+    }
   }
 }
 

@@ -123,7 +123,7 @@ object ReflectionUtils {
         .getOrElse(Seq.empty)
     }
 
-  def setFinalStatic(field: Field, newValue: Any) = {
+  def setFinalStatic(field: Field, newValue: Any): Unit = {
     field.setAccessible(true)
     val modifiersField = classOf[Field].getDeclaredField("modifiers")
     modifiersField.setAccessible(true)

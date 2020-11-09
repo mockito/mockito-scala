@@ -16,7 +16,7 @@ import org.mockito.ReflectionUtils.InvocationOnMockOps
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions
-import org.mockito.internal.handler.ScalaMockHandler
+import org.mockito.internal.handler.{ ScalaMockHandler, ThreadAwareMockHandler }
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.stubbing.answers.ScalaThrowsException
 import org.mockito.internal.util.MockUtil
@@ -511,8 +511,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 
   private def createMock[T <: AnyRef: ClassTag: WeakTypeTag](
       mockSettings: MockSettings,
-      mockHandler: MockCreationSettings[T] => MockHandler[T] = (settings: MockCreationSettings[T]) => ScalaMockHandler(settings)
-  ): T = {
+      mockHandler: (MockCreationSettings[T], Prettifier) => MockHandler[T] = (settings: MockCreationSettings[T], pt: Prettifier) => ScalaMockHandler(settings)(pt)
+  )(implicit $pt: Prettifier): T = {
     val interfaces = ReflectionUtils.extraInterfaces
 
     val realClass: Class[T] = mockSettings match {
@@ -527,7 +527,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       else mockSettings
 
     def createMock(settings: MockCreationSettings[T]): T = {
-      val mock          = getMockMaker.createMock(settings, mockHandler(settings))
+      val mock          = getMockMaker.createMock(settings, mockHandler(settings, $pt))
       val spiedInstance = settings.getSpiedInstance
       if (spiedInstance != null) new LenientCopyTool().copyToMock(spiedInstance, mock)
       mock
@@ -627,7 +627,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Mocks the specified object only for the context of the block
    */
-  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer): Unit = {
+  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit = {
     val objectClass = clazz[O]
     objectClass.synchronized {
       val moduleField = objectClass.getDeclaredField("MODULE$")
@@ -635,19 +635,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 
       val threadAwareMock = createMock(
         withSettings(defaultAnswer),
-        (settings: MockCreationSettings[O]) =>
-          new MockHandler[O] {
-            private val currentThread = Thread.currentThread()
-            private val delegate      = ScalaMockHandler(settings)
-
-            override def handle(invocation: Invocation): AnyRef =
-              if (Thread.currentThread() == currentThread) delegate.handle(invocation)
-              else invocation.callRealMethod()
-
-            override def getMockSettings: MockCreationSettings[O] = delegate.getMockSettings
-
-            override def getInvocationContainer: InvocationContainer = delegate.getInvocationContainer
-          }
+        (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings)(pt)
       )
 
       ReflectionUtils.setFinalStatic(moduleField, threadAwareMock)

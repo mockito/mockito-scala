@@ -620,12 +620,19 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Mocks the specified object only for the context of the block
    */
-  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any): Unit = {
+  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer): Unit = {
     val objectClass = clazz[O]
     objectClass.synchronized {
-      val moduleField = objectClass.getDeclaredField("MODULE$")
-      val realImpl    = moduleField.get(null)
-      ReflectionUtils.setFinalStatic(moduleField, mock[O])
+      val moduleField  = objectClass.getDeclaredField("MODULE$")
+      val realImpl     = moduleField.get(null)
+      val callRealImpl = AdditionalAnswers.delegatesTo(realImpl)
+
+      val currentThread = Thread.currentThread()
+      val threadAwareMock = mock[O](DefaultAnswer { (i: InvocationOnMock) =>
+        if (Thread.currentThread() == currentThread) defaultAnswer.answer(i) else callRealImpl.answer(i)
+      })
+
+      ReflectionUtils.setFinalStatic(moduleField, threadAwareMock)
       try block
       finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
     }

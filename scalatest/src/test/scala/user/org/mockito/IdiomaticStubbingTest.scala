@@ -9,6 +9,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 
 import scala.collection.parallel.immutable
+import scala.concurrent.{ Await, Future }
 
 class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
@@ -319,6 +320,17 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
           FooObject.simpleMethod returns s"mocked!-$i"
           FooObject.simpleMethod shouldBe s"mocked!-$i"
         }
+      }
+    }
+
+    "object stubbing should be thread safe 2" in {
+      immutable.ParSeq.range(1, 100).foreach { i =>
+        if (i % 2 != 0)
+          withObjectMocked[FooObject.type] {
+            FooObject.simpleMethod returns s"mocked!-$i"
+            FooObject.simpleMethod shouldBe s"mocked!-$i"
+          }
+        else FooObject.simpleMethod shouldBe "not mocked!"
       }
     }
   }

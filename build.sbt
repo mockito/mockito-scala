@@ -43,7 +43,15 @@ lazy val commonSettings =
           Nil
       }
     },
-    Test / scalacOptions += "-Ywarn-value-discard"
+    Test / scalacOptions += "-Ywarn-value-discard",
+    libraryDependencies ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, major)) if major <= 12 =>
+          Seq()
+        case _ =>
+          Seq("org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.0-RC1")
+      }
+    }
   )
 
 lazy val publishSettings = Seq(

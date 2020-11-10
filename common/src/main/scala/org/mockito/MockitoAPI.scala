@@ -16,13 +16,13 @@ import org.mockito.ReflectionUtils.InvocationOnMockOps
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions
-import org.mockito.internal.handler.ScalaMockHandler
+import org.mockito.internal.handler.{ ScalaMockHandler, ThreadAwareMockHandler }
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.internal.stubbing.answers.ScalaThrowsException
 import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.internal.{ ValueClassExtractor, ValueClassWrapper }
-import org.mockito.invocation.InvocationOnMock
+import org.mockito.invocation.{ Invocation, InvocationContainer, InvocationOnMock, MockHandler }
 import org.mockito.mock.MockCreationSettings
 import org.mockito.stubbing._
 import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
@@ -472,7 +472,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T = mock(withSettings)
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
+    createMock(withSettings)
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
@@ -489,7 +490,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * as the value for the second parameter would have been null...
    */
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T =
-    mock(withSettings(defaultAnswer))
+    createMock(withSettings(defaultAnswer))
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code>
@@ -505,7 +506,13 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
    * as the value for the second parameter would have been null...
    */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T = {
+  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T =
+    createMock(mockSettings)
+
+  private def createMock[T <: AnyRef: ClassTag: WeakTypeTag](
+      mockSettings: MockSettings,
+      mockHandler: (MockCreationSettings[T], Prettifier) => MockHandler[T] = (settings: MockCreationSettings[T], pt: Prettifier) => ScalaMockHandler(settings)(pt)
+  )(implicit $pt: Prettifier): T = {
     val interfaces = ReflectionUtils.extraInterfaces
 
     val realClass: Class[T] = mockSettings match {
@@ -520,7 +527,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       else mockSettings
 
     def createMock(settings: MockCreationSettings[T]): T = {
-      val mock          = getMockMaker.createMock(settings, ScalaMockHandler(settings))
+      val mock          = getMockMaker.createMock(settings, mockHandler(settings, $pt))
       val spiedInstance = settings.getSpiedInstance
       if (spiedInstance != null) new LenientCopyTool().copyToMock(spiedInstance, mock)
       mock
@@ -620,12 +627,21 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Mocks the specified object only for the context of the block
    */
-  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any): Unit = {
-    val moduleField = clazz[O].getDeclaredField("MODULE$")
-    val realImpl    = moduleField.get(null)
-    ReflectionUtils.setFinalStatic(moduleField, mock[O])
-    try block
-    finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
+  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit = {
+    val objectClass = clazz[O]
+    objectClass.synchronized {
+      val moduleField = objectClass.getDeclaredField("MODULE$")
+      val realImpl: O = moduleField.get(null).asInstanceOf[O]
+
+      val threadAwareMock = createMock(
+        withSettings(defaultAnswer),
+        (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings, realImpl)(pt)
+      )
+
+      ReflectionUtils.setFinalStatic(moduleField, threadAwareMock)
+      try block
+      finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
+    }
   }
 }
 

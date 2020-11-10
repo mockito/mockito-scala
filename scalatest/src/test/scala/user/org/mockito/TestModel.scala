@@ -2,6 +2,7 @@ package user.org.mockito
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 
 import scala.annotation.varargs
+import scala.util.Random
 
 trait FooTrait {
   def bar = "not mocked"
@@ -128,5 +129,9 @@ class TestController(org: Org) {
 }
 
 object FooObject {
+  val now: Long = Random.nextLong()
+
   def simpleMethod: String = "not mocked!"
+
+  def stateDependantMethod: Long = now
 }

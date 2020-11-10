@@ -631,11 +631,11 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
     val objectClass = clazz[O]
     objectClass.synchronized {
       val moduleField = objectClass.getDeclaredField("MODULE$")
-      val realImpl    = moduleField.get(null)
+      val realImpl: O = moduleField.get(null).asInstanceOf[O]
 
       val threadAwareMock = createMock(
         withSettings(defaultAnswer),
-        (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings)(pt)
+        (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings, realImpl)(pt)
       )
 
       ReflectionUtils.setFinalStatic(moduleField, threadAwareMock)

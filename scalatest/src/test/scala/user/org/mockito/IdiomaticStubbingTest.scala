@@ -10,6 +10,7 @@ import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, Valu
 
 import scala.collection.parallel.immutable
 import scala.concurrent.{ Await, Future }
+import scala.util.Random
 
 class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
@@ -324,13 +325,14 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
     }
 
     "object stubbing should be thread safe 2" in {
+      val now = FooObject.stateDependantMethod
       immutable.ParSeq.range(1, 100).foreach { i =>
-        if (i % 2 != 0)
+        if (i % 2 == 0)
           withObjectMocked[FooObject.type] {
-            FooObject.simpleMethod returns s"mocked!-$i"
-            FooObject.simpleMethod shouldBe s"mocked!-$i"
+            FooObject.stateDependantMethod returns i
+            FooObject.stateDependantMethod shouldBe i
           }
-        else FooObject.simpleMethod shouldBe "not mocked!"
+        else FooObject.stateDependantMethod shouldBe now
       }
     }
   }

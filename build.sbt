@@ -21,7 +21,7 @@ lazy val commonSettings =
       source.close
       version.get
     },
-    crossScalaVersions := Seq(currentScalaVersion, "2.12.12", "2.11.12"),
+    crossScalaVersions := Seq(currentScalaVersion, "2.12.12", "2.13.4"),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
       "-unchecked",

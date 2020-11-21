@@ -1,42 +1,50 @@
-shipkit {
-    gitHub.repository = "mockito/mockito-scala"
-    gitHub.readOnlyAuthToken = "a0a4c0f41c200f7c653323014d6a72a127764e17"
-    gitHub.writeAuthToken = System.getenv("GH_WRITE_TOKEN")
+apply plugin: "org.shipkit.shipkit-auto-version"
+apply plugin: "org.shipkit.shipkit-changelog"
+apply plugin: "org.shipkit.shipkit-gh-release"
+
+tasks.named("generateChangelog") {
+    previousRevision = "v" + project.ext.'shipkit-auto-version.previous-version'
+    readOnlyToken = "a0a4c0f41c200f7c653323014d6a72a127764e17"
+    repository = "mockito/mockito-scala"
 }
 
-//all contents of this directory will be uploaded to Bintray
-ext.releaseSpec = fileTree("target/dist")
+tasks.named("githubRelease") {
+    def genTask = tasks.named("generateChangelog").get()
+    dependsOn genTask
+    repository = genTask.repository
+    changelog = genTask.outputFile
+    writeToken = System.getenv("GH_WRITE_TOKEN")
+}
 
-allprojects {
-    plugins.withId("org.shipkit.bintray") {
+apply plugin: 'com.jfrog.bintray'
 
-        //Bintray configuration is handled by JFrog Bintray Gradle Plugin
-        //For reference see the official documentation: https://github.com/bintray/gradle-bintray-plugin
-        bintray {
+//Bintray configuration is handled by JFrog Bintray Gradle Plugin
+//For reference see the official documentation: https://github.com/bintray/gradle-bintray-plugin
+bintray {
 
-            key = System.getenv("BINTRAY_API_KEY")
+    key = System.getenv("BINTRAY_API_KEY")
 
-            pkg {
-                repo = 'maven'
-                user = 'szczepiq'
-                name = 'mockito-scala'
-                userOrg = 'mockito'
-                licenses = ['MIT']
-                labels = ['mocks', 'tdd', 'unit tests']
-                publish = true //can be changed to 'false' for testing
+    pkg {
+        repo = 'maven'
+        user = 'szczepiq'
+        name = 'mockito-scala'
+        userOrg = 'mockito'
+        licenses = ['MIT']
+        labels = ['mocks', 'tdd', 'unit tests']
+        publish = true // can be changed to 'false' for testing
+        dryRun = project.hasProperty("bintrayDryRun")
 
-                filesSpec {
-                    from releaseSpec
-                    into '.'
-                }
+        filesSpec {
+            // all contents of this directory will be uploaded to Bintray
+            from fileTree("target/dist")
+            into '.'
+        }
 
-                version {
-                    mavenCentralSync {
-                        sync = true
-                        user = System.env.NEXUS_TOKEN_USER
-                        password = System.env.NEXUS_TOKEN_PWD
-                    }
-                }
+        version {
+            mavenCentralSync {
+                sync = false // TODO: true
+                user = System.env.NEXUS_TOKEN_USER
+                password = System.env.NEXUS_TOKEN_PWD
             }
         }
     }

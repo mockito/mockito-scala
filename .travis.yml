@@ -16,6 +16,12 @@ branches:
   except:
   - /^v\d/
 
-#Build and perform release (if needed)
+
 script:
-  - ./gradlew build -s && ./gradlew ciPerformRelease
+  # To validate changes, we run building and bintray upload in dry run. This happens on every build, even PRs.
+  # To publish, we perform github release and perform bintray upload (no dry run). This only for main branch builds.
+  - >
+    ./gradlew resolveVersion
+    && ./gradlew build bintrayUpload -PbintrayDryRun
+    && if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" = "release/1.x" ];
+      then ./gradlew bintrayUpload githubRelease; fi

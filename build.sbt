@@ -19,7 +19,7 @@ lazy val commonSettings =
         v
       }.get)
       source.close
-      version.get
+      version.get.replace(".*", "-SNAPSHOT")
     },
     crossScalaVersions := Seq(currentScalaVersion, "2.12.12", "2.11.12"),
     scalafmtOnCompile := true,

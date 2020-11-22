@@ -5,18 +5,25 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.shipkit:shipkit:2.0.26"
+        //Using buildscript.classpath so that we can resolve plugins from maven local, during local testing
+        classpath "org.shipkit:shipkit-auto-version:0.+"
+        classpath "org.shipkit:shipkit-changelog:0.+"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+"
     }
 }
 
-apply plugin: "org.shipkit.single-project"
+apply from: "gradle/shipkit.gradle"
+
+task resolveVersion {
+    description = "Resolves version in the 'version.properties' file for the SBT build."
+    doLast {
+        file("version.properties").text = "version=$version"
+    }
+}
 
 task build(type: Exec) {
     commandLine "./build.sh"
 }
-
-//Performing hard to reverse release operation (git push) as late as possible
-gitPush.mustRunAfter build
 
 task clean(type: Exec) {
     commandLine "./clean.sh"

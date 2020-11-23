@@ -13,13 +13,18 @@ lazy val commonSettings =
     organization := "org.mockito",
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
     version := {
-      val pattern = """^version=(.+)$""".r
-      val source  = Source.fromFile("version.properties")
-      val version = Try(source.getLines.collectFirst { case pattern(v) =>
-        v
-      }.get)
-      source.close
-      version.get.replace(".*", "-SNAPSHOT")
+      val versionFromEnv = System.getenv("PROJECT_VERSION")
+      if (versionFromEnv != null && !versionFromEnv.trim().isEmpty()) {
+        versionFromEnv
+      } else {
+        val pattern = """^version=(.+)$""".r
+        val source  = Source.fromFile("version.properties")
+        val version = Try(source.getLines.collectFirst { case pattern(v) =>
+          v
+        }.get)
+        source.close
+        version.get.replace(".*", "-SNAPSHOT")
+      }
     },
     crossScalaVersions := Seq(currentScalaVersion, "2.12.12", "2.11.12"),
     scalafmtOnCompile := true,

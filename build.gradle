@@ -14,17 +14,12 @@ buildscript {
 
 apply from: "gradle/shipkit.gradle"
 
-task resolveVersion {
-    description = "Resolves version in the 'version.properties' file for the SBT build."
-    doLast {
-        file("version.properties").text = "version=$version"
-    }
-}
-
 task build(type: Exec) {
     commandLine "./build.sh"
+    environment "PROJECT_VERSION", version
 }
 
 task clean(type: Exec) {
     commandLine "./clean.sh"
+    environment "PROJECT_VERSION", version
 }

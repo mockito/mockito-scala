@@ -1,6 +1,8 @@
 package user.org.mockito.captor
 
-import org.mockito.captor.{ ArgCaptor, ValCaptor }
+import org.mockito.captor.ArgCaptor
+import org.mockito.exceptions.base.MockitoAssertionError
+import org.mockito.exceptions.verification.{ TooFewActualInvocations, TooManyActualInvocations }
 import org.mockito.{ IdiomaticMockito, MockitoSugar }
 import org.scalactic.{ Equality, StringNormalizations }
 import user.org.mockito.captor.ArgCaptorTest._
@@ -98,6 +100,81 @@ class ArgCaptorTest extends AnyWordSpec with MockitoSugar with Matchers {
 
       captor.values.should(contain).only("it worked!", "it worked again!")
       captor.hasCaptured("it worked!", "it worked again!")
+    }
+
+    "report failure" when {
+
+      "fewer values were captured than expected" in {
+        val aMock  = mock[Foo]
+        val captor = ArgCaptor[String]
+
+        aMock.stringArgument("it worked!")
+        aMock.stringArgument("it worked again!")
+
+        verify(aMock, times(2)).stringArgument(captor)
+
+        captor.values.should(contain).only("it worked!", "it worked again!")
+
+        the[TooManyActualInvocations] thrownBy {
+          captor.hasCaptured("it worked!")
+        } should have message "Also got 1 more: [it worked again!]"
+      }
+
+      "more values were captured than expected" in {
+        val aMock  = mock[Foo]
+        val captor = ArgCaptor[String]
+
+        aMock.stringArgument("it worked!")
+
+        verify(aMock, times(1)).stringArgument(captor)
+
+        captor.values.should(contain).only("it worked!")
+
+        the[TooFewActualInvocations] thrownBy {
+          captor.hasCaptured("it worked!", "it worked again!")
+        } should have message "Also expected 1 more: [it worked again!]"
+      }
+
+      "fewer values were captured than expected while wrong values were captured" in {
+        val aMock  = mock[Foo]
+        val captor = ArgCaptor[String]
+
+        aMock.stringArgument("it worked again!")
+
+        verify(aMock, times(1)).stringArgument(captor)
+
+        captor.values.should(contain).only("it worked again!")
+
+        val error = the[MockitoAssertionError] thrownBy {
+          captor.hasCaptured("it worked!", "it worked again!")
+        }
+
+        error.getMessage should (
+          include("Got [it worked again!] instead of [it worked!]") and
+          include("Also expected 1 more: [it worked again!]")
+        )
+      }
+
+      "more values were captured than expected while wrong values were captured" in {
+        val aMock  = mock[Foo]
+        val captor = ArgCaptor[String]
+
+        aMock.stringArgument("it worked!")
+        aMock.stringArgument("it worked again!")
+
+        verify(aMock, times(2)).stringArgument(captor)
+
+        captor.values.should(contain).only("it worked!", "it worked again!")
+
+        val error = the[MockitoAssertionError] thrownBy {
+          captor.hasCaptured("it worked again!")
+        }
+
+        error.getMessage should (
+          include("Got [it worked!] instead of [it worked again!]") and
+          include("Also got 1 more: [it worked again!]")
+        )
+      }
     }
 
     "work with value case classes" in {

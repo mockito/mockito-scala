@@ -1,5 +1,3 @@
-import sbt.Keys._
-
 import scala.io.Source
 import scala.language.postfixOps
 import scala.util.Try
@@ -78,6 +76,17 @@ lazy val publishSettings = Seq(
   )
 )
 
+lazy val noPublishingSettings = Seq(
+  publish := {},
+  publishLocal := {},
+  publishArtifact := false,
+)
+
+lazy val noCrossBuildSettings = Seq(
+  crossScalaVersions := Nil,
+  publish / skip := true
+)
+
 lazy val scalatest = (project in file("scalatest"))
   .dependsOn(core)
   .dependsOn(common % "compile-internal, test-internal")
@@ -134,14 +143,12 @@ lazy val common = (project in file("common"))
   .dependsOn(macroCommon)
   .settings(
     commonSettings,
+    noPublishingSettings,
     libraryDependencies ++= Dependencies.commonLibraries ++ Seq(
       Dependencies.scalaReflection(scalaVersion.value),
       Dependencies.catsLaws   % "test",
       Dependencies.scalacheck % "test"
-    ),
-    publish := {},
-    publishLocal := {},
-    publishArtifact := false
+    )
   )
 
 lazy val core = (project in file("core"))
@@ -185,6 +192,7 @@ lazy val macroSub = (project in file("macro"))
   .dependsOn(common)
   .settings(
     commonSettings,
+    noPublishingSettings,
     libraryDependencies ++= Dependencies.commonLibraries,
     libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
     publish := {},
@@ -195,6 +203,7 @@ lazy val macroSub = (project in file("macro"))
 lazy val macroCommon = (project in file("macro-common"))
   .settings(
     commonSettings,
+    noPublishingSettings,
     libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
     publish := {},
     publishLocal := {},
@@ -202,7 +211,5 @@ lazy val macroCommon = (project in file("macro-common"))
   )
 
 lazy val root = (project in file("."))
-  .settings(
-    publish := {},
-    publishLocal := {}
-  ) aggregate (common, core, scalatest, specs2, cats, scalaz)
+  .settings(noPublishingSettings, noCrossBuildSettings)
+  .aggregate (common, core, scalatest, specs2, cats, scalaz)

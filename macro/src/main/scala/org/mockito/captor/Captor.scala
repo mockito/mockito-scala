@@ -1,14 +1,16 @@
 package org.mockito.captor
 
 import org.mockito.internal.MacroDebug.debugResult
-import org.mockito.exceptions.verification.ArgumentsAreDifferent
+import org.mockito.exceptions.verification.{ ArgumentsAreDifferent, TooFewActualInvocations, TooManyActualInvocations }
 import org.mockito.{ clazz, ArgumentCaptor }
 import org.scalactic.Equality
 import org.scalactic.TripleEquals._
-
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
+import scala.util.{ Failure, Try }
+
+import org.mockito.exceptions.base.MockitoAssertionError
 
 trait Captor[T] {
   def capture: T
@@ -17,10 +19,28 @@ trait Captor[T] {
 
   def values: List[T]
 
-  def hasCaptured(expectations: T*)(implicit $eq: Equality[T]): Unit =
-    expectations.zip(values).foreach { case (e, v) =>
-      if (e !== v) throw new ArgumentsAreDifferent(s"Got [$v] instead of [$e]")
+  def hasCaptured(expectations: T*)(implicit $eq: Equality[T]): Unit = {
+    val elementResult = Try {
+      expectations.zip(values).foreach { case (e, v) =>
+        if (e !== v) throw new ArgumentsAreDifferent(s"Got [$v] instead of [$e]")
+      }
     }
+
+    val sizeResult = Try {
+      (expectations.size, values.size) match {
+        case (es, vs) if es - vs > 0 => throw new TooFewActualInvocations(s"Also expected ${es - vs} more: [${expectations.drop(vs).mkString(", ")}]")
+        case (es, vs) if es - vs < 0 => throw new TooManyActualInvocations(s"Also got ${vs - es} more: [${values.drop(es).mkString(", ")}]")
+        case _                       => None
+      }
+    }
+
+    (elementResult, sizeResult) match {
+      case (Failure(ef), Failure(sf: MockitoAssertionError)) => throw new MockitoAssertionError(sf, ef.getMessage)
+      case (_, Failure(sf))                                  => throw sf
+      case (Failure(ef), _)                                  => throw ef
+      case _                                                 =>
+    }
+  }
 }
 
 class WrapperCaptor[T: ClassTag] extends Captor[T] {

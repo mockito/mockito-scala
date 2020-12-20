@@ -26,7 +26,7 @@ lazy val commonSettings =
         version.get.replace(".*", "-SNAPSHOT")
       }
     },
-    crossScalaVersions := Seq(currentScalaVersion, "2.12.12", "2.11.12"),
+    crossScalaVersions := Seq(currentScalaVersion, "2.12.12", "2.11.12", "3.0.0-M3"),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
       "-unchecked",
@@ -44,6 +44,8 @@ lazy val commonSettings =
           Seq("-Xsource:2.12", "-Ypartial-unification")
         case Some((2, 12)) =>
           Seq("-Ypartial-unification")
+        case Some((3, _)) =>
+          Seq("-source:3.0-migration", "-explain", "-explain-types")
         case _ =>
           Nil
       }

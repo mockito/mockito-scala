@@ -43,7 +43,7 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: 3. Build on Java ${{ matrix.java }}
-        run: ./gradlew build bintrayUpload --scan
+        run: ./gradlew build bintrayUpload --scan -PbintrayDryRun
 
   #
   # Release job, only for pushes to the main development branch

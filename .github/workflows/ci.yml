@@ -54,7 +54,7 @@ jobs:
 
     if: github.event_name == 'push'
       && github.ref == 'refs/heads/release/1.x'
-      && github.repository == 'mockito/mockito'
+      && github.repository == 'mockito/mockito-scala'
       && !contains(toJSON(github.event.commits.*.message), '[skip release]')
 
     steps:

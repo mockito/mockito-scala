@@ -42,7 +42,7 @@ bintray {
 
         version {
             mavenCentralSync {
-                sync = true
+                sync = false //TODO: set to true
                 user = System.env.NEXUS_TOKEN_USER
                 password = System.env.NEXUS_TOKEN_PWD
             }

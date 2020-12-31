@@ -70,7 +70,7 @@ jobs:
           java-version: 8
 
       - name: Build and publish to Bintray/MavenCentral
-        run: ./gradlew bintrayUpload githubRelease --scan
+        run: ./gradlew build bintrayUpload githubRelease --scan
         env:
           MAVEN_CENTRAL_RELEASE: ${{contains(toJSON(github.event.commits.*.message), '[ci maven-central-release]')}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

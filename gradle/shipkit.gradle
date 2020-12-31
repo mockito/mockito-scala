@@ -14,7 +14,7 @@ tasks.named("githubRelease") {
     repository = genTask.repository
     changelog = genTask.outputFile
     githubToken = System.getenv("GITHUB_TOKEN")
-    newTagRevision = System.getenv("GIT_SHA")
+    newTagRevision = System.getenv("GITHUB_SHA")
 }
 
 apply plugin: 'com.jfrog.bintray'

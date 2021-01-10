@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueClass }
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import user.org.mockito.SameThreadExecutionContext.Instance
 import scala.concurrent.Future
 
 class IdiomaticMockitoTest_212 extends AnyWordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with ScalaFutures {

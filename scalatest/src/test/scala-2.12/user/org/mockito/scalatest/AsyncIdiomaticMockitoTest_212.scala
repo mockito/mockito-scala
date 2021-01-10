@@ -12,7 +12,7 @@ class AsyncIdiomaticMockitoTest_212 extends AsyncWordSpec with Matchers with Asy
       val mockFunction = mock[() => Int]
       mockFunction() returns 42
 
-      Future(mockFunction.apply())
+      Future(mockFunction.apply())(user.org.mockito.SameThreadExecutionContext.Instance)
         .map { v =>
           v shouldBe 42
           mockFunction() was called

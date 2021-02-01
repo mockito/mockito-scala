@@ -77,7 +77,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
       .getOrElse(args)
 
     //For some border cases, we can't extract the varargs in the nice way, so we try the brute force one
-    if (args.length != transformed.length) transformed
+    if (methodsToProcess.isEmpty || args.length != transformed.length) transformed
     else unwrapVarargs(transformed)
   }
 }

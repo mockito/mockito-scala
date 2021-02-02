@@ -633,25 +633,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit = {
     val objectClass = clazz[O]
     objectClass.synchronized {
-      val moduleField: Field = Try(objectClass.getDeclaredField("MODULE$")) match {
-        case Success(module) => module
-        case Failure(e) =>
-          Try {
-            val getDeclaredFields0           = objectClass.getDeclaredMethod("getDeclaredFields0", classOf[Boolean])
-            val accessibleBeforeSet: Boolean = getDeclaredFields0.isAccessible
-            getDeclaredFields0.setAccessible(true)
-            val declaredFields: Array[Field] = getDeclaredFields0.invoke(classOf[Field], () => false).asInstanceOf[Array[Field]]
-            getDeclaredFields0.setAccessible(accessibleBeforeSet)
-            declaredFields.find("MODULE$" == _.getName).get
-          } match {
-            case Success(module) => module
-            case Failure(ex) =>
-              e.addSuppressed(ex)
-              throw e
-          }
-      }
-
-      val realImpl: O = moduleField.get(null).asInstanceOf[O]
+      val moduleField: Field = objectClass.getDeclaredField("MODULE$")
+      val realImpl: O        = moduleField.get(null).asInstanceOf[O]
 
       val threadAwareMock = createMock(
         withSettings(defaultAnswer),

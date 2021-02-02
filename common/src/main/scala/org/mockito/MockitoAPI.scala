@@ -640,8 +640,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
             val getDeclaredFields0           = objectClass.getDeclaredMethod("getDeclaredFields0", classOf[Boolean])
             val accessibleBeforeSet: Boolean = getDeclaredFields0.isAccessible
             getDeclaredFields0.setAccessible(true)
-            @SuppressWarnings("unchecked")
-            val declaredFields = getDeclaredFields0.invoke(classOf[Field], false).asInstanceOf[Array[Field]]
+            val declaredFields: Array[Field] = getDeclaredFields0.invoke(classOf[Field], () => false).asInstanceOf[Array[Field]]
             getDeclaredFields0.setAccessible(accessibleBeforeSet)
             declaredFields.find("MODULE$" == _.getName).get
           } match {

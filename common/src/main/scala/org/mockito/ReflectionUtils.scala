@@ -9,6 +9,7 @@ import ru.vyarus.java.generics.resolver.GenericsResolver
 
 import scala.reflect.ClassTag
 import scala.reflect.internal.Symbols
+import scala.util.{ Failure, Success, Try => uTry }
 import scala.util.control.NonFatal
 
 object ReflectionUtils {
@@ -124,10 +125,30 @@ object ReflectionUtils {
     }
 
   def setFinalStatic(field: Field, newValue: Any): Unit = {
+    val clazz = classOf[java.lang.Class[_]]
     field.setAccessible(true)
-    val modifiersField = classOf[Field].getDeclaredField("modifiers")
+    val modifiersField: Field = uTry(clazz.getDeclaredField("modifiers")) match {
+      case Success(modifiers) => modifiers
+      case Failure(e) =>
+        uTry {
+          val getDeclaredFields0           = clazz.getDeclaredMethod("getDeclaredFields0", classOf[Boolean])
+          val accessibleBeforeSet: Boolean = getDeclaredFields0.isAccessible
+          getDeclaredFields0.setAccessible(true)
+          val declaredFields: Array[Field] = getDeclaredFields0
+            .invoke(classOf[Field], java.lang.Boolean.FALSE)
+            .asInstanceOf[Array[Field]]
+          getDeclaredFields0.setAccessible(accessibleBeforeSet)
+          declaredFields.find("modifiers" == _.getName).get
+        } match {
+          case Success(modifiers) => modifiers
+          case Failure(ex) =>
+            e.addSuppressed(ex)
+            throw e
+        }
+    }
     modifiersField.setAccessible(true)
     modifiersField.setInt(field, field.getModifiers & ~Modifier.FINAL)
     field.set(null, newValue)
   }
+
 }

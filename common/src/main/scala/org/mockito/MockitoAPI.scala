@@ -32,8 +32,6 @@ import java.lang.reflect.Field
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
-import scala.util.{ Failure, Success, Try }
-import scala.util.control.Breaks.break
 
 private[mockito] trait ScalacticSerialisableHack {
   //Hack until Equality can be made serialisable

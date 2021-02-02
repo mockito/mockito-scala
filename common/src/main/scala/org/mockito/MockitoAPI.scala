@@ -633,8 +633,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit = {
     val objectClass = clazz[O]
     objectClass.synchronized {
-      val moduleField: Field = objectClass.getDeclaredField("MODULE$")
-      val realImpl: O        = moduleField.get(null).asInstanceOf[O]
+      val moduleField = objectClass.getDeclaredField("MODULE$")
+      val realImpl: O = moduleField.get(null).asInstanceOf[O]
 
       val threadAwareMock = createMock(
         withSettings(defaultAnswer),

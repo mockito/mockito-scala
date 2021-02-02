@@ -2,12 +2,12 @@ package user.org.mockito
 
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
-import user.org.mockito.matchers.{ ValueCaseClassInt, ValueClass }
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import user.org.mockito.SameThreadExecutionContext.Instance
+import user.org.mockito.matchers.{ ValueCaseClassInt, ValueClass }
+
+import scala.concurrent.Future
 
 class IdiomaticMockitoTest_213 extends AnyWordSpec with Matchers with IdiomaticMockito with ArgumentMatchersSugar with ScalaFutures {
   class Foo {

@@ -8,8 +8,6 @@
 
 The most popular mocking framework for Java, now in Scala!!!
 
-[![Build Status](https://travis-ci.org/mockito/mockito-scala.svg?branch=release/1.x)](https://travis-ci.org/mockito/mockito-scala)
-
 [![Download](https://api.bintray.com/packages/mockito/maven/mockito-scala/images/download.svg) ](https://bintray.com/mockito/maven/mockito-scala/_latestVersion)
 [![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala_2.12.svg)](https://search.maven.org/search?q=mockito-scala)
 

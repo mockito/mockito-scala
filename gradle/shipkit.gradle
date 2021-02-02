@@ -1,10 +1,10 @@
 apply plugin: "org.shipkit.shipkit-auto-version"
 apply plugin: "org.shipkit.shipkit-changelog"
-apply plugin: "org.shipkit.shipkit-gh-release"
+apply plugin: "org.shipkit.shipkit-github-release"
 
 tasks.named("generateChangelog") {
-    previousRevision = "v" + project.ext.'shipkit-auto-version.previous-version'
-    readOnlyToken = "a0a4c0f41c200f7c653323014d6a72a127764e17"
+    previousRevision = project.ext.'shipkit-auto-version.previous-tag'
+    githubToken = System.getenv("GITHUB_TOKEN")
     repository = "mockito/mockito-scala"
 }
 
@@ -13,7 +13,8 @@ tasks.named("githubRelease") {
     dependsOn genTask
     repository = genTask.repository
     changelog = genTask.outputFile
-    writeToken = System.getenv("GH_WRITE_TOKEN")
+    githubToken = System.getenv("GITHUB_TOKEN")
+    newTagRevision = System.getenv("GITHUB_SHA")
 }
 
 apply plugin: 'com.jfrog.bintray'
@@ -42,7 +43,7 @@ bintray {
 
         version {
             mavenCentralSync {
-                sync = false // TODO: true
+                //sync = true // enable after #351 is fixed. In the meantime, we will publish to Maven Central from Bintray UI
                 user = System.env.NEXUS_TOKEN_USER
                 password = System.env.NEXUS_TOKEN_PWD
             }

@@ -4,7 +4,7 @@ import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.prop.TableDrivenPropertyChecks
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import user.org.mockito.SameThreadExecutionContext.Instance
 import scala.concurrent.Future
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

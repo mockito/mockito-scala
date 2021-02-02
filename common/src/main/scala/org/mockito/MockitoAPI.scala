@@ -28,9 +28,12 @@ import org.mockito.stubbing._
 import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
 import org.scalactic.{ Equality, Prettifier }
 
+import java.lang.reflect.Field
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
+import scala.util.{ Failure, Success, Try }
+import scala.util.control.Breaks.break
 
 private[mockito] trait ScalacticSerialisableHack {
   //Hack until Equality can be made serialisable
@@ -630,7 +633,25 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit = {
     val objectClass = clazz[O]
     objectClass.synchronized {
-      val moduleField = objectClass.getDeclaredField("MODULE$")
+      val moduleField: Field = Try(objectClass.getDeclaredField("MODULE$")) match {
+        case Success(module) => module
+        case Failure(e) =>
+          Try {
+            val getDeclaredFields0           = objectClass.getDeclaredMethod("getDeclaredFields0", classOf[Boolean])
+            val accessibleBeforeSet: Boolean = getDeclaredFields0.isAccessible
+            getDeclaredFields0.setAccessible(true)
+            @SuppressWarnings("unchecked")
+            val declaredFields = getDeclaredFields0.invoke(classOf[Field], false).asInstanceOf[Array[Field]]
+            getDeclaredFields0.setAccessible(accessibleBeforeSet)
+            declaredFields.find("MODULE$" == _.getName).get
+          } match {
+            case Success(module) => module
+            case Failure(ex) =>
+              e.addSuppressed(ex)
+              throw e
+          }
+      }
+
       val realImpl: O = moduleField.get(null).asInstanceOf[O]
 
       val threadAwareMock = createMock(

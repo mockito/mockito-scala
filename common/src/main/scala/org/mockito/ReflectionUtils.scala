@@ -1,6 +1,7 @@
 package org.mockito
 
 import java.lang.reflect.{ Field, Method, Modifier }
+
 import org.mockito.internal.ValueClassWrapper
 import org.mockito.invocation.InvocationOnMock
 import org.scalactic.TripleEquals._

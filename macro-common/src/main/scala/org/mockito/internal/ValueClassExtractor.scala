@@ -1,9 +1,9 @@
 package org.mockito.internal
 
 import org.mockito.internal.MacroDebug.debugResult
+import org.mockito.internal.ScalaVersion.{ V2_11, V2_12, V2_13 }
 
 import scala.reflect.macros.blackbox
-import scala.util.Properties
 
 trait ValueClassExtractor[VC] extends Serializable {
   def isValueClass: Boolean = true
@@ -30,8 +30,6 @@ class ReflectionExtractor[VC] extends ValueClassExtractor[VC] {
 object ValueClassExtractor {
   def apply[T: ValueClassExtractor]: ValueClassExtractor[T] = implicitly[ValueClassExtractor[T]]
 
-  private val ScalaVersion = Properties.scalaPropOrElse("version.number", "unknown")
-
   implicit def instance[VC]: ValueClassExtractor[VC] = macro materialise[VC]
 
   def materialise[VC: c.WeakTypeTag](c: blackbox.Context): c.Expr[ValueClassExtractor[VC]] = {
@@ -41,24 +39,25 @@ object ValueClassExtractor {
     val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
 
     val r =
-      if (isValueClass)
-        if (ScalaVersion.startsWith("2.12") || ScalaVersion.startsWith("2.13"))
-          c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
-        else if (ScalaVersion.startsWith("2.11"))
-          c.Expr[ValueClassExtractor[VC]] {
-            val companion = typeSymbol.companion
+      if (isValueClass) {
+        ScalaVersion.Current match {
+          case V2_12 | V2_13 =>
+            c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
+          case V2_11 =>
+            c.Expr[ValueClassExtractor[VC]] {
+              val companion = typeSymbol.companion
 
-            if (companion.info.decls.exists(_.name.toString == "unapply"))
-              q"""
-            new _root_.org.mockito.internal.ValueClassExtractor[$tpe] {
-              override def extract(vc: $tpe): Any = $companion.unapply(vc).get
+              if (companion.info.decls.exists(_.name.toString == "unapply"))
+                q"""
+                  new _root_.org.mockito.internal.ValueClassExtractor[$tpe] {
+                    override def extract(vc: $tpe): Any = $companion.unapply(vc).get
+                  }
+                 """
+              else
+                q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]"
             }
-           """
-            else
-              q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]"
-          }
-        else throw new Exception(s"Unsupported scala version $ScalaVersion")
-      else
+        }
+      } else
         c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")
 
     debugResult(c)("mockito-print-extractor")(r.tree)

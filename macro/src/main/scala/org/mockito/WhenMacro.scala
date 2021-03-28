@@ -22,27 +22,28 @@ object WhenMacro {
     if (pf.isDefinedAt(invocation))
       pf(invocation)
     else if (pf.isDefinedAt(invocation.children.last)) {
-      val values = invocation.children
-        .dropRight(1)
-        .collect { case q"$_ val $name:$_ = $value" =>
-          name.toString -> value.asInstanceOf[c.Tree]
-        }
-        .toMap
+      val vals = invocation.children.dropRight(1)
+      val valsByName = vals.collect { case line @ q"$_ val $name:$_ = $value" =>
+        name.toString -> (value.asInstanceOf[c.Tree], line)
+      }.toMap
 
-      val nonMatchers = invocation.children.dropRight(1).collect {
-        case t @ q"$_ val $_:$_ = $value" if !isMatcher(c)(value) => t
-      }
-
-      invocation.children.last match {
+      val inlinedArgsCall = invocation.children.last match {
         case q"$obj.$method[..$targs](...$args)" =>
           val newArgs = args.map { a =>
             transformArgs(c)(a).map {
-              case p if show(p).startsWith("x$") => transformArg(c)(values(p.toString))
+              case p if show(p).startsWith("x$") => transformArg(c)(valsByName(p.toString)._1)
               case other                         => other
             }
           }
-          q"..$nonMatchers; $obj.$method[..$targs](...$newArgs)"
+          q"$obj.$method[..$targs](...$newArgs)"
       }
+
+      val call = show(inlinedArgsCall)
+      val usedVals = valsByName.collect {
+        case (name, (_, line)) if call.contains(name) => line
+      }
+
+      q"..$usedVals; $inlinedArgsCall"
     } else throw new Exception(s"Couldn't recognize invocation ${show(invocation)}")
   }
 

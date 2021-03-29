@@ -12,7 +12,7 @@ lazy val commonSettings =
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
     version := {
       val versionFromEnv = System.getenv("PROJECT_VERSION")
-      if (versionFromEnv != null && !versionFromEnv.trim().isEmpty()) {
+      if (versionFromEnv != null && versionFromEnv.trim().nonEmpty) {
         versionFromEnv
       } else {
         val pattern = """^version=(.+)$""".r
@@ -33,17 +33,17 @@ lazy val commonSettings =
       "-encoding",
       "UTF-8",
       "-Xfatal-warnings",
+//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-expect,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-wrapper,mockito-print-lenient",
       "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds"
-//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-expect,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-wrapper,mockito-print-lenient"
     ),
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, 11)) =>
           Seq("-Xsource:2.12", "-Ypartial-unification")
         case Some((2, 12)) =>
-          Seq("-Ypartial-unification")
+          Seq("-Ypartial-unification", "-Ywarn-unused:locals")
         case _ =>
-          Nil
+          Seq("-Ywarn-unused:locals")
       }
     },
     Test / scalacOptions += "-Ywarn-value-discard",
@@ -79,7 +79,7 @@ lazy val publishSettings = Seq(
 lazy val noPublishingSettings = Seq(
   publish := {},
   publishLocal := {},
-  publishArtifact := false,
+  publishArtifact := false
 )
 
 lazy val noCrossBuildSettings = Seq(
@@ -212,4 +212,4 @@ lazy val macroCommon = (project in file("macro-common"))
 
 lazy val root = (project in file("."))
   .settings(noPublishingSettings, noCrossBuildSettings)
-  .aggregate (common, core, scalatest, specs2, cats, scalaz)
+  .aggregate(common, core, scalatest, specs2, cats, scalaz)

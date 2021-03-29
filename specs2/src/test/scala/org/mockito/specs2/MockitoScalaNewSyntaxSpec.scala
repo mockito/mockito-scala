@@ -356,8 +356,6 @@ The Mockito trait is reusable in other contexts
   }
 
   def verification27 = {
-    object list extends list
-
     val foo        = mock[FooComponent]
     val controller = spy(new TestController(foo))
 
@@ -723,8 +721,8 @@ The Mockito trait is reusable in other contexts
   }
 
   def mockitoMatchers2 = {
-    val m              = mock[M]
-    val shouldReturnOk = m.method(*, *) returns 1
+    val m = mock[M]
+    m.method(*, *) returns 1
 
     m.method(new B, b = true)
     got {

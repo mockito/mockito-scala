@@ -2,7 +2,7 @@ import scala.io.Source
 import scala.language.postfixOps
 import scala.util.Try
 
-val currentScalaVersion = "2.13.5"
+val currentScalaVersion = "2.13.6"
 
 ThisBuild / scalaVersion := currentScalaVersion
 

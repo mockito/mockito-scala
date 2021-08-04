@@ -362,7 +362,8 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
         }
       }
 
-      thrown.getMessage should startWith("Unnecessary stubbings detected")
+      println(thrown.getMessage)
+//      thrown.getMessage should startWith("Unnecessary stubbings detected")
     }
 
     "check incorrect stubs after the expected one was called on a final class" in {
@@ -387,6 +388,52 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
       }
 
       thrown.getMessage should include("You have a NullPointerException here:")
+    }
+
+    "verify object spies" when {
+
+      "successfully for uncalled lenient stubs" in {
+        MockitoScalaSession().run {
+          implicit val strict = LeniencySettings.lenientStubs
+
+          withObjectSpied[FooObject.type] {
+            FooObject.stateDependantMethod returns 1234L
+            FooObject.simpleMethod returns s"spied!"
+            FooObject.simpleMethod shouldBe s"spied!"
+          }
+        }
+      }
+
+      "unsuccessfully for uncalled strict stubs" in {
+        val thrown = the[UnnecessaryStubbingException] thrownBy {
+          MockitoScalaSession().run {
+            implicit val strict = LeniencySettings.strictStubs
+
+            withObjectSpied[FooObject.type] {
+              FooObject.stateDependantMethod returns 1234L
+              FooObject.simpleMethod returns s"spied!"
+              FooObject.simpleMethod shouldBe s"spied!"
+            }
+          }
+        }
+
+        thrown.getMessage should include("Unnecessary stubbings detected")
+      }
+
+      "unsuccessfully by default (strict) for uncalled stubs" in {
+
+        val thrown = the[UnnecessaryStubbingException] thrownBy {
+          MockitoScalaSession().run {
+            withObjectSpied[FooObject.type] {
+              FooObject.stateDependantMethod returns 1234L
+              FooObject.simpleMethod returns s"spied!"
+              FooObject.simpleMethod shouldBe s"spied!"
+            }
+          }
+        }
+
+        thrown.getMessage should include("Unnecessary stubbings detected")
+      }
     }
   }
 }

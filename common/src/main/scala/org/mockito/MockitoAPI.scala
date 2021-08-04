@@ -27,7 +27,6 @@ import org.mockito.mock.MockCreationSettings
 import org.mockito.stubbing._
 import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
 import org.scalactic.{ Equality, Prettifier }
-
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
@@ -643,6 +642,32 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
     }
   }
+
+  def withObjectSpied[O <: AnyRef: ClassTag](block: => Any)(implicit leniency: LeniencySettings, $pt: Prettifier): Unit = {
+    val objectClass = clazz[O]
+    objectClass.synchronized {
+      val moduleField = objectClass.getDeclaredField("MODULE$")
+      val realImpl: O = moduleField.get(null).asInstanceOf[O]
+
+      val threadAwareMock = createMock(
+        leniency(Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS).spiedInstance(realImpl)),
+        (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings, realImpl)(pt)
+      )
+
+      ReflectionUtils.setFinalStatic(moduleField, threadAwareMock)
+      try block
+      finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
+    }
+  }
+}
+
+trait LeniencySettings {
+  def apply(settings: MockSettings): MockSettings
+}
+
+object LeniencySettings {
+  implicit val strictStubs: LeniencySettings = identity
+  val lenientStubs: LeniencySettings = _.lenient()
 }
 
 private[mockito] trait Verifications {

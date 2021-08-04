@@ -1,29 +1,31 @@
 import scala.io.Source
 import scala.language.postfixOps
-import scala.util.Try
+import sbt.io.Using
 
 val currentScalaVersion = "2.13.6"
 
-ThisBuild / scalaVersion := currentScalaVersion
+inThisBuild(
+  Seq(
+    scalaVersion := currentScalaVersion,
+    //Load version from the file so that Gradle/Shipkit and SBT use the same version
+    version := sys.env
+      .get("PROJECT_VERSION")
+      .filter(_.trim.nonEmpty)
+      .orElse {
+        lazy val VersionRE = """^version=(.+)$""".r
+        Using.file(Source.fromFile)(baseDirectory.value / "version.properties") {
+          _.getLines.collectFirst { case VersionRE(v) => v }
+        }
+      }
+      .map { _.replace(".*", "-SNAPSHOT") }
+      .get
+  )
+)
 
 lazy val commonSettings =
   Seq(
     organization := "org.mockito",
     //Load version from the file so that Gradle/Shipkit and SBT use the same version
-    version := {
-      val versionFromEnv = System.getenv("PROJECT_VERSION")
-      if (versionFromEnv != null && versionFromEnv.trim().nonEmpty) {
-        versionFromEnv
-      } else {
-        val pattern = """^version=(.+)$""".r
-        val source  = Source.fromFile("version.properties")
-        val version = Try(source.getLines.collectFirst { case pattern(v) =>
-          v
-        }.get)
-        source.close
-        version.get.replace(".*", "-SNAPSHOT")
-      }
-    },
     crossScalaVersions := Seq(currentScalaVersion, "2.12.14", "2.11.12"),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
@@ -163,29 +165,17 @@ lazy val core = (project in file("core"))
     //TODO remove when we remove the deprecated classes in org.mockito.integrations.Dependencies.scalatest
     libraryDependencies += Dependencies.scalatest % "provided",
     // include the macro classes and resources in the main jar
-    mappings in (Compile, packageBin) ++= mappings
-      .in(macroSub, Compile, packageBin)
-      .value,
+    Compile / packageBin / mappings ++= (macroSub / Compile / packageBin / mappings).value,
     // include the macro sources in the main source jar
-    mappings in (Compile, packageSrc) ++= mappings
-      .in(macroSub, Compile, packageSrc)
-      .value,
+    Compile / packageSrc / mappings ++= (macroSub / Compile / packageSrc / mappings).value,
     // include the common classes and resources in the main jar
-    mappings in (Compile, packageBin) ++= mappings
-      .in(common, Compile, packageBin)
-      .value,
+    Compile / packageBin / mappings ++= (common / Compile / packageBin / mappings).value,
     // include the common sources in the main source jar
-    mappings in (Compile, packageSrc) ++= mappings
-      .in(common, Compile, packageSrc)
-      .value,
+    Compile / packageSrc / mappings ++= (common / Compile / packageSrc / mappings).value,
     // include the common classes and resources in the main jar
-    mappings in (Compile, packageBin) ++= mappings
-      .in(macroCommon, Compile, packageBin)
-      .value,
+    Compile / packageBin / mappings ++= (macroCommon / Compile / packageBin / mappings).value,
     // include the common sources in the main source jar
-    mappings in (Compile, packageSrc) ++= mappings
-      .in(macroCommon, Compile, packageSrc)
-      .value
+    Compile / packageSrc / mappings ++= (macroCommon / Compile / packageSrc / mappings).value
   )
 
 lazy val macroSub = (project in file("macro"))

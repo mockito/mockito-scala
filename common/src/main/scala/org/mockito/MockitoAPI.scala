@@ -627,30 +627,25 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * Mocks the specified object only for the context of the block
    */
   def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit = {
-    val objectClass = clazz[O]
-    objectClass.synchronized {
-      val moduleField = objectClass.getDeclaredField("MODULE$")
-      val realImpl: O = moduleField.get(null).asInstanceOf[O]
-
-      val threadAwareMock = createMock(
-        withSettings(defaultAnswer),
-        (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings, realImpl)(pt)
-      )
-
-      ReflectionUtils.setFinalStatic(moduleField, threadAwareMock)
-      try block
-      finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
-    }
+    withObject[O](_ => withSettings(defaultAnswer), block)
   }
 
+  /**
+   * Spies the specified object only for the context of the block
+   */
   def withObjectSpied[O <: AnyRef: ClassTag](block: => Any)(implicit leniency: LeniencySettings, $pt: Prettifier): Unit = {
+    val settings = leniency(Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS))
+    withObject[O](settings.spiedInstance(_), block)
+  }
+
+  private[mockito] def withObject[O <: AnyRef: ClassTag](settings: O => MockSettings, block: => Any)(implicit $pt: Prettifier) = {
     val objectClass = clazz[O]
     objectClass.synchronized {
       val moduleField = objectClass.getDeclaredField("MODULE$")
       val realImpl: O = moduleField.get(null).asInstanceOf[O]
 
       val threadAwareMock = createMock(
-        leniency(Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS).spiedInstance(realImpl)),
+        settings(realImpl),
         (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings, realImpl)(pt)
       )
 

@@ -3,15 +3,15 @@ package user.org.mockito
 import java.util.concurrent.atomic.AtomicInteger
 
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ArgumentMatchersSugar, IdiomaticStubbing}
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticStubbing }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import user.org.mockito.matchers.{ValueCaseClassInt, ValueCaseClassString, ValueClass}
+import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import scala.collection.parallel.immutable
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{ Await, Future }
 import scala.util.Random
 
-class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing{
+class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
   forAll(scenarios) { (testDouble, orgDouble, foo) =>
     testDouble should {
@@ -294,7 +294,6 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true) shouldBe "not mocked"
       org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false) shouldBe ""
     }
-
 
     "stub an object method" in {
       FooObject.simpleMethod shouldBe "not mocked!"

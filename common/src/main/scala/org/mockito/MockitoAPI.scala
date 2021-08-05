@@ -626,9 +626,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Mocks the specified object only for the context of the block
    */
-  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit = {
+  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit =
     withObject[O](_ => withSettings(defaultAnswer), block)
-  }
 
   /**
    * Spies the specified object only for the context of the block
@@ -661,8 +660,13 @@ trait LeniencySettings {
 }
 
 object LeniencySettings {
-  implicit val strictStubs: LeniencySettings = identity
-  val lenientStubs: LeniencySettings = _.lenient()
+  implicit val strictStubs: LeniencySettings = new LeniencySettings {
+    override def apply(settings: MockSettings): MockSettings = settings
+  }
+
+  val lenientStubs: LeniencySettings = new LeniencySettings {
+    override def apply(settings: MockSettings): MockSettings = settings.lenient()
+  }
 }
 
 private[mockito] trait Verifications {

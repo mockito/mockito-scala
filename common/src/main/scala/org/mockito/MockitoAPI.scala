@@ -631,6 +631,10 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 
   /**
    * Spies the specified object only for the context of the block
+   *
+   * Automatically pulls in [[org.mockito.LeniencySettings#strictStubs strict stubbing]] behaviour via implicits.
+   * To override this default (strict) behaviour, bring lenient settings into implicit scope;
+   * see [[org.mockito.leniency]] for details
    */
   def withObjectSpied[O <: AnyRef: ClassTag](block: => Any)(implicit leniency: LeniencySettings, $pt: Prettifier): Unit = {
     val settings = leniency(Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS))

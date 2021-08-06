@@ -362,8 +362,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
         }
       }
 
-      println(thrown.getMessage)
-//      thrown.getMessage should startWith("Unnecessary stubbings detected")
+      thrown.getMessage should startWith("Unnecessary stubbings detected")
     }
 
     "check incorrect stubs after the expected one was called on a final class" in {
@@ -394,7 +393,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
 
       "successfully for uncalled lenient stubs" in {
         MockitoScalaSession().run {
-          implicit val strict = LeniencySettings.lenientStubs
+          import org.mockito.leniency.lenient
 
           withObjectSpied[FooObject.type] {
             FooObject.stateDependantMethod returns 1234L
@@ -407,7 +406,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
       "unsuccessfully for uncalled strict stubs" in {
         val thrown = the[UnnecessaryStubbingException] thrownBy {
           MockitoScalaSession().run {
-            implicit val strict = LeniencySettings.strictStubs
+            import org.mockito.leniency.strict
 
             withObjectSpied[FooObject.type] {
               FooObject.stateDependantMethod returns 1234L

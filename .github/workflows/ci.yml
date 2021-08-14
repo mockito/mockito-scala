@@ -44,7 +44,7 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: 3. Build on Java ${{ matrix.java }}
-        run: ./gradlew build bintrayUpload --scan -PbintrayDryRun
+        run: ./build.sh
 
   #
   # Release job, only for pushes to the main development branch
@@ -72,10 +72,7 @@ jobs:
           java-version: 8
 
       - name: Build and publish to Bintray/MavenCentral
-        run: ./gradlew build bintrayUpload githubRelease --scan
+        run: ./gradlew # TODO fix the release build
         env:
-          MAVEN_CENTRAL_RELEASE: ${{contains(toJSON(github.event.commits.*.message), '[ci maven-central-release]')}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          BINTRAY_API_KEY: ${{secrets.BINTRAY_API_KEY}}
           NEXUS_TOKEN_USER: ${{secrets.NEXUS_TOKEN_USER}}
           NEXUS_TOKEN_PWD: ${{secrets.NEXUS_TOKEN_PWD}}

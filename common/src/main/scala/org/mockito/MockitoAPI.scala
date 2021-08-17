@@ -27,7 +27,6 @@ import org.mockito.mock.MockCreationSettings
 import org.mockito.stubbing._
 import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
 import org.scalactic.{ Equality, Prettifier }
-
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
@@ -627,14 +626,29 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Mocks the specified object only for the context of the block
    */
-  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit = {
+  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit =
+    withObject[O](_ => withSettings(defaultAnswer), block)
+
+  /**
+   * Spies the specified object only for the context of the block
+   *
+   * Automatically pulls in [[org.mockito.LeniencySettings#strictStubs strict stubbing]] behaviour via implicits.
+   * To override this default (strict) behaviour, bring lenient settings into implicit scope;
+   * see [[org.mockito.leniency]] for details
+   */
+  def withObjectSpied[O <: AnyRef: ClassTag](block: => Any)(implicit leniency: LeniencySettings, $pt: Prettifier): Unit = {
+    val settings = leniency(Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS))
+    withObject[O](settings.spiedInstance(_), block)
+  }
+
+  private[mockito] def withObject[O <: AnyRef: ClassTag](settings: O => MockSettings, block: => Any)(implicit $pt: Prettifier) = {
     val objectClass = clazz[O]
     objectClass.synchronized {
       val moduleField = objectClass.getDeclaredField("MODULE$")
       val realImpl: O = moduleField.get(null).asInstanceOf[O]
 
       val threadAwareMock = createMock(
-        withSettings(defaultAnswer),
+        settings(realImpl),
         (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings, realImpl)(pt)
       )
 
@@ -642,6 +656,20 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       try block
       finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
     }
+  }
+}
+
+trait LeniencySettings {
+  def apply(settings: MockSettings): MockSettings
+}
+
+object LeniencySettings {
+  implicit val strictStubs: LeniencySettings = new LeniencySettings {
+    override def apply(settings: MockSettings): MockSettings = settings
+  }
+
+  val lenientStubs: LeniencySettings = new LeniencySettings {
+    override def apply(settings: MockSettings): MockSettings = settings.lenient()
   }
 }
 

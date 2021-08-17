@@ -7,7 +7,6 @@ import org.mockito.{ ArgumentMatchersSugar, IdiomaticStubbing }
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
-
 import scala.collection.parallel.immutable
 import scala.concurrent.{ Await, Future }
 import scala.util.Random
@@ -246,8 +245,8 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
     }
   }
 
-  "doStub" should {
-    "stub a spy that would fail if the real impl is called" in {
+  "spy" should {
+    "stub a function that would fail if the real impl is called" in {
       val aSpy = spy(new Org)
 
       an[IllegalArgumentException] should be thrownBy {
@@ -264,7 +263,7 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       }
     }
 
-    "stub a spy with an answer" in {
+    "stub a function with an answer" in {
       val aSpy = spy(new Org)
 
       ((i: Int) => i * 10 + 2) willBe answered by aSpy.doSomethingWithThisInt(*)
@@ -294,6 +293,49 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
 
       org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true) shouldBe "not mocked"
       org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false) shouldBe ""
+    }
+
+    "stub an object method" in {
+      FooObject.simpleMethod shouldBe "not mocked!"
+
+      withObjectSpied[FooObject.type] {
+        FooObject.simpleMethod returns "spied!"
+        FooObject.simpleMethod shouldBe "spied!"
+      }
+
+      FooObject.simpleMethod shouldBe "not mocked!"
+    }
+
+    "call real object method when not stubbed" in {
+      val now = FooObject.stateDependantMethod
+      withObjectSpied[FooObject.type] {
+        FooObject.simpleMethod returns s"spied!"
+        FooObject.simpleMethod shouldBe s"spied!"
+        FooObject.stateDependantMethod shouldBe now
+      }
+    }
+
+    "be thread safe" when {
+      "always stubbing object methods" in {
+        immutable.ParSeq.range(1, 100).foreach { i =>
+          withObjectSpied[FooObject.type] {
+            FooObject.simpleMethod returns s"spied!-$i"
+            FooObject.simpleMethod shouldBe s"spied!-$i"
+          }
+        }
+      }
+
+      "intermittently stubbing object methods" in {
+        val now = FooObject.stateDependantMethod
+        immutable.ParSeq.range(1, 100).foreach { i =>
+          if (i % 2 == 0)
+            withObjectSpied[FooObject.type] {
+              FooObject.stateDependantMethod returns i
+              FooObject.stateDependantMethod shouldBe i
+            }
+          else FooObject.stateDependantMethod shouldBe now
+        }
+      }
     }
   }
 

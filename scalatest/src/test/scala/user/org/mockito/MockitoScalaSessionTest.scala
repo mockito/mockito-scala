@@ -388,5 +388,51 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
 
       thrown.getMessage should include("You have a NullPointerException here:")
     }
+
+    "verify object spies" when {
+
+      "successfully for uncalled lenient stubs" in {
+        MockitoScalaSession().run {
+          import org.mockito.leniency.lenient
+
+          withObjectSpied[FooObject.type] {
+            FooObject.stateDependantMethod returns 1234L
+            FooObject.simpleMethod returns s"spied!"
+            FooObject.simpleMethod shouldBe s"spied!"
+          }
+        }
+      }
+
+      "unsuccessfully for uncalled strict stubs" in {
+        val thrown = the[UnnecessaryStubbingException] thrownBy {
+          MockitoScalaSession().run {
+            import org.mockito.leniency.strict
+
+            withObjectSpied[FooObject.type] {
+              FooObject.stateDependantMethod returns 1234L
+              FooObject.simpleMethod returns s"spied!"
+              FooObject.simpleMethod shouldBe s"spied!"
+            }
+          }
+        }
+
+        thrown.getMessage should include("Unnecessary stubbings detected")
+      }
+
+      "unsuccessfully by default (strict) for uncalled stubs" in {
+
+        val thrown = the[UnnecessaryStubbingException] thrownBy {
+          MockitoScalaSession().run {
+            withObjectSpied[FooObject.type] {
+              FooObject.stateDependantMethod returns 1234L
+              FooObject.simpleMethod returns s"spied!"
+              FooObject.simpleMethod shouldBe s"spied!"
+            }
+          }
+        }
+
+        thrown.getMessage should include("Unnecessary stubbings detected")
+      }
+    }
   }
 }

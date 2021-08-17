@@ -613,4 +613,27 @@ package object mockito {
     new Equality[T] with Serializable {
       override def areEqual(a: T, b: Any): Boolean = Equality.default[T].areEqual(a, b)
     }
+
+  /**
+   * Implicit [[org.mockito.LeniencySettings LeniencySettings]] provided here for convenience
+   *
+   *  Neither are in implicit scope as is; pull one or the other in to activate the respective semantics, for
+   *  example:
+   *
+   *  {{{
+   *  import org.mockito.leniency.lenient
+   *
+   *  withObjectSpied[SomeObject.type] {
+   *     SomeObject.getExternalThing returns "external-thing"
+   *     SomeObject.getOtherThing returns "other-thing"
+   *     SomeObject.getExternalThing should be("external-thing")
+   *  }
+   *  }}}
+   *
+   *  Note: strict stubbing is active by default via [[org.mockito.LeniencySettings#strictStubs strictStubs]]
+   */
+  object leniency {
+    implicit val strict: LeniencySettings  = LeniencySettings.strictStubs
+    implicit val lenient: LeniencySettings = LeniencySettings.lenientStubs
+  }
 }

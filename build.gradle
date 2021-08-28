@@ -8,18 +8,99 @@ buildscript {
         //Using buildscript.classpath so that we can resolve plugins from maven local, during local testing
         classpath "org.shipkit:shipkit-auto-version:1.+"
         classpath "org.shipkit:shipkit-changelog:1.+"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+"
+        classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
     }
 }
 
+group = 'org.mockito'
+
 apply from: "gradle/shipkit.gradle"
 
-task build(type: Exec) {
-    commandLine "./build.sh"
-    environment "PROJECT_VERSION", version
+apply plugin: "maven-publish"
+
+def pubNames = []
+publishing {
+publications {
+    int i = 1
+    [
+            "mockito-scala_2.11", "mockito-scala_2.12", "mockito-scala_2.13",
+            "mockito-scala-cats_2.11", "mockito-scala-cats_2.12", "mockito-scala-cats_2.13",
+            "mockito-scala-scalatest_2.11", "mockito-scala-scalatest_2.12", "mockito-scala-scalatest_2.13",
+            "mockito-scala-scalaz_2.11", "mockito-scala-scalaz_2.12", "mockito-scala-scalaz_2.13",
+            "mockito-scala-specs2_2.11", "mockito-scala-specs2_2.12", "mockito-scala-specs2_2.13",
+    ].each {pub ->
+        String pubName = "publication${i++}"
+        pubNames << pubName
+        "$pubName"(MavenPublication) {
+            groupId = 'org.mockito'
+            artifactId = pub
+
+            def jarFile = file("target/dist/org/mockito/${pub}/${version}/${pub}-${version}.jar")
+            artifact jarFile
+
+            def srcFile = file("target/dist/org/mockito/${pub}/${version}/${pub}-${version}-sources.jar")
+            artifact source: srcFile, classifier: "sources"
+
+            def jFile = file("target/dist/org/mockito/${pub}/${version}/${pub}-${version}-javadoc.jar")
+            artifact source: jFile, classifier: "javadoc"
+
+            pom {
+                withXml {
+                    def xml = asString()
+                    xml.setLength(0)
+                    def pomFile = file("target/dist/org/mockito/${pub}/${version}/${pub}-${version}.pom")
+                    assert pomFile.file
+                    xml.append(pomFile.text)
+                }
+            }
+        }
+    }
+}
 }
 
-task clean(type: Exec) {
-    commandLine "./clean.sh"
-    environment "PROJECT_VERSION", version
+apply plugin: 'signing' //https://docs.gradle.org/current/userguide/signing_plugin.html
+signing {
+    if (System.getenv("PGP_KEY")) {
+        useInMemoryPgpKeys(System.getenv("PGP_KEY"), System.getenv("PGP_PWD"))
+        pubNames.each {
+            sign publishing.publications."$it"
+        }
+    }
+}
+
+apply plugin: "io.github.gradle-nexus.publish-plugin"
+
+nexusPublishing {
+    repositories {
+        if (System.getenv("NEXUS_TOKEN_PWD")) {
+            sonatype {
+                // Publishing to: https://s01.oss.sonatype.org (faster instance)
+                nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+                snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+
+                username = System.getenv("NEXUS_TOKEN_USER")
+                password = System.getenv("NEXUS_TOKEN_PWD")
+            }
+        }
+    }
+}
+
+def isSnapshot = version.endsWith("-SNAPSHOT")
+
+if (isSnapshot) {
+    println "Building a -SNAPSHOT version (Github release and Maven Central tasks are skipped)"
+    tasks.named("githubRelease") {
+        //snapshot versions do not produce changelog / Github releases
+        enabled = false
+    }
+    tasks.named("closeAndReleaseStagingRepository") {
+        //snapshot binaries are available in Sonatype without the need to close the staging repo
+        enabled = false
+    }
+}
+
+task writeActualVersion {
+    doLast {
+        file("version.actual") << "$version"
+    }
 }

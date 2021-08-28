@@ -85,6 +85,12 @@ nexusPublishing {
     }
 }
 
+task writeActualVersion {
+    doLast {
+        file("version.actual") << "$version"
+    }
+}
+
 def isSnapshot = version.endsWith("-SNAPSHOT")
 
 if (isSnapshot) {
@@ -99,8 +105,17 @@ if (isSnapshot) {
     }
 }
 
-task writeActualVersion {
+tasks.register("releaseSummary") {
     doLast {
-        file("version.actual") << "$version"
+        if (isSnapshot) {
+            println "RELEASE SUMMARY\n" +
+                    "  SNAPSHOTS released to: https://s01.oss.sonatype.org/content/repositories/snapshots/org/mockito/kotlin/mockito-kotlin\n" +
+                    "  Release to Maven Central: SKIPPED FOR SNAPSHOTS\n" +
+                    "  Github releases: SKIPPED FOR SNAPSHOTS"
+        } else {
+            println "RELEASE SUMMARY\n" +
+                    "  Release to Maven Central (available after delay): https://repo1.maven.org/maven2/org/mockito/kotlin/mockito-kotlin/\n" +
+                    "  Github releases: https://github.com/mockito/mockito-kotlin/releases"
+        }
     }
 }

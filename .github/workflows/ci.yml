@@ -75,7 +75,7 @@ jobs:
         run: ./gradlew writeActualVersion
           && export PROJECT_VERSION=`cat version.actual`
           && ./build.sh
-          && ./gradlew publishToSonatype githubRelease # closeAndReleaseStagingRepository releaseSummary
+          && ./gradlew publishToSonatype githubRelease closeAndReleaseStagingRepository releaseSummary
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           NEXUS_TOKEN_USER: ${{secrets.NEXUS_TOKEN_USER}}

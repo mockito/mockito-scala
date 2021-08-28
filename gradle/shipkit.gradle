@@ -16,37 +16,3 @@ tasks.named("githubRelease") {
     githubToken = System.getenv("GITHUB_TOKEN")
     newTagRevision = System.getenv("GITHUB_SHA")
 }
-
-apply plugin: 'com.jfrog.bintray'
-
-//Bintray configuration is handled by JFrog Bintray Gradle Plugin
-//For reference see the official documentation: https://github.com/bintray/gradle-bintray-plugin
-bintray {
-
-    key = System.getenv("BINTRAY_API_KEY")
-
-    pkg {
-        repo = 'maven'
-        user = 'szczepiq'
-        name = 'mockito-scala'
-        userOrg = 'mockito'
-        licenses = ['MIT']
-        labels = ['mocks', 'tdd', 'unit tests']
-        publish = true // can be changed to 'false' for testing
-        dryRun = project.hasProperty("bintrayDryRun")
-
-        filesSpec {
-            // all contents of this directory will be uploaded to Bintray
-            from fileTree("target/dist")
-            into '.'
-        }
-
-        version {
-            mavenCentralSync {
-                //sync = true // enable after #351 is fixed. In the meantime, we will publish to Maven Central from Bintray UI
-                user = System.env.NEXUS_TOKEN_USER
-                password = System.env.NEXUS_TOKEN_PWD
-            }
-        }
-    }
-}

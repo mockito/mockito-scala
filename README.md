@@ -8,7 +8,6 @@
 
 The most popular mocking framework for Java, now in Scala!!!
 
-[![Download](https://api.bintray.com/packages/mockito/maven/mockito-scala/images/download.svg) ](https://bintray.com/mockito/maven/mockito-scala/_latestVersion)
 [![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala_2.12.svg)](https://search.maven.org/search?q=mockito-scala)
 
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/mockito-scala/)
@@ -26,7 +25,7 @@ The library has independent developers, release cycle and versioning from core m
 *   Artifact identifier: "org.mockito:mockito-scala-cats_[scala-version]:[version]"
 *   Artifact identifier: "org.mockito:mockito-scala-scalaz_[scala-version]:[version]"
 *   Latest version - see [release notes](/docs/release-notes.md)
-*   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala) or [JFrog's Bintray](https://bintray.com/mockito/maven/mockito-scala)
+*   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala)
 
 
 ### Please ensure you don't declare `mockito-core` as a dependency. `mockito-scala` will pull the appropiate version automatically

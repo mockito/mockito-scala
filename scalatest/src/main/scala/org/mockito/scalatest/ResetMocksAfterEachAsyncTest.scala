@@ -11,6 +11,6 @@ import org.scalatest.{ AsyncTestSuite, FutureOutcome }
 trait ResetMocksAfterEachAsyncTest extends AsyncTestSuite with ResetMocksAfterEachTestBase {
 
   override def withFixture(test: NoArgAsyncTest): FutureOutcome =
-    super.withFixture(test).onSucceededThen(resetAll())
+    super.withFixture(test).onCompletedThen(_ => resetAll())
 
 }

@@ -2,7 +2,7 @@ import scala.io.Source
 import scala.language.postfixOps
 import sbt.io.Using
 
-val currentScalaVersion = "2.13.6"
+val currentScalaVersion = "2.13.7"
 
 inThisBuild(
   Seq(
@@ -17,7 +17,7 @@ inThisBuild(
           _.getLines.collectFirst { case VersionRE(v) => v }
         }
       }
-      .map { _.replace(".*", "-SNAPSHOT") }
+      .map(_.replace(".*", "-SNAPSHOT"))
       .get
   )
 )

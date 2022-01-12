@@ -5,9 +5,9 @@ object Dependencies {
   val scalatestVersion = "3.2.10"
 
   val commonLibraries = Seq(
-    "org.mockito"   % "mockito-core"      % "3.12.4",
-    "org.scalactic" %% "scalactic"        % scalatestVersion,
-    "ru.vyarus"     % "generics-resolver" % "3.0.3"
+    "org.mockito"    % "mockito-core"      % "4.2.0",
+    "org.scalactic" %% "scalactic"         % scalatestVersion,
+    "ru.vyarus"      % "generics-resolver" % "3.0.3"
   )
 
   val scalacheck = "org.scalacheck" %% "scalacheck" % "1.15.2"
@@ -15,8 +15,8 @@ object Dependencies {
   val scalatest = "org.scalatest" %% "scalatest" % scalatestVersion
 
   val specs2 = Seq(
-    "org.specs2"   %% "specs2-core"  % "4.10.6" % "provided",
-    "org.hamcrest" % "hamcrest-core" % "2.2"   % "provided"
+    "org.specs2"  %% "specs2-core"   % "4.10.6" % "provided",
+    "org.hamcrest" % "hamcrest-core" % "2.2"    % "provided"
   )
 
   def scalaReflection(scalaVersion: String) = "org.scala-lang" % "scala-reflect" % scalaVersion

@@ -12,13 +12,12 @@ trait ArgThat {
 
 trait FunctionArgumentsLowImplicits extends ArgThat with Expectations {
   def partialCallMatching[A, R](a: A, m: Matcher[R]): PartialFunction[A, R] = {
-    val partialMatcher: Matcher[PartialFunction[A, R]] = (f: PartialFunction[A, R]) => {
+    val partialMatcher: Matcher[PartialFunction[A, R]] = (f: PartialFunction[A, R]) =>
       try {
         (m ^^ ((pf: PartialFunction[A, R]) => pf(a))).apply(createExpectable(f))
       } catch {
         case _: MatchError => MatchFailure("ok", s"a PartialFunction defined for $a", createExpectable(f))
       }
-    }
     argThat(partialMatcher)
   }
 

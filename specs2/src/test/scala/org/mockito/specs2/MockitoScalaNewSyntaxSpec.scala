@@ -22,7 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 class MockitoScalaNewSyntaxSpec extends Spec with Mockito {
-  def is       = s2"""
+  def is = s2"""
 
 CREATION
 ========
@@ -363,7 +363,7 @@ The Mockito trait is reusable in other contexts
     // controller is a spy. Calling 'test' for real must not re-evaluate
     // the arguments, hence make a mock call, to register matchers
     controller.test(1)
-    foo.getBar(1) wasCalled once //1.times syntax clashes with the 1.times(obj) from specs2
+    foo.getBar(1) wasCalled once // 1.times syntax clashes with the 1.times(obj) from specs2
   }
 
   /* STUBS */

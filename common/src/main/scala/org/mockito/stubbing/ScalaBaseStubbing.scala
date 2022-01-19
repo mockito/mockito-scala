@@ -359,20 +359,16 @@ abstract class ScalaBaseStubbing[T: ValueClassExtractor] {
 //    }
 
   /**
-   * Returns the mock that was used for this stub.
-   * <p>
-   * It allows to create a stub in one line of code.
-   * This can be helpful to keep test code clean.
-   * For example, some boring stub can be created & stubbed at field initialization in a test:
-   * <pre class="code"><code class="java">
-   * public class CarTest {
-   *   Car boringStubbedCar = when(mock(Car.class).shiftGear()).thenThrow(EngineNotStarted.class).getMock();
+   * Returns the mock that was used for this stub. <p> It allows to create a stub in one line of code. This can be helpful to keep test code clean. For example, some boring stub
+   * can be created & stubbed at field initialization in a test: <pre class="code"><code class="java"> public class CarTest { Car boringStubbedCar =
+   * when(mock(Car.class).shiftGear()).thenThrow(EngineNotStarted.class).getMock();
    *
-   *   &#064;Test public void should... {}
-   * </code></pre>
+   * &#064;Test public void should... {} </code></pre>
    *
-   * @param <M> The mock type given by the variable type.
-   * @return Mock used in this ongoing stubbing.
+   * @param <M>
+   *   The mock type given by the variable type.
+   * @return
+   *   Mock used in this ongoing stubbing.
    */
   def getMock[M]: M = delegate.getMock[M]
 }

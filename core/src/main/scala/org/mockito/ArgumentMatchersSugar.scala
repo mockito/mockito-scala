@@ -16,10 +16,11 @@ import org.mockito.matchers._
 /**
  * Trait that provides some syntax sugar and type mapping.
  *
- * It mostly forwards the calls to org.mockito.ArgumentMatchers, but with a few improvements to make it more scala-like
- * It also renames the "eq" matcher to "eqTo" as in Scala "eq" is a keyword used to do object identity equality
+ * It mostly forwards the calls to org.mockito.ArgumentMatchers, but with a few improvements to make it more scala-like It also renames the "eq" matcher to "eqTo" as in Scala "eq"
+ * is a keyword used to do object identity equality
  *
- * @author Bruno Bonanno
+ * @author
+ *   Bruno Bonanno
  */
 trait ArgumentMatchersSugar
     extends AnyMatchers
@@ -35,6 +36,7 @@ trait ArgumentMatchersSugar
 /**
  * Simple object to allow the usage of the trait without mixing it in
  *
- * @author Bruno Bonanno
+ * @author
+ *   Bruno Bonanno
  */
 object ArgumentMatchersSugar extends ArgumentMatchersSugar

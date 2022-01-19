@@ -32,7 +32,7 @@ import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
 
 private[mockito] trait ScalacticSerialisableHack {
-  //Hack until Equality can be made serialisable
+  // Hack until Equality can be made serialisable
   implicit def mockitoSerialisableEquality[T]: Equality[T] = serialisableEquality[T]
 }
 
@@ -58,13 +58,11 @@ private[mockito] trait MockCreator {
 private[mockito] trait DoSomething {
 
   /**
-   * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code>
-   * but fixes the following compiler issue that happens because the overloaded vararg on the Java side
+   * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code> but fixes the following compiler issue that happens because the overloaded vararg on the
+   * Java side
    *
-   * {{{Error:(33, 25) ambiguous reference to overloaded definition,
-   * both method doReturn in class Mockito of type (x$1: Any, x$2: Object*)org.mockito.stubbing.Stubber
-   * and  method doReturn in class Mockito of type (x$1: Any)org.mockito.stubbing.Stubber
-   * match argument types (`Type`)}}}
+   * {{{Error:(33, 25) ambiguous reference to overloaded definition, both method doReturn in class Mockito of type (x$1: Any, x$2: Object*)org.mockito.stubbing.Stubber and method
+   * doReturn in class Mockito of type (x$1: Any)org.mockito.stubbing.Stubber match argument types (`Type`)}}}
    */
   def doReturn[T: ValueClassExtractor](toBeReturned: T, toBeReturnedNext: T*): Stubber =
     toBeReturnedNext.foldLeft(Mockito.doAnswer(ScalaReturns(toBeReturned))) { case (s, v) =>
@@ -72,8 +70,7 @@ private[mockito] trait DoSomething {
     }
 
   /**
-   * Delegates to <code>Mockito.doThrow</code>, it's only here so we expose all the Mockito API
-   * on a single place
+   * Delegates to <code>Mockito.doThrow</code>, it's only here so we expose all the Mockito API on a single place
    */
   def doThrow(toBeThrown: Throwable*): Stubber = {
     val stubber = Mockito.MOCKITO_CORE.stubber
@@ -82,8 +79,7 @@ private[mockito] trait DoSomething {
   }
 
   /**
-   * Delegates to <code>Mockito.doThrow(type: Class[T])</code>
-   * It provides a nicer API as you can, for instance, do doThrow[Throwable] instead of doThrow(classOf[Throwable])
+   * Delegates to <code>Mockito.doThrow(type: Class[T])</code> It provides a nicer API as you can, for instance, do doThrow[Throwable] instead of doThrow(classOf[Throwable])
    */
   def doThrow[T <: Throwable: ClassTag]: Stubber = Mockito.doAnswer(ScalaThrowsException[T])
 
@@ -458,52 +454,40 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   implicit val invocationOps: InvocationOnMock => InvocationOnMockOps = InvocationOps
 
   /**
-   * Delegates to <code>Mockito.mock(type: Class[T])</code>
-   * It provides a nicer API as you can, for instance, do <code>mock[MyClass]</code>
-   * instead of <code>mock(classOf[MyClass])</code>
+   * Delegates to <code>Mockito.mock(type: Class[T])</code> It provides a nicer API as you can, for instance, do <code>mock[MyClass]</code> instead of
+   * <code>mock(classOf[MyClass])</code>
    *
-   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
-   * are called, ie:
-   * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
+   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments are called, ie: given <code>def
+   * iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
    *
-   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
-   * then you could have not verified it like
-   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
-   * as the value for the second parameter would have been null...
+   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
+   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
    */
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     createMock(withSettings)
 
   /**
-   * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code>
-   * It provides a nicer API as you can, for instance, do <code>mock[MyClass](defaultAnswer)</code>
+   * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code> It provides a nicer API as you can, for instance, do <code>mock[MyClass](defaultAnswer)</code>
    * instead of <code>mock(classOf[MyClass], defaultAnswer)</code>
    *
-   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
-   * are called, ie:
-   * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
+   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments are called, ie: given <code>def
+   * iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
    *
-   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
-   * then you could have not verified it like
-   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
-   * as the value for the second parameter would have been null...
+   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
+   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
    */
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T =
     createMock(withSettings(defaultAnswer))
 
   /**
-   * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code>
-   * It provides a nicer API as you can, for instance, do <code>mock[MyClass](mockSettings)</code>
-   * instead of <code>mock(classOf[MyClass], mockSettings)</code>
+   * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code> It provides a nicer API as you can, for instance, do
+   * <code>mock[MyClass](mockSettings)</code> instead of <code>mock(classOf[MyClass], mockSettings)</code>
    *
-   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
-   * are called, ie:
-   * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
+   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments are called, ie: given <code>def
+   * iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
    *
-   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
-   * then you could have not verified it like
-   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
-   * as the value for the second parameter would have been null...
+   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
+   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
    */
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T =
     createMock(mockSettings)
@@ -545,18 +529,14 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   }
 
   /**
-   * Delegates to <code>Mockito.mock(type: Class[T], name: String)</code>
-   * It provides a nicer API as you can, for instance, do <code>mock[MyClass](name)</code>
-   * instead of <code>mock(classOf[MyClass], name)</code>
+   * Delegates to <code>Mockito.mock(type: Class[T], name: String)</code> It provides a nicer API as you can, for instance, do <code>mock[MyClass](name)</code> instead of
+   * <code>mock(classOf[MyClass], name)</code>
    *
-   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments
-   * are called, ie:
-   * given <code>def iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
+   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments are called, ie: given <code>def
+   * iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
    *
-   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code>
-   * then you could have not verified it like
-   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code>
-   * as the value for the second parameter would have been null...
+   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
+   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
    */
   override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     mock(withSettings.name(name))
@@ -568,8 +548,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   }
 
   /**
-   * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that
-   * deal with default argument values
+   * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that deal with default argument values
    */
   def reset(mocks: AnyRef*)(implicit $pt: Prettifier): Unit = {
     val mp = mockingProgress()
@@ -592,8 +571,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   def mockingDetails(toInspect: AnyRef): MockingDetails = Mockito.mockingDetails(toInspect)
 
   /**
-   * Delegates to <code>Mockito.verifyNoMoreInteractions(Object... mocks)</code>, but ignores the default stubs that
-   * deal with default argument values
+   * Delegates to <code>Mockito.verifyNoMoreInteractions(Object... mocks)</code>, but ignores the default stubs that deal with default argument values
    */
   def verifyNoMoreInteractions(mocks: AnyRef*): Unit = {
     def ignoreDefaultArguments(m: AnyRef): Unit =
@@ -618,8 +596,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
 
   /**
-   * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as
-   * they are created as final classes by the compiler
+   * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as they are created as final classes by the compiler
    */
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
 
@@ -632,9 +609,8 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Spies the specified object only for the context of the block
    *
-   * Automatically pulls in [[org.mockito.LeniencySettings#strictStubs strict stubbing]] behaviour via implicits.
-   * To override this default (strict) behaviour, bring lenient settings into implicit scope;
-   * see [[org.mockito.leniency]] for details
+   * Automatically pulls in [[org.mockito.LeniencySettings#strictStubs strict stubbing]] behaviour via implicits. To override this default (strict) behaviour, bring lenient
+   * settings into implicit scope; see [[org.mockito.leniency]] for details
    */
   def withObjectSpied[O <: AnyRef: ClassTag](block: => Any)(implicit leniency: LeniencySettings, $pt: Prettifier): Unit = {
     val settings = leniency(Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS))
@@ -726,10 +702,10 @@ private[mockito] trait Verifications {
  *
  * The idea is based on org.scalatest.mockito.MockitoSugar but it adds 100% of the Mockito API
  *
- * It also solve problems like overloaded varargs calls to Java code and pre-stub the mocks so the default arguments
- * in the method parameters work as expected
+ * It also solve problems like overloaded varargs calls to Java code and pre-stub the mocks so the default arguments in the method parameters work as expected
  *
- * @author Bruno Bonanno
+ * @author
+ *   Bruno Bonanno
  */
 private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifications {
 
@@ -746,7 +722,7 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
   /**
    * Delegates to <code>Mockito.verifyZeroInteractions()</code>, it's only here to expose the full Mockito API
    */
-  def verifyZeroInteractions(mocks: AnyRef*): Unit = Mockito.verifyZeroInteractions(mocks: _*)
+  def verifyZeroInteractions(mocks: AnyRef*): Unit = Mockito.verifyNoInteractions(mocks: _*)
 
   /**
    * Delegates to <code>Mockito.inOrder()</code>, it's only here to expose the full Mockito API

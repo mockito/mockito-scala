@@ -11,8 +11,7 @@ import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
 
 /**
- * It automatically resets each mock after a each test is run, useful when we need to pass the mocks to some framework
- * once at the beginning of the test suite
+ * It automatically resets each mock after a each test is run, useful when we need to pass the mocks to some framework once at the beginning of the test suite
  *
  * Just mix-in after your favourite suite, i.e. {{{class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest}}}
  */

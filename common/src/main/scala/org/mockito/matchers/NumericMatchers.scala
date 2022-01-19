@@ -19,41 +19,35 @@ class N {
   /**
    * Creates a matcher that works only if there is a Numeric[T] associated with the type, this allows you to write stuff like
    *
-   *     aMock.pepe(4.1)
-   *     aMock.pepe(n > 4) was called
+   * aMock.pepe(4.1) aMock.pepe(n > 4) was called
    */
   def >[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, ">", _ > _))
 
   /**
    * Creates a matcher that works only if there is a Numeric[T] associated with the type, this allows you to write stuff like
    *
-   *     aMock.pepe(4)
-   *     aMock.pepe(n >= 4) was called
+   * aMock.pepe(4) aMock.pepe(n >= 4) was called
    */
   def >=[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, ">=", _ >= _))
 
   /**
    * Creates a matcher that works only if there is a Numeric[T] associated with the type, this allows you to write stuff like
    *
-   *     aMock.pepe(3.1)
-   *     aMock.pepe(n < 4) was called
+   * aMock.pepe(3.1) aMock.pepe(n < 4) was called
    */
   def <[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, "<", _ < _))
 
   /**
    * Creates a matcher that works only if there is a Numeric[T] associated with the type, this allows you to write stuff like
    *
-   *     aMock.pepe(4)
-   *     aMock.pepe(n <= 4) was called
+   * aMock.pepe(4) aMock.pepe(n <= 4) was called
    */
   def <=[N: Numeric](n: N): N = argThat[N](new NumericMatcher(n, "<=", _ <= _))
 
   /**
-   * Creates a matcher that delegates on {{org.scalactic.TripleEqualsSupport.Spread}} so you can get around the lack of
-   * precision on floating points, e.g.
+   * Creates a matcher that delegates on {{org.scalactic.TripleEqualsSupport.Spread}} so you can get around the lack of precision on floating points, e.g.
    *
-   *     aMock.barDouble(4.999)
-   *     verify(aMock).barDouble(=~(5.0 +- 0.001))
+   * aMock.barDouble(4.999) verify(aMock).barDouble(=~(5.0 +- 0.001))
    */
   def =~[T](spread: Spread[T]): T = ThatMatchers.argThat[T](spread.isWithin _, s"=~($spread)")
 }

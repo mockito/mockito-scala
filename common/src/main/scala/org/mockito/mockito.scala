@@ -14,8 +14,8 @@ import scala.reflect.ClassTag
 package object mockito {
 
   /**
-   * Some forms of tagged types don't provide a ClassTag, given that sometimes we only use it to differentiate
-   *  an InvocationOnMock from anything else, this is a safe default for those methods
+   * Some forms of tagged types don't provide a ClassTag, given that sometimes we only use it to differentiate an InvocationOnMock from anything else, this is a safe default for
+   * those methods
    */
   private[mockito] def defaultClassTag[T]: ClassTag[T] = ClassTag.AnyRef.asInstanceOf[ClassTag[T]]
 
@@ -599,7 +599,7 @@ package object mockito {
 //             |""".stripMargin)
 //  }
 
-  //Look at org.mockito.internal.invocation.InvocationMatcher#hasSameMethod
+  // Look at org.mockito.internal.invocation.InvocationMatcher#hasSameMethod
   implicit val JavaMethodEquality: Equality[Method] = new Equality[Method] {
     override def areEqual(m1: Method, b: Any): Boolean =
       b match {
@@ -617,20 +617,19 @@ package object mockito {
   /**
    * Implicit [[org.mockito.LeniencySettings LeniencySettings]] provided here for convenience
    *
-   *  Neither are in implicit scope as is; pull one or the other in to activate the respective semantics, for
-   *  example:
+   * Neither are in implicit scope as is; pull one or the other in to activate the respective semantics, for example:
    *
-   *  {{{
-   *  import org.mockito.leniency.lenient
+   * {{{
+   *   import org.mockito.leniency.lenient
    *
-   *  withObjectSpied[SomeObject.type] {
+   *   withObjectSpied[SomeObject.type] {
    *     SomeObject.getExternalThing returns "external-thing"
    *     SomeObject.getOtherThing returns "other-thing"
    *     SomeObject.getExternalThing should be("external-thing")
-   *  }
-   *  }}}
+   *   }
+   * }}}
    *
-   *  Note: strict stubbing is active by default via [[org.mockito.LeniencySettings#strictStubs strictStubs]]
+   * Note: strict stubbing is active by default via [[org.mockito.LeniencySettings#strictStubs strictStubs]]
    */
   object leniency {
     implicit val strict: LeniencySettings  = LeniencySettings.strictStubs

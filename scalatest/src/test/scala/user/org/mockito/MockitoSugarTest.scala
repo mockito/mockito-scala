@@ -57,7 +57,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
       "deal with verifying value type parameters" in {
         val aMock = parametrisedTraitInt()
-        //this has to be done separately as the verification in the other test would return the stubbed value so the
+        // this has to be done separately as the verification in the other test would return the stubbed value so the
         // null problem on the primitive would not happen
         verify(aMock, never).m()
       }
@@ -90,7 +90,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
         aMock.doSomethingWithThisIntAndString(4, "2") shouldBe ValueCaseClassInt(4)
       }
 
-      //useful if we want to delay the evaluation of whatever we are returning until the method is called
+      // useful if we want to delay the evaluation of whatever we are returning until the method is called
       "simplify stubbing an answer where we don't care about any param" in {
         val org = foo()
 
@@ -201,7 +201,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
         aMock.bar should not be "mocked!"
         aMock.iHavePrimitiveByNameArgs(1, "arg2") should not be "mocked!"
 
-        //to verify the reset mock handler still handles by-name params
+        // to verify the reset mock handler still handles by-name params
         when(aMock.iHavePrimitiveByNameArgs(1, "arg2")) thenReturn "mocked!"
 
         aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"

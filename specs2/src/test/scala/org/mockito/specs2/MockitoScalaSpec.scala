@@ -21,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 class MockitoScalaSpec extends Spec with Mockito {
-  def is       = s2"""
+  def is = s2"""
 
 CREATION
 ========

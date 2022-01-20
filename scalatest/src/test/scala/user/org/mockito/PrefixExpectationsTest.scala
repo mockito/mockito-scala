@@ -374,7 +374,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
         expect a call to org.fooWithVarArgAndSecondParameterList(endsWith("w"))(*)
         expect a call to org.fooWithVarArgAndSecondParameterList(startsWith("c"))(*)
         expect a call to org.fooWithVarArgAndSecondParameterList(contains("ow"))(*)
-        expect a call to org.fooWithVarArgAndSecondParameterList(argMatching({ case "cow" => }))(*)
+        expect a call to org.fooWithVarArgAndSecondParameterList(argMatching { case "cow" => })(*)
         expect a call to org.fooWithVarArgAndSecondParameterList(argThat((v: String) => v == "cow", "some desc"))(*)
 
         org.fooWithVarArgAndSecondParameterList("cow", "blue")(cheese)
@@ -472,12 +472,12 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
       "argMatching works with new syntax" in {
         val org = orgDouble()
 
-        org.baz(2, argMatching({ case Baz2(n, _) if n > 90 => })) returns "mocked!"
+        org.baz(2, argMatching { case Baz2(n, _) if n > 90 => }) returns "mocked!"
         org.baz(2, Baz2(100, "pepe")) shouldBe "mocked!"
-        expect a call to org.baz(2, argMatching({ case Baz2(_, "pepe") => }))
+        expect a call to org.baz(2, argMatching { case Baz2(_, "pepe") => })
 
         an[WantedButNotInvoked] should be thrownBy {
-          expect a call to org.baz(2, argMatching({ case Baz2(99, "pepe") => }))
+          expect a call to org.baz(2, argMatching { case Baz2(99, "pepe") => })
         }
       }
 
@@ -614,7 +614,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
         aMock.bar should not be "mocked!"
         aMock.iHavePrimitiveByNameArgs(1, "arg2") should not be "mocked!"
 
-        //to verify the reset mock handler still handles by-name params
+        // to verify the reset mock handler still handles by-name params
         aMock.iHavePrimitiveByNameArgs(1, "arg2") returns "mocked!"
 
         aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"

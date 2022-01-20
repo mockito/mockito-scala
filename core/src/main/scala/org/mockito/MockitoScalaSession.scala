@@ -21,32 +21,35 @@ class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoS
   Mockito.framework().addListener(listener)
 
   /**
-   * If the test has thrown an exception, the session will check first if the exception could be related to a misuse
-   * of mockito. If not, it will rethrow the original error so the real test failure can be reported by the testing framework
+   * If the test has thrown an exception, the session will check first if the exception could be related to a misuse of mockito. If not, it will rethrow the original error so the
+   * real test failure can be reported by the testing framework
    *
-   * @param t exception thrown by the test framework
+   * @param t
+   *   exception thrown by the test framework
    */
   def finishMocking(t: Option[Throwable] = None): Unit = {
     listener.cleanLenientStubs()
-    try t.fold {
-      mockitoSession.finishMocking()
-      listener.reportIssues().foreach(_.report())
-    } {
-      case e: NullPointerException =>
-        mockitoSession.finishMocking(e)
-        listener.reportIssues().foreach {
-          case unStubbedCalls: UnexpectedInvocations if unStubbedCalls.nonEmpty =>
-            throw new UnexpectedInvocationException(
-              s"""A NullPointerException was thrown, check if maybe related to
+    try
+      t.fold {
+        mockitoSession.finishMocking()
+        listener.reportIssues().foreach(_.report())
+      } {
+        case e: NullPointerException =>
+          mockitoSession.finishMocking(e)
+          listener.reportIssues().foreach {
+            case unStubbedCalls: UnexpectedInvocations if unStubbedCalls.nonEmpty =>
+              throw new UnexpectedInvocationException(
+                s"""A NullPointerException was thrown, check if maybe related to
                    |$unStubbedCalls""".stripMargin,
-              e
-            )
-          case _ => throw e
-        }
-      case other =>
-        mockitoSession.finishMocking(other)
-        throw other
-    } finally Mockito.framework().removeListener(listener)
+                e
+              )
+            case _ => throw e
+          }
+        case other =>
+          mockitoSession.finishMocking(other)
+          throw other
+      }
+    finally Mockito.framework().removeListener(listener)
   }
 
   def run[T](block: => T): T =
@@ -175,7 +178,7 @@ object Strictness {
     override val toJava: JavaStrictness = JavaStrictness.STRICT_STUBS
   }
 
-  //implicit conversions for backward compatibility
+  // implicit conversions for backward compatibility
   implicit def scalaToJava(s: Strictness): JavaStrictness = s.toJava
   implicit def javaToScala(s: JavaStrictness): Strictness =
     s match {

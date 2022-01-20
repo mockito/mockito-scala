@@ -11,22 +11,22 @@ class ThatMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with 
     val aMock = mock[Foo]
 
     aMock.bar("meh")
-    verify(aMock).bar(argMatching({ case "meh" => }))
+    verify(aMock).bar(argMatching { case "meh" => })
 
     aMock.barTyped("meh")
-    verify(aMock).barTyped(argMatching({ case "meh" => }))
+    verify(aMock).barTyped(argMatching { case "meh" => })
 
     aMock.bar(List("meh"))
-    verify(aMock).bar(argMatching({ case "meh" :: Nil => }))
+    verify(aMock).bar(argMatching { case "meh" :: Nil => })
 
     aMock.baz(Baz("Hello", "World"))
-    verify(aMock).baz(argMatching({ case Baz("Hello", "World") => }))
-    verify(aMock).baz(argMatching({ case Baz(_, "World") => }))
-    verify(aMock).baz(argMatching({ case Baz("Hello", _) => }))
-    verify(aMock).baz(argMatching({ case Baz(_, _) => }))
+    verify(aMock).baz(argMatching { case Baz("Hello", "World") => })
+    verify(aMock).baz(argMatching { case Baz(_, "World") => })
+    verify(aMock).baz(argMatching { case Baz("Hello", _) => })
+    verify(aMock).baz(argMatching { case Baz(_, _) => })
 
     an[WantedButNotInvoked] should be thrownBy {
-      verify(aMock).baz(argMatching({ case Baz("", _) => }))
+      verify(aMock).baz(argMatching { case Baz("", _) => })
     }
   }
 

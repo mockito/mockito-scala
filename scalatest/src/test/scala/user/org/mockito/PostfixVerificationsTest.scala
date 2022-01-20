@@ -350,7 +350,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
         org.fooWithVarArgAndSecondParameterList(endsWith("w"))(*) was called
         org.fooWithVarArgAndSecondParameterList(startsWith("c"))(*) was called
         org.fooWithVarArgAndSecondParameterList(contains("ow"))(*) was called
-        org.fooWithVarArgAndSecondParameterList(argMatching({ case "cow" => }))(*) was called
+        org.fooWithVarArgAndSecondParameterList(argMatching { case "cow" => })(*) was called
         org.fooWithVarArgAndSecondParameterList(argThat((v: String) => v == "cow", "some desc"))(*) was called
 
         org.fooWithVarArgAndSecondParameterList("cow", "blue")(cheese)
@@ -448,12 +448,12 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
       "argMatching works with new syntax" in {
         val org = orgDouble()
 
-        org.baz(2, argMatching({ case Baz2(n, _) if n > 90 => })) returns "mocked!"
+        org.baz(2, argMatching { case Baz2(n, _) if n > 90 => }) returns "mocked!"
         org.baz(2, Baz2(100, "pepe")) shouldBe "mocked!"
-        org.baz(2, argMatching({ case Baz2(_, "pepe") => })) was called
+        org.baz(2, argMatching { case Baz2(_, "pepe") => }) was called
 
         an[WantedButNotInvoked] should be thrownBy {
-          org.baz(2, argMatching({ case Baz2(99, "pepe") => })) was called
+          org.baz(2, argMatching { case Baz2(99, "pepe") => }) was called
         }
       }
 
@@ -590,7 +590,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
         aMock.bar should not be "mocked!"
         aMock.iHavePrimitiveByNameArgs(1, "arg2") should not be "mocked!"
 
-        //to verify the reset mock handler still handles by-name params
+        // to verify the reset mock handler still handles by-name params
         aMock.iHavePrimitiveByNameArgs(1, "arg2") returns "mocked!"
 
         aMock.iHavePrimitiveByNameArgs(1, "arg2") shouldBe "mocked!"

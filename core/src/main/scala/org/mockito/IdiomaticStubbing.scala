@@ -27,7 +27,7 @@ trait IdiomaticStubbing extends MockitoEnhancer with ScalacticSerialisableHack {
     def mustAnswerPF: AnswerPFActions[T] = macro WhenMacro.shouldAnswerPF[T]
     def answersPF: AnswerPFActions[T] = macro WhenMacro.shouldAnswerPF[T]
 
-    //noinspection AccessorLikeMethodIsUnit
+    // noinspection AccessorLikeMethodIsUnit
     def isLenient(): Unit = macro WhenMacro.isLenient[T]
 
     def shouldDoNothing(): Unit = macro DoSomethingMacro.doesNothing

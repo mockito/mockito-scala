@@ -68,7 +68,7 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
         an[IllegalArgumentException] shouldBe thrownBy(org.bar)
       }
 
-      //useful if we want to delay the evaluation of whatever we are returning until the method is called
+      // useful if we want to delay the evaluation of whatever we are returning until the method is called
       "simplify stubbing an answer where we don't care about any param" in {
         val org = orgDouble()
 

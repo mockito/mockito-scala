@@ -42,7 +42,7 @@ object IdiomaticMockitoBase {
       }
   }
 
-  //Helper methods for the specs2 macro
+  // Helper methods for the specs2 macro
   def Exactly(times: Int): Times = Times(times)
   def AtLeastOne: AtLeast        = AtLeast(1)
   def AtLeastTwo: AtLeast        = AtLeast(2)

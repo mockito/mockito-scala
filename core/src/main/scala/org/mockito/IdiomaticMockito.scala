@@ -8,8 +8,7 @@ trait IdiomaticMockito extends IdiomaticStubbing with PostfixVerifications {
 object IdiomaticMockito extends IdiomaticMockito {
 
   /**
-   * EXPERIMENTAL base trait using new prefix DSL for verifications.
-   * Use with care: API may change between minor versions.
+   * EXPERIMENTAL base trait using new prefix DSL for verifications. Use with care: API may change between minor versions.
    */
   trait WithExpect extends IdiomaticStubbing with PrefixExpectations {
     override type Verification = Unit

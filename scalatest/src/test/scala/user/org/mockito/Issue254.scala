@@ -13,7 +13,7 @@ class Issue254 extends AnyFlatSpec with MockitoSugar with Matchers {
   "mocking method returning Any" should "not explode" in {
     val myMock = mock[SomeClassToMock]
 
-    //will explode with
+    // will explode with
     // java.lang.ClassNotFoundException: scala.Any
     // because it tries to instatiate Any at org/mockito/ReflectionUtils.scala:57
     when(myMock.methodReturningAny("test"))

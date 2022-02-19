@@ -44,8 +44,10 @@ lazy val commonSettings =
           Seq("-Xsource:2.12", "-Ypartial-unification")
         case Some((2, 12)) =>
           Seq("-Ypartial-unification", "-Ywarn-unused:locals")
-        case _ =>
+        case Some((2, 13)) =>
           Seq("-Ywarn-unused:locals")
+        case _ =>
+          Seq()
       }
     },
     Test / scalacOptions += "-Ywarn-value-discard",
@@ -120,8 +122,8 @@ lazy val cats = (project in file("cats"))
     commonSettings,
     publishSettings,
     libraryDependencies ++= Seq(
-      Dependencies.cats,
-      Dependencies.catsLaws            % "test",
+      Dependencies.cats.value,
+      Dependencies.catsLaws.value      % "test",
       Dependencies.disciplineScalatest % "test",
       Dependencies.scalatest           % "test"
     )
@@ -146,10 +148,10 @@ lazy val common = (project in file("common"))
   .settings(
     commonSettings,
     noPublishingSettings,
-    libraryDependencies ++= Dependencies.commonLibraries ++ Seq(
-      Dependencies.scalaReflection(scalaVersion.value),
-      Dependencies.catsLaws   % "test",
-      Dependencies.scalacheck % "test"
+    libraryDependencies ++= Dependencies.commonLibraries ++
+      Dependencies.scalaReflection.value ++ Seq(
+      Dependencies.catsLaws.value   % "test",
+      Dependencies.scalacheck.value % "test"
     )
   )
 
@@ -161,7 +163,7 @@ lazy val core = (project in file("core"))
     publishSettings,
     name := "mockito-scala",
     libraryDependencies ++= Dependencies.commonLibraries,
-    libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
+    libraryDependencies ++= Dependencies.scalaReflection.value,
     //TODO remove when we remove the deprecated classes in org.mockito.integrations.Dependencies.scalatest
     libraryDependencies += Dependencies.scalatest % "provided",
     // include the macro classes and resources in the main jar
@@ -184,7 +186,7 @@ lazy val macroSub = (project in file("macro"))
     commonSettings,
     noPublishingSettings,
     libraryDependencies ++= Dependencies.commonLibraries,
-    libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
+    libraryDependencies ++= Dependencies.scalaReflection.value,
     publish := {},
     publishLocal := {},
     publishArtifact := false
@@ -194,7 +196,7 @@ lazy val macroCommon = (project in file("macro-common"))
   .settings(
     commonSettings,
     noPublishingSettings,
-    libraryDependencies += Dependencies.scalaReflection(scalaVersion.value),
+    libraryDependencies ++= Dependencies.scalaReflection.value,
     publish := {},
     publishLocal := {},
     publishArtifact := false

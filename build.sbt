@@ -7,7 +7,7 @@ val currentScalaVersion = "2.13.8"
 inThisBuild(
   Seq(
     scalaVersion := currentScalaVersion,
-    //Load version from the file so that Gradle/Shipkit and SBT use the same version
+    // Load version from the file so that Gradle/Shipkit and SBT use the same version
     version := sys.env
       .get("PROJECT_VERSION")
       .filter(_.trim.nonEmpty)
@@ -25,9 +25,9 @@ inThisBuild(
 lazy val commonSettings =
   Seq(
     organization := "org.mockito",
-    //Load version from the file so that Gradle/Shipkit and SBT use the same version
+    // Load version from the file so that Gradle/Shipkit and SBT use the same version
     crossScalaVersions := Seq(currentScalaVersion, "2.12.15", "2.11.12"),
-    scalafmtOnCompile := true,
+    scalafmtOnCompile  := true,
     scalacOptions ++= Seq(
       "-unchecked",
       "-feature",
@@ -81,14 +81,14 @@ lazy val publishSettings = Seq(
 )
 
 lazy val noPublishingSettings = Seq(
-  publish := {},
-  publishLocal := {},
+  publish         := {},
+  publishLocal    := {},
   publishArtifact := false
 )
 
 lazy val noCrossBuildSettings = Seq(
   crossScalaVersions := Nil,
-  publish / skip := true
+  publish / skip     := true
 )
 
 lazy val scalatest = (project in file("scalatest"))
@@ -149,7 +149,7 @@ lazy val common = (project in file("common"))
     commonSettings,
     noPublishingSettings,
     libraryDependencies ++= Dependencies.commonLibraries ++
-      Dependencies.scalaReflection.value ++ Seq(
+    Dependencies.scalaReflection.value ++ Seq(
       Dependencies.catsLaws.value   % "test",
       Dependencies.scalacheck.value % "test"
     )
@@ -164,7 +164,7 @@ lazy val core = (project in file("core"))
     name := "mockito-scala",
     libraryDependencies ++= Dependencies.commonLibraries,
     libraryDependencies ++= Dependencies.scalaReflection.value,
-    //TODO remove when we remove the deprecated classes in org.mockito.integrations.Dependencies.scalatest
+    // TODO remove when we remove the deprecated classes in org.mockito.integrations.Dependencies.scalatest
     libraryDependencies += Dependencies.scalatest % "provided",
     // include the macro classes and resources in the main jar
     Compile / packageBin / mappings ++= (macroSub / Compile / packageBin / mappings).value,
@@ -187,8 +187,8 @@ lazy val macroSub = (project in file("macro"))
     noPublishingSettings,
     libraryDependencies ++= Dependencies.commonLibraries,
     libraryDependencies ++= Dependencies.scalaReflection.value,
-    publish := {},
-    publishLocal := {},
+    publish         := {},
+    publishLocal    := {},
     publishArtifact := false
   )
 
@@ -197,8 +197,8 @@ lazy val macroCommon = (project in file("macro-common"))
     commonSettings,
     noPublishingSettings,
     libraryDependencies ++= Dependencies.scalaReflection.value,
-    publish := {},
-    publishLocal := {},
+    publish         := {},
+    publishLocal    := {},
     publishArtifact := false
   )
 

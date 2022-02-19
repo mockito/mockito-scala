@@ -1,16 +1,23 @@
 import sbt._
+import sbt.Keys._
 
 object Dependencies {
 
-  val scalatestVersion = "3.2.10"
+  val scalatestVersion = "3.2.11"
 
   val commonLibraries = Seq(
-    "org.mockito"    % "mockito-core"      % "4.2.0",
+    "org.mockito"    % "mockito-core"      % "4.3.1",
     "org.scalactic" %% "scalactic"         % scalatestVersion,
     "ru.vyarus"      % "generics-resolver" % "3.0.3"
   )
 
-  val scalacheck = "org.scalacheck" %% "scalacheck" % "1.15.2"
+  val scalacheck = Def.setting(
+    if (scalaBinaryVersion.value == "3") {
+      "org.scalacheck" %% "scalacheck" % "1.15.4"
+    } else {
+      "org.scalacheck" %% "scalacheck" % "1.15.2"
+    }
+  )
 
   val scalatest = "org.scalatest" %% "scalatest" % scalatestVersion
 
@@ -19,11 +26,29 @@ object Dependencies {
     "org.hamcrest" % "hamcrest-core" % "2.2"    % "provided"
   )
 
-  def scalaReflection(scalaVersion: String) = "org.scala-lang" % "scala-reflect" % scalaVersion
+  val scalaReflection = Def.setting(
+    if (scalaBinaryVersion.value == "3") {
+      Nil
+    } else {
+      Seq("org.scala-lang" % "scala-reflect" % scalaVersion.value)
+    }
+  )
 
-  val cats   = "org.typelevel" %% "cats-core"   % "2.0.0" % "provided"
+  val cats = Def.setting(
+    if (scalaBinaryVersion.value == "3") {
+      "org.typelevel" %% "cats-core" % "2.7.0" % "provided"
+    } else {
+      "org.typelevel" %% "cats-core" % "2.0.0" % "provided"
+    }
+  )
   val scalaz = "org.scalaz"    %% "scalaz-core" % "7.3.6" % "provided"
 
-  val catsLaws            = "org.typelevel" %% "cats-laws"            % "2.0.0"
+  val catsLaws = Def.setting(
+    if (scalaBinaryVersion.value == "3") {
+      "org.typelevel" %% "cats-laws" % "2.7.0"
+    } else {
+      "org.typelevel" %% "cats-laws" % "2.0.0"
+    }
+  )
   val disciplineScalatest = "org.typelevel" %% "discipline-scalatest" % "2.1.1"
 }

@@ -106,17 +106,17 @@ private[mockito] trait VerificationMacroTransformer {
         q"""
            if (_root_.org.mockito.MockitoSugar.mockingDetails($a).isMock) {
             ${called match {
-          case q"$_.calledAgain" =>
-            val calledPattern = show(q"$a.$b")
-            q"""throw new _root_.org.mockito.exceptions.misusing.NotAMockException(Seq(
+            case q"$_.calledAgain" =>
+              val calledPattern = show(q"$a.$b")
+              q"""throw new _root_.org.mockito.exceptions.misusing.NotAMockException(Seq(
                 "[" + $calledPattern + "] is not a mock!",
                 "Example of correct verification:",
                 "    myMock wasNever called",
                 ""
               ).mkString("\n"))
              """
-          case _ => transformInvocation(c)(q"$a.$b", order, q"_root_.org.mockito.VerifyMacro.Never")
-        }}
+            case _ => transformInvocation(c)(q"$a.$b", order, q"_root_.org.mockito.VerifyMacro.Never")
+          }}
           } else { 
             ${transformMockWasNeverCalled(q"$a.$b", called)}
           }

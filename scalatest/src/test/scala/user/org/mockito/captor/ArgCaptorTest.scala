@@ -151,7 +151,7 @@ class ArgCaptorTest extends AnyWordSpec with MockitoSugar with Matchers {
 
         error.getMessage should (
           include("Got [it worked again!] instead of [it worked!]") and
-          include("Also expected 1 more: [it worked again!]")
+            include("Also expected 1 more: [it worked again!]")
         )
       }
 
@@ -172,7 +172,7 @@ class ArgCaptorTest extends AnyWordSpec with MockitoSugar with Matchers {
 
         error.getMessage should (
           include("Got [it worked!] instead of [it worked again!]") and
-          include("Also got 1 more: [it worked again!]")
+            include("Also got 1 more: [it worked again!]")
         )
       }
     }

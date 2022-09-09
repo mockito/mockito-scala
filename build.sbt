@@ -149,10 +149,10 @@ lazy val common = (project in file("common"))
     commonSettings,
     noPublishingSettings,
     libraryDependencies ++= Dependencies.commonLibraries ++
-    Dependencies.scalaReflection.value ++ Seq(
-      Dependencies.catsLaws.value   % "test",
-      Dependencies.scalacheck.value % "test"
-    )
+      Dependencies.scalaReflection.value ++ Seq(
+        Dependencies.catsLaws.value   % "test",
+        Dependencies.scalacheck.value % "test"
+      )
   )
 
 lazy val core = (project in file("core"))

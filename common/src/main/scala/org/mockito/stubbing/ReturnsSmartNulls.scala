@@ -1,9 +1,8 @@
 package org.mockito
 package stubbing
 import java.lang.reflect.Modifier.isFinal
-
 import org.mockito.Mockito.{ mock, withSettings }
-import org.mockito.internal.debugging.LocationImpl
+import org.mockito.internal.debugging.LocationFactory
 import org.mockito.internal.exceptions.Reporter.smartNullPointerException
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 import org.mockito.internal.util.ObjectMethodsGuru.isToStringMethod
@@ -22,7 +21,7 @@ object ReturnsSmartNulls extends DefaultAnswer {
         None
     }
 
-  case class ThrowsSmartNullPointer(unstubbedInvocation: InvocationOnMock, location: Location = new LocationImpl) extends Answer[AnyRef] {
+  case class ThrowsSmartNullPointer(unstubbedInvocation: InvocationOnMock, location: Location = LocationFactory.create()) extends Answer[AnyRef] {
     override def answer(invocation: InvocationOnMock): AnyRef =
       if (isToStringMethod(invocation.getMethod))
         s"""SmartNull returned by this unstubbed method call on a mock:

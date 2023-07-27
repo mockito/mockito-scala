@@ -747,7 +747,7 @@ val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) returns Left(Err
 
 ## Mocking Scala `object`
 
-Since version 1.16.0 it is possible to mock `object` methods, given that such definitions are global, the way to mock them is sligtly different in order to ensure we restore the real implementation of the object after we are done
+Since version 1.16.0 it is possible to mock `object` methods, given that such definitions are global, the way to mock them is slightly different in order to ensure we restore the real implementation of the object after we are done
 
 To enable `withObjectMocked` feature, it is mandatory to create the file `src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker` containing a single line:
  

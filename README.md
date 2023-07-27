@@ -608,7 +608,7 @@ aMock.method(n =~ 5.0 +- 0.001) was called
 
 An instance of `org.scalactic.Prettifier` is implicitly pulled by the `EqTo` matcher to provide a nicer (and customisable) printing of 
 your types when an verification fails. `EqTo` is also used internally by `Mockito` to print the arguments of every invocation, so you'll 
-get a consisten printing for both the expectation and the actual call.
+get a consistent printing for both the expectation and the actual call.
 
 If you want to customise the print of any type you just need to declare your `Prettifier` in the implicit scope like
 

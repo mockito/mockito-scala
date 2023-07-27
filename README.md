@@ -554,7 +554,7 @@ The workaround is quite easy though, just provide a value (or a matcher) for tha
 
 ## Numeric matchers
 
-A new set of matchers to deal with number comparison were introduced (see [Scalactic tolerance](#tolerance) for aproximation),
+A new set of matchers to deal with number comparison were introduced (see [Scalactic tolerance](#tolerance) for approximation),
 the syntax is slightly different to make them more readable, so now we can write stuff like (notice the 'n')
 ```scala
 aMock.method(5)

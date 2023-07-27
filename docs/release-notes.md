@@ -36,7 +36,7 @@
  - NPE caused by mocking a generic method multiple times [(#256)](https://github.com/mockito/mockito-scala/issues/256)
  - Mocking method return Any as type throws Exception [(#254)](https://github.com/mockito/mockito-scala/issues/254)
  - IdiomaticMockitoSyntax appears not to handle thrown by without annotation [(#251)](https://github.com/mockito/mockito-scala/issues/251)
- - NPE when mocking a trait with a NonEmpyString argument [(#250)](https://github.com/mockito/mockito-scala/issues/250)
+ - NPE when mocking a trait with a NonEmptyString argument [(#250)](https://github.com/mockito/mockito-scala/issues/250)
 
 #### 1.14.8
  - 2020-06-23 - [1 commit](https://github.com/mockito/mockito-scala/compare/v1.14.7...v1.14.8) by [Ben Spencer](https://github.com/dangerousben) - published to [![Bintray](https://img.shields.io/badge/Bintray-1.14.8-green.svg)](https://bintray.com/mockito/maven/mockito-scala/1.14.8)

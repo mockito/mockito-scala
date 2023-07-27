@@ -28,7 +28,7 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala)
 
 
-### Please ensure you don't declare `mockito-core` as a dependency. `mockito-scala` will pull the appropiate version automatically
+### Please ensure you don't declare `mockito-core` as a dependency. `mockito-scala` will pull the appropriate version automatically
 
 
 ### Note: For more examples and use cases than the ones shown below, please refer to the library's specific tests

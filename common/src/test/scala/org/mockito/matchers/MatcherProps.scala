@@ -52,7 +52,7 @@ class MatcherProps extends Properties("matchers") {
     val transformed = Transformed(ma)(f)
     val matches     = transformed.matches(value)
     classify(matches, "matches", "doesn't match") {
-      (matches ?= ma.matches(f(value))) :| "matches if underlying matches transfomed value" &&
+      (matches ?= ma.matches(f(value))) :| "matches if underlying matches transformed value" &&
       (transformed.toString ?= s"transformed($ma: $f)") :| "renders to string correctly"
     }
   }

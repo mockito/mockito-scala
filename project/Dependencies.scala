@@ -41,7 +41,7 @@ object Dependencies {
       "org.typelevel" %% "cats-core" % "2.0.0" % "provided"
     }
   )
-  val scalaz = "org.scalaz" %% "scalaz-core" % "7.3.6" % "provided"
+  val scalaz = "org.scalaz" %% "scalaz-core" % "7.3.7" % "provided"
 
   val catsLaws = Def.setting(
     if (scalaBinaryVersion.value == "3") {

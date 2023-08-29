@@ -28,7 +28,7 @@ The library has independent developers, release cycle and versioning from core m
 *   Repositories: [Maven Central](https://search.maven.org/search?q=mockito-scala)
 
 
-### Please ensure you don't declare `mockito-core` as a dependency. `mockito-scala` will pull the appropiate version automatically
+### Please ensure you don't declare `mockito-core` as a dependency. `mockito-scala` will pull the appropriate version automatically
 
 
 ### Note: For more examples and use cases than the ones shown below, please refer to the library's specific tests
@@ -554,7 +554,7 @@ The workaround is quite easy though, just provide a value (or a matcher) for tha
 
 ## Numeric matchers
 
-A new set of matchers to deal with number comparison were introduced (see [Scalactic tolerance](#tolerance) for aproximation),
+A new set of matchers to deal with number comparison were introduced (see [Scalactic tolerance](#tolerance) for approximation),
 the syntax is slightly different to make them more readable, so now we can write stuff like (notice the 'n')
 ```scala
 aMock.method(5)
@@ -608,7 +608,7 @@ aMock.method(n =~ 5.0 +- 0.001) was called
 
 An instance of `org.scalactic.Prettifier` is implicitly pulled by the `EqTo` matcher to provide a nicer (and customisable) printing of 
 your types when an verification fails. `EqTo` is also used internally by `Mockito` to print the arguments of every invocation, so you'll 
-get a consisten printing for both the expectation and the actual call.
+get a consistent printing for both the expectation and the actual call.
 
 If you want to customise the print of any type you just need to declare your `Prettifier` in the implicit scope like
 
@@ -747,7 +747,7 @@ val failingMock: Foo = mock[Foo].returnsMT[ErrorOr, MyClass](*) returns Left(Err
 
 ## Mocking Scala `object`
 
-Since version 1.16.0 it is possible to mock `object` methods, given that such definitions are global, the way to mock them is sligtly different in order to ensure we restore the real implementation of the object after we are done
+Since version 1.16.0 it is possible to mock `object` methods, given that such definitions are global, the way to mock them is slightly different in order to ensure we restore the real implementation of the object after we are done
 
 To enable `withObjectMocked` feature, it is mandatory to create the file `src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker` containing a single line:
  

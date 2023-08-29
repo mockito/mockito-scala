@@ -2,7 +2,7 @@ package org.mockito
 package matchers
 
 /**
- * Matcher tranformed from one type to another with a function to modify the input
+ * Matcher transformed from one type to another with a function to modify the input
  *
  * Technically this is 'contramapped' but that seemed like an unnecessarily jargony name.
  */

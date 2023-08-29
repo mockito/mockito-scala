@@ -15,7 +15,7 @@ class Issue254 extends AnyFlatSpec with MockitoSugar with Matchers {
 
     // will explode with
     // java.lang.ClassNotFoundException: scala.Any
-    // because it tries to instatiate Any at org/mockito/ReflectionUtils.scala:57
+    // because it tries to instantiate Any at org/mockito/ReflectionUtils.scala:57
     when(myMock.methodReturningAny("test"))
       .thenReturn("some value")
 

@@ -27,7 +27,7 @@ case class ScalaFirstStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[
    * Sets consecutive return one or more values to be returned when the method is called. E.g: <pre class="code"><code class="scala"> when(mock.someMethod) thenReturn 1
    * </code></pre> <pre class="code"><code class="scala"> when(mock.someMethod) thenReturn (1, 2, 3) </code></pre>
    *
-   * Last return value in the sequence (in example: 3) determines the behavior of further consecutive calls. <p> See examples in javadoc for {@link org.mockito.MockitoSugar#when}
+   * Last return value in the sequence (in example: 3) determines the behavior of further consecutive calls. <p> See examples in javadoc for {@@linkorg.mockito.MockitoSugar#when}
    *
    * @param value
    *   first return value
@@ -43,7 +43,7 @@ case class ScalaFirstStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[
    * </code></pre> <pre class="code"><code class="java"> when(mock.someMethod) thenThrow (new RuntimeException, new OtherException) </code></pre>
    *
    * <p> You can specify throwables to be thrown for consecutive calls. In that case the last throwable determines the behavior of further consecutive calls. <p> If throwable is
-   * null then exception will be thrown. <p> See examples in javadoc for {@link org.mockito.MockitoSugar#when}
+   * null then exception will be thrown. <p> See examples in javadoc for {@@linkorg.mockito.MockitoSugar#when}
    *
    * @param throwables
    *   to be thrown on method invocation
@@ -57,7 +57,7 @@ case class ScalaFirstStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[
    * </code></pre>
    *
    * <p> If the throwable class is a checked exception then it has to match one of the checked exceptions of the stubbed method signature. <p> If throwable is null then exception
-   * will be thrown. <p> See examples in javadoc for {@link Mockito#when}
+   * will be thrown. <p> See examples in javadoc for {@@linkMockito#when}
    *
    * <p>Note depending on the JVM, stack trace information may not be available in the generated throwable instance. If you require stack trace information, use {@link
    * OngoingStubbing#thenThrow(Throwable...)} instead.
@@ -80,9 +80,9 @@ case class ScalaFirstStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[
    *
    * // calls real method: mock.someMethod();
    *
-   * </code></pre> See also javadoc {@link Mockito#spy(Object)} to find out more about partial mocks. <b>Mockito.spy() is a recommended way of creating partial mocks.</b> The
+   * </code></pre> See also javadoc {@@linkMockito#spy(Object)} to find out more about partial mocks. <b>Mockito.spy() is a recommended way of creating partial mocks.</b> The
    * reason is it guarantees real methods are called against correctly constructed object because you're responsible for constructing the object passed to spy() method. <p> See
-   * examples in javadoc for {@link Mockito#when}
+   * examples in javadoc for {@@linkMockito#when}
    *
    * @return
    *   object that allows stubbing consecutive calls

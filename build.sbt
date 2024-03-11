@@ -2,7 +2,7 @@ import scala.io.Source
 import scala.language.postfixOps
 import sbt.io.Using
 
-val currentScalaVersion = "2.13.8"
+val currentScalaVersion = "2.13.13"
 
 inThisBuild(
   Seq(
@@ -26,7 +26,7 @@ lazy val commonSettings =
   Seq(
     organization := "org.mockito",
     // Load version from the file so that Gradle/Shipkit and SBT use the same version
-    crossScalaVersions := Seq(currentScalaVersion, "2.12.18", "2.11.12"),
+    crossScalaVersions := Seq(currentScalaVersion, "2.12.19", "2.11.12"),
     scalafmtOnCompile  := true,
     scalacOptions ++= Seq(
       "-unchecked",

@@ -2,8 +2,8 @@ package org.mockito.specs2
 
 import java.io.{ File, FileOutputStream, ObjectOutputStream }
 import java.util
-
 import org.hamcrest.core.IsNull
+import org.mockito.VerifyOrder
 import org.mockito.captor.ArgCaptor
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.DefaultAnswer
@@ -660,7 +660,7 @@ The Mockito trait is reusable in other contexts
       "ex1" in new org.specs2.specification.Scope {
         val (list1, list2) = (mock[java.util.List[String]], mock[java.util.List[String]])
         list1.add("two"); list2.add("one")
-        implicit val order = inOrder(list1, list2)
+        implicit val order: VerifyOrder = inOrder(list1, list2)
         there was one(list2).add("two") andThen one(list1).add("one")
       }
     }

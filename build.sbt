@@ -2,7 +2,7 @@ import scala.io.Source
 import scala.language.postfixOps
 import sbt.io.Using
 
-val currentScalaVersion = "2.13.14"
+val currentScalaVersion = "2.13.15"
 
 inThisBuild(
   Seq(

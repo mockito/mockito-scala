@@ -25,9 +25,8 @@ class ThatMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with 
     verify(aMock).baz(argMatching { case Baz("Hello", _) => })
     verify(aMock).baz(argMatching { case Baz(_, _) => })
 
-    an[WantedButNotInvoked] should be thrownBy {
-      verify(aMock).baz(argMatching { case Baz("", _) => })
-    }
+    an[WantedButNotInvoked] should be thrownBy
+    verify(aMock).baz(argMatching { case Baz("", _) => })
   }
 
   "argThat[T]" should "work with AnyRef" in {

@@ -13,15 +13,14 @@ class Issue256 extends AnyWordSpec with Matchers {
   }
 
   "mockito" should {
-    "allow stubbing the same method multiple times" in {
-      MockitoScalaSession().run {
-        val foo = mock[Foo]
-        foo.test[String](argThat((s: String) => s.startsWith("foo"))) returns "foo"
-        foo.test[Int](argThat((n: Int) => n > 10)) returns 42
+    "allow stubbing the same method multiple times" in
+    MockitoScalaSession().run {
+      val foo = mock[Foo]
+      foo.test[String](argThat((s: String) => s.startsWith("foo"))) returns "foo"
+      foo.test[Int](argThat((n: Int) => n > 10)) returns 42
 
-        foo.test("fooSSS") shouldBe "foo"
-        foo.test(11) shouldBe 42
-      }
+      foo.test("fooSSS") shouldBe "foo"
+      foo.test(11) shouldBe 42
     }
   }
 }

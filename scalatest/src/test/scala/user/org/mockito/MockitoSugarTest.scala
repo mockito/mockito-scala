@@ -408,9 +408,8 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
     }
 
     "stop the user passing traits in the settings" in {
-      a[IllegalArgumentException] should be thrownBy {
-        mock[Foo](withSettings.extraInterfaces(classOf[Baz]))
-      }
+      a[IllegalArgumentException] should be thrownBy
+      mock[Foo](withSettings.extraInterfaces(classOf[Baz]))
     }
 
     "work when getting varargs from collections" in {

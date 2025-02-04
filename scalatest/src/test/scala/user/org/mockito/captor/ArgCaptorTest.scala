@@ -145,9 +145,8 @@ class ArgCaptorTest extends AnyWordSpec with MockitoSugar with Matchers {
 
         captor.values.should(contain).only("it worked again!")
 
-        val error = the[MockitoAssertionError] thrownBy {
+        val error = the[MockitoAssertionError] thrownBy
           captor.hasCaptured("it worked!", "it worked again!")
-        }
 
         error.getMessage should (
           include("Got [it worked again!] instead of [it worked!]") and
@@ -166,9 +165,8 @@ class ArgCaptorTest extends AnyWordSpec with MockitoSugar with Matchers {
 
         captor.values.should(contain).only("it worked!", "it worked again!")
 
-        val error = the[MockitoAssertionError] thrownBy {
+        val error = the[MockitoAssertionError] thrownBy
           captor.hasCaptured("it worked again!")
-        }
 
         error.getMessage should (
           include("Got [it worked!] instead of [it worked again!]") and

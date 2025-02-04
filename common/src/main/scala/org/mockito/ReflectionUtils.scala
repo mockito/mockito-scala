@@ -20,9 +20,8 @@ object ReflectionUtils {
 
   private val mirror = runtimeMirror(getClass.getClassLoader)
   private val customMirror = mirror.asInstanceOf[{
-      def methodToJava(sym: Symbols#MethodSymbol): Method
-    }
-  ]
+    def methodToJava(sym: Symbols#MethodSymbol): Method
+  }]
 
   def listToTuple(l: List[Object]): Any =
     l match {

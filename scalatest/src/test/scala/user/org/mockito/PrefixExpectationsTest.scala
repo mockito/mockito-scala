@@ -275,11 +275,10 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
         mock1.bar
         mock2.iHaveDefaultArgs()
 
-        a[VerificationInOrderFailure] should be thrownBy {
-          InOrder(mock1, mock2) { implicit order =>
-            expect a call to mock2.iHaveDefaultArgs()
-            expect a call to mock1.bar
-          }
+        a[VerificationInOrderFailure] should be thrownBy
+        InOrder(mock1, mock2) { implicit order =>
+          expect a call to mock2.iHaveDefaultArgs()
+          expect a call to mock1.bar
         }
 
         InOrder(mock1, mock2) { implicit order =>

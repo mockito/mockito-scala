@@ -251,11 +251,10 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
         mock1.bar
         mock2.iHaveDefaultArgs()
 
-        a[VerificationInOrderFailure] should be thrownBy {
-          InOrder(mock1, mock2) { implicit order =>
-            mock2.iHaveDefaultArgs() was called
-            mock1.bar was called
-          }
+        a[VerificationInOrderFailure] should be thrownBy
+        InOrder(mock1, mock2) { implicit order =>
+          mock2.iHaveDefaultArgs() was called
+          mock1.bar was called
         }
 
         InOrder(mock1, mock2) { implicit order =>

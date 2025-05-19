@@ -295,9 +295,8 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
         aMock.baz(42, Baz2(69, "hola"))
 
-        val e = the[ArgumentsAreDifferent] thrownBy {
+        val e = the[ArgumentsAreDifferent] thrownBy
           verify(aMock).baz(42, Baz2(69, "chau"))
-        }
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("foo.baz(42, PrettifiedBaz(hola));")
@@ -408,9 +407,8 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
     }
 
     "stop the user passing traits in the settings" in {
-      a[IllegalArgumentException] should be thrownBy {
-        mock[Foo](withSettings.extraInterfaces(classOf[Baz]))
-      }
+      a[IllegalArgumentException] should be thrownBy
+      mock[Foo](withSettings.extraInterfaces(classOf[Baz]))
     }
 
     "work when getting varargs from collections" in {

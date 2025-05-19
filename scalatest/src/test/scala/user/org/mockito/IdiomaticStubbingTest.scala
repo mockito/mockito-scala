@@ -236,9 +236,8 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
 
         org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = false)
 
-        an[IllegalArgumentException] should be thrownBy {
-          org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true)
-        }
+        an[IllegalArgumentException] should be thrownBy
+        org.doSomethingWithThisIntAndStringAndBoolean(1, "2", v3 = true)
 
         """"some value" willBe thrown by org.bar""" shouldNot compile
       }
@@ -258,9 +257,8 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       aSpy.iBlowUp(1, "ok") shouldBe "mocked!"
       aSpy.iBlowUp(2, "ok") shouldBe "mocked!"
 
-      an[IllegalArgumentException] should be thrownBy {
-        aSpy.iBlowUp(2, "not ok")
-      }
+      an[IllegalArgumentException] should be thrownBy
+      aSpy.iBlowUp(2, "not ok")
     }
 
     "stub a function with an answer" in {
@@ -316,12 +314,11 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
     }
 
     "be thread safe" when {
-      "always stubbing object methods" in {
-        immutable.ParSeq.range(1, 100).foreach { i =>
-          withObjectSpied[FooObject.type] {
-            FooObject.simpleMethod returns s"spied!-$i"
-            FooObject.simpleMethod shouldBe s"spied!-$i"
-          }
+      "always stubbing object methods" in
+      immutable.ParSeq.range(1, 100).foreach { i =>
+        withObjectSpied[FooObject.type] {
+          FooObject.simpleMethod returns s"spied!-$i"
+          FooObject.simpleMethod shouldBe s"spied!-$i"
         }
       }
 
@@ -357,12 +354,11 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       FooObject.simpleMethod shouldBe "not mocked!"
     }
 
-    "object stubbing should be thread safe" in {
-      immutable.ParSeq.range(1, 100).foreach { i =>
-        withObjectMocked[FooObject.type] {
-          FooObject.simpleMethod returns s"mocked!-$i"
-          FooObject.simpleMethod shouldBe s"mocked!-$i"
-        }
+    "object stubbing should be thread safe" in
+    immutable.ParSeq.range(1, 100).foreach { i =>
+      withObjectMocked[FooObject.type] {
+        FooObject.simpleMethod returns s"mocked!-$i"
+        FooObject.simpleMethod shouldBe s"mocked!-$i"
       }
     }
 

@@ -16,6 +16,12 @@ object ReflectionUtils {
   import scala.reflect.runtime.{ universe => ru }
   import ru._
 
+  private val JavaVersion: Int =
+    System.getProperty("java.version").split("\\.") match {
+      case Array("1", v, _*) => v.toInt // Java 8 style: 1.8.x
+      case Array(v, _*)      => v.toInt // Java 9+ style: 11.x, 17.x, etc.
+    }
+
   implicit def symbolToMethodSymbol(sym: Symbol): Symbols#MethodSymbol = sym.asInstanceOf[Symbols#MethodSymbol]
 
   private val mirror = runtimeMirror(getClass.getClassLoader)
@@ -51,29 +57,23 @@ object ReflectionUtils {
     def returnsValueClass: Boolean = findTypeSymbol.exists(_.returnType.typeSymbol.isDerivedValueClass)
 
     private def resolveWithScalaGenerics: Option[Class[_]] =
-      scala.util
-        .Try {
-          findTypeSymbol
-            .filter(_.returnType.typeSymbol.isClass)
-            .map(_.asMethod.returnType.typeSymbol.asClass)
-            .map(mirror.runtimeClass)
-        }
-        .toOption
-        .flatten
+      uTry {
+        findTypeSymbol
+          .filter(_.returnType.typeSymbol.isClass)
+          .map(_.asMethod.returnType.typeSymbol.asClass)
+          .map(mirror.runtimeClass)
+      }.toOption.flatten
 
     private def findTypeSymbol =
-      scala.util
-        .Try {
-          mirror
-            .classSymbol(method.getDeclaringClass)
-            .info
-            .decls
-            .collectFirst {
-              case symbol if isNonConstructorMethod(symbol) && customMirror.methodToJava(symbol) === method => symbol
-            }
-        }
-        .toOption
-        .flatten
+      uTry {
+        mirror
+          .classSymbol(method.getDeclaringClass)
+          .info
+          .decls
+          .collectFirst {
+            case symbol if isNonConstructorMethod(symbol) && customMirror.methodToJava(symbol) === method => symbol
+          }
+      }.toOption.flatten
 
     private def resolveWithJavaGenerics: Option[Class[_]] =
       try Some(GenericsResolver.resolve(invocation.getMock.getClass).`type`(method.getDeclaringClass).method(method).resolveReturnClass())
@@ -85,45 +85,47 @@ object ReflectionUtils {
   private def isNonConstructorMethod(d: ru.Symbol): Boolean = d.isMethod && !d.isConstructor
 
   def extraInterfaces[T](implicit $wtt: WeakTypeTag[T], $ct: ClassTag[T]): List[Class[_]] =
-    scala.util
-      .Try {
-        val cls = clazz($ct)
-        $wtt.tpe match {
-          case RefinedType(types, _) =>
-            types.map($wtt.mirror.runtimeClass).collect {
-              case c: Class[_] if c.isInterface && c != cls => c
-            }
-          case _ => List.empty
-        }
+    uTry {
+      val cls = clazz($ct)
+      $wtt.tpe match {
+        case RefinedType(types, _) =>
+          types.map($wtt.mirror.runtimeClass).collect {
+            case c: Class[_] if c.isInterface && c != cls => c
+          }
+        case _ => List.empty
       }
-      .toOption
+    }.toOption
       .getOrElse(List.empty)
 
   def methodsWithLazyOrVarArgs(classes: Seq[Class[_]]): Seq[(Method, Set[Int])] =
     classes.flatMap { clazz =>
-      scala.util
-        .Try {
-          mirror
-            .classSymbol(clazz)
-            .info
-            .members
-            .collect {
-              case symbol if isNonConstructorMethod(symbol) =>
-                symbol -> symbol.typeSignature.paramLists.flatten.zipWithIndex.collect {
-                  case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
-                  case (p, idx) if p.typeSignature.toString.endsWith("*")    => idx
-                }.toSet
-            }
-            .collect {
-              case (symbol, indices) if indices.nonEmpty => customMirror.methodToJava(symbol) -> indices
-            }
-            .toSeq
-        }
-        .toOption
+      uTry {
+        mirror
+          .classSymbol(clazz)
+          .info
+          .members
+          .collect {
+            case symbol if isNonConstructorMethod(symbol) =>
+              symbol -> symbol.typeSignature.paramLists.flatten.zipWithIndex.collect {
+                case (p, idx) if p.typeSignature.toString.startsWith("=>") => idx
+                case (p, idx) if p.typeSignature.toString.endsWith("*")    => idx
+              }.toSet
+          }
+          .collect {
+            case (symbol, indices) if indices.nonEmpty => customMirror.methodToJava(symbol) -> indices
+          }
+          .toSeq
+      }.toOption
         .getOrElse(Seq.empty)
     }
 
-  def setFinalStatic(field: Field, newValue: Any): Unit = {
+  def setFinalStatic(field: Field, newValue: AnyRef): Unit =
+    if (JavaVersion < 17)
+      setFinalStatic17Minus(field, newValue)
+    else
+      setFinalStatic17Plus(field, newValue)
+
+  private def setFinalStatic17Minus(field: Field, newValue: AnyRef): Unit = {
     val clazz = classOf[java.lang.Class[_]]
     field.setAccessible(true)
     val modifiersField: Field = uTry(clazz.getDeclaredField("modifiers")) match {
@@ -149,5 +151,35 @@ object ReflectionUtils {
     modifiersField.setInt(field, field.getModifiers & ~Modifier.FINAL)
     field.set(null, newValue)
   }
+
+  private def setFinalStatic17Plus(field: Field, newValue: AnyRef): Unit =
+    try {
+      // Try to get Unsafe instance (works with both sun.misc.Unsafe and jdk.internal.misc.Unsafe)
+      val unsafeClass: Class[_] =
+        try
+          Class.forName("sun.misc.Unsafe")
+        catch {
+          case _: ClassNotFoundException => Class.forName("jdk.internal.misc.Unsafe")
+        }
+
+      val unsafeField = unsafeClass.getDeclaredField("theUnsafe")
+      unsafeField.setAccessible(true)
+      val unsafe = unsafeField.get(null)
+
+      // Get methods via reflection to handle both Unsafe implementations
+      val staticFieldBaseMethod   = unsafeClass.getMethod("staticFieldBase", classOf[Field])
+      val staticFieldOffsetMethod = unsafeClass.getMethod("staticFieldOffset", classOf[Field])
+      val putObjectMethod         = unsafeClass.getMethod("putObject", classOf[Object], classOf[Long], classOf[Object])
+
+      // Get base and offset for the field
+      val base: Object = staticFieldBaseMethod.invoke(unsafe, field)
+      val offset: Long = staticFieldOffsetMethod.invoke(unsafe, field).asInstanceOf[Long]
+
+      // Set the field value directly
+      putObjectMethod.invoke(unsafe, base, java.lang.Long.valueOf(offset), newValue)
+    } catch {
+      case NonFatal(e) =>
+        throw new IllegalStateException(s"Cannot modify final field ${field.getName}", e)
+    }
 
 }

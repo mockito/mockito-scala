@@ -83,7 +83,8 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
 
         org.bar wasCalled onlyHere
 
-        a[NoInteractionsWanted] should be thrownBy {
+        // https://github.com/mockito/mockito/pull/3287 changed the behavior of this
+        a[WantedButNotInvoked] should be thrownBy {
           org.baz
 
           org.baz wasCalled onlyHere
@@ -509,7 +510,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("org.baz(42, PrettifiedBaz(hola));")
-        e.getMessage should include("Actual invocations have different arguments:")
+        e.getMessage should include("Actual invocations have different arguments")
         e.getMessage should include("org.baz(42, PrettifiedBaz(chau));")
       }
 

@@ -369,6 +369,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
         org.fooWithVarArgAndSecondParameterList("cow")(cheese)
         expect a call to org.fooWithVarArgAndSecondParameterList("cow")(cheese)
         expect a call to org.fooWithVarArgAndSecondParameterList("cow")(*)
+        expect a call to org.fooWithVarArgAndSecondParameterList(*)(*)
 
         expect a call to org.fooWithVarArgAndSecondParameterList(endsWith("w"))(*)
         expect a call to org.fooWithVarArgAndSecondParameterList(startsWith("c"))(*)
@@ -533,7 +534,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("org.baz(42, PrettifiedBaz(hola));")
-        e.getMessage should include("Actual invocations have different arguments:")
+        e.getMessage should include("Actual invocations have different arguments")
         e.getMessage should include("org.baz(42, PrettifiedBaz(chau));")
       }
 

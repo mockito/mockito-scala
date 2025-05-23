@@ -38,7 +38,10 @@ The library has independent developers, release cycle and versioning from core m
 - [Scalaz](/scalaz/src/test)
 
 ## Partial unification
-If you're in Scala 2.11 or 2.12 you'll probably want to add the compiler flag `-Ypartial-unification`, if you don't you risk some compile errors when trying to stub complex types using the idiomatic syntax
+If you're in Scala 2.12 you'll probably want to add the compiler flag `-Ypartial-unification`, if you don't you risk some compile errors when trying to stub complex types using the idiomatic syntax
+
+## Notes for 2.0.0
+We dropped support for Scala 2.11 and Java 8, as Mockito 5 dropped support for Java 8.
 
 ## Notes for 1.13.6
 
@@ -500,14 +503,14 @@ Of course you can override the default behaviour, for this you have 2 options
 DefaultAnswers are also composable, so for example if you wanted empty values first and then smart nulls you could do `implicit val defaultAnswer: DefaultAnswer = ReturnsEmptyValues orElse ReturnsSmartNulls`
 
 ## Function Answers
-`org.mockito.Answer[T]` can be a bit boilerplate-ish, mostly if you're still in Scala 2.11 (in 2.12 with SAM is much nicer),
+`org.mockito.Answer[T]` can be a bit boilerplate-ish, 
 to simplify the usage for both versions is that we replaced it by standard scala functions, so instead of 
 ```scala
 when(myMock.foo("bar", 42)) thenAnswer new Answer[String] {
   override def answer(invocation: InvocationOnMock): String = i.getArgument[String](0) + i.getArgument[Int](1)
 }
 ```
-We can now write: (this may be nothing new for users of 2.12, but at least now the API is consistent for both 2.11 and 2.12)
+We can now write: 
 ```scala
 when(myMock.foo("bar", 42)) thenAnswer ((i: InvocationOnMock) => i.getArgument[String](0) + i.getArgument[Int](1))
 ```
@@ -797,13 +800,6 @@ your build.sbt and that warning will be ignored for your tests **only**
 matchers usage then you have to explicitly provide the type for the matcher, thus `any` would become `any[MyType]` and
 `*` would become `*[MyType]` (you can also use `anyShort`, `anyInt`, etc for the primitive types)
  
-### Scala 2.11
-Please note that in Scala 2.11 the following features are not supported
-
-* Default arguments on methods defined in traits (they will behave as before, getting `null` or a default value if they 
-are of a primitive type)
-* Any kind of `ArgumentMatcher[T]` for methods with by-name parameters (they'll throw an exception if used with `ArgumentMatcher[T]`)
-
 ## Authors
 
 * **Bruno Bonanno** - *Initial work* - [bbonanno](https://github.com/bbonanno)

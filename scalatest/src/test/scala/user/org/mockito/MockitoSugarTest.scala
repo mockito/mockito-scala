@@ -300,7 +300,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
         e.getMessage should include("Argument(s) are different! Wanted:")
         e.getMessage should include("foo.baz(42, PrettifiedBaz(hola));")
-        e.getMessage should include("Actual invocations have different arguments:")
+        e.getMessage should include("Actual invocations have different arguments")
         e.getMessage should include("foo.baz(42, PrettifiedBaz(chau));")
       }
     }

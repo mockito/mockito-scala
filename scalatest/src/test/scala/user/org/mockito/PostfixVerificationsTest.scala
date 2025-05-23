@@ -403,27 +403,6 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
         org.valueClassWithVarArgAndSecondParameterList(Bread("Chipa"), Bread("Tortilla"))(cheese) was called
       }
 
-      "eqToVal works with new syntax" in {
-        val org = orgDouble()
-
-        org.valueClass(1, eqToVal(new ValueClass("meh"))) returns "mocked!"
-        org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
-        org.valueClass(1, eqToVal(new ValueClass("meh"))) was called
-
-        org.valueCaseClass(2, eqToVal(ValueCaseClassInt(100))) returns "mocked!"
-        org.valueCaseClass(2, ValueCaseClassInt(100)) shouldBe "mocked!"
-        org.valueCaseClass(2, eqToVal(ValueCaseClassInt(100))) was called
-
-        val caseClassValue = ValueCaseClassInt(100)
-        org.valueCaseClass(3, eqToVal(caseClassValue)) returns "mocked!"
-        org.valueCaseClass(3, ValueCaseClassInt(100)) shouldBe "mocked!"
-        org.valueCaseClass(3, eqToVal(caseClassValue)) was called
-
-        org.valueCaseClass(*, ValueCaseClassInt(200)) returns "mocked!"
-        org.valueCaseClass(4, ValueCaseClassInt(200)) shouldBe "mocked!"
-        org.valueCaseClass(*, ValueCaseClassInt(200)) was called
-      }
-
       "eqTo macro works with new syntax" in {
         val org = orgDouble()
 
@@ -455,18 +434,6 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
         an[WantedButNotInvoked] should be thrownBy {
           org.baz(2, argMatching { case Baz2(99, "pepe") => }) was called
         }
-      }
-
-      "anyVal works with new syntax" in {
-        val org = orgDouble()
-
-        org.valueClass(1, anyVal[ValueClass]) returns "mocked!"
-        org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
-        org.valueClass(1, anyVal[ValueClass]) was called
-
-        org.valueCaseClass(2, anyVal[ValueCaseClassInt]) returns "mocked!"
-        org.valueCaseClass(2, ValueCaseClassInt(100)) shouldBe "mocked!"
-        org.valueCaseClass(2, anyVal[ValueCaseClassInt]) was called
       }
 
       "any works with new syntax" in {

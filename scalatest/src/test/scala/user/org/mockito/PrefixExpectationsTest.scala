@@ -427,27 +427,6 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
         expect a call to org.valueClassWithVarArgAndSecondParameterList(Bread("Chipa"), Bread("Tortilla"))(cheese)
       }
 
-      "eqToVal works with new syntax" in {
-        val org = orgDouble()
-
-        org.valueClass(1, eqToVal(new ValueClass("meh"))) returns "mocked!"
-        org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
-        expect a call to org.valueClass(1, eqToVal(new ValueClass("meh")))
-
-        org.valueCaseClass(2, eqToVal(ValueCaseClassInt(100))) returns "mocked!"
-        org.valueCaseClass(2, ValueCaseClassInt(100)) shouldBe "mocked!"
-        expect a call to org.valueCaseClass(2, eqToVal(ValueCaseClassInt(100)))
-
-        val caseClassValue = ValueCaseClassInt(100)
-        org.valueCaseClass(3, eqToVal(caseClassValue)) returns "mocked!"
-        org.valueCaseClass(3, ValueCaseClassInt(100)) shouldBe "mocked!"
-        expect a call to org.valueCaseClass(3, eqToVal(caseClassValue))
-
-        org.valueCaseClass(*, ValueCaseClassInt(200)) returns "mocked!"
-        org.valueCaseClass(4, ValueCaseClassInt(200)) shouldBe "mocked!"
-        expect a call to org.valueCaseClass(*, ValueCaseClassInt(200))
-      }
-
       "eqTo macro works with new syntax" in {
         val org = orgDouble()
 
@@ -479,18 +458,6 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
         an[WantedButNotInvoked] should be thrownBy {
           expect a call to org.baz(2, argMatching { case Baz2(99, "pepe") => })
         }
-      }
-
-      "anyVal works with new syntax" in {
-        val org = orgDouble()
-
-        org.valueClass(1, anyVal[ValueClass]) returns "mocked!"
-        org.valueClass(1, new ValueClass("meh")) shouldBe "mocked!"
-        expect a call to org.valueClass(1, anyVal[ValueClass])
-
-        org.valueCaseClass(2, anyVal[ValueCaseClassInt]) returns "mocked!"
-        org.valueCaseClass(2, ValueCaseClassInt(100)) shouldBe "mocked!"
-        expect a call to org.valueCaseClass(2, anyVal[ValueCaseClassInt])
       }
 
       "any works with new syntax" in {

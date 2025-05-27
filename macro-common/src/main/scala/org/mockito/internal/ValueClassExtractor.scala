@@ -1,7 +1,7 @@
 package org.mockito.internal
 
 import org.mockito.internal.MacroDebug.debugResult
-import org.mockito.internal.ScalaVersion.{ V2_11, V2_12, V2_13 }
+import org.mockito.internal.ScalaVersion.{ V2_12, V2_13 }
 
 import scala.reflect.macros.blackbox
 
@@ -43,19 +43,6 @@ object ValueClassExtractor {
         ScalaVersion.Current match {
           case V2_12 | V2_13 =>
             c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
-          case V2_11 =>
-            c.Expr[ValueClassExtractor[VC]] {
-              val companion = typeSymbol.companion
-
-              if (companion.info.decls.exists(_.name.toString == "unapply"))
-                q"""
-                  new _root_.org.mockito.internal.ValueClassExtractor[$tpe] {
-                    override def extract(vc: $tpe): Any = $companion.unapply(vc).get
-                  }
-                 """
-              else
-                q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]"
-            }
         }
       } else
         c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")

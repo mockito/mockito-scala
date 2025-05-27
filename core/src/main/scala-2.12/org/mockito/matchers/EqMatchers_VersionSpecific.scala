@@ -14,9 +14,4 @@ trait EqMatchers_VersionSpecific {
     value
   }
 
-  /**
-   * It was intended to be used instead of eqTo when the argument is a value class, but eqTo now supports value classes so it is not needed anymore
-   */
-  @deprecated("Use 'eqTo' instead", since = "1.0.2")
-  def eqToVal[T: Equality: ValueClassExtractor](value: T)(implicit $pt: Prettifier): T = eqTo(value)
 }

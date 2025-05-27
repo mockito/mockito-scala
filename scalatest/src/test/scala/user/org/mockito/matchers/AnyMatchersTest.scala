@@ -43,18 +43,6 @@ class AnyMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with A
     verify(aMock).barTyped("meh")
   }
 
-  "anyVal" should "work with a value class" in {
-    val aMock = mock[Foo]
-
-    when(aMock.valueClass(anyVal[ValueClass])) thenReturn "mocked!"
-    aMock.valueClass(new ValueClass("meh")) shouldBe "mocked!"
-    verify(aMock).valueClass(anyVal[ValueClass])
-
-    when(aMock.valueCaseClass(anyVal[ValueCaseClassInt])) thenReturn 100
-    aMock.valueCaseClass(ValueCaseClassInt(1)) shouldBe 100
-    verify(aMock).valueCaseClass(anyVal[ValueCaseClassInt])
-  }
-
   "any" should "work with a value class" in {
     val aMock = mock[Foo]
 

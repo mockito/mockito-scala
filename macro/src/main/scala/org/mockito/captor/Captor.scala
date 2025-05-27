@@ -4,7 +4,7 @@ import org.mockito.exceptions.base.MockitoAssertionError
 import org.mockito.exceptions.verification.{ ArgumentsAreDifferent, TooFewActualInvocations, TooManyActualInvocations }
 import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.ScalaVersion
-import org.mockito.internal.ScalaVersion.{ V2_11, V2_12, V2_13 }
+import org.mockito.internal.ScalaVersion.{ V2_12, V2_13 }
 import org.mockito.{ clazz, ArgumentCaptor }
 import org.scalactic.Equality
 import org.scalactic.TripleEquals._
@@ -78,8 +78,8 @@ object Captor {
       val paramType = tpe.decl(param.name).typeSignature.finalResultType
 
       val collectionConverters = ScalaVersion.Current match {
-        case V2_11 | V2_12 => q"import _root_.scala.collection.JavaConverters._"
-        case V2_13         => q"import _root_.scala.jdk.CollectionConverters._"
+        case V2_12 => q"import _root_.scala.collection.JavaConverters._"
+        case V2_13 => q"import _root_.scala.jdk.CollectionConverters._"
       }
 
       q"""

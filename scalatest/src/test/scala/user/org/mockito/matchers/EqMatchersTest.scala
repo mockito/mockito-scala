@@ -18,18 +18,6 @@ class EqMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with Ar
     verify(aMock).valueCaseClass(eqTo(expected))
   }
 
-  "eqToVal[T]" should "work with value classes" in {
-    val aMock = mock[Foo]
-
-    aMock.valueClass(new ValueClass("meh"))
-    verify(aMock).valueClass(eqToVal(new ValueClass("meh")))
-
-    aMock.valueCaseClass(ValueCaseClassInt(100))
-    verify(aMock).valueCaseClass(eqToVal(ValueCaseClassInt(100)))
-    val expected = ValueCaseClassInt(100)
-    verify(aMock).valueCaseClass(eqToVal(expected))
-  }
-
   "eqTo[T]" should "work with AnyRef" in {
     val aMock = mock[Foo]
 

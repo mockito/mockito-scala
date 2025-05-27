@@ -26,7 +26,7 @@ lazy val commonSettings =
   Seq(
     organization := "org.mockito",
     // Load version from the file so that Gradle/Shipkit and SBT use the same version
-    crossScalaVersions := Seq(currentScalaVersion, "2.12.20", "2.11.12"),
+    crossScalaVersions := Seq(currentScalaVersion, "2.12.20"),
     scalafmtOnCompile  := true,
     scalacOptions ++= Seq(
       "-unchecked",
@@ -122,8 +122,8 @@ lazy val cats = (project in file("cats"))
     commonSettings,
     publishSettings,
     libraryDependencies ++= Seq(
-      Dependencies.cats.value,
-      Dependencies.catsLaws.value      % "test",
+      Dependencies.cats,
+      Dependencies.catsLaws      % "test",
       Dependencies.disciplineScalatest % "test",
       Dependencies.scalatest           % "test"
     )
@@ -150,8 +150,8 @@ lazy val common = (project in file("common"))
     noPublishingSettings,
     libraryDependencies ++= Dependencies.commonLibraries ++
       Dependencies.scalaReflection.value ++ Seq(
-        Dependencies.catsLaws.value   % "test",
-        Dependencies.scalacheck.value % "test"
+        Dependencies.catsLaws   % "test",
+        Dependencies.scalacheck % "test"
       )
   )
 

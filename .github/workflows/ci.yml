@@ -45,6 +45,13 @@ jobs:
 
       - name: 3. Build on Java ${{ matrix.java }}
         run: ./build.sh
+  
+  verify-wrapper:
+    name: "Verify Gradle wrapper"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v4
 
   #
   # Release job, only for pushes to the main development branch

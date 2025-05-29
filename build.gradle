@@ -6,9 +6,9 @@ buildscript {
 
     dependencies {
         //Using buildscript.classpath so that we can resolve plugins from maven local, during local testing
-        classpath "org.shipkit:shipkit-auto-version:1.+"
-        classpath "org.shipkit:shipkit-changelog:1.+"
-        classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
+        classpath "org.shipkit:shipkit-auto-version:2.1.0"
+        classpath "org.shipkit:shipkit-changelog:2.0.1"
+        classpath "io.github.gradle-nexus:publish-plugin:2.0.0"
     }
 }
 
@@ -23,11 +23,11 @@ publishing {
 publications {
     int i = 1
     [
-            "mockito-scala_2.11", "mockito-scala_2.12", "mockito-scala_2.13",
-            "mockito-scala-cats_2.11", "mockito-scala-cats_2.12", "mockito-scala-cats_2.13",
-            "mockito-scala-scalatest_2.11", "mockito-scala-scalatest_2.12", "mockito-scala-scalatest_2.13",
-            "mockito-scala-scalaz_2.11", "mockito-scala-scalaz_2.12", "mockito-scala-scalaz_2.13",
-            "mockito-scala-specs2_2.11", "mockito-scala-specs2_2.12", "mockito-scala-specs2_2.13",
+            "mockito-scala_2.12", "mockito-scala_2.13",
+            "mockito-scala-cats_2.12", "mockito-scala-cats_2.13",
+            "mockito-scala-scalatest_2.12", "mockito-scala-scalatest_2.13",
+            "mockito-scala-scalaz_2.12", "mockito-scala-scalaz_2.13",
+            "mockito-scala-specs2_2.12", "mockito-scala-specs2_2.13",
     ].each {pub ->
         String pubName = "publication${i++}"
         pubNames << pubName

@@ -78,7 +78,7 @@ case class ScalaOngoingStubbing[T: ValueClassExtractor](delegate: OngoingStubbin
    */
   def andThenCallRealMethod(): ScalaOngoingStubbing[T] = _thenCallRealMethod()
 
-  def andThenAnswer(f: => T): ScalaOngoingStubbing[T] = _thenAnswer(f)
+  def andThenAnswer(f: => T): ScalaOngoingStubbing[T]                                                                                  = _thenAnswer(f)
   def andThenAnswer[P0: ValueClassWrapper](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): ScalaOngoingStubbing[T] =
     _thenAnswer(f)
   def andThenAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper](f: (P0, P1) => T): ScalaOngoingStubbing[T] =

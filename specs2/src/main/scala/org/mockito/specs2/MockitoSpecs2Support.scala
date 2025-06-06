@@ -21,8 +21,8 @@ trait FunctionArgumentsLowImplicits extends ArgThat with Expectations {
     argThat(partialMatcher)
   }
 
-  def partialFunctionCall[A, R](a: A, r: R): PartialFunction[A, R]                = partialCallMatching(a, new BeEqualTo(r))
-  implicit def toPartialFunctionCall[A, R](values: (A, R)): PartialFunction[A, R] = partialFunctionCall(values._1, values._2)
+  def partialFunctionCall[A, R](a: A, r: R): PartialFunction[A, R]                                = partialCallMatching(a, new BeEqualTo(r))
+  implicit def toPartialFunctionCall[A, R](values: (A, R)): PartialFunction[A, R]                 = partialFunctionCall(values._1, values._2)
   implicit def matcherToPartialFunctionCall[A, R](values: (A, Matcher[R])): PartialFunction[A, R] =
     partialCallMatching(values._1, values._2)
 }
@@ -30,12 +30,12 @@ trait FunctionArgumentsLowImplicits extends ArgThat with Expectations {
 trait FunctionArguments extends FunctionArgumentsLowImplicits {
   def callMatching[A, R](a: A, m: Matcher[R]): A => R =
     argThat(m ^^ { (f: A => R) => f(a) })
-  def functionCall[A, R](a: A, r: R): A => R                                = callMatching(a, new BeEqualTo(r))
-  implicit def toFunctionCall[A, R](values: (A, R)): A => R                 = functionCall(values._1, values._2)
-  implicit def matcherToFunctionCall[A, R](values: (A, Matcher[R])): A => R = callMatching(values._1, values._2)
+  def functionCall[A, R](a: A, r: R): A => R                                        = callMatching(a, new BeEqualTo(r))
+  implicit def toFunctionCall[A, R](values: (A, R)): A => R                         = functionCall(values._1, values._2)
+  implicit def matcherToFunctionCall[A, R](values: (A, Matcher[R])): A => R         = callMatching(values._1, values._2)
   def callMatching2[T1, T2, R](t1: T1, t2: T2, m: Matcher[R]): Function2[T1, T2, R] =
     argThat(m ^^ { (f: Function2[T1, T2, R]) => f(t1, t2) })
-  def functionCall2[T1, T2, R](t1: T1, t2: T2, r: R): Function2[T1, T2, R] = callMatching2(t1, t2, new BeEqualTo(r))
+  def functionCall2[T1, T2, R](t1: T1, t2: T2, r: R): Function2[T1, T2, R]             = callMatching2(t1, t2, new BeEqualTo(r))
   implicit def toFunctionCall2[T1, T2, R](values: ((T1, T2), R)): Function2[T1, T2, R] =
     functionCall2(values._1._1, values._1._2, values._2)
   implicit def matcherToFunctionCall2[T1, T2, R](values: ((T1, T2), Matcher[R])): Function2[T1, T2, R] =
@@ -43,7 +43,7 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
 
   def callMatching3[T1, T2, T3, R](t1: T1, t2: T2, t3: T3, m: Matcher[R]): Function3[T1, T2, T3, R] =
     argThat(m ^^ { (f: Function3[T1, T2, T3, R]) => f(t1, t2, t3) })
-  def functionCall3[T1, T2, T3, R](t1: T1, t2: T2, t3: T3, r: R): Function3[T1, T2, T3, R] = callMatching3(t1, t2, t3, new BeEqualTo(r))
+  def functionCall3[T1, T2, T3, R](t1: T1, t2: T2, t3: T3, r: R): Function3[T1, T2, T3, R]         = callMatching3(t1, t2, t3, new BeEqualTo(r))
   implicit def toFunctionCall3[T1, T2, T3, R](values: ((T1, T2, T3), R)): Function3[T1, T2, T3, R] =
     functionCall3(values._1._1, values._1._2, values._1._3, values._2)
   implicit def matcherToFunctionCall3[T1, T2, T3, R](values: ((T1, T2, T3), Matcher[R])): Function3[T1, T2, T3, R] =

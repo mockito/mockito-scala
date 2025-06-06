@@ -24,7 +24,7 @@ object ReflectionUtils {
 
   implicit def symbolToMethodSymbol(sym: Symbol): Symbols#MethodSymbol = sym.asInstanceOf[Symbols#MethodSymbol]
 
-  private val mirror = runtimeMirror(getClass.getClassLoader)
+  private val mirror       = runtimeMirror(getClass.getClassLoader)
   private val customMirror = mirror.asInstanceOf[{
     def methodToJava(sym: Symbols#MethodSymbol): Method
   }]
@@ -130,7 +130,7 @@ object ReflectionUtils {
     field.setAccessible(true)
     val modifiersField: Field = uTry(clazz.getDeclaredField("modifiers")) match {
       case Success(modifiers) => modifiers
-      case Failure(e) =>
+      case Failure(e)         =>
         uTry {
           val getDeclaredFields0           = clazz.getDeclaredMethod("getDeclaredFields0", classOf[Boolean])
           val accessibleBeforeSet: Boolean = getDeclaredFields0.isAccessible
@@ -142,7 +142,7 @@ object ReflectionUtils {
           declaredFields.find("modifiers" == _.getName).get
         } match {
           case Success(modifiers) => modifiers
-          case Failure(ex) =>
+          case Failure(ex)        =>
             e.addSuppressed(ex)
             throw e
         }

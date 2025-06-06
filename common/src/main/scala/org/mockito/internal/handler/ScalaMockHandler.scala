@@ -27,7 +27,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
           i.callRealMethod()
         else {
           val rawArguments = i.getRawArguments
-          val arguments =
+          val arguments    =
             if (rawArguments != null && rawArguments.nonEmpty && !isCallRealMethod) unwrapArgs(method, rawArguments)
             else rawArguments
 
@@ -42,10 +42,10 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
     val transformed = methodsToProcess
       .collectFirst {
         case (mtd, indices) if method === mtd =>
-          val argumentMatcherStorage = mockingProgress().getArgumentMatcherStorage
-          val matchers               = argumentMatcherStorage.pullLocalizedMatchers().asScala.toIterator
-          val matchersWereUsed       = matchers.nonEmpty
-          def reportMatcher(): Unit  = if (matchers.nonEmpty) argumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
+          val argumentMatcherStorage                     = mockingProgress().getArgumentMatcherStorage
+          val matchers                                   = argumentMatcherStorage.pullLocalizedMatchers().asScala.toIterator
+          val matchersWereUsed                           = matchers.nonEmpty
+          def reportMatcher(): Unit                      = if (matchers.nonEmpty) argumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
           def reportMatchers(varargs: Iterable[_]): Unit =
             if (matchersWereUsed && varargs.nonEmpty) {
               def reportAsEqTo(): Unit = varargs.map(EqTo(_)).foreach(argumentMatcherStorage.reportMatcher(_))
@@ -53,7 +53,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
               matcher match {
                 case EqTo(value: Array[_]) if varargs.sameElements(value) => reportAsEqTo()
                 case EqTo(value) if varargs == value                      => reportAsEqTo()
-                case other =>
+                case other                                                =>
                   argumentMatcherStorage.reportMatcher(other)
                   varargs.drop(1).foreach(_ => reportMatcher())
               }
@@ -100,7 +100,7 @@ object ScalaMockHandler {
       mockSettings
     )
 
-  private val InvocationClassName = classOf[ScalaInvocation].getName
+  private val InvocationClassName       = classOf[ScalaInvocation].getName
   private def isCallRealMethod: Boolean =
     (new Exception).getStackTrace.toList.exists { t =>
       t.getClassName == InvocationClassName &&

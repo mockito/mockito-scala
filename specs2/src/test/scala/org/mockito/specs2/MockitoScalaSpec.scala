@@ -595,7 +595,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0); list1.size; list1.get(0); list1.size
 
     implicit val order = inOrder(list1)
-    val result = there was one(list1).get(0) andThen
+    val result         = there was one(list1).get(0) andThen
       one(list1).size() andThen
       no(list1).get(0) andThen
       one(list1).size()

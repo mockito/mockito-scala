@@ -98,7 +98,7 @@ case class ScalaFirstStubbing[T: ValueClassExtractor](delegate: OngoingStubbing[
       }
     }
 
-  def thenAnswer(f: => T): ScalaOngoingStubbing[T] = _thenAnswer(f)
+  def thenAnswer(f: => T): ScalaOngoingStubbing[T]                                                                                  = _thenAnswer(f)
   def thenAnswer[P0: ValueClassWrapper](f: P0 => T)(implicit classTag: ClassTag[P0] = defaultClassTag[P0]): ScalaOngoingStubbing[T] =
     _thenAnswer(f)
   def thenAnswer[P0: ValueClassWrapper, P1: ValueClassWrapper](f: (P0, P1) => T): ScalaOngoingStubbing[T] =

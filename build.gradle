@@ -103,7 +103,7 @@ tasks {
         githubToken = githubTokenProvider.get()
         newTagRevision = githubShaProvider.get()
         repository = mockitoScalaRepository
-        changelog = generateChangelog.get().outputFile
+        changelog = generateChangelog.outputFile
     }
 
     closeAndReleaseStagingRepositories {

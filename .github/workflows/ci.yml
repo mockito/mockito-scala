@@ -82,7 +82,9 @@ jobs:
           java-version: 17
 
       - name: Build and publish to Bintray/MavenCentral
-        run: ./build.sh
+        run: ./gradlew writeActualVersion
+          && export PROJECT_VERSION=`cat version.actual`
+          && ./build.sh
           && ./gradlew publishToSonatype githubRelease closeAndReleaseStagingRepositories releaseSummary
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

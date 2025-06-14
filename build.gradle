@@ -111,6 +111,12 @@ tasks {
     }
 }
 
+tasks.register("writeActualVersion") {
+    doLast {
+        file("version.actual") << "$version"
+    }
+}
+
 tasks.register("releaseSummary") {
     doLast {
         if (isSnapshot) {

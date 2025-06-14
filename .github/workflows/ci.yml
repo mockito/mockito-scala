@@ -83,7 +83,7 @@ jobs:
 
       - name: Build and publish to Bintray/MavenCentral
         run: ./build.sh
-          && ./gradlew publishToSonatype githubRelease closeAndReleaseStagingRepository releaseSummary
+          && ./gradlew publishToSonatype githubRelease closeAndReleaseStagingRepositories releaseSummary
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           NEXUS_TOKEN_USER: ${{secrets.NEXUS_TOKEN_USER}}

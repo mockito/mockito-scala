@@ -187,7 +187,7 @@ object DoSomethingMacro {
     if (pf.isDefinedAt(invocation))
       pf(invocation)
     else if (pf.isDefinedAt(invocation.children.last)) {
-      val vals = invocation.children.dropRight(1)
+      val vals       = invocation.children.dropRight(1)
       val valsByName = vals.collect { case line @ q"$_ val $name:$_ = $value" =>
         name.toString -> (value.asInstanceOf[c.Tree], line)
       }.toMap
@@ -203,7 +203,7 @@ object DoSomethingMacro {
           q"$action.when($obj).$method[..$targs](...$newArgs)"
       }
 
-      val call = show(inlinedArgsCall)
+      val call     = show(inlinedArgsCall)
       val usedVals = valsByName.collect {
         case (name, (_, line)) if call.contains(name) => line
       }

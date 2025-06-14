@@ -57,7 +57,7 @@ object Specs2VerifyMacro extends VerificationMacroTransformer {
 
         case q"$_.got[$_]({..$block})($order)" =>
           block.foldLeft(q"") {
-            case (q"", t) => if (transformSpecs2Verification.isDefinedAt(t)) transformSpecs2Verification(t) else q"$t"
+            case (q"", t)   => if (transformSpecs2Verification.isDefinedAt(t)) transformSpecs2Verification(t) else q"$t"
             case (other, t) =>
               if (transformSpecs2Verification.isDefinedAt(t)) q"$other and ${transformSpecs2Verification(t)}" else q"$other and $t"
           }

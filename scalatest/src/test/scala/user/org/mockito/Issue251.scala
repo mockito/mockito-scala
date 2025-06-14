@@ -12,7 +12,7 @@ class Issue251 extends AnyFlatSpec with IdiomaticMockito with Matchers with Argu
     cars += (0 -> Car(0))
 
     def getCar(id: Int): Option[Car] = cars.get(id)
-    def saveCar(car: Car) = {
+    def saveCar(car: Car)            = {
       cars += car.id -> car;
       car
     }

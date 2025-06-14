@@ -19,7 +19,7 @@ class NormalClassExtractor[T] extends ValueClassExtractor[T] {
 class ReflectionExtractor[VC] extends ValueClassExtractor[VC] {
   override def extract(vc: VC): Any = {
     val constructorParam = vc.getClass.getConstructors.head.getParameters.head
-    val accessor = vc.getClass.getMethods
+    val accessor         = vc.getClass.getMethods
       .filter(m => m.getName == constructorParam.getName || m.getName.endsWith("$$" + constructorParam.getName))
       .head
     accessor.setAccessible(true)

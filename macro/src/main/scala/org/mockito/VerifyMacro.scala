@@ -62,7 +62,7 @@ private[mockito] trait VerificationMacroTransformer {
     if (pf.isDefinedAt(invocation))
       pf(invocation)
     else if (invocation.children.nonEmpty && pf.isDefinedAt(invocation.children.last)) {
-      val vals = invocation.children.dropRight(1)
+      val vals       = invocation.children.dropRight(1)
       val valsByName = vals.collect { case line @ q"$_ val $name:$_ = $value" =>
         name.toString -> (value.asInstanceOf[c.Tree], line)
       }.toMap
@@ -78,7 +78,7 @@ private[mockito] trait VerificationMacroTransformer {
           q"verification($order.verifyWithMode($obj, $times).$method[..$targs](...$newArgs))"
       }
 
-      val call = show(inlinedArgsCall)
+      val call     = show(inlinedArgsCall)
       val usedVals = valsByName.collect {
         case (name, (_, line)) if call.contains(name) => line
       }
@@ -92,8 +92,8 @@ private[mockito] trait VerificationMacroTransformer {
 
     def transformMockWasNeverCalled(obj: c.Tree, called: c.Tree): c.Tree =
       called match {
-        case q"$_.called"      => q"verification(_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj))"
-        case q"$_.calledAgain" => q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions($obj))"
+        case q"$_.called"                              => q"verification(_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj))"
+        case q"$_.calledAgain"                         => q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions($obj))"
         case q"$_.calledAgain.apply($_.ignoringStubs)" =>
           q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($obj): _*))"
       }

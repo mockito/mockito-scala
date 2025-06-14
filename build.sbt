@@ -54,7 +54,7 @@ lazy val commonSettings =
 lazy val publishSettings = Seq(
   licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
   homepage := Some(url("https://github.com/mockito/mockito-scala")),
-  scmInfo := Some(
+  scmInfo  := Some(
     ScmInfo(
       url("https://github.com/mockito/mockito-scala"),
       "git@github.com:mockito/mockito-scala.git"
@@ -113,7 +113,7 @@ lazy val cats = (project in file("cats"))
     publishSettings,
     libraryDependencies ++= Seq(
       Dependencies.cats,
-      Dependencies.catsLaws      % "test",
+      Dependencies.catsLaws            % "test",
       Dependencies.disciplineScalatest % "test",
       Dependencies.scalatest           % "test"
     )

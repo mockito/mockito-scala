@@ -22,7 +22,7 @@ object WhenMacro {
     if (pf.isDefinedAt(invocation))
       pf(invocation)
     else if (pf.isDefinedAt(invocation.children.last)) {
-      val vals = invocation.children.dropRight(1)
+      val vals       = invocation.children.dropRight(1)
       val valsByName = vals.collect { case line @ q"$_ val $name:$_ = $value" =>
         name.toString -> (value.asInstanceOf[c.Tree], line)
       }.toMap
@@ -38,7 +38,7 @@ object WhenMacro {
           q"$obj.$method[..$targs](...$newArgs)"
       }
 
-      val call = show(inlinedArgsCall)
+      val call     = show(inlinedArgsCall)
       val usedVals = valsByName.collect {
         case (name, (_, line)) if call.contains(name) => line
       }
@@ -47,9 +47,9 @@ object WhenMacro {
     } else throw new Exception(s"Couldn't recognize invocation ${show(invocation)}")
   }
 
-  private val ShouldReturnOptions            = Set("shouldReturn", "mustReturn", "returns")
-  private val FunctionalShouldReturnOptions  = ShouldReturnOptions.map(_ + "F")
-  private val FunctionalShouldReturnOptions2 = ShouldReturnOptions.map(_ + "FG")
+  private val ShouldReturnOptions                                 = Set("shouldReturn", "mustReturn", "returns")
+  private val FunctionalShouldReturnOptions                       = ShouldReturnOptions.map(_ + "F")
+  private val FunctionalShouldReturnOptions2                      = ShouldReturnOptions.map(_ + "FG")
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
@@ -88,7 +88,7 @@ object WhenMacro {
     def willBe(called: Called.type): Called.type = called
   }
 
-  val ShouldCallOptions = Set("shouldCall", "mustCall", "calls")
+  val ShouldCallOptions                                                                                                          = Set("shouldCall", "mustCall", "calls")
   def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod.type]): c.Expr[ScalaOngoingStubbing[T]] = {
     import c.universe._
 
@@ -104,9 +104,9 @@ object WhenMacro {
     r
   }
 
-  private val ShouldThrowOptions           = Set("shouldThrow", "mustThrow", "throws")
-  private val FunctionalShouldFailOptions  = Set("shouldFailWith", "mustFailWith", "failsWith", "raises")
-  private val FunctionalShouldFailOptions2 = Set("shouldFailWithG", "mustFailWithG", "failsWithG", "raisesG")
+  private val ShouldThrowOptions                                 = Set("shouldThrow", "mustThrow", "throws")
+  private val FunctionalShouldFailOptions                        = Set("shouldFailWith", "mustFailWith", "failsWith", "raises")
+  private val FunctionalShouldFailOptions2                       = Set("shouldFailWithG", "mustFailWithG", "failsWithG", "raisesG")
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
@@ -450,9 +450,9 @@ object WhenMacro {
 //      }
   }
 
-  private val ShouldAnswerOptions            = Set("shouldAnswer", "mustAnswer", "answers")
-  private val FunctionalShouldAnswerOptions  = ShouldAnswerOptions.map(_ + "F")
-  private val FunctionalShouldAnswerOptions2 = ShouldAnswerOptions.map(_ + "FG")
+  private val ShouldAnswerOptions                                 = Set("shouldAnswer", "mustAnswer", "answers")
+  private val FunctionalShouldAnswerOptions                       = ShouldAnswerOptions.map(_ + "F")
+  private val FunctionalShouldAnswerOptions2                      = ShouldAnswerOptions.map(_ + "FG")
   def shouldAnswer[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 
@@ -476,7 +476,7 @@ object WhenMacro {
     def apply(pf: PartialFunction[Any, T]): ScalaOngoingStubbing[T] = os thenAnswer pf
   }
 
-  private val ShouldAnswerPFOptions = Set("shouldAnswerPF", "mustAnswerPF", "answersPF")
+  private val ShouldAnswerPFOptions                                 = Set("shouldAnswerPF", "mustAnswerPF", "answersPF")
   def shouldAnswerPF[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe._
 

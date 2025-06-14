@@ -32,7 +32,7 @@ object IdiomaticMockitoBase {
 
   case class Times(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.times(times)
-    def within(d: Duration): ScalaVerificationMode =
+    def within(d: Duration): ScalaVerificationMode  =
       new ScalaVerificationMode {
         override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).times(times)
       }
@@ -53,7 +53,7 @@ object IdiomaticMockitoBase {
 
   case class AtLeast(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.atLeast(times)
-    def within(d: Duration): ScalaVerificationMode =
+    def within(d: Duration): ScalaVerificationMode  =
       new ScalaVerificationMode {
         override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).atLeast(times)
       }
@@ -65,7 +65,7 @@ object IdiomaticMockitoBase {
 
   case class AtMost(times: Int) extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.atMost(times)
-    def after(d: Duration): ScalaVerificationMode =
+    def after(d: Duration): ScalaVerificationMode   =
       new ScalaVerificationMode {
         override def verificationMode: VerificationMode = Mockito.after(d.toMillis).atMost(times)
       }
@@ -73,7 +73,7 @@ object IdiomaticMockitoBase {
 
   object OnlyOn extends ScalaVerificationMode {
     override def verificationMode: VerificationMode = Mockito.only
-    def within(d: Duration): ScalaVerificationMode =
+    def within(d: Duration): ScalaVerificationMode  =
       new ScalaVerificationMode {
         override def verificationMode: VerificationMode = Mockito.timeout(d.toMillis).only
       }

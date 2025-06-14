@@ -85,12 +85,6 @@ nexusPublishing {
     }
 }
 
-task writeActualVersion {
-    doLast {
-        file("version.actual") << "$version"
-    }
-}
-
 def isSnapshot = version.endsWith("-SNAPSHOT")
 
 if (isSnapshot) {

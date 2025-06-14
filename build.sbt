@@ -7,19 +7,6 @@ val currentScalaVersion = "2.13.16"
 inThisBuild(
   Seq(
     scalaVersion := currentScalaVersion,
-    // Load version from the file so that Gradle/Shipkit and SBT use the same version
-    version := sys.env
-      .get("PROJECT_VERSION")
-      .filter(_.trim.nonEmpty)
-      .orElse {
-        lazy val VersionRE = """^version=(.+)$""".r
-        Using.file(Source.fromFile)(baseDirectory.value / "version.properties") {
-          _.getLines.collectFirst { case VersionRE(v) => v }
-        }
-      }
-      .map(_.replace(".*", "-SNAPSHOT"))
-      .get
-  )
 )
 
 lazy val commonSettings =

@@ -7,6 +7,8 @@ val currentScalaVersion = "2.13.16"
 inThisBuild(
   Seq(
     scalaVersion := currentScalaVersion,
+    // Load version from the file so that Gradle/Shipkit and SBT use the same version
+    version := sys.env.getOrElse("PROJECT_VERSION", "0.1.0")
   )
 )
 

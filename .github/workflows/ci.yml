@@ -43,7 +43,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
-          cache: 'gradle'
 
       - name: 3. Build on Java ${{ matrix.java }}
         run: ./build.sh
@@ -81,7 +80,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
-          cache: 'gradle'
 
       - name: Build and publish to Bintray/MavenCentral
         run: ./build.sh

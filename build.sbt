@@ -7,6 +7,7 @@ val currentScalaVersion = "2.13.16"
 inThisBuild(
   Seq(
     scalaVersion := currentScalaVersion,
+  )
 )
 
 lazy val commonSettings =

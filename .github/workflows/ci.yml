@@ -64,7 +64,7 @@ jobs:
     needs: [build] # build job must pass before we can release
 
     if: github.event_name == 'push'
-      && startsWith(github.ref, 'refs/tags/v')
+      && (github.ref == 'refs/heads/release/2.x' || startsWith(github.ref, 'refs/tags/v'))
       && github.repository == 'mockito/mockito-scala'
       && !contains(toJSON(github.event.commits.*.message), '[skip release]')
 

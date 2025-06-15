@@ -7,6 +7,7 @@ import org.mockito.internal.exceptions.Reporter.smartNullPointerException
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 import org.mockito.internal.util.ObjectMethodsGuru.isToStringMethod
 import org.mockito.invocation.{ InvocationOnMock, Location }
+import org.mockito.quality.Strictness
 
 object ReturnsSmartNulls extends DefaultAnswer {
   val delegate = new ReturnsMoreEmptyValues
@@ -16,7 +17,7 @@ object ReturnsSmartNulls extends DefaultAnswer {
       val returnType = invocation.returnType
 
       if (!returnType.isPrimitive && !isFinal(returnType.getModifiers) && classOf[Object] != returnType)
-        Some(mock(returnType, withSettings.defaultAnswer(ThrowsSmartNullPointer(invocation)).lenient()))
+        Some(mock(returnType, withSettings.defaultAnswer(ThrowsSmartNullPointer(invocation)).strictness(Strictness.LENIENT)))
       else
         None
     }

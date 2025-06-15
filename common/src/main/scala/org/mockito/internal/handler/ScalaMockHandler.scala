@@ -3,7 +3,6 @@ package internal.handler
 
 import java.lang.reflect.Method
 import java.util.regex.Pattern
-
 import org.mockito.ReflectionUtils.methodsWithLazyOrVarArgs
 import org.mockito.internal.handler.ScalaMockHandler._
 import org.mockito.internal.invocation._
@@ -14,7 +13,9 @@ import org.mockito.mock.MockCreationSettings
 import org.scalactic.Prettifier
 import org.scalactic.TripleEquals._
 
-import scala.collection.JavaConverters._
+import scala.annotation.nowarn
+import scala.collection.compat._
+import scala.jdk.CollectionConverters._
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProcess: Seq[(Method, Set[Int])])(implicit $pt: Prettifier) extends MockHandlerImpl[T](mockSettings) {
   override def handle(invocation: Invocation): AnyRef =
@@ -22,7 +23,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
       case i: InterceptedInvocation =>
         val method     = i.getMethod
         val methodName = method.getName
-        val realMethod = i.getRealMethod
+        val realMethod = i.getRealMethod: @nowarn("cat=deprecation")
         if (realMethod.isInvokable && (methodName.contains("$default$") || ExecuteIfSpecialised(methodName)))
           i.callRealMethod()
         else {
@@ -32,7 +33,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
             else rawArguments
 
           val scalaInvocation =
-            new ScalaInvocation(i.getMockRef, i.getMockitoMethod, arguments, rawArguments, realMethod, i.getLocation, i.getSequenceNumber)
+            new ScalaInvocation(i.getMockRef, i.getMockitoMethod, arguments, rawArguments, realMethod, i.getLocation, i.getSequenceNumber): @nowarn("cat=deprecation")
           super.handle(scalaInvocation)
         }
       case other => super.handle(other)
@@ -43,7 +44,7 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
       .collectFirst {
         case (mtd, indices) if method === mtd =>
           val argumentMatcherStorage                     = mockingProgress().getArgumentMatcherStorage
-          val matchers                                   = argumentMatcherStorage.pullLocalizedMatchers().asScala.toIterator
+          val matchers                                   = argumentMatcherStorage.pullLocalizedMatchers().asScala.iterator
           val matchersWereUsed                           = matchers.nonEmpty
           def reportMatcher(): Unit                      = if (matchers.nonEmpty) argumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
           def reportMatchers(varargs: Iterable[_]): Unit =
@@ -51,9 +52,9 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
               def reportAsEqTo(): Unit = varargs.map(EqTo(_)).foreach(argumentMatcherStorage.reportMatcher(_))
               val matcher              = matchers.next().getMatcher
               matcher match {
-                case EqTo(value: Array[_]) if varargs.sameElements(value) => reportAsEqTo()
-                case EqTo(value) if varargs == value                      => reportAsEqTo()
-                case other                                                =>
+                case EqTo(value: Array[_]) if varargs.iterator.sameElements(value.iterator) => reportAsEqTo()
+                case EqTo(value) if varargs == value                                        => reportAsEqTo()
+                case other                                                                  =>
                   argumentMatcherStorage.reportMatcher(other)
                   varargs.drop(1).foreach(_ => reportMatcher())
               }

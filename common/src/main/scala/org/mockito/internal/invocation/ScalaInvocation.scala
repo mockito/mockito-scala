@@ -13,7 +13,7 @@ import org.mockito.invocation.{ Invocation, Location, StubInfo }
 import org.mockito.matchers.EqTo
 import org.scalactic.Prettifier
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class ScalaInvocation(
     val mockRef: MockReference[AnyRef],

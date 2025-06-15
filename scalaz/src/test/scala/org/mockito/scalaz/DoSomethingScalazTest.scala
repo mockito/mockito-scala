@@ -51,7 +51,7 @@ class DoSomethingScalazTest
       ValueClass("mocked!") willBe returnedFG by aMock.returnsFutureEither("hello")
       Error("boom") willBe raisedG by aMock.returnsFutureEither("bye")
 
-      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("hello"))(_.value shouldBe ValueClass("mocked!"))
       whenReady(aMock.returnsFutureEither("bye"))(_.left.value shouldBe Error("boom"))
     }
 
@@ -69,7 +69,7 @@ class DoSomethingScalazTest
       ValueClass("mocked!") willBe returnedF by aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi"))
       Error("error") willBe raised by aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye"))
 
-      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).right.value shouldBe ValueClass("mocked!")
+      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).value shouldBe ValueClass("mocked!")
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")).left.value shouldBe Error("error")
     }
 
@@ -90,7 +90,7 @@ class DoSomethingScalazTest
       ValueClass("mocked!") willBe returnedF by aMock.returnsEitherT("hello")
 
       whenReady(aMock.returnsEitherT("bye").run)(_.toEither.left.value shouldBe Error("error"))
-      whenReady(aMock.returnsEitherT("hello").run)(_.toEither.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsEitherT("hello").run)(_.toEither.value shouldBe ValueClass("mocked!"))
     }
 
     "work with OptionT" in {
@@ -126,9 +126,9 @@ class DoSomethingScalazTest
         .returnsFutureEither("hola")
       ((i: Int, b: Boolean) => s"$i, $b") willBe answeredFG by aMock.returnsFutureOptionFrom(42, true)
 
-      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
-      whenReady(aMock.returnsFutureEither("hi"))(_.right.value shouldBe ValueClass("hi mocked!"))
-      whenReady(aMock.returnsFutureEither("hola"))(_.right.value shouldBe ValueClass("hola invocation mocked!"))
+      whenReady(aMock.returnsFutureEither("hello"))(_.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("hi"))(_.value shouldBe ValueClass("hi mocked!"))
+      whenReady(aMock.returnsFutureEither("hola"))(_.value shouldBe ValueClass("hola invocation mocked!"))
       whenReady(aMock.returnsFutureOptionFrom(42, true))(_.value shouldBe "42, true")
     }
   }

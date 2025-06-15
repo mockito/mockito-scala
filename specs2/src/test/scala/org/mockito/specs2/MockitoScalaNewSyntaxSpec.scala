@@ -678,7 +678,7 @@ The Mockito trait is reusable in other contexts
 
     def List[T](a: List[T]): Unit
     def Set[T](a: Set[T]): Unit
-    def Traversable[T](a: Traversable[T]): Unit
+    def Iterable[T](a: Iterable[T]): Unit
     def Map[K, V](a: Map[K, V]): Unit
 
     def varargs[T](ts: T*): Unit
@@ -700,7 +700,7 @@ The Mockito trait is reusable in other contexts
 
     m.List(List[Int]())
     m.Set(Set[Int]())
-    m.Traversable(List[Int]())
+    m.Iterable(List[Int]())
     m.Map(Map[Int, String]())
 
     m.varargs(1, 2)
@@ -713,7 +713,7 @@ The Mockito trait is reusable in other contexts
       m.javaMap(*) was called
       m.List(*) was called
       m.Set(*) was called
-      m.Traversable(*) was called
+      m.Iterable(*) was called
       m.Map(*) was called
       m.varargs(*, *) was called
       m.array(*) was called

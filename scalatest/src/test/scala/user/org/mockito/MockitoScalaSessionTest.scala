@@ -206,7 +206,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
 
       "don't check unexpected calls for lenient mocks" in
       MockitoScalaSession().run {
-        val aFoo = parametrisedFoo(withSettings.lenient())
+        val aFoo = parametrisedFoo(withSettings.strictness(Strictness.LENIENT))
 
         aFoo.bar("pepe") returns "mocked"
 
@@ -241,7 +241,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
 
       "don't check unused stubs for lenient" in
       MockitoScalaSession().run {
-        val aFoo = parametrisedFoo(withSettings.lenient())
+        val aFoo = parametrisedFoo(withSettings.strictness(Strictness.LENIENT))
 
         aFoo.bar("pepe") returns "mocked"
       }

@@ -61,7 +61,7 @@ object ExpectMacro extends VerificationMacroTransformer {
         q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions($obj))"
 
       case q"$_.this.expect.noMore($_.calls.apply($_.ignoringStubs)).on($obj)" =>
-        q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($obj): _*))"
+        q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($obj).toIndexedSeq: _*))"
 
       case _ => throw new Exception(s"Expect-on macro: couldn't recognize invocation ${show(called)}")
     }

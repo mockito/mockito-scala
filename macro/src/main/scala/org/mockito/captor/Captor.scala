@@ -9,7 +9,7 @@ import org.mockito.{ clazz, ArgumentCaptor }
 import org.scalactic.Equality
 import org.scalactic.TripleEquals._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
 import scala.util.{ Failure, Try }
@@ -69,7 +69,7 @@ object Captor {
     val r = if (isValueClass) c.Expr[Captor[T]] {
       val param = tpe.decls
         .collectFirst {
-          case m: MethodSymbol if m.isPrimaryConstructor ⇒ m
+          case m: MethodSymbol if m.isPrimaryConstructor => m
         }
         .get
         .paramLists

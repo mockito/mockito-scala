@@ -11,7 +11,7 @@ import org.mockito.session.MockitoSessionLogger
 import org.scalactic.Equality
 import org.scalactic.TripleEquals._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoSessionLogger) {
@@ -156,7 +156,7 @@ object MockitoScalaSession {
     private val mocks = mutable.Set.empty[AnyRef]
 
     override def onMockCreated(mock: AnyRef, settings: MockCreationSettings[_]): Unit =
-      if (!settings.isLenient && (strictness !== Strictness.Lenient)) mocks += mock
+      if ((settings.getStrictness !== JavaStrictness.LENIENT) && (strictness !== Strictness.Lenient)) mocks += mock
   }
 }
 

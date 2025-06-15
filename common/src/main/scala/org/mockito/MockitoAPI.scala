@@ -24,10 +24,12 @@ import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.internal.{ ValueClassExtractor, ValueClassWrapper }
 import org.mockito.invocation.{ Invocation, InvocationContainer, InvocationOnMock, MockHandler }
 import org.mockito.mock.MockCreationSettings
+import org.mockito.quality.Strictness
 import org.mockito.stubbing._
 import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
 import org.scalactic.{ Equality, Prettifier }
-import scala.collection.JavaConverters._
+
+import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
 
@@ -543,7 +545,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 
   def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false)(implicit $pt: Prettifier): T = {
     def mockSettings: MockSettings = Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS).spiedInstance(realObj)
-    val settings                   = if (lenient) mockSettings.lenient() else mockSettings
+    val settings                   = if (lenient) mockSettings.strictness(Strictness.LENIENT) else mockSettings
     mock[T](settings)
   }
 
@@ -584,7 +586,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
         ignoreDefaultArguments(m)
         Mockito.verifyNoMoreInteractions(m)
       case t: Array[AnyRef] =>
-        verifyNoMoreInteractions(t: _*)
+        verifyNoMoreInteractions(t.toIndexedSeq: _*)
       case _ =>
         throw notAMockPassedToVerifyNoMoreInteractions
     }
@@ -645,7 +647,7 @@ object LeniencySettings {
   }
 
   val lenientStubs: LeniencySettings = new LeniencySettings {
-    override def apply(settings: MockSettings): MockSettings = settings.lenient()
+    override def apply(settings: MockSettings): MockSettings = settings.strictness(Strictness.LENIENT)
   }
 }
 

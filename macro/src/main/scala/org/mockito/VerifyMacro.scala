@@ -95,7 +95,7 @@ private[mockito] trait VerificationMacroTransformer {
         case q"$_.called"                              => q"verification(_root_.org.mockito.MockitoSugar.verifyZeroInteractions($obj))"
         case q"$_.calledAgain"                         => q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions($obj))"
         case q"$_.calledAgain.apply($_.ignoringStubs)" =>
-          q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($obj): _*))"
+          q"verification(_root_.org.mockito.MockitoSugar.verifyNoMoreInteractions(_root_.org.mockito.MockitoSugar.ignoreStubs($obj).toIndexedSeq: _*))"
       }
 
     called match {

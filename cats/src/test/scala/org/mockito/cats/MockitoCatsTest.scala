@@ -45,7 +45,7 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
       whenFG(aMock.returnsFutureEither("hello")) thenReturn ValueClass("mocked!")
       whenFG(aMock.returnsFutureEither("bye")) thenFailWith Error("boom")
 
-      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("hello"))(_.value shouldBe ValueClass("mocked!"))
       whenReady(aMock.returnsFutureEither("bye"))(_.left.value shouldBe Error("boom"))
     }
 
@@ -69,7 +69,7 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
       whenF(aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi"))) thenReturn ValueClass("mocked!")
       whenF(aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye"))) thenFailWith Error("error")
 
-      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).right.value shouldBe ValueClass("mocked!")
+      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).value shouldBe ValueClass("mocked!")
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")).left.value shouldBe Error("error")
     }
 
@@ -103,7 +103,7 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
       whenF(aMock.returnsEitherT("hello")) thenReturn ValueClass("mocked!")
 
       whenReady(aMock.returnsEitherT("bye").value)(_.left.value shouldBe Error("error"))
-      whenReady(aMock.returnsEitherT("hello").value)(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsEitherT("hello").value)(_.value shouldBe ValueClass("mocked!"))
     }
 
     "work with OptionT" in {
@@ -138,9 +138,9 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
       whenFG(aMock.returnsFutureEither("hola")) thenAnswer ((i: InvocationOnMock) => ValueClass(i.arg[String](0) + " invocation mocked!"))
       whenFG(aMock.returnsFutureOptionFrom(42, true)) thenAnswer ((i: Int, b: Boolean) => s"$i, $b")
 
-      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
-      whenReady(aMock.returnsFutureEither("hi"))(_.right.value shouldBe ValueClass("hi mocked!"))
-      whenReady(aMock.returnsFutureEither("hola"))(_.right.value shouldBe ValueClass("hola invocation mocked!"))
+      whenReady(aMock.returnsFutureEither("hello"))(_.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("hi"))(_.value shouldBe ValueClass("hi mocked!"))
+      whenReady(aMock.returnsFutureEither("hola"))(_.value shouldBe ValueClass("hola invocation mocked!"))
       whenReady(aMock.returnsFutureOptionFrom(42, true))(_.value shouldBe "42, true")
     }
   }
@@ -176,7 +176,7 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
       doReturnFG[Future, ErrorOr, ValueClass](ValueClass("mocked!")).when(aMock).returnsFutureEither("hello")
       doFailWithG[Future, ErrorOr, Error, ValueClass](Error("boom")).when(aMock).returnsFutureEither("bye")
 
-      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("hello"))(_.value shouldBe ValueClass("mocked!"))
       whenReady(aMock.returnsFutureEither("bye"))(_.left.value shouldBe Error("boom"))
     }
 
@@ -194,7 +194,7 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
       doReturnF[ErrorOr, ValueClass](ValueClass("mocked!")).when(aMock).returnsMT(ValueClass("hi"))
       doFailWith[ErrorOr, Error, ValueClass](Error("error")).when(aMock).returnsMT(ValueClass("bye"))
 
-      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).right.value shouldBe ValueClass("mocked!")
+      aMock.returnsMT[ErrorOr, ValueClass](ValueClass("hi")).value shouldBe ValueClass("mocked!")
       aMock.returnsMT[ErrorOr, ValueClass](ValueClass("bye")).left.value shouldBe Error("error")
     }
 
@@ -216,7 +216,7 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
       doReturnF[F, ValueClass](ValueClass("mocked!")).when(aMock).returnsEitherT("hello")
 
       whenReady(aMock.returnsEitherT("bye").value)(_.left.value shouldBe Error("error"))
-      whenReady(aMock.returnsEitherT("hello").value)(_.right.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsEitherT("hello").value)(_.value shouldBe ValueClass("mocked!"))
     }
 
     "work with OptionT" in {
@@ -256,9 +256,9 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
         .returnsFutureEither("hola")
       doAnswerFG[Future, Option, Int, Boolean, String]((i: Int, b: Boolean) => s"$i, $b").when(aMock).returnsFutureOptionFrom(42, true)
 
-      whenReady(aMock.returnsFutureEither("hello"))(_.right.value shouldBe ValueClass("mocked!"))
-      whenReady(aMock.returnsFutureEither("hi"))(_.right.value shouldBe ValueClass("hi mocked!"))
-      whenReady(aMock.returnsFutureEither("hola"))(_.right.value shouldBe ValueClass("hola invocation mocked!"))
+      whenReady(aMock.returnsFutureEither("hello"))(_.value shouldBe ValueClass("mocked!"))
+      whenReady(aMock.returnsFutureEither("hi"))(_.value shouldBe ValueClass("hi mocked!"))
+      whenReady(aMock.returnsFutureEither("hola"))(_.value shouldBe ValueClass("hola invocation mocked!"))
       whenReady(aMock.returnsFutureOptionFrom(42, true))(_.value shouldBe "42, true")
     }
   }

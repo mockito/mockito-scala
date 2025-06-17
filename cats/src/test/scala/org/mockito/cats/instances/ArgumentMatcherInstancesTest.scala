@@ -80,7 +80,7 @@ class ArgumentMatcherInstancesTest extends AnyFunSuiteLike with FunSuiteDiscipli
   test("EqTo works with cats syntax") {
     val aMock = mock[Foo]
 
-    val matcher = (EqTo("foo"), EqTo(new Integer(42))).tupled
+    val matcher = (EqTo("foo"), EqTo(Integer.valueOf(42))).tupled
     aMock.takesTuple(argThat(matcher)) returns "mocked!"
 
     aMock.takesTuple("foo", 42) shouldBe "mocked!"

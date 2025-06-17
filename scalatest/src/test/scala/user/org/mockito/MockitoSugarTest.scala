@@ -234,7 +234,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
         when(aMock.method) thenReturn Some(Right("Mocked!"))
 
-        aMock.method.value.right.value shouldBe "Mocked!"
+        aMock.method.value.value shouldBe "Mocked!"
         aMock.method2
       }
 
@@ -243,7 +243,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
         when(aMock.method) thenReturn Some(Right("Mocked!"))
 
-        aMock.method.value.right.value shouldBe "Mocked!"
+        aMock.method.value.value shouldBe "Mocked!"
         aMock.method2
       }
 
@@ -255,7 +255,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
         whenGetById(aMock) thenReturn Some(Right("Mocked!"))
 
-        aMock.method.value.right.value shouldBe "Mocked!"
+        aMock.method.value.value shouldBe "Mocked!"
       }
 
       "work with standard mixins" in {

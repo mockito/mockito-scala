@@ -9,18 +9,12 @@ import ru.vyarus.java.generics.resolver.GenericsResolver
 
 import scala.reflect.ClassTag
 import scala.reflect.internal.Symbols
-import scala.util.{ Failure, Success, Try => uTry }
+import scala.util.{ Try => uTry }
 import scala.util.control.NonFatal
 
 object ReflectionUtils {
   import scala.reflect.runtime.{ universe => ru }
   import ru._
-
-  private val JavaVersion: Int =
-    System.getProperty("java.version").split("\\.") match {
-      case Array("1", v, _*) => v.toInt // Java 8 style: 1.8.x
-      case Array(v, _*)      => v.toInt // Java 9+ style: 11.x, 17.x, etc.
-    }
 
   implicit def symbolToMethodSymbol(sym: Symbol): Symbols#MethodSymbol = sym.asInstanceOf[Symbols#MethodSymbol]
 
@@ -120,39 +114,6 @@ object ReflectionUtils {
     }
 
   def setFinalStatic(field: Field, newValue: AnyRef): Unit =
-    if (JavaVersion < 17)
-      setFinalStatic17Minus(field, newValue)
-    else
-      setFinalStatic17Plus(field, newValue)
-
-  private def setFinalStatic17Minus(field: Field, newValue: AnyRef): Unit = {
-    val clazz = classOf[java.lang.Class[_]]
-    field.setAccessible(true)
-    val modifiersField: Field = uTry(clazz.getDeclaredField("modifiers")) match {
-      case Success(modifiers) => modifiers
-      case Failure(e)         =>
-        uTry {
-          val getDeclaredFields0           = clazz.getDeclaredMethod("getDeclaredFields0", classOf[Boolean])
-          val accessibleBeforeSet: Boolean = getDeclaredFields0.isAccessible
-          getDeclaredFields0.setAccessible(true)
-          val declaredFields: Array[Field] = getDeclaredFields0
-            .invoke(classOf[Field], java.lang.Boolean.FALSE)
-            .asInstanceOf[Array[Field]]
-          getDeclaredFields0.setAccessible(accessibleBeforeSet)
-          declaredFields.find("modifiers" == _.getName).get
-        } match {
-          case Success(modifiers) => modifiers
-          case Failure(ex)        =>
-            e.addSuppressed(ex)
-            throw e
-        }
-    }
-    modifiersField.setAccessible(true)
-    modifiersField.setInt(field, field.getModifiers & ~Modifier.FINAL)
-    field.set(null, newValue)
-  }
-
-  private def setFinalStatic17Plus(field: Field, newValue: AnyRef): Unit =
     try {
       // Try to get Unsafe instance (works with both sun.misc.Unsafe and jdk.internal.misc.Unsafe)
       val unsafeClass: Class[_] =
@@ -170,6 +131,9 @@ object ReflectionUtils {
       val staticFieldBaseMethod   = unsafeClass.getMethod("staticFieldBase", classOf[Field])
       val staticFieldOffsetMethod = unsafeClass.getMethod("staticFieldOffset", classOf[Field])
       val putObjectMethod         = unsafeClass.getMethod("putObject", classOf[Object], classOf[Long], classOf[Object])
+
+      // Make the field accessible
+      field.setAccessible(true)
 
       // Get base and offset for the field
       val base: Object = staticFieldBaseMethod.invoke(unsafe, field)

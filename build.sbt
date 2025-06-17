@@ -1,6 +1,4 @@
-import scala.io.Source
 import scala.language.postfixOps
-import sbt.io.Using
 
 val currentScalaVersion = "2.13.16"
 
@@ -21,7 +19,7 @@ lazy val commonSettings =
     scalacOptions ++= Seq(
       "-unchecked",
       "-feature",
-      "-deprecation:false",
+      "-deprecation",
       "-encoding",
       "UTF-8",
       "-Xfatal-warnings",
@@ -48,7 +46,8 @@ lazy val commonSettings =
         case _ =>
           Seq("org.scala-lang.modules" %% "scala-parallel-collections" % "1.2.0")
       }
-    }
+    },
+    libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.13.0"
   )
 
 lazy val publishSettings = Seq(
@@ -154,8 +153,6 @@ lazy val core = (project in file("core"))
     name := "mockito-scala",
     libraryDependencies ++= Dependencies.commonLibraries,
     libraryDependencies ++= Dependencies.scalaReflection.value,
-    // TODO remove when we remove the deprecated classes in org.mockito.integrations.Dependencies.scalatest
-    libraryDependencies += Dependencies.scalatest % "provided",
     // include the macro classes and resources in the main jar
     Compile / packageBin / mappings ++= (macroSub / Compile / packageBin / mappings).value,
     // include the macro sources in the main source jar

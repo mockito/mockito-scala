@@ -41,7 +41,8 @@ The library has independent developers, release cycle and versioning from core m
 If you're in Scala 2.12 you'll probably want to add the compiler flag `-Ypartial-unification`, if you don't you risk some compile errors when trying to stub complex types using the idiomatic syntax
 
 ## Notes for 2.0.0
-We dropped support for Scala 2.11 and Java 8, as Mockito 5 dropped support for Java 8.
+We dropped support for Scala 2.11 and Java 8, as Mockito 5 dropped support for Java 8. 
+Java 11 is now the minimum supported version.
 
 ## Notes for 1.13.6
 

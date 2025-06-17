@@ -700,7 +700,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
       org.unit().doesNothing()
 
-      org.unit() shouldBe ()
+      org.unit() shouldBe ((): Unit)
     }
 
     "stub a real call" in {
@@ -742,7 +742,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
       aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
 
-      expect a call to aMock.varargMethod("hola", Array(1, 2, 3): _*)
+      expect a call to aMock.varargMethod("hola", List(1, 2, 3): _*)
       expect a call to aMock.varargMethod("hola", Vector(1, 2, 3): _*)
       expect a call to aMock.varargMethod("hola", 1, 2, 3)
     }

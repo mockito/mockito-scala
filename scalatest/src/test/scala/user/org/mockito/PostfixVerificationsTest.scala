@@ -676,7 +676,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
 
       org.unit().doesNothing()
 
-      org.unit() shouldBe ()
+      org.unit() shouldBe ((): Unit)
     }
 
     "stub a real call" in {
@@ -716,7 +716,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
 
       aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
 
-      aMock.varargMethod("hola", Array(1, 2, 3): _*) was called
+      aMock.varargMethod("hola", List(1, 2, 3): _*) was called
       aMock.varargMethod("hola", Vector(1, 2, 3): _*) was called
       aMock.varargMethod("hola", 1, 2, 3) was called
     }

@@ -3,7 +3,7 @@ package org.mockito.specs2
 import java.io.{ File, FileOutputStream, ObjectOutputStream }
 import java.util
 import org.hamcrest.core.IsNull
-import org.mockito.VerifyOrder
+import org.mockito.{ VerifyInOrder, VerifyOrder }
 import org.mockito.captor.ArgCaptor
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.DefaultAnswer
@@ -525,7 +525,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list2.get(0)
 
-    implicit val order = inOrder(list1, list2)
+    implicit val order: VerifyInOrder = inOrder(list1, list2)
     (there was one(list1).get(0) andThen
       one(list2).get(0)).message must_== "The mock was called as expected"
   }
@@ -541,7 +541,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list2.get(0)
 
-    implicit val order = inOrder(ignoreStubs(list1, list2))
+    implicit val order: VerifyInOrder = inOrder(ignoreStubs(list1, list2))
     (there was one(list1).get(0) andThen
       one(list2).get(0)).message must_== "The mock was called as expected"
   }
@@ -552,7 +552,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list1.get(1)
 
-    implicit val order = inOrder(list1)
+    implicit val order: VerifyInOrder = inOrder(list1)
 
     val result = there was one(list1).get(1) andThen
       one(list1).get(0)
@@ -566,7 +566,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list1.get(1)
 
-    implicit val order = inOrder(list1)
+    implicit val order: VerifyInOrder = inOrder(list1)
 
     var result: Result = success
 
@@ -584,7 +584,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list2.get(0)
 
-    implicit val order = inOrder(list1, list2)
+    implicit val order: VerifyInOrder = inOrder(list1, list2)
     (there was one(list2).get(0) andThen
       one(list1).get(0)).message must startWith("The mock was not called as expected")
   }
@@ -594,8 +594,8 @@ The Mockito trait is reusable in other contexts
 
     list1.get(0); list1.size; list1.get(0); list1.size
 
-    implicit val order = inOrder(list1)
-    val result         = there was one(list1).get(0) andThen
+    implicit val order: VerifyInOrder = inOrder(list1)
+    val result                        = there was one(list1).get(0) andThen
       one(list1).size() andThen
       no(list1).get(0) andThen
       one(list1).size()
@@ -607,13 +607,13 @@ The Mockito trait is reusable in other contexts
 
   def callbacks1 = {
     val list = mock[java.util.List[String]]("list")
-    list.get(*) answers { i: Int => "The parameter is " + i.toString }
+    list.get(*) answers { (i: Int) => "The parameter is " + i.toString }
     list.get(2) must_== "The parameter is 2"
   }
 
   def callbacks2 = {
     val list = mock[java.util.List[String]]("list")
-    list.get(*) answers { i: Int => (i + 1).toString }
+    list.get(*) answers { (i: Int) => (i + 1).toString }
     list.get(1) must_== "2"
     list.get(5) must_== "6"
   }

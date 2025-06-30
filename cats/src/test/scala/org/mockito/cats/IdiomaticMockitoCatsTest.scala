@@ -1,9 +1,8 @@
 package org.mockito.cats
 
 import cats.Eq
-import cats.implicits._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, OptionValues }
 

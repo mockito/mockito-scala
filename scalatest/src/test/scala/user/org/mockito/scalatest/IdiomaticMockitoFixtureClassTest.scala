@@ -20,7 +20,7 @@ class IdiomaticMockitoFixtureClassTest extends flatspec.FixtureAnyFlatSpec with 
     withFixture(test.toNoArgTest(theFixture))
   }
 
-  "Mockito" should "verifyNoMoreInteractions fixture objects" in { f: FixtureParam =>
+  "Mockito" should "verifyNoMoreInteractions fixture objects" in { (f: FixtureParam) =>
     "mocked" willBe returned by f.foo.bar("pepe")
 
     f.foo wasNever called
@@ -32,7 +32,7 @@ class IdiomaticMockitoFixtureClassTest extends flatspec.FixtureAnyFlatSpec with 
     }
   }
 
-  "Mockito" should "verify no calls on fixture objects methods" in { f: FixtureParam =>
+  "Mockito" should "verify no calls on fixture objects methods" in { (f: FixtureParam) =>
     "mocked" willBe returned by f.foo.bar("pepe")
     "mocked" willBe returned by f.foo.baz
 

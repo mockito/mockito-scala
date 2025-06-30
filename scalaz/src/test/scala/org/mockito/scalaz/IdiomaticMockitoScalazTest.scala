@@ -1,11 +1,11 @@
 package org.mockito.scalaz
 
 import _root_.scalaz._
+import Scalaz._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, OptionValues }
-import scalaz.Scalaz._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ Future, Promise }

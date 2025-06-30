@@ -22,7 +22,7 @@ class IdiomaticMockitoWithExpectFixtureClassTest extends flatspec.FixtureAnyFlat
     super.withFixture(test.toNoArgTest(theFixture))
   }
 
-  "expect no calls TO" should "verify no calls on fixture objects methods" in { f: FixtureParam =>
+  "expect no calls TO" should "verify no calls on fixture objects methods" in { (f: FixtureParam) =>
     "mocked" willBe returned by f.foo.bar("pepe")
     "mocked" willBe returned by f.foo.baz
 
@@ -37,7 +37,7 @@ class IdiomaticMockitoWithExpectFixtureClassTest extends flatspec.FixtureAnyFlat
     }
   }
 
-  "expect no calls ON" should "verify no calls on a mock inside a fixture object" in { f: FixtureParam =>
+  "expect no calls ON" should "verify no calls on a mock inside a fixture object" in { (f: FixtureParam) =>
     f.foo.bar("pepe") returns "mocked"
 
     expect no calls on f.foo
@@ -49,7 +49,7 @@ class IdiomaticMockitoWithExpectFixtureClassTest extends flatspec.FixtureAnyFlat
     }
   }
 
-  it should "prevent usage of 'no calls to' when 'no calls on' is intended" in { f: FixtureParam =>
+  it should "prevent usage of 'no calls to' when 'no calls on' is intended" in { (f: FixtureParam) =>
     the[MissingMethodInvocationException] thrownBy {
       expect no calls to f.foo
     } should have message
@@ -62,7 +62,7 @@ class IdiomaticMockitoWithExpectFixtureClassTest extends flatspec.FixtureAnyFlat
         |""".stripMargin
   }
 
-  "expect noMore calls on" should "verify no more calls on a mock inside a fixture object" in { f: FixtureParam =>
+  "expect noMore calls on" should "verify no more calls on a mock inside a fixture object" in { (f: FixtureParam) =>
     f.foo.bar("pepe") returns "mocked"
 
     f.foo.bar("pepe") shouldBe "mocked"

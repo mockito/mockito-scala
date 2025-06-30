@@ -1,6 +1,6 @@
 package org.mockito.scalaz
 
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito }
+import org.mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, OptionValues }
 import _root_.scalaz._

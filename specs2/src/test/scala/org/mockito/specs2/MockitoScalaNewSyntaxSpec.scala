@@ -4,7 +4,7 @@ import java.io.{ File, FileOutputStream, ObjectOutputStream }
 import java.util
 import org.hamcrest.core.IsNull
 import org.mockito.IdiomaticMockitoBase.Times
-import org.mockito.VerifyOrder
+import org.mockito.{ VerifyInOrder, VerifyOrder }
 import org.mockito.captor.ArgCaptor
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.DefaultAnswer
@@ -554,7 +554,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list1.get(1)
 
-    implicit val order = inOrder(list1)
+    implicit val order: VerifyInOrder = inOrder(list1)
 
     val result = list1.get(1).was(called) andThen list1.get(0).was(called)
 
@@ -567,7 +567,7 @@ The Mockito trait is reusable in other contexts
     list1.get(0)
     list1.get(1)
 
-    implicit val order = inOrder(list1)
+    implicit val order: VerifyInOrder = inOrder(list1)
 
     var result: Result = success
 
@@ -593,8 +593,8 @@ The Mockito trait is reusable in other contexts
 
     list1.get(0); list1.size; list1.get(0); list1.size
 
-    implicit val order = inOrder(list1)
-    val result         = got {
+    implicit val order: VerifyInOrder = inOrder(list1)
+    val result                        = got {
       list1.get(0) was called
       list1.size() was called
       list1.get(0) wasNever called
@@ -608,13 +608,13 @@ The Mockito trait is reusable in other contexts
 
   def callbacks1 = {
     val list = mock[java.util.List[String]]("list")
-    list.get(*) answers { i: Int => s"The parameter is ${i.toString}" }
+    list.get(*) answers { (i: Int) => s"The parameter is ${i.toString}" }
     list.get(2) must_== "The parameter is 2"
   }
 
   def callbacks2 = {
     val list = mock[java.util.List[String]]("list")
-    list.get(*) answers { i: Int => (i + 1).toString }
+    list.get(*) answers { (i: Int) => (i + 1).toString }
     list.get(1) must_== "2"
     list.get(5) must_== "6"
   }

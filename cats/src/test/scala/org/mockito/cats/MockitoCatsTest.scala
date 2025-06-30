@@ -2,9 +2,8 @@ package org.mockito.cats
 
 import cats.Eq
 import cats.data.{ EitherT, OptionT }
-import cats.implicits._
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, OptionValues }
 
@@ -251,7 +250,7 @@ class MockitoCatsTest extends AnyWordSpec with Matchers with MockitoSugar with A
 
       doAnswerFG[Future, ErrorOr, ValueClass](ValueClass("mocked!")).when(aMock).returnsFutureEither("hello")
       doAnswerFG[Future, ErrorOr, String, ValueClass]((s: String) => ValueClass(s + " mocked!")).when(aMock).returnsFutureEither("hi")
-      doAnswerFG[Future, ErrorOr, InvocationOnMock, ValueClass] { i: InvocationOnMock => ValueClass(i.arg[String](0) + " invocation mocked!") }
+      doAnswerFG[Future, ErrorOr, InvocationOnMock, ValueClass]((i: InvocationOnMock) => ValueClass(i.arg[String](0) + " invocation mocked!"))
         .when(aMock)
         .returnsFutureEither("hola")
       doAnswerFG[Future, Option, Int, Boolean, String]((i: Int, b: Boolean) => s"$i, $b").when(aMock).returnsFutureOptionFrom(42, true)

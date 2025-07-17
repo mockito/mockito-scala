@@ -12,7 +12,6 @@
 package org.mockito
 
 import org.mockito.Answers.CALLS_REAL_METHODS
-import org.mockito.ReflectionUtils.InvocationOnMockOps
 import org.mockito.internal.configuration.plugins.Plugins.getMockMaker
 import org.mockito.internal.creation.MockSettingsImpl
 import org.mockito.internal.exceptions.Reporter.notAMockPassedToVerifyNoMoreInteractions
@@ -453,7 +452,6 @@ private[mockito] trait DoSomething {
 }
 
 private[mockito] trait MockitoEnhancer extends MockCreator {
-  implicit val invocationOps: InvocationOnMock => InvocationOnMockOps = InvocationOps
 
   /**
    * Delegates to <code>Mockito.mock(type: Class[T])</code> It provides a nicer API as you can, for instance, do <code>mock[MyClass]</code> instead of
@@ -630,9 +628,9 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
         (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings, realImpl)(pt)
       )
 
-      ReflectionUtils.setFinalStatic(moduleField, threadAwareMock)
+      JavaReflectionUtils.setFinalStatic(moduleField, threadAwareMock)
       try block
-      finally ReflectionUtils.setFinalStatic(moduleField, realImpl)
+      finally JavaReflectionUtils.setFinalStatic(moduleField, realImpl)
     }
   }
 }

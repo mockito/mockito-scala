@@ -2,7 +2,6 @@ package org
 
 import java.lang.reflect.Method
 
-import org.mockito.ReflectionUtils.InvocationOnMockOps
 import org.mockito.internal.{ ValueClassExtractor, ValueClassWrapper }
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.ScalaAnswer
@@ -21,7 +20,20 @@ package object mockito {
 
   def clazz[T](implicit classTag: ClassTag[T]): Class[T] = classTag.runtimeClass.asInstanceOf[Class[T]]
 
-  implicit val InvocationOps: InvocationOnMock => InvocationOnMockOps = new InvocationOnMockOps(_)
+  implicit class InvocationOnMockOps(val invocation: InvocationOnMock) {
+    def mock[M]: M                               = invocation.getMock.asInstanceOf[M]
+    def method: Method                           = invocation.getMethod
+    def arg[A: ValueClassWrapper](index: Int): A = ValueClassWrapper[A].wrapAs[A](invocation.getArgument(index))
+    def args: List[Any]                          = invocation.getArguments.toList
+    def callRealMethod[R](): R                   = invocation.callRealMethod.asInstanceOf[R]
+    def argsAsTuple: Any                         = args.map(_.asInstanceOf[Object]) match {
+      case Nil      => Nil
+      case h :: Nil => h
+      case l        => Class.forName(s"scala.Tuple${l.size}").getDeclaredConstructors.head.newInstance(l: _*)
+    }
+    def returnType: Class[_]       = ReflectionUtils.returnType(invocation)
+    def returnsValueClass: Boolean = ReflectionUtils.returnsValueClass(invocation)
+  }
 
   def invocationToAnswer[T: ValueClassExtractor](f: InvocationOnMock => T): ScalaAnswer[T] =
     ScalaAnswer.lift(f.andThen(ValueClassExtractor[T].extractAs[T]))

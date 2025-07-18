@@ -25,8 +25,8 @@ class MalformedClassError extends AnyWordSpecLike with Matchers with IdiomaticMo
 object MalformedClassError {
   sealed trait Permissions
   object Permissions {
-    final case object Allowed extends Permissions
-    final case object Denied  extends Permissions
+    case object Allowed extends Permissions
+    case object Denied  extends Permissions
   }
   type Allowed = Permissions.Allowed.type
 

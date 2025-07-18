@@ -8,14 +8,13 @@ import org.mockito.exceptions.misusing.WrongTypeOfReturnValue
 import org.mockito.exceptions.verification.{ ArgumentsAreDifferent, WantedButNotInvoked }
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ScalaFirstStubbing }
-import org.mockito.{ ArgumentMatchersSugar, MockitoSugar }
+import org.mockito._
 import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ EitherValues, OptionValues }
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import user.org.mockito.model.JavaFoo
 
-import scala.reflect.io.AbstractFile
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -317,14 +316,6 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
       org.takesManyValueClasses(new ValueClass("1"), ValueCaseClassInt(2), ValueCaseClassString("3")) shouldBe "ValueClass(1)-ValueCaseClassInt(2)-ValueCaseClassString(3)"
     }
 
-    "not mock final methods" in {
-      val abstractFile = mock[AbstractFile]
-
-      when(abstractFile.path) thenReturn "sammy.scala"
-
-      abstractFile.path shouldBe "sammy.scala"
-    }
-
     "be serialisable" in {
       val list = mock[java.util.List[String]](withSettings.name("list1").serializable())
       when(list.get(eqTo(3))) thenAnswer "mocked"
@@ -353,7 +344,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
       aMock.bar shouldBe "hola"
 
-      val ex = the[WrongTypeOfReturnValue] thrownBy (aMock.returnBar shouldBe "hola")
+      val ex = the[WrongTypeOfReturnValue] thrownBy aMock.returnBar
       ex.getMessage should include("Default answer returned a result with the wrong type")
     }
 

@@ -11,7 +11,7 @@ object Dependencies {
     "ru.vyarus"      % "generics-resolver" % "3.0.3"
   )
 
-  val scalacheck = "org.scalacheck" %% "scalacheck" % "1.18.1"
+  val scalacheck = "org.scalacheck" %% "scalacheck" % "1.19.0"
 
   val scalatest = "org.scalatest" %% "scalatest" % scalatestVersion
 

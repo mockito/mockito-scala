@@ -2,7 +2,7 @@ package org.mockito.matchers
 
 import org.mockito.ArgumentMatcher
 import org.mockito.internal.ValueClassExtractor
-import org.scalactic.TripleEquals._
+import org.scalactic.TripleEquals.*
 import org.scalactic.{ Equality, Prettifier }
 
 case class EqTo[T: Equality: ValueClassExtractor](value: T)(implicit $pt: Prettifier) extends ArgumentMatcher[T] {

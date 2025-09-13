@@ -8,7 +8,7 @@ import org.mockito.stubbing.ScalaOngoingStubbing
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticStubbing, PostfixVerifications, Specs2VerifyMacro, VerifyInOrder, VerifyOrder }
 import org.scalactic.{ Equality, Prettifier }
 import org.specs2.control.Exceptions.catchAll
-import org.specs2.control.Throwablex._
+import org.specs2.control.Throwablex.*
 import org.specs2.matcher.{ Expectable, MatchFailure, MatchResult, MatchSuccess, Matcher }
 
 import scala.reflect.ClassTag
@@ -39,8 +39,8 @@ trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentM
     new DefaultMatcher[T] {
       override def registerDefaultMatcher(value: T): T =
         value match {
-          case m: org.hamcrest.Matcher[_]       => MockitoHamcrest.argThat[T](m.asInstanceOf[org.hamcrest.Matcher[T]])
-          case m: org.specs2.matcher.Matcher[_] => argThat(m)
+          case m: org.hamcrest.Matcher[?]       => MockitoHamcrest.argThat[T](m.asInstanceOf[org.hamcrest.Matcher[T]])
+          case m: org.specs2.matcher.Matcher[?] => argThat(m)
           case _                                => eqTo(value)
         }
     }
@@ -106,7 +106,7 @@ trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentM
   }
 
   implicit class Specs2Stubbing[T](s: ScalaOngoingStubbing[T]) {
-    def thenReturns(value: T, values: T*): ScalaOngoingStubbing[T] = s.andThen(value, values: _*)
+    def thenReturns(value: T, values: T*): ScalaOngoingStubbing[T] = s.andThen(value, values*)
   }
 
   implicit class MatchResultOps[T](m: MatchResult[T]) {
@@ -119,7 +119,7 @@ trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentM
 
   def inOrder(mocks: AnyRef*) =
     VerifyInOrder(mocks.toList.flatMap {
-      case i: Array[_] => i.asInstanceOf[Array[AnyRef]]
+      case i: Array[?] => i.asInstanceOf[Array[AnyRef]]
       case m           => List(m)
     })
 }

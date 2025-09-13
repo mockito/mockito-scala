@@ -5,7 +5,7 @@ import org.mockito.exceptions.base.MockitoAssertionError
 import org.mockito.exceptions.verification.{ TooFewActualInvocations, TooManyActualInvocations }
 import org.mockito.{ IdiomaticMockito, MockitoSugar }
 import org.scalactic.{ Equality, StringNormalizations }
-import user.org.mockito.captor.ArgCaptorTest._
+import user.org.mockito.captor.ArgCaptorTest.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -45,7 +45,7 @@ class ArgCaptorTest extends AnyWordSpec with MockitoSugar with Matchers {
     "works with Equality" in {
       val aMock  = mock[Foo]
       val captor = ArgCaptor[String]
-      import StringNormalizations._
+      import StringNormalizations.*
 
       implicit val eq: Equality[String] = decided by defaultEquality[String] afterBeing lowerCased
 

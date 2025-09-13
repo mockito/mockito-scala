@@ -126,7 +126,7 @@ class EqMatchersTest extends AnyFlatSpec with MockitoSugar with Matchers with Ar
   }
 
   "eqTo[T]" should "work when an implicit Equality is in scope" in {
-    import StringNormalizations._
+    import StringNormalizations.*
 
     implicit val eq: Equality[String] = decided by defaultEquality[String] afterBeing lowerCased
 

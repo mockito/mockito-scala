@@ -8,7 +8,7 @@ import org.mockito.exceptions.misusing.WrongTypeOfReturnValue
 import org.mockito.exceptions.verification.{ ArgumentsAreDifferent, WantedButNotInvoked }
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.{ CallsRealMethods, DefaultAnswer, ScalaFirstStubbing }
-import org.mockito._
+import org.mockito.*
 import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ EitherValues, OptionValues }
@@ -405,7 +405,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
     "work when getting varargs from collections" in {
       val aMock = mock[Baz]
 
-      when(aMock.varargMethod("hola", List(1, 2, 3): _*)) thenReturn 42
+      when(aMock.varargMethod("hola", List(1, 2, 3)*)) thenReturn 42
 
       aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
 
@@ -415,7 +415,7 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
     "work when getting varargs from collections (with matchers)" in {
       val aMock = mock[Baz]
 
-      when(aMock.varargMethod(eqTo("hola"), eqTo(List(1, 2, 3)): _*)) thenReturn 42
+      when(aMock.varargMethod(eqTo("hola"), eqTo(List(1, 2, 3))*)) thenReturn 42
 
       aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
 

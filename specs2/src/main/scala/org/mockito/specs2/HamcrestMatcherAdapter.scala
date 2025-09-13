@@ -19,10 +19,10 @@ case class HamcrestMatcherAdapter[T](m: Matcher[T]) extends BaseMatcher[T] {
   private def matchesSafely[A](item: A, matcher: Matcher[A]): Boolean = {
     // special case for by-name arguments
     // in that case we apply the Function0 to get the value
-    val i = if (item != null && item.isInstanceOf[Function0[_]]) item.asInstanceOf[Function0[_]].apply().asInstanceOf[A] else item
+    val i = if (item != null && item.isInstanceOf[Function0[?]]) item.asInstanceOf[Function0[?]].apply().asInstanceOf[A] else item
     try
       matcher.apply(Expectations.createExpectable(i)) match {
-        case f: MatchFailure[_] => message = f.koMessage; false
+        case f: MatchFailure[?] => message = f.koMessage; false
         case _                  => true
       }
     // a class cast exception can happen if we tried: vet.treat(dog); there must be one(vet).treat(bird) (see issue https://github.com/etorreborre/specs2/issues/222)

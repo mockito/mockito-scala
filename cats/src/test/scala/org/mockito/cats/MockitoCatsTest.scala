@@ -3,7 +3,7 @@ package org.mockito.cats
 import cats.Eq
 import cats.data.{ EitherT, OptionT }
 import org.mockito.invocation.InvocationOnMock
-import org.mockito._
+import org.mockito.*
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, OptionValues }
 

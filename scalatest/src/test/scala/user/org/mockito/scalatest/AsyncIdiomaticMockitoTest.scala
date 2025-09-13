@@ -36,7 +36,7 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
 
     "work on tests with setup" in {
       val setup = new Setup
-      import setup._
+      import setup.*
 
       "mocked" willBe returned by foo.bar("pepe")
 
@@ -47,7 +47,7 @@ class AsyncIdiomaticMockitoTest extends AsyncWordSpec with Matchers with AsyncId
 
     "work with real future assertions" in {
       val setup = new Setup
-      import setup._
+      import setup.*
 
       val baz = new Baz
 

@@ -2,7 +2,7 @@ package org.mockito.scalaz
 
 import org.scalactic.Equality
 import scalaz.Equal
-import scalaz.Scalaz._
+import scalaz.Scalaz.*
 
 class EqToEquality[T: Equal] extends Equality[T] {
   override def areEqual(a: T, b: Any): Boolean =

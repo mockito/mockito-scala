@@ -11,7 +11,7 @@ import scala.util.control.NonFatal
  */
 object JavaReflectionUtils {
 
-  def resolveWithJavaGenerics(invocation: InvocationOnMock): Option[Class[_]] =
+  def resolveWithJavaGenerics(invocation: InvocationOnMock): Option[Class[?]] =
     try Some(GenericsResolver.resolve(invocation.getMock.getClass).`type`(invocation.method.getDeclaringClass).method(invocation.method).resolveReturnClass())
     catch {
       case _: Throwable => None
@@ -20,7 +20,7 @@ object JavaReflectionUtils {
   def setFinalStatic(field: Field, newValue: AnyRef): Unit =
     try {
       // Try to get Unsafe instance (works with both sun.misc.Unsafe and jdk.internal.misc.Unsafe)
-      val unsafeClass: Class[_] =
+      val unsafeClass: Class[?] =
         try
           Class.forName("sun.misc.Unsafe")
         catch {

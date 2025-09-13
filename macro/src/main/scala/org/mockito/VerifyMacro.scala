@@ -1,6 +1,6 @@
 package org.mockito
 
-import org.mockito.Utils._
+import org.mockito.Utils.*
 import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.verification.VerificationMode
@@ -40,7 +40,7 @@ object VerifyMacro extends VerificationMacroTransformer {
 
 private[mockito] trait VerificationMacroTransformer {
   protected def transformInvocation(c: blackbox.Context)(invocation: c.Tree, order: c.Tree, times: c.Tree): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     try doTransformInvocation(c)(invocation, order, times)
     catch {
@@ -49,7 +49,7 @@ private[mockito] trait VerificationMacroTransformer {
   }
 
   protected def doTransformInvocation(c: blackbox.Context)(invocation: c.Tree, order: c.Tree, times: c.Tree): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     val pf: PartialFunction[c.Tree, c.Tree] = {
       case q"$obj.$method[..$targs](...$args)" =>
@@ -88,7 +88,7 @@ private[mockito] trait VerificationMacroTransformer {
   }
 
   protected def transformVerification[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     def transformMockWasNeverCalled(obj: c.Tree, called: c.Tree): c.Tree =
       called match {
@@ -151,7 +151,7 @@ object VerifyUnOrdered extends VerifyOrder {
 }
 
 case class VerifyInOrder(mocks: Seq[AnyRef]) extends VerifyOrder {
-  private val _inOrder = Mockito.inOrder(mocks: _*)
+  private val _inOrder = Mockito.inOrder(mocks*)
 
   override def verify[T](mock: T): T                                      = _inOrder.verify(mock)
   override def verifyWithMode[T](mock: T, mode: ScalaVerificationMode): T = _inOrder.verify(mock, mode.verificationMode)

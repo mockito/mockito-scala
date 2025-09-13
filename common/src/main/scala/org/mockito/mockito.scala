@@ -6,7 +6,7 @@ import org.mockito.internal.{ ValueClassExtractor, ValueClassWrapper }
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.ScalaAnswer
 import org.scalactic.Equality
-import org.scalactic.TripleEquals._
+import org.scalactic.TripleEquals.*
 
 import scala.reflect.ClassTag
 
@@ -29,9 +29,9 @@ package object mockito {
     def argsAsTuple: Any                         = args.map(_.asInstanceOf[Object]) match {
       case Nil      => Nil
       case h :: Nil => h
-      case l        => Class.forName(s"scala.Tuple${l.size}").getDeclaredConstructors.head.newInstance(l: _*)
+      case l        => Class.forName(s"scala.Tuple${l.size}").getDeclaredConstructors.head.newInstance(l*)
     }
-    def returnType: Class[_]       = ReflectionUtils.returnType(invocation)
+    def returnType: Class[?]       = ReflectionUtils.returnType(invocation)
     def returnsValueClass: Boolean = ReflectionUtils.returnsValueClass(invocation)
   }
 

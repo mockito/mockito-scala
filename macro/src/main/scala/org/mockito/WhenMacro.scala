@@ -1,6 +1,6 @@
 package org.mockito
 
-import org.mockito.Utils._
+import org.mockito.Utils.*
 import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.ValueClassWrapper
 import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
@@ -10,7 +10,7 @@ import scala.reflect.macros.blackbox
 
 object WhenMacro {
   private def transformInvocation(c: blackbox.Context)(invocation: c.Tree): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     val pf: PartialFunction[c.Tree, c.Tree] = {
       case q"$obj.$method[..$targs](...$args)" =>
@@ -51,7 +51,7 @@ object WhenMacro {
   private val FunctionalShouldReturnOptions                       = ShouldReturnOptions.map(_ + "F")
   private val FunctionalShouldReturnOptions2                      = ShouldReturnOptions.map(_ + "FG")
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.macroApplication match {
       case q"$_.StubbingOps[$t]($invocation).$m" if ShouldReturnOptions.contains(m.toString) =>
@@ -70,7 +70,7 @@ object WhenMacro {
   }
 
   def isLenient[T: c.WeakTypeTag](c: blackbox.Context)(): c.Expr[Unit] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[Unit] {
       c.macroApplication match {
@@ -90,7 +90,7 @@ object WhenMacro {
 
   val ShouldCallOptions                                                                                                          = Set("shouldCall", "mustCall", "calls")
   def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod.type]): c.Expr[ScalaOngoingStubbing[T]] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[ScalaOngoingStubbing[T]] {
       c.macroApplication match {
@@ -108,7 +108,7 @@ object WhenMacro {
   private val FunctionalShouldFailOptions                        = Set("shouldFailWith", "mustFailWith", "failsWith", "raises")
   private val FunctionalShouldFailOptions2                       = Set("shouldFailWithG", "mustFailWithG", "failsWithG", "raisesG")
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.macroApplication match {
       case q"$_.StubbingOps[$t]($invocation).$m" if ShouldThrowOptions.contains(m.toString) =>
@@ -454,7 +454,7 @@ object WhenMacro {
   private val FunctionalShouldAnswerOptions                       = ShouldAnswerOptions.map(_ + "F")
   private val FunctionalShouldAnswerOptions2                      = ShouldAnswerOptions.map(_ + "FG")
   def shouldAnswer[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.macroApplication match {
       case q"$_.StubbingOps[$t]($invocation).$m" if ShouldAnswerOptions.contains(m.toString) =>
@@ -478,7 +478,7 @@ object WhenMacro {
 
   private val ShouldAnswerPFOptions                                 = Set("shouldAnswerPF", "mustAnswerPF", "answersPF")
   def shouldAnswerPF[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.macroApplication match {
       case q"$_.StubbingOps[$t]($invocation).$m" if ShouldAnswerPFOptions.contains(m.toString) =>

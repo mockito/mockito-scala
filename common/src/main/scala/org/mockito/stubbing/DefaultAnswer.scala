@@ -2,7 +2,7 @@ package org.mockito.stubbing
 
 import org.mockito.exceptions.base.MockitoException
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.Answers._
+import org.mockito.Answers.*
 import org.mockito.internal.stubbing.defaultanswers.ReturnsMoreEmptyValues
 
 import scala.concurrent.Future
@@ -20,7 +20,7 @@ trait DefaultAnswer extends Answer[Any] with Function[InvocationOnMock, Option[A
 object DefaultAnswer {
   implicit val defaultAnswer: DefaultAnswer = ReturnsSmartNulls
 
-  def apply(from: Answer[_]): DefaultAnswer = new DecoratedAnswer(from)
+  def apply(from: Answer[?]): DefaultAnswer = new DecoratedAnswer(from)
 
   def apply(a: InvocationOnMock => Any): DefaultAnswer =
     DefaultAnswer(new Answer[Any] {
@@ -33,7 +33,7 @@ object DefaultAnswer {
     }
 }
 
-class DecoratedAnswer(from: Answer[_]) extends DefaultAnswer {
+class DecoratedAnswer(from: Answer[?]) extends DefaultAnswer {
   override def apply(invocation: InvocationOnMock): Option[Any] = Option(from.answer(invocation))
 }
 

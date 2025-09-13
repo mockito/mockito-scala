@@ -10,7 +10,7 @@ trait IdiomaticVerifications {
 
 trait PostfixVerifications extends IdiomaticVerifications {
 
-  import org.mockito.IdiomaticMockitoBase._
+  import org.mockito.IdiomaticMockitoBase.*
 
   implicit class VerifyingOps[T](stubbing: T) {
     def was(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]

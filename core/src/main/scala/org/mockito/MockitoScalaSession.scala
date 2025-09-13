@@ -6,12 +6,12 @@ import org.mockito.internal.stubbing.StubbedInvocationMatcher
 import org.mockito.invocation.{ DescribedInvocation, Invocation, Location }
 import org.mockito.listeners.MockCreationListener
 import org.mockito.mock.MockCreationSettings
-import org.mockito.quality.{ Strictness => JavaStrictness }
+import org.mockito.quality.Strictness as JavaStrictness
 import org.mockito.session.MockitoSessionLogger
 import org.scalactic.Equality
-import org.scalactic.TripleEquals._
+import org.scalactic.TripleEquals.*
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.collection.mutable
 
 class MockitoScalaSession(name: String, strictness: Strictness, logger: MockitoSessionLogger) {
@@ -155,7 +155,7 @@ object MockitoScalaSession {
 
     private val mocks = mutable.Set.empty[AnyRef]
 
-    override def onMockCreated(mock: AnyRef, settings: MockCreationSettings[_]): Unit =
+    override def onMockCreated(mock: AnyRef, settings: MockCreationSettings[?]): Unit =
       if ((settings.getStrictness !== JavaStrictness.LENIENT) && (strictness !== Strictness.Lenient)) mocks += mock
   }
 }

@@ -339,7 +339,7 @@ case class ScalazStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
 //             |""".stripMargin)
 //  }
 
-  def thenFailWith[E](error: E)(implicit ae: MonadError[F, _ >: E]): ScalazStubbing[F, T] =
+  def thenFailWith[E](error: E)(implicit ae: MonadError[F, ? >: E]): ScalazStubbing[F, T] =
     delegate thenReturn ae.raiseError[T](error)
 
   def getMock[M]: M = delegate.getMock[M]
@@ -692,7 +692,7 @@ case class ScalazStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
 //             |""".stripMargin)
 //  }
 
-  def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: MonadError[G, _ >: E]): ScalazStubbing2[F, G, T] =
+  def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: MonadError[G, ? >: E]): ScalazStubbing2[F, G, T] =
     delegate thenReturn ae.pure(ag.raiseError[T](error))
 
   def getMock[M]: M = delegate.getMock[M]

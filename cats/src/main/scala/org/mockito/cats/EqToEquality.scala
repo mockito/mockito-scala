@@ -1,7 +1,7 @@
 package org.mockito.cats
 
 import cats.Eq
-import cats.syntax.eq._
+import cats.syntax.eq.*
 import org.scalactic.Equality
 
 class EqToEquality[T: Eq] extends Equality[T] {

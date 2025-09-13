@@ -13,7 +13,7 @@ import org.mockito.invocation.{ Invocation, Location, StubInfo }
 import org.mockito.matchers.EqTo
 import org.scalactic.Prettifier
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 class ScalaInvocation(
     val mockRef: MockReference[AnyRef],
@@ -36,7 +36,7 @@ class ScalaInvocation(
   override def getSequenceNumber: Int                         = sequenceNumber
   override def getLocation: Location                          = location
   override def getRawArguments: Array[AnyRef]                 = rawArguments
-  override def getRawReturnType: Class[_]                     = mockitoMethod.getReturnType
+  override def getRawReturnType: Class[?]                     = mockitoMethod.getReturnType
   override def markVerified(): Unit                           = verified = true
   override def stubInfo(): StubInfo                           = _stubInfo
   override def markStubbed(stubInfo: StubInfo): Unit          = _stubInfo = stubInfo
@@ -63,6 +63,6 @@ class ScalaInvocation(
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
   override def toString: String                                      = new PrintSettings().print(getArgumentsAsMatchers, this)
-  override def getArgumentsAsMatchers: util.List[ArgumentMatcher[_]] =
-    arguments.map(EqTo(_)(serialisableEquality[AnyRef], ValueClassExtractor.instance[AnyRef], $pt): ArgumentMatcher[_]).toList.asJava
+  override def getArgumentsAsMatchers: util.List[ArgumentMatcher[?]] =
+    arguments.map(EqTo(_)(serialisableEquality[AnyRef], ValueClassExtractor.instance[AnyRef], $pt): ArgumentMatcher[?]).toList.asJava
 }

@@ -4,7 +4,7 @@ import java.io.{ File, FileOutputStream, ObjectOutputStream }
 
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.misusing.MissingMethodInvocationException
-import org.mockito.exceptions.verification._
+import org.mockito.exceptions.verification.*
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoSugar }
 import org.scalatest.FixtureContext
 import org.scalatest.matchers.should.Matchers
@@ -299,7 +299,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
         val s = List("horse", "red")
 
-        foo.fooWithVarArg(s: _*)
+        foo.fooWithVarArg(s*)
         expect a call to foo.fooWithVarArg("horse", "red")
 
         expect two calls to foo.fooWithVarArg(*, *)
@@ -327,7 +327,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
         val b = Seq(Bread("Chipa"), Bread("Tortilla"))
 
-        foo.valueClassWithVarArg(b: _*)
+        foo.valueClassWithVarArg(b*)
         expect a call to foo.valueClassWithVarArg(Bread("Chipa"), Bread("Tortilla"))
       }
 
@@ -382,7 +382,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
         expect two calls to org.fooWithVarArgAndSecondParameterList(*)(*)
 
         val s = List("horse", "red", "meh")
-        org.fooWithVarArgAndSecondParameterList(s: _*)(cheese)
+        org.fooWithVarArgAndSecondParameterList(s*)(cheese)
         expect a call to org.fooWithVarArgAndSecondParameterList("horse", "red", "meh")(cheese)
         expect three calls to org.fooWithVarArgAndSecondParameterList(*)(*)
       }
@@ -423,7 +423,7 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
 
         val b = Seq(Bread("Chipa"), Bread("Tortilla"))
 
-        org.valueClassWithVarArgAndSecondParameterList(b: _*)(cheese)
+        org.valueClassWithVarArgAndSecondParameterList(b*)(cheese)
         expect a call to org.valueClassWithVarArgAndSecondParameterList(Bread("Chipa"), Bread("Tortilla"))(cheese)
       }
 
@@ -738,12 +738,12 @@ class PrefixExpectationsTest extends AnyWordSpec with Matchers with ArgumentMatc
       val aMock = mock[Baz]
       val args  = List(1, 2, 3)
 
-      aMock.varargMethod("hola", args: _*) returns 42
+      aMock.varargMethod("hola", args*) returns 42
 
       aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
 
-      expect a call to aMock.varargMethod("hola", List(1, 2, 3): _*)
-      expect a call to aMock.varargMethod("hola", Vector(1, 2, 3): _*)
+      expect a call to aMock.varargMethod("hola", List(1, 2, 3)*)
+      expect a call to aMock.varargMethod("hola", Vector(1, 2, 3)*)
       expect a call to aMock.varargMethod("hola", 1, 2, 3)
     }
 

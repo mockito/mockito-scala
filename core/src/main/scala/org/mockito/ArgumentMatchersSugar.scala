@@ -11,7 +11,7 @@
 
 package org.mockito
 
-import org.mockito.matchers._
+import org.mockito.matchers.*
 
 /**
  * Trait that provides some syntax sugar and type mapping.

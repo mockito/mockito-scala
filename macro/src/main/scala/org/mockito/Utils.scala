@@ -58,7 +58,7 @@ object Utils {
   private def isSpecs2Matcher(methodName: String): Boolean = specs2implicits.pattern.matcher(methodName).matches
 
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {
-    import c.universe._
+    import c.universe.*
     if (arg.toString().contains("org.mockito.matchers.MacroMatchers")) true
     else {
       val methodName = arg match {
@@ -79,7 +79,7 @@ object Utils {
     args.map(arg => transformArg(c)(arg))
 
   private[mockito] def transformArg(c: blackbox.Context)(arg: c.Tree): c.Tree = {
-    import c.universe._
+    import c.universe.*
     if (isMatcher(c)(arg)) arg
     else
       arg match {
@@ -90,12 +90,12 @@ object Utils {
   }
 
   private[mockito] def packageName(c: blackbox.Context)(cls: c.TermName): c.TermName = {
-    import c.universe._
+    import c.universe.*
     if (cls.toString.contains("Scalaz")) TermName("scalaz") else TermName("cats")
   }
 
   private[mockito] def className(c: blackbox.Context)(cls: c.TermName, start: String): c.TermName = {
-    import c.universe._
+    import c.universe.*
     if (cls.toString.contains("Scalaz")) TermName(start + "Scalaz") else TermName(start + "Cats")
   }
 }

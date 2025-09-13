@@ -1,7 +1,7 @@
 package org.mockito.scalatest
 
 import org.mockito.{ MockitoScalaSession, Strictness }
-import org.scalatest._
+import org.scalatest.*
 
 private[mockito] trait MockitoSessionFixture extends TestSuite { this: Suite =>
 

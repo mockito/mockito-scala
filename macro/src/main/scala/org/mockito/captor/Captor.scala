@@ -7,9 +7,9 @@ import org.mockito.internal.ScalaVersion
 import org.mockito.internal.ScalaVersion.{ V2_12, V2_13 }
 import org.mockito.{ clazz, ArgumentCaptor }
 import org.scalactic.Equality
-import org.scalactic.TripleEquals._
+import org.scalactic.TripleEquals.*
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
 import scala.util.{ Failure, Try }
@@ -61,7 +61,7 @@ object Captor {
   implicit def materializeValueClassCaptor[T]: Captor[T] = macro materializeValueClassCaptorMacro[T]
 
   def materializeValueClassCaptorMacro[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[Captor[T]] = {
-    import c.universe._
+    import c.universe.*
     val tpe          = weakTypeOf[T]
     val typeSymbol   = tpe.typeSymbol
     val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass

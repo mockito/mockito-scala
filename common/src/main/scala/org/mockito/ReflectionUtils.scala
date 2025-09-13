@@ -2,16 +2,16 @@ package org.mockito
 
 import org.mockito.JavaReflectionUtils.resolveWithJavaGenerics
 import org.mockito.invocation.InvocationOnMock
-import org.scalactic.TripleEquals._
+import org.scalactic.TripleEquals.*
 
 import java.lang.reflect.Method
 import scala.reflect.ClassTag
 import scala.reflect.internal.Symbols
-import scala.util.{ Try => uTry }
+import scala.util.Try as uTry
 
 object ReflectionUtils {
-  import scala.reflect.runtime.{ universe => ru }
-  import ru._
+  import scala.reflect.runtime.universe as ru
+  import ru.*
 
   implicit def symbolToMethodSymbol(sym: Symbol): Symbols#MethodSymbol = sym.asInstanceOf[Symbols#MethodSymbol]
 
@@ -20,7 +20,7 @@ object ReflectionUtils {
     def methodToJava(sym: Symbols#MethodSymbol): Method
   }]
 
-  private[mockito] def returnType(invocation: InvocationOnMock): Class[_] = {
+  private[mockito] def returnType(invocation: InvocationOnMock): Class[?] = {
     val javaReturnType = invocation.method.getReturnType
 
     if (javaReturnType == classOf[Object])
@@ -33,7 +33,7 @@ object ReflectionUtils {
   private[mockito] def returnsValueClass(invocation: InvocationOnMock): Boolean =
     findTypeSymbol(invocation).exists(_.returnType.typeSymbol.isDerivedValueClass)
 
-  private def resolveWithScalaGenerics(invocation: InvocationOnMock): Option[Class[_]] =
+  private def resolveWithScalaGenerics(invocation: InvocationOnMock): Option[Class[?]] =
     uTry {
       findTypeSymbol(invocation)
         .filter(_.returnType.typeSymbol.isClass)
@@ -54,20 +54,20 @@ object ReflectionUtils {
 
   private def isNonConstructorMethod(d: ru.Symbol): Boolean = d.isMethod && !d.isConstructor
 
-  def extraInterfaces[T](implicit $wtt: WeakTypeTag[T], $ct: ClassTag[T]): List[Class[_]] =
+  def extraInterfaces[T](implicit $wtt: WeakTypeTag[T], $ct: ClassTag[T]): List[Class[?]] =
     uTry {
       val cls = clazz($ct)
       $wtt.tpe match {
         case RefinedType(types, _) =>
           types.map($wtt.mirror.runtimeClass).collect {
-            case c: Class[_] if c.isInterface && c != cls => c
+            case c: Class[?] if c.isInterface && c != cls => c
           }
         case _ => List.empty
       }
     }.toOption
       .getOrElse(List.empty)
 
-  def methodsWithLazyOrVarArgs(classes: Seq[Class[_]]): Seq[(Method, Set[Int])] =
+  def methodsWithLazyOrVarArgs(classes: Seq[Class[?]]): Seq[(Method, Set[Int])] =
     classes.flatMap { clazz =>
       uTry {
         mirror

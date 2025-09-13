@@ -17,7 +17,7 @@ object DefaultValueProvider {
   implicit def default[T]: DefaultValueProvider[T] = macro _defaultValueProvider[T]
 
   def _defaultValueProvider[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[DefaultValueProvider[T]] = {
-    import c.universe._
+    import c.universe.*
     val tpe          = weakTypeOf[T]
     val typeSymbol   = tpe.typeSymbol
     val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass

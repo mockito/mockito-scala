@@ -24,11 +24,11 @@ import org.mockito.internal.{ ValueClassExtractor, ValueClassWrapper }
 import org.mockito.invocation.{ Invocation, InvocationContainer, InvocationOnMock, MockHandler }
 import org.mockito.mock.MockCreationSettings
 import org.mockito.quality.Strictness
-import org.mockito.stubbing._
+import org.mockito.stubbing.*
 import org.mockito.verification.{ VerificationAfterDelay, VerificationMode, VerificationWithTimeout }
 import org.scalactic.{ Equality, Prettifier }
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
 
@@ -39,7 +39,7 @@ private[mockito] trait ScalacticSerialisableHack {
 
 private[mockito] trait MockCreator {
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[_])(implicit $pt: Prettifier): T =
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[?])(implicit $pt: Prettifier): T =
     mock[T](DefaultAnswer(defaultAnswer))
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T
@@ -102,7 +102,7 @@ private[mockito] trait DoSomething {
       // Store the param so we don't evaluate the by-name twice
       val _l = l
       _l match {
-        case f: Function0[_] => f()
+        case f: Function0[?] => f()
         case _               => _l
       }
     })
@@ -499,14 +499,14 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
     val interfaces = ReflectionUtils.extraInterfaces
 
     val realClass: Class[T] = mockSettings match {
-      case m: MockSettingsImpl[_] if !m.getExtraInterfaces.isEmpty =>
+      case m: MockSettingsImpl[?] if !m.getExtraInterfaces.isEmpty =>
         throw new IllegalArgumentException("If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
-      case m: MockSettingsImpl[_] if m.getSpiedInstance != null => m.getSpiedInstance.getClass.asInstanceOf[Class[T]]
+      case m: MockSettingsImpl[?] if m.getSpiedInstance != null => m.getSpiedInstance.getClass.asInstanceOf[Class[T]]
       case _                                                    => clazz
     }
 
     val settings =
-      if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces: _*)
+      if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces*)
       else mockSettings
 
     def createMock(settings: MockCreationSettings[T]): T = {
@@ -517,7 +517,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
     }
 
     settings match {
-      case s: MockSettingsImpl[_] =>
+      case s: MockSettingsImpl[?] =>
         val creationSettings = s.build[T](realClass)
         val mock             = createMock(creationSettings)
         mockingProgress.mockingStarted(mock, creationSettings)
@@ -584,7 +584,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
         ignoreDefaultArguments(m)
         Mockito.verifyNoMoreInteractions(m)
       case t: Array[AnyRef] =>
-        verifyNoMoreInteractions(t.toIndexedSeq: _*)
+        verifyNoMoreInteractions(t.toIndexedSeq*)
       case _ =>
         throw notAMockPassedToVerifyNoMoreInteractions
     }
@@ -593,7 +593,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Delegates to <code>Mockito.ignoreStubs()</code>, it's only here to expose the full Mockito API
    */
-  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks: _*)
+  def ignoreStubs(mocks: AnyRef*): Array[AnyRef] = Mockito.ignoreStubs(mocks*)
 
   /**
    * Creates a "spy" in a way that supports lambdas and anonymous classes as they don't work with the standard spy as they are created as final classes by the compiler
@@ -722,12 +722,12 @@ private[mockito] trait Rest extends MockitoEnhancer with DoSomething with Verifi
   /**
    * Delegates to <code>Mockito.verifyZeroInteractions()</code>, it's only here to expose the full Mockito API
    */
-  def verifyZeroInteractions(mocks: AnyRef*): Unit = Mockito.verifyNoInteractions(mocks: _*)
+  def verifyZeroInteractions(mocks: AnyRef*): Unit = Mockito.verifyNoInteractions(mocks*)
 
   /**
    * Delegates to <code>Mockito.inOrder()</code>, it's only here to expose the full Mockito API
    */
-  def inOrder(mocks: AnyRef*): InOrder = Mockito.inOrder(mocks: _*)
+  def inOrder(mocks: AnyRef*): InOrder = Mockito.inOrder(mocks*)
 
   /**
    * Delegates to <code>Mockito.verify()</code>, it's only here to expose the full Mockito API

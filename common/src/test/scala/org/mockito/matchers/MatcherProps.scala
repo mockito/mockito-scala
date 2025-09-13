@@ -2,20 +2,20 @@ package org.mockito
 package matchers
 
 import cats.laws.discipline.MiniInt
-import cats.laws.discipline.arbitrary._
-import org.mockito.internal.matchers._
-import org.scalacheck._
+import cats.laws.discipline.arbitrary.*
+import org.mockito.internal.matchers.*
+import org.scalacheck.*
 
 import Arbitrary.arbitrary
-import Gen._
-import Prop._
+import Gen.*
+import Prop.*
 
 class MatcherProps extends Properties("matchers") {
-  import Generators._
+  import Generators.*
 
   property("AllOf") = forAll(chooseNum(0, 8))(length =>
     forAll(listOfN(length, arbitrary[ArgumentMatcher[MiniInt]]), arbitrary[MiniInt]) { case (matchers, value) =>
-      val allOf     = AllOf(matchers: _*)
+      val allOf     = AllOf(matchers*)
       val stringRep = allOf.toString
 
       classify(allOf.matches(value), "matches", "doesn't match") {

@@ -1,6 +1,6 @@
 package user.org.mockito
 
-import user.org.mockito.MalformedClassError._
+import user.org.mockito.MalformedClassError.*
 import org.mockito.IdiomaticMockito
 import org.scalatest.concurrent.ScalaFutures
 

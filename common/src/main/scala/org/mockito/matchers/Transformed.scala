@@ -7,8 +7,13 @@ package matchers
  * Technically this is 'contramapped' but that seemed like an unnecessarily jargony name.
  */
 case class Transformed[A, B] private (ma: ArgumentMatcher[A])(f: B => A) extends ArgumentMatcher[B] {
-  override def matches(b: B) = ma.matches(f(b))
-  override def toString      = s"transformed($ma: $f)"
+  override def matches(b: B): Boolean = ma.matches(f(b))
+  override def toString: String       = s"transformed($ma: $f)"
+
+  // Address "-Xsource:3" warning
+  @deprecated("for bincompat only, do not use", "2.0.1")
+  private[mockito] def copy(ma: ArgumentMatcher[A] = this.ma)(f: B => A = this.f): Transformed[A, B] =
+    new Transformed(ma)(f)
 }
 
 object Transformed {

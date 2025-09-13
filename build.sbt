@@ -23,13 +23,12 @@ lazy val commonSettings =
       "-encoding",
       "UTF-8",
       "-Xfatal-warnings",
+      "-Xsource:3",
 //      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-expect,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-wrapper,mockito-print-lenient",
       "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds"
     ),
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, 11)) =>
-          Seq("-Xsource:2.12", "-Ypartial-unification")
         case Some((2, 12)) =>
           Seq("-Ypartial-unification", "-Ywarn-unused:locals")
         case Some((2, 13)) =>

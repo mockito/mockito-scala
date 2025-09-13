@@ -28,5 +28,5 @@ object AllOf {
 
   // Address "-Xsource:3" warning
   @deprecated("for bincompat only, do not use", "2.0.1")
-  private[mockito] def apply[A](matchers: List[ArgumentMatcher[A]]): ArgumentMatcher[A] = apply(matchers *)
+  private[mockito] def apply[A](matchers: List[ArgumentMatcher[A]]): ArgumentMatcher[A] = apply(matchers*)
 }

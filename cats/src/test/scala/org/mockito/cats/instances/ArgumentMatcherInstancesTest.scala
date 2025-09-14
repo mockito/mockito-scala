@@ -2,12 +2,12 @@ package org.mockito.cats
 package instances
 
 import cats.{ Contravariant, Eq }
-import cats.implicits._
-import cats.laws.discipline._
-import cats.laws.discipline.arbitrary._
-import cats.laws.discipline.eq._
+import cats.implicits.*
+import cats.laws.discipline.*
+import cats.laws.discipline.arbitrary.*
+import cats.laws.discipline.eq.*
 import org.mockito.{ ArgumentMatcher, ArgumentMatchers, ArgumentMatchersSugar, IdiomaticMockito }
-import org.mockito.internal.matchers._
+import org.mockito.internal.matchers.*
 import org.mockito.matchers.{ EqTo, Generators }
 import org.scalacheck.Arbitrary
 import org.scalatest.matchers.should.Matchers
@@ -16,7 +16,7 @@ import org.scalatest.prop.Configuration
 import org.typelevel.discipline.scalatest.FunSuiteDiscipline
 
 class ArgumentMatcherInstancesTest extends AnyFunSuiteLike with FunSuiteDiscipline with Configuration with ArgumentMatchersSugar with IdiomaticMockito with Matchers {
-  import Generators._
+  import Generators.*
 
   implicit def eqArgumentMatcherExhaustive[A: ExhaustiveCheck]: Eq[ArgumentMatcher[A]] =
     Eq.instance((f, g) => ExhaustiveCheck[A].allValues.forall(a => f.matches(a) == g.matches(a)))

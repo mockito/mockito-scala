@@ -4,7 +4,7 @@ import java.io.{ File, FileOutputStream, ObjectOutputStream }
 
 import org.mockito.captor.ArgCaptor
 import org.mockito.exceptions.misusing.NotAMockException
-import org.mockito.exceptions.verification._
+import org.mockito.exceptions.verification.*
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, IdiomaticStubbing, MockitoSugar }
 import org.scalactic.Prettifier
 import org.scalatest.FixtureContext
@@ -276,7 +276,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
 
         val s = List("horse", "red")
 
-        foo.fooWithVarArg(s: _*)
+        foo.fooWithVarArg(s*)
         foo.fooWithVarArg("horse", "red") was called
 
         foo.fooWithVarArg(*, *) wasCalled twice
@@ -304,7 +304,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
 
         val b = Seq(Bread("Chipa"), Bread("Tortilla"))
 
-        foo.valueClassWithVarArg(b: _*)
+        foo.valueClassWithVarArg(b*)
         foo.valueClassWithVarArg(Bread("Chipa"), Bread("Tortilla")) was called
       }
 
@@ -358,7 +358,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
         org.fooWithVarArgAndSecondParameterList(*)(*) wasCalled twice
 
         val s = List("horse", "red", "meh")
-        org.fooWithVarArgAndSecondParameterList(s: _*)(cheese)
+        org.fooWithVarArgAndSecondParameterList(s*)(cheese)
         org.fooWithVarArgAndSecondParameterList("horse", "red", "meh")(cheese) was called
         org.fooWithVarArgAndSecondParameterList(*)(*) wasCalled thrice
       }
@@ -399,7 +399,7 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
 
         val b = Seq(Bread("Chipa"), Bread("Tortilla"))
 
-        org.valueClassWithVarArgAndSecondParameterList(b: _*)(cheese)
+        org.valueClassWithVarArgAndSecondParameterList(b*)(cheese)
         org.valueClassWithVarArgAndSecondParameterList(Bread("Chipa"), Bread("Tortilla"))(cheese) was called
       }
 
@@ -712,12 +712,12 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
       val aMock = mock[Baz]
       val args  = List(1, 2, 3)
 
-      aMock.varargMethod("hola", args: _*) returns 42
+      aMock.varargMethod("hola", args*) returns 42
 
       aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
 
-      aMock.varargMethod("hola", List(1, 2, 3): _*) was called
-      aMock.varargMethod("hola", Vector(1, 2, 3): _*) was called
+      aMock.varargMethod("hola", List(1, 2, 3)*) was called
+      aMock.varargMethod("hola", Vector(1, 2, 3)*) was called
       aMock.varargMethod("hola", 1, 2, 3) was called
     }
 

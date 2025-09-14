@@ -1,6 +1,6 @@
 package org.mockito
 
-import _root_.scalaz._
+import _root_.scalaz.*
 
 import scala.concurrent.Future
 

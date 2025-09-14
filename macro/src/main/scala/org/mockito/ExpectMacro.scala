@@ -13,7 +13,7 @@ object ExpectMacro extends VerificationMacroTransformer {
   }
 
   private def transformExpectation[R](c: blackbox.Context)(called: c.Tree): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     called match {
       case q"$_.this.expect.no($_).to($obj.$methodOrField)($order)" =>
@@ -51,7 +51,7 @@ object ExpectMacro extends VerificationMacroTransformer {
   }
 
   def transformNoInteractionsExpectation[R](c: blackbox.Context)(called: c.Tree): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     called match {
       case q"$_.this.expect.no($_.calls).on($obj)" =>

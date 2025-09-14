@@ -1,6 +1,6 @@
 package org.mockito
 
-import org.mockito.Utils._
+import org.mockito.Utils.*
 import org.mockito.internal.MacroDebug.debugResult
 
 import scala.reflect.macros.blackbox
@@ -16,7 +16,7 @@ object Specs2VerifyMacro extends VerificationMacroTransformer {
   private val WasWere = "(was|were)".r.pattern
 
   def wasMacro[T: c.WeakTypeTag, R](c: blackbox.Context)(calls: c.Expr[T])(order: c.Expr[VerifyOrder]): c.Expr[R] = {
-    import c.universe._
+    import c.universe.*
 
     val transformSpecs2Verification: PartialFunction[c.Tree, c.Tree] = {
       case q"$_.$numWord[$_]($obj).$method[..$targs](...$args)" =>

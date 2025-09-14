@@ -338,7 +338,7 @@ case class CatsStubbing[F[_], T](delegate: OngoingStubbing[F[T]]) {
 //             |""".stripMargin)
 //  }
 
-  def thenFailWith[E](error: E)(implicit F: ApplicativeError[F, _ >: E]): CatsStubbing[F, T] =
+  def thenFailWith[E](error: E)(implicit F: ApplicativeError[F, ? >: E]): CatsStubbing[F, T] =
     delegate thenReturn F.raiseError[T](error)
 
   def getMock[M]: M = delegate.getMock[M]
@@ -688,7 +688,7 @@ case class CatsStubbing2[F[_], G[_], T](delegate: OngoingStubbing[F[G[T]]]) {
 //             |""".stripMargin)
 //  }
 
-  def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): CatsStubbing2[F, G, T] =
+  def thenFailWith[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, ? >: E]): CatsStubbing2[F, G, T] =
     delegate thenReturn ae.pure(ag.raiseError[T](error))
 
   def getMock[M]: M = delegate.getMock[M]

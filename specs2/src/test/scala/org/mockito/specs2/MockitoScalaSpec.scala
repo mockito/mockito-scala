@@ -7,18 +7,18 @@ import org.mockito.{ VerifyInOrder, VerifyOrder }
 import org.mockito.captor.ArgCaptor
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.DefaultAnswer
-import org.specs2._
-import org.specs2.control.Exceptions._
-import org.specs2.execute._
-import org.specs2.fp.syntax._
-import org.specs2.matcher.ActionMatchers._
-import org.specs2.matcher.MatchersImplicits._
-import org.specs2.matcher._
-import org.specs2.specification.core.{ Env, _ }
-import org.specs2.specification.process._
+import org.specs2.*
+import org.specs2.control.Exceptions.*
+import org.specs2.execute.*
+import org.specs2.fp.syntax.*
+import org.specs2.matcher.ActionMatchers.*
+import org.specs2.matcher.MatchersImplicits.*
+import org.specs2.matcher.*
+import org.specs2.specification.core.{ Env, * }
+import org.specs2.specification.process.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 class MockitoScalaSpec extends Spec with Mockito {
   def is = s2"""
@@ -213,63 +213,63 @@ The Mockito trait is reusable in other contexts
   }
 
   def verification6 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     byname.call(10)
     there was one(byname).call(10)
   }
 
   def verification7 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     byname.add(1, 2)
     there was one(byname).add(1, 2)
   }
 
   def verification8 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     byname.mult(1)(2)
     there was one(byname).mult(1)(2)
   }
 
   def verification9 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     byname.call(10)
     there was one(byname).call(be_>(5))
   }
 
   def verification10 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     byname.add(1, 2)
     there was one(byname).add(anyInt, anyInt)
   }
 
   def verification11 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     byname.min(2, 1)
     there was one(byname).min(anyInt, anyInt)
   }
 
   def verification12 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     byname.mult(1)(2)
     there was one(byname).mult(anyInt)(anyInt)
   }
 
   def verification13 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     function1.call((_: Int).toString)
     there was one(function1).call(1 -> "1")
   }
 
   def verification14 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     function1.call((_: Int).toString)
     (there was one(function1).call(1 -> startWith("1"))) and
@@ -277,70 +277,70 @@ The Mockito trait is reusable in other contexts
   }
 
   def verification15 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     function2.call((i: Int, d: Double) => (i + d).toString)
     there was one(function2).call((1, 3.0) -> "4.0")
   }
 
   def verification16 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     function2.call((i: Int, d: Double) => (i + d).toString)
     there was one(function2).call((1, 3.0) -> haveSize[String](3))
   }
 
   def verification17 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     function2.call((i: Int, d: Double) => (i + d).toString)
     there was one(function2).call(*)
   }
 
   def verification18 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     functionNothing.call((_: Int) => throw new Exception)
     there was one(functionNothing).call(*)
   }
 
   def verification19 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     functionAny.call(() => throw new Exception)
     there was one(functionAny).call(any[() => Any])
   }
 
   def verification20 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     partial.call { case (i: Int, d: Double) => (i + d).toString }
     there was one(partial).call((1, 3.0) -> "4.0")
   }
 
   def verification21 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     partial.call { case (i: Int, d: Double) => (i + d).toString }
     there was one(partial).call((1, 3.0) -> haveSize[String](3))
   }
 
   def verification22 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     partial.call { case (i: Int, d: Double) => (i + d).toString }
     there was one(partial).call(*)
   }
 
   def verification23 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     partial.call { case (i: Int, d: Double) if i > 10 => (i + d).toString }
     (there was one(partial).call((1, 3.0) -> "4.0")).message must contain("a PartialFunction defined for (1,3.0)")
   }
 
   def verification24 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     repeated.call(1, 2, 3)
     (there was one(repeated).call(1, 2, 3)) and
@@ -348,7 +348,7 @@ The Mockito trait is reusable in other contexts
   }
 
   def verification26 = {
-    object list extends list; import list._
+    object list extends list; import list.*
 
     functionInt.call((i: Int) => i + 2)
     (there was one(functionInt).call(Map(1 -> 2))).message must contain("Argument(s) are different")

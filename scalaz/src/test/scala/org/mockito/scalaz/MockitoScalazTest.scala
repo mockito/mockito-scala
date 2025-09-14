@@ -1,9 +1,9 @@
 package org.mockito.scalaz
 
-import _root_.scalaz._
-import Scalaz._
+import _root_.scalaz.*
+import Scalaz.*
 import org.mockito.invocation.InvocationOnMock
-import org.mockito._
+import org.mockito.*
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ EitherValues, OptionValues }
 

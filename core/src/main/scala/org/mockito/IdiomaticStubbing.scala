@@ -1,10 +1,10 @@
 package org.mockito
 
-import org.mockito.WhenMacro._
+import org.mockito.WhenMacro.*
 import org.mockito.stubbing.ScalaOngoingStubbing
 
 trait IdiomaticStubbing extends MockitoEnhancer with ScalacticSerialisableHack {
-  import org.mockito.IdiomaticMockitoBase._
+  import org.mockito.IdiomaticMockitoBase.*
 
   implicit class StubbingOps[T](stubbing: T) {
     def shouldReturn: ReturnActions[T] = macro WhenMacro.shouldReturn[T]

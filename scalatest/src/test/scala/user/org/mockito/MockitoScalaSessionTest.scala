@@ -1,6 +1,6 @@
 package user.org.mockito
 
-import org.mockito._
+import org.mockito.*
 import org.mockito.exceptions.misusing.{ UnexpectedInvocationException, UnnecessaryStubbingException }
 import org.mockito.exceptions.verification.SmartNullPointerException
 import org.mockito.internal.creation.settings.CreationSettings
@@ -15,7 +15,7 @@ class MockitoScalaSessionTest extends AnyWordSpec with IdiomaticMockito with Mat
   val scenarios = Table(
     ("testDouble", "foo", "parametrisedFoo", "fooBar"),
     ("mock", () => mock[Foo], (mockSettings: MockSettings) => mock[Foo](mockSettings), ""),
-    ("spy", () => spy(new Foo), (mockSettings: MockSettings) => spy(new Foo, mockSettings.asInstanceOf[CreationSettings[_]].isLenient), "bar")
+    ("spy", () => spy(new Foo), (mockSettings: MockSettings) => spy(new Foo, mockSettings.asInstanceOf[CreationSettings[?]].isLenient), "bar")
   )
 
   class FinalEqualsAndHashcode {

@@ -3,8 +3,8 @@ package user.org.mockito
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.mockito.{ ArgumentMatchersSugar, IdiomaticMockito, MockitoScalaSession }
-import IdiomaticMockito._
-import ArgumentMatchersSugar._
+import IdiomaticMockito.*
+import ArgumentMatchersSugar.*
 
 class Issue256 extends AnyWordSpec with Matchers {
 

@@ -33,7 +33,7 @@ object ValueClassExtractor {
   implicit def instance[VC]: ValueClassExtractor[VC] = macro materialise[VC]
 
   def materialise[VC: c.WeakTypeTag](c: blackbox.Context): c.Expr[ValueClassExtractor[VC]] = {
-    import c.universe._
+    import c.universe.*
     val tpe          = weakTypeOf[VC]
     val typeSymbol   = tpe.typeSymbol
     val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass

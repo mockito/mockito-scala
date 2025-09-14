@@ -2,7 +2,7 @@ package org.mockito
 
 trait PrefixExpectations extends IdiomaticVerifications {
 
-  import org.mockito.IdiomaticMockitoBase._
+  import org.mockito.IdiomaticMockitoBase.*
 
   type Calls = Times
 

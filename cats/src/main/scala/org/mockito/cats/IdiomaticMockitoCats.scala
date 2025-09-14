@@ -1,13 +1,13 @@
 package org.mockito.cats
 
 import cats.{ Applicative, ApplicativeError, Eq }
-import org.mockito._
+import org.mockito.*
 import org.scalactic.Equality
 
 import scala.reflect.ClassTag
 
 trait IdiomaticMockitoCats extends ScalacticSerialisableHack {
-  import org.mockito.cats.IdiomaticMockitoCats._
+  import org.mockito.cats.IdiomaticMockitoCats.*
 
   implicit class StubbingOpsCats[F[_], T](stubbing: F[T]) {
     def shouldReturnF: ReturnActions[F, T] = macro WhenMacro.shouldReturn[T]
@@ -128,12 +128,12 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
 
   object Raised
   case class Raised[T]() {
-    def by[F[_], E](stubbing: F[E])(implicit F: ApplicativeError[F, _ >: T]): F[E] = macro DoSomethingMacro.raised[E]
+    def by[F[_], E](stubbing: F[E])(implicit F: ApplicativeError[F, ? >: T]): F[E] = macro DoSomethingMacro.raised[E]
   }
 
   object RaisedG
   case class RaisedG[T]() {
-    def by[F[_], G[_], E](stubbing: F[G[E]])(implicit F: Applicative[F], G: ApplicativeError[G, _ >: T]): F[G[E]] =
+    def by[F[_], G[_], E](stubbing: F[G[E]])(implicit F: Applicative[F], G: ApplicativeError[G, ? >: T]): F[G[E]] =
       macro DoSomethingMacro.raisedG[E]
   }
 
@@ -146,11 +146,11 @@ object IdiomaticMockitoCats extends IdiomaticMockitoCats {
   }
 
   class ThrowActions[F[_], T](os: CatsStubbing[F, T]) {
-    def apply[E](error: E)(implicit ae: ApplicativeError[F, _ >: E]): CatsStubbing[F, T] = os thenFailWith error
+    def apply[E](error: E)(implicit ae: ApplicativeError[F, ? >: E]): CatsStubbing[F, T] = os thenFailWith error
   }
 
   class ThrowActions2[F[_], G[_], T](os: CatsStubbing2[F, G, T]) {
-    def apply[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, _ >: E]): CatsStubbing2[F, G, T] = os thenFailWith error
+    def apply[E](error: E)(implicit ae: Applicative[F], ag: ApplicativeError[G, ? >: E]): CatsStubbing2[F, G, T] = os thenFailWith error
   }
 
   class AnswerActions[F[_], T](os: CatsStubbing[F, T]) {

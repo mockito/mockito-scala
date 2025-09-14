@@ -84,11 +84,11 @@ object IdiomaticMockitoBase {
   }
 
   class ReturnActions[T](os: ScalaFirstStubbing[T]) {
-    def apply(value: T, values: T*): ScalaOngoingStubbing[T] = os.thenReturn(value, values: _*)
+    def apply(value: T, values: T*): ScalaOngoingStubbing[T] = os.thenReturn(value, values*)
   }
 
   class ThrowActions[T](os: ScalaFirstStubbing[T]) {
-    def apply[E <: Throwable](e: E*): ScalaOngoingStubbing[T] = os thenThrow (e: _*)
+    def apply[E <: Throwable](e: E*): ScalaOngoingStubbing[T] = os thenThrow (e*)
   }
 
   // types for postfix verifications

@@ -6,7 +6,7 @@ import org.mockito.stubbing.DefaultAnswer
 import org.scalatest
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ OptionValues, TryValues }
-import user.org.mockito.stubbing.DefaultAnswerTest._
+import user.org.mockito.stubbing.DefaultAnswerTest.*
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpec
 

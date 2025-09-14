@@ -13,26 +13,26 @@ import scala.util.{ Failure, Try }
 object ReturnsEmptyValues extends DefaultAnswer {
   private val javaEmptyValuesAndPrimitives = new ReturnsMoreEmptyValues
 
-  private[mockito] lazy val emptyValues: Map[Class[_], AnyRef] = Map(
-    classOf[Option[_]]      -> Option.empty,
-    classOf[List[_]]        -> List.empty,
-    classOf[Set[_]]         -> Set.empty,
-    classOf[Seq[_]]         -> Seq.empty,
-    classOf[Iterable[_]]    -> Iterable.empty,
-    classOf[IndexedSeq[_]]  -> IndexedSeq.empty,
-    classOf[Iterator[_]]    -> Iterator.empty,
-    classOf[LazyList[_]]    -> LazyList.empty,
-    classOf[Vector[_]]      -> Vector.empty,
-    classOf[Try[_]]         -> Failure(new MockitoException("Auto stub provided by mockito-scala")),
-    classOf[Future[_]]      -> Future.failed(new MockitoException("Auto stub provided by mockito-scala")),
+  private[mockito] lazy val emptyValues: Map[Class[?], AnyRef] = Map(
+    classOf[Option[?]]      -> Option.empty,
+    classOf[List[?]]        -> List.empty,
+    classOf[Set[?]]         -> Set.empty,
+    classOf[Seq[?]]         -> Seq.empty,
+    classOf[Iterable[?]]    -> Iterable.empty,
+    classOf[IndexedSeq[?]]  -> IndexedSeq.empty,
+    classOf[Iterator[?]]    -> Iterator.empty,
+    classOf[LazyList[?]]    -> LazyList.empty,
+    classOf[Vector[?]]      -> Vector.empty,
+    classOf[Try[?]]         -> Failure(new MockitoException("Auto stub provided by mockito-scala")),
+    classOf[Future[?]]      -> Future.failed(new MockitoException("Auto stub provided by mockito-scala")),
     classOf[BigDecimal]     -> BigDecimal(0),
     classOf[BigInt]         -> BigInt(0),
     classOf[StringBuilder]  -> new StringBuilder,
-    classOf[Map[_, _]]      -> Map.empty,
-    classOf[ListBuffer[_]]  -> ListBuffer.empty,
-    classOf[mutable.Seq[_]] -> ListBuffer.empty,
-    classOf[mutable.Set[_]] -> mutable.HashSet.empty,
-    classOf[Either[_, _]]   -> Left("Auto stub provided by mockito-scala")
+    classOf[Map[?, ?]]      -> Map.empty,
+    classOf[ListBuffer[?]]  -> ListBuffer.empty,
+    classOf[mutable.Seq[?]] -> ListBuffer.empty,
+    classOf[mutable.Set[?]] -> mutable.HashSet.empty,
+    classOf[Either[?, ?]]   -> Left("Auto stub provided by mockito-scala")
   )
 
   override def apply(invocation: InvocationOnMock): Option[Any] =

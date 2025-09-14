@@ -6,7 +6,7 @@ import org.mockito.stubbing.DefaultAnswer
 import org.mockito.{ MockCreator, MockSettings }
 import org.scalactic.Prettifier
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
 

@@ -1,8 +1,8 @@
 package org.mockito.cats
 
-import cats._
+import cats.*
 import org.mockito.ArgumentMatcher
-import org.mockito.matchers._
+import org.mockito.matchers.*
 
 trait ArgumentMatcherInstances {
   implicit val argumentMatcherInstance: ContravariantMonoidal[ArgumentMatcher] with MonoidK[ArgumentMatcher] =

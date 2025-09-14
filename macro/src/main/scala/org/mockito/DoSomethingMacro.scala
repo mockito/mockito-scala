@@ -1,13 +1,13 @@
 package org.mockito
 
-import org.mockito.Utils._
+import org.mockito.Utils.*
 import org.mockito.internal.MacroDebug.debugResult
 
 import scala.reflect.macros.blackbox
 
 object DoSomethingMacro {
   def doesNothing(c: blackbox.Context)(): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.macroApplication match {
       case q"$_.StubbingOps[$_]($invocation).shouldDoNothing()" =>
@@ -24,7 +24,7 @@ object DoSomethingMacro {
   }
 
   def returnedBy[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Expr[S]): c.Expr[S] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[S] {
       c.macroApplication match {
@@ -39,7 +39,7 @@ object DoSomethingMacro {
   }
 
   def returnedF[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[S] {
       c.macroApplication match {
@@ -54,7 +54,7 @@ object DoSomethingMacro {
   }
 
   def returnedFG[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, G: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[S] {
       c.macroApplication match {
@@ -69,7 +69,7 @@ object DoSomethingMacro {
   }
 
   def answeredBy[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Expr[S]): c.Expr[S] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[S] {
       c.macroApplication match {
@@ -84,7 +84,7 @@ object DoSomethingMacro {
   }
 
   def answeredF[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[S] {
       c.macroApplication match {
@@ -99,7 +99,7 @@ object DoSomethingMacro {
   }
 
   def answeredFG[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, G: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[S] {
       c.macroApplication match {
@@ -114,7 +114,7 @@ object DoSomethingMacro {
   }
 
   def thrownBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Tree): c.Expr[T] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[T] {
       c.macroApplication match {
@@ -129,7 +129,7 @@ object DoSomethingMacro {
   }
 
   def raised[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree): c.Expr[T] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[T] {
       c.macroApplication match {
@@ -144,7 +144,7 @@ object DoSomethingMacro {
   }
 
   def raisedG[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, G: c.Tree): c.Expr[T] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[T] {
       c.macroApplication match {
@@ -159,7 +159,7 @@ object DoSomethingMacro {
   }
 
   def calledBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T]): c.Expr[T] = {
-    import c.universe._
+    import c.universe.*
 
     val r = c.Expr[T] {
       c.macroApplication match {
@@ -174,7 +174,7 @@ object DoSomethingMacro {
   }
 
   private def transformInvocation(c: blackbox.Context)(invocation: c.Tree, action: c.Tree): c.Tree = {
-    import c.universe._
+    import c.universe.*
 
     val pf: PartialFunction[c.Tree, c.Tree] = {
       case q"$obj.$method[..$targs](...$args)" =>

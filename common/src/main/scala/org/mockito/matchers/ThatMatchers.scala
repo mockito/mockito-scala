@@ -1,6 +1,6 @@
 package org.mockito.matchers
 
-import org.mockito.{ ArgumentMatcher, ArgumentMatchers => JavaMatchers }
+import org.mockito.{ ArgumentMatcher, ArgumentMatchers as JavaMatchers }
 
 import scala.util.Try
 

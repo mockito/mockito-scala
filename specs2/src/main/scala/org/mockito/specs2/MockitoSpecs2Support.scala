@@ -1,6 +1,6 @@
 package org.mockito.specs2
 
-import org.specs2.matcher.MatchersImplicits._
+import org.specs2.matcher.MatchersImplicits.*
 import org.specs2.matcher.{ BeEqualTo, Expectations, MatchFailure, Matcher }
 
 trait ArgThat {

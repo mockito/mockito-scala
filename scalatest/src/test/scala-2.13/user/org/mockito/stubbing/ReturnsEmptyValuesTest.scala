@@ -4,7 +4,7 @@ import org.mockito.exceptions.base.MockitoException
 import org.mockito.{ DefaultAnswers, IdiomaticMockito }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ OptionValues, TryValues }
-import user.org.mockito.stubbing.DefaultAnswerTest._
+import user.org.mockito.stubbing.DefaultAnswerTest.*
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

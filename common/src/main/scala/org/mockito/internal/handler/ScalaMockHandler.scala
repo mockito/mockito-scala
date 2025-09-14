@@ -4,18 +4,18 @@ package internal.handler
 import java.lang.reflect.Method
 import java.util.regex.Pattern
 import org.mockito.ReflectionUtils.methodsWithLazyOrVarArgs
-import org.mockito.internal.handler.ScalaMockHandler._
-import org.mockito.internal.invocation._
+import org.mockito.internal.handler.ScalaMockHandler.*
+import org.mockito.internal.invocation.*
 import org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress
 import org.mockito.invocation.{ Invocation, MockHandler }
 import org.mockito.matchers.EqTo
 import org.mockito.mock.MockCreationSettings
 import org.scalactic.Prettifier
-import org.scalactic.TripleEquals._
+import org.scalactic.TripleEquals.*
 
 import scala.annotation.nowarn
-import scala.collection.compat._
-import scala.jdk.CollectionConverters._
+import scala.collection.compat.*
+import scala.jdk.CollectionConverters.*
 
 class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProcess: Seq[(Method, Set[Int])])(implicit $pt: Prettifier) extends MockHandlerImpl[T](mockSettings) {
   override def handle(invocation: Invocation): AnyRef =
@@ -47,12 +47,12 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
           val matchers                                   = argumentMatcherStorage.pullLocalizedMatchers().asScala.iterator
           val matchersWereUsed                           = matchers.nonEmpty
           def reportMatcher(): Unit                      = if (matchers.nonEmpty) argumentMatcherStorage.reportMatcher(matchers.next().getMatcher)
-          def reportMatchers(varargs: Iterable[_]): Unit =
+          def reportMatchers(varargs: Iterable[?]): Unit =
             if (matchersWereUsed && varargs.nonEmpty) {
               def reportAsEqTo(): Unit = varargs.map(EqTo(_)).foreach(argumentMatcherStorage.reportMatcher(_))
               val matcher              = matchers.next().getMatcher
               matcher match {
-                case EqTo(value: Array[_]) if varargs.iterator.sameElements(value.iterator) => reportAsEqTo()
+                case EqTo(value: Array[?]) if varargs.iterator.sameElements(value.iterator) => reportAsEqTo()
                 case EqTo(value) if varargs == value                                        => reportAsEqTo()
                 case other                                                                  =>
                   argumentMatcherStorage.reportMatcher(other)
@@ -61,12 +61,12 @@ class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProces
             }
 
           args.zipWithIndex.flatMap {
-            case (arg: Function0[_], idx) if indices.contains(idx) =>
+            case (arg: Function0[?], idx) if indices.contains(idx) =>
               List(arg())
-            case (arg: Iterable[_], idx) if indices.contains(idx) =>
+            case (arg: Iterable[?], idx) if indices.contains(idx) =>
               reportMatchers(arg)
               arg
-            case (arg: Array[_], idx) if indices.contains(idx) =>
+            case (arg: Array[?], idx) if indices.contains(idx) =>
               val argList = arg.toList
               reportMatchers(arg)
               argList

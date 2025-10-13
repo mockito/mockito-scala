@@ -46,7 +46,7 @@ lazy val commonSettings =
           Seq("org.scala-lang.modules" %% "scala-parallel-collections" % "1.2.0")
       }
     },
-    libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.13.0"
+    libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.14.0"
   )
 
 lazy val publishSettings = Seq(

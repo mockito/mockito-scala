@@ -6,19 +6,16 @@ import org.scalactic.TripleEquals.*
 
 import java.lang.reflect.Method
 import scala.reflect.ClassTag
-import scala.reflect.internal.Symbols
 import scala.util.Try as uTry
 
 object ReflectionUtils {
   import scala.reflect.runtime.universe as ru
   import ru.*
 
-  implicit def symbolToMethodSymbol(sym: Symbol): Symbols#MethodSymbol = sym.asInstanceOf[Symbols#MethodSymbol]
-
-  private val mirror       = runtimeMirror(getClass.getClassLoader)
-  private val customMirror = mirror.asInstanceOf[{
-    def methodToJava(sym: Symbols#MethodSymbol): Method
-  }]
+  private val mirror                     = runtimeMirror(getClass.getClassLoader)
+  private val methodToJavaMethod: Method =
+    mirror.getClass.getMethods.find(m => m.getName == "methodToJava" && m.getParameterCount == 1 && m.getParameterTypes.head.getName.endsWith("Symbol")).get
+  private def asJavaMethod(sym: Symbol): Method = methodToJavaMethod.invoke(mirror, sym).asInstanceOf[Method]
 
   private[mockito] def returnType(invocation: InvocationOnMock): Class[?] = {
     val javaReturnType = invocation.method.getReturnType
@@ -31,12 +28,15 @@ object ReflectionUtils {
   }
 
   private[mockito] def returnsValueClass(invocation: InvocationOnMock): Boolean =
-    findTypeSymbol(invocation).exists(_.returnType.typeSymbol.isDerivedValueClass)
+    findTypeSymbol(invocation).exists { s =>
+      val typeSymbol = s.asMethod.returnType.typeSymbol
+      typeSymbol.isClass && typeSymbol.asClass.toType <:< typeOf[AnyVal]
+    }
 
   private def resolveWithScalaGenerics(invocation: InvocationOnMock): Option[Class[?]] =
     uTry {
       findTypeSymbol(invocation)
-        .filter(_.returnType.typeSymbol.isClass)
+        .filter(_.asMethod.returnType.typeSymbol.isClass)
         .map(_.asMethod.returnType.typeSymbol.asClass)
         .map(mirror.runtimeClass)
     }.toOption.flatten
@@ -48,7 +48,7 @@ object ReflectionUtils {
         .info
         .decls
         .collectFirst {
-          case symbol if isNonConstructorMethod(symbol) && customMirror.methodToJava(symbol) === invocation.method => symbol
+          case symbol if isNonConstructorMethod(symbol) && asJavaMethod(symbol) === invocation.method => symbol
         }
     }.toOption.flatten
 
@@ -82,7 +82,7 @@ object ReflectionUtils {
               }.toSet
           }
           .collect {
-            case (symbol, indices) if indices.nonEmpty => customMirror.methodToJava(symbol) -> indices
+            case (symbol, indices) if indices.nonEmpty => asJavaMethod(symbol) -> indices
           }
           .toSeq
       }.toOption

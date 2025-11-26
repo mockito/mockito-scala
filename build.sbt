@@ -1,6 +1,6 @@
 import scala.language.postfixOps
 
-val currentScalaVersion = "2.13.17"
+val currentScalaVersion = "2.13.18"
 
 inThisBuild(
   Seq(

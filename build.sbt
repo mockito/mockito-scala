@@ -14,7 +14,7 @@ lazy val commonSettings =
   Seq(
     organization := "org.mockito",
     // Load version from the file so that Gradle/Shipkit and SBT use the same version
-    crossScalaVersions := Seq(currentScalaVersion, "2.12.20"),
+    crossScalaVersions := Seq(currentScalaVersion, "2.12.21"),
     scalafmtOnCompile  := true,
     scalacOptions ++= Seq(
       "-unchecked",

@@ -1,30 +1,17 @@
 package org.mockito.scalatest
 
-import java.util.concurrent.ConcurrentHashMap
-
 import org.mockito.stubbing.DefaultAnswer
 import org.mockito.{ MockCreator, MockSettings }
 import org.scalactic.Prettifier
 
-import scala.jdk.CollectionConverters.*
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.WeakTypeTag
 
 /**
- * It automatically resets each mock after each test is run, useful when we need to pass the mocks to some framework once at the beginning of the test suite
- *
- * Just mix-in after your favourite suite, i.e. {{{class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest}}}
+ * Internal Scala 2 compatibility layer for `ResetMocksAfterEachTest`/`ResetMocksAfterEachAsyncTest`.
+ * Provides WeakTypeTag-based mock override methods that intercept mock creation to track mocks for automatic reset.
  */
-trait ResetMocksAfterEachTestBase extends MockCreator { self: MockCreator =>
-
-  private val mocksToReset = ConcurrentHashMap.newKeySet[AnyRef]().asScala
-
-  protected def resetAll(): Unit = mocksToReset.foreach(org.mockito.MockitoSugar.reset(_))
-
-  private def addMock[T <: AnyRef](mock: T) = {
-    mocksToReset.add(mock)
-    mock
-  }
+private[scalatest] trait ResetMocksAfterEachTestCompat extends MockCreator with ResetMocksAfterEachTestRuntime {
 
   abstract override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     addMock(super.mock[T])

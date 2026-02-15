@@ -21,7 +21,7 @@ import org.mockito.internal.stubbing.answers.ScalaThrowsException
 import org.mockito.internal.util.MockUtil
 import org.mockito.internal.util.reflection.LenientCopyTool
 import org.mockito.internal.{ ValueClassExtractor, ValueClassWrapper }
-import org.mockito.invocation.{ Invocation, InvocationContainer, InvocationOnMock, MockHandler }
+import org.mockito.invocation.{ InvocationOnMock, MockHandler }
 import org.mockito.mock.MockCreationSettings
 import org.mockito.quality.Strictness
 import org.mockito.stubbing.*
@@ -30,29 +30,59 @@ import org.scalactic.{ Equality, Prettifier }
 
 import scala.jdk.CollectionConverters.*
 import scala.reflect.ClassTag
-import scala.reflect.runtime.universe.WeakTypeTag
 
 private[mockito] trait ScalacticSerialisableHack {
   // Hack until Equality can be made serialisable
   implicit def mockitoSerialisableEquality[T]: Equality[T] = serialisableEquality[T]
 }
 
-private[mockito] trait MockCreator {
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[?])(implicit $pt: Prettifier): T =
-    mock[T](DefaultAnswer(defaultAnswer))
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T
-
-  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean)(implicit $pt: Prettifier): T
-  def spyLambda[T <: AnyRef: ClassTag](realObj: T): T
+/**
+ * Runtime support for MockCreator. Provides createMock implementation using only ClassTag (Scala 3 compatible). Shared across Scala 2 and Scala 3. Version-specific MockCreator
+ * traits extend this.
+ */
+private[mockito] trait MockCreatorRuntime {
 
   /**
    * Delegates to <code>Mockito.withSettings()</code>, it's only here to expose the full Mockito API
    */
   def withSettings(implicit defaultAnswer: DefaultAnswer): MockSettings =
     Mockito.withSettings().defaultAnswer(defaultAnswer)
+
+  private[mockito] def createMock[T <: AnyRef: ClassTag](
+      mockSettings: MockSettings,
+      interfaces: List[Class[?]],
+      mockHandler: (MockCreationSettings[T], Prettifier) => MockHandler[T]
+  )(implicit $pt: Prettifier): T = {
+    val realClass: Class[T] = mockSettings match {
+      case m: MockSettingsImpl[?] if !m.getExtraInterfaces.isEmpty =>
+        throw new IllegalArgumentException("If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
+      case m: MockSettingsImpl[?] if m.getSpiedInstance != null => m.getSpiedInstance.getClass.asInstanceOf[Class[T]]
+      case _                                                    => clazz
+    }
+
+    val settings =
+      if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces*)
+      else mockSettings
+
+    def createMock(settings: MockCreationSettings[T]): T = {
+      val mock          = getMockMaker.createMock(settings, mockHandler(settings, $pt))
+      val spiedInstance = settings.getSpiedInstance
+      if (spiedInstance != null) new LenientCopyTool().copyToMock(spiedInstance, mock)
+      mock
+    }
+
+    settings match {
+      case s: MockSettingsImpl[?] =>
+        val creationSettings = s.build[T](realClass)
+        val mock             = createMock(creationSettings)
+        mockingProgress.mockingStarted(mock, creationSettings)
+        mock
+      case _ =>
+        throw new IllegalArgumentException(s"""Unexpected implementation of '${settings.getClass.getCanonicalName}'
+                                              |At the moment, you cannot provide your own implementations of that class.""".stripMargin)
+    }
+  }
+
 }
 
 //noinspection MutatorLikeMethodIsParameterless
@@ -451,101 +481,10 @@ private[mockito] trait DoSomething {
 //  }
 }
 
-private[mockito] trait MockitoEnhancer extends MockCreator {
-
-  /**
-   * Delegates to <code>Mockito.mock(type: Class[T])</code> It provides a nicer API as you can, for instance, do <code>mock[MyClass]</code> instead of
-   * <code>mock(classOf[MyClass])</code>
-   *
-   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments are called, ie: given <code>def
-   * iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
-   *
-   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
-   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
-   */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
-    createMock(withSettings)
-
-  /**
-   * Delegates to <code>Mockito.mock(type: Class[T], defaultAnswer: Answer[_])</code> It provides a nicer API as you can, for instance, do <code>mock[MyClass](defaultAnswer)</code>
-   * instead of <code>mock(classOf[MyClass], defaultAnswer)</code>
-   *
-   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments are called, ie: given <code>def
-   * iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
-   *
-   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
-   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
-   */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T =
-    createMock(withSettings(defaultAnswer))
-
-  /**
-   * Delegates to <code>Mockito.mock(type: Class[T], mockSettings: MockSettings)</code> It provides a nicer API as you can, for instance, do
-   * <code>mock[MyClass](mockSettings)</code> instead of <code>mock(classOf[MyClass], mockSettings)</code>
-   *
-   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments are called, ie: given <code>def
-   * iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
-   *
-   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
-   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
-   */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T =
-    createMock(mockSettings)
-
-  private def createMock[T <: AnyRef: ClassTag: WeakTypeTag](
-      mockSettings: MockSettings,
-      mockHandler: (MockCreationSettings[T], Prettifier) => MockHandler[T] = (settings: MockCreationSettings[T], pt: Prettifier) => ScalaMockHandler(settings)(pt)
-  )(implicit $pt: Prettifier): T = {
-    val interfaces = ReflectionUtils.extraInterfaces
-
-    val realClass: Class[T] = mockSettings match {
-      case m: MockSettingsImpl[?] if !m.getExtraInterfaces.isEmpty =>
-        throw new IllegalArgumentException("If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
-      case m: MockSettingsImpl[?] if m.getSpiedInstance != null => m.getSpiedInstance.getClass.asInstanceOf[Class[T]]
-      case _                                                    => clazz
-    }
-
-    val settings =
-      if (interfaces.nonEmpty) mockSettings.extraInterfaces(interfaces*)
-      else mockSettings
-
-    def createMock(settings: MockCreationSettings[T]): T = {
-      val mock          = getMockMaker.createMock(settings, mockHandler(settings, $pt))
-      val spiedInstance = settings.getSpiedInstance
-      if (spiedInstance != null) new LenientCopyTool().copyToMock(spiedInstance, mock)
-      mock
-    }
-
-    settings match {
-      case s: MockSettingsImpl[?] =>
-        val creationSettings = s.build[T](realClass)
-        val mock             = createMock(creationSettings)
-        mockingProgress.mockingStarted(mock, creationSettings)
-        mock
-      case _ =>
-        throw new IllegalArgumentException(s"""Unexpected implementation of '${settings.getClass.getCanonicalName}'
-             |At the moment, you cannot provide your own implementations of that class.""".stripMargin)
-    }
-  }
-
-  /**
-   * Delegates to <code>Mockito.mock(type: Class[T], name: String)</code> It provides a nicer API as you can, for instance, do <code>mock[MyClass](name)</code> instead of
-   * <code>mock(classOf[MyClass], name)</code>
-   *
-   * It also pre-stub the mock so the compiler-generated methods that provide the values for the default arguments are called, ie: given <code>def
-   * iHaveSomeDefaultArguments(noDefault: String, default: String = "default value")</code>
-   *
-   * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
-   * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
-   */
-  override def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
-    mock(withSettings.name(name))
-
-  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false)(implicit $pt: Prettifier): T = {
-    def mockSettings: MockSettings = Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS).spiedInstance(realObj)
-    val settings                   = if (lenient) mockSettings.strictness(Strictness.LENIENT) else mockSettings
-    mock[T](settings)
-  }
+/**
+ * Runtime support for MockitoEnhancer with utility methods that don't require WeakTypeTag. Shared across Scala 2 and Scala 3. Version-specific MockitoEnhancer traits extend this.
+ */
+private[mockito] trait MockitoEnhancerRuntime extends MockCreatorRuntime {
 
   /**
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that deal with default argument values
@@ -617,7 +556,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
     withObject[O](settings.spiedInstance(_), block)
   }
 
-  private[mockito] def withObject[O <: AnyRef: ClassTag](settings: O => MockSettings, block: => Any)(implicit $pt: Prettifier) = {
+  private[mockito] def withObject[O <: AnyRef: ClassTag](settings: O => MockSettings, block: => Any)(implicit $pt: Prettifier): Unit = {
     val objectClass = clazz[O]
     objectClass.synchronized {
       val moduleField = objectClass.getDeclaredField("MODULE$")
@@ -625,6 +564,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
 
       val threadAwareMock = createMock(
         settings(realImpl),
+        List.empty[Class[?]],
         (settings: MockCreationSettings[O], pt: Prettifier) => ThreadAwareMockHandler(settings, realImpl)(pt)
       )
 
@@ -633,6 +573,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
       finally JavaReflectionUtils.setFinalStatic(moduleField, realImpl)
     }
   }
+
 }
 
 trait LeniencySettings {
@@ -702,7 +643,7 @@ private[mockito] trait Verifications {
  *
  * The idea is based on org.scalatest.mockito.MockitoSugar but it adds 100% of the Mockito API
  *
- * It also solve problems like overloaded varargs calls to Java code and pre-stub the mocks so the default arguments in the method parameters work as expected
+ * It also solves problems like overloaded varargs calls to Java code and pre-stub the mocks so the default arguments in the method parameters work as expected
  *
  * @author
  *   Bruno Bonanno

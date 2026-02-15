@@ -373,5 +373,27 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
         else FooObject.stateDependantMethod shouldBe now
       }
     }
+
+    "stub methods from traits in object" in {
+      ObjectWithTraits.methodFromTraitA shouldBe "TraitA implementation"
+      ObjectWithTraits.methodFromTraitB shouldBe 42
+
+      withObjectMocked[ObjectWithTraits.type] {
+        // Verify the mock implements the trait interfaces
+        ObjectWithTraits shouldBe a[TraitA]
+        ObjectWithTraits shouldBe a[TraitB]
+
+        ObjectWithTraits.methodFromTraitA returns "mocked A"
+        ObjectWithTraits.methodFromTraitB returns 99
+        ObjectWithTraits.ownMethod returns "mocked own"
+
+        ObjectWithTraits.methodFromTraitA shouldBe "mocked A"
+        ObjectWithTraits.methodFromTraitB shouldBe 99
+        ObjectWithTraits.ownMethod shouldBe "mocked own"
+      }
+
+      ObjectWithTraits.methodFromTraitA shouldBe "TraitA implementation"
+      ObjectWithTraits.methodFromTraitB shouldBe 42
+    }
   }
 }

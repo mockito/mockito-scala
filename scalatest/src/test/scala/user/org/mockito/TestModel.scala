@@ -135,3 +135,15 @@ object FooObject {
 
   def stateDependantMethod: Long = now
 }
+
+trait TraitA {
+  def methodFromTraitA: String = "TraitA implementation"
+}
+
+trait TraitB {
+  def methodFromTraitB: Int = 42
+}
+
+object ObjectWithTraits extends TraitA with TraitB {
+  def ownMethod: String = "own method"
+}

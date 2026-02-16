@@ -1,61 +1,12 @@
 package org.mockito
+
+import org.mockito.MacroConstants.{ isSpecs2Matcher, MockitoMatchers }
+
 import scala.reflect.macros.blackbox
-import scala.util.matching.Regex
 
 object Utils {
   private[mockito] def hasMatchers(c: blackbox.Context)(args: List[c.Tree]): Boolean =
     args.exists(arg => isMatcher(c)(arg))
-
-  private val MockitoMatchers = Set(
-    "anyByte",
-    "anyBoolean",
-    "anyChar",
-    "anyDouble",
-    "anyInt",
-    "anyFloat",
-    "anyShort",
-    "anyLong",
-    "anyList",
-    "anySeq",
-    "anyIterable",
-    "anySet",
-    "anyMap",
-    "any",
-    "anyVal",
-    "$times", // *
-    "isNull",
-    "isNotNull",
-    "eqTo",
-    "eqToVal",
-    "same",
-    "isA",
-    "refEq",
-    "function0",
-    "matches",
-    "startsWith",
-    "contains",
-    "endsWith",
-    "argThat",
-    "byteThat",
-    "booleanThat",
-    "charThat",
-    "doubleThat",
-    "intThat",
-    "floatThat",
-    "shortThat",
-    "longThat",
-    "argMatching",
-    "$greater",    // >
-    "$greater$eq", // >=
-    "$less",       // <
-    "$less$eq",    // <=
-    "$eq$tilde",   // =~
-    "Captor.asCapture",
-    "capture"
-  )
-
-  private val specs2implicits: Regex                       = "(matcher)?[t,T]o(Partial)?FunctionCall(\\d*)".r
-  private def isSpecs2Matcher(methodName: String): Boolean = specs2implicits.pattern.matcher(methodName).matches
 
   private[mockito] def isMatcher(c: blackbox.Context)(arg: c.Tree): Boolean = {
     import c.universe.*

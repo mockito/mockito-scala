@@ -34,4 +34,7 @@ object Dependencies {
   val catsLaws = "org.typelevel" %% "cats-laws" % "2.13.0"
 
   val disciplineScalatest = "org.typelevel" %% "discipline-scalatest" % "2.3.0"
+
+  val scalaParallelCollections = "org.scala-lang.modules" %% "scala-parallel-collections" % "1.2.0"
+  val scalaCollectionCompat    = "org.scala-lang.modules" %% "scala-collection-compat"    % "2.14.0"
 }

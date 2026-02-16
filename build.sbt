@@ -10,6 +10,12 @@ inThisBuild(
   )
 )
 
+def scala213PlusSourceDirectory(baseDir: File, sourceScope: String, scalaV: String): Seq[File] =
+  CrossVersion.partialVersion(scalaV) match {
+    case Some((2, 13)) | Some((3, _)) => Seq(baseDir / "src" / sourceScope / "scala-2.13+")
+    case _                             => Seq.empty
+  }
+
 lazy val commonSettings =
   Seq(
     organization := "org.mockito",
@@ -43,10 +49,12 @@ lazy val commonSettings =
         case Some((2, major)) if major <= 12 =>
           Seq()
         case _ =>
-          Seq("org.scala-lang.modules" %% "scala-parallel-collections" % "1.2.0")
+          Seq(Dependencies.scalaParallelCollections)
       }
     },
-    libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.13.0"
+    libraryDependencies += Dependencies.scalaCollectionCompat,
+    Compile / unmanagedSourceDirectories ++= scala213PlusSourceDirectory(baseDirectory.value, "main", scalaVersion.value),
+    Test / unmanagedSourceDirectories ++= scala213PlusSourceDirectory(baseDirectory.value, "test", scalaVersion.value)
   )
 
 lazy val publishSettings = Seq(

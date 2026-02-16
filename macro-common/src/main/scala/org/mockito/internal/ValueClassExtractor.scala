@@ -1,10 +1,5 @@
 package org.mockito.internal
 
-import org.mockito.internal.MacroDebug.debugResult
-import org.mockito.internal.ScalaVersion.{ V2_12, V2_13 }
-
-import scala.reflect.macros.blackbox
-
 trait ValueClassExtractor[VC] extends Serializable {
   def isValueClass: Boolean = true
   def extract(vc: VC): Any
@@ -27,28 +22,6 @@ class ReflectionExtractor[VC] extends ValueClassExtractor[VC] {
   }
 }
 
-object ValueClassExtractor {
+object ValueClassExtractor extends ValueClassExtractorCompat {
   def apply[T: ValueClassExtractor]: ValueClassExtractor[T] = implicitly[ValueClassExtractor[T]]
-
-  implicit def instance[VC]: ValueClassExtractor[VC] = macro materialise[VC]
-
-  def materialise[VC: c.WeakTypeTag](c: blackbox.Context): c.Expr[ValueClassExtractor[VC]] = {
-    import c.universe.*
-    val tpe          = weakTypeOf[VC]
-    val typeSymbol   = tpe.typeSymbol
-    val isValueClass = typeSymbol.isClass && typeSymbol.asClass.isDerivedValueClass
-
-    val r =
-      if (isValueClass) {
-        ScalaVersion.Current match {
-          case V2_12 | V2_13 =>
-            c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.ReflectionExtractor[$tpe]")
-        }
-      } else
-        c.Expr[ValueClassExtractor[VC]](q"new _root_.org.mockito.internal.NormalClassExtractor[$tpe]")
-
-    debugResult(c)("mockito-print-extractor")(r.tree)
-
-    r
-  }
 }

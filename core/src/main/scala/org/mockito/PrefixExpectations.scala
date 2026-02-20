@@ -1,15 +1,8 @@
 package org.mockito
 
-trait PrefixExpectations extends IdiomaticVerifications {
+trait PrefixExpectations extends PrefixExpectationsRuntime {
 
   import org.mockito.IdiomaticMockitoBase.*
-
-  type Calls = Times
-
-  val call: CallWord.type   = CallWord
-  val calls: CallsWord.type = CallsWord
-
-  val ignoringStubs: IgnoringStubs.type = IgnoringStubs
 
   object expect {
     def a(callWord: CallWord.type): ExpectationOps       = new ExpectationOps(Times(1))
@@ -82,9 +75,4 @@ trait PrefixExpectations extends IdiomaticVerifications {
   }
 
   def InOrder(mocks: AnyRef*)(verifications: VerifyInOrder => Verification): Verification = verifications(VerifyInOrder(mocks))
-
-  implicit class IntOps(i: Int) {
-    def calls: Calls = Times(i)
-    def call: Calls  = Times(i)
-  }
 }

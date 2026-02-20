@@ -1,59 +1,15 @@
 package org.mockito.captor
 
-import org.mockito.exceptions.base.MockitoAssertionError
-import org.mockito.exceptions.verification.{ ArgumentsAreDifferent, TooFewActualInvocations, TooManyActualInvocations }
 import org.mockito.internal.MacroDebug.debugResult
 import org.mockito.internal.ScalaVersion
 import org.mockito.internal.ScalaVersion.{ V2_12, V2_13 }
-import org.mockito.{ clazz, ArgumentCaptor }
-import org.scalactic.Equality
-import org.scalactic.TripleEquals.*
 
-import scala.jdk.CollectionConverters.*
 import scala.reflect.ClassTag
 import scala.reflect.macros.blackbox
-import scala.util.{ Failure, Try }
 
-trait Captor[T] {
-  def capture: T
+trait Captor[T] extends CaptorBase[T]
 
-  def value: T
-
-  def values: List[T]
-
-  def hasCaptured(expectations: T*)(implicit $eq: Equality[T]): Unit = {
-    val elementResult = Try {
-      expectations.zip(values).foreach { case (e, v) =>
-        if (e !== v) throw new ArgumentsAreDifferent(s"Got [$v] instead of [$e]")
-      }
-    }
-
-    val sizeResult = Try {
-      (expectations.size, values.size) match {
-        case (es, vs) if es - vs > 0 => throw new TooFewActualInvocations(s"Also expected ${es - vs} more: [${expectations.drop(vs).mkString(", ")}]")
-        case (es, vs) if es - vs < 0 => throw new TooManyActualInvocations(s"Also got ${vs - es} more: [${values.drop(es).mkString(", ")}]")
-        case _                       => None
-      }
-    }
-
-    (elementResult, sizeResult) match {
-      case (Failure(ef), Failure(sf: MockitoAssertionError)) => throw new MockitoAssertionError(sf, ef.getMessage)
-      case (_, Failure(sf))                                  => throw sf
-      case (Failure(ef), _)                                  => throw ef
-      case _                                                 =>
-    }
-  }
-}
-
-class WrapperCaptor[T: ClassTag] extends Captor[T] {
-  private val argumentCaptor: ArgumentCaptor[T] = ArgumentCaptor.forClass(clazz)
-
-  override def capture: T = argumentCaptor.capture()
-
-  override def value: T = argumentCaptor.getValue
-
-  override def values: List[T] = argumentCaptor.getAllValues.asScala.toList
-}
+class WrapperCaptor[T: ClassTag] extends WrapperCaptorBase[T] with Captor[T]
 
 object Captor {
   implicit def asCapture[T](c: Captor[T]): T = c.capture

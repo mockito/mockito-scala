@@ -3,8 +3,10 @@ package org.mockito
 import org.mockito.WhenMacro.*
 import org.mockito.stubbing.ScalaOngoingStubbing
 
-trait IdiomaticStubbing extends MockitoEnhancer with ScalacticSerialisableHack {
+trait IdiomaticStubbing extends IdiomaticStubbingRuntime {
   import org.mockito.IdiomaticMockitoBase.*
+
+  val called: Called.type = Called
 
   implicit class StubbingOps[T](stubbing: T) {
     def shouldReturn: ReturnActions[T] = macro WhenMacro.shouldReturn[T]
@@ -34,14 +36,6 @@ trait IdiomaticStubbing extends MockitoEnhancer with ScalacticSerialisableHack {
     def mustDoNothing(): Unit = macro DoSomethingMacro.doesNothing
     def doesNothing(): Unit = macro DoSomethingMacro.doesNothing
   }
-
-  val called: Called.type            = Called
-  val thrown: Thrown.type            = Thrown
-  val returned: Returned.type        = Returned
-  val answered: Answered.type        = Answered
-  val theRealMethod: RealMethod.type = RealMethod
-
-  val realMethod: RealMethod.type = RealMethod
 
   implicit class DoSomethingOps[R](v: R) {
     def willBe(r: Returned.type): ReturnedBy[R] = ReturnedBy[R]()

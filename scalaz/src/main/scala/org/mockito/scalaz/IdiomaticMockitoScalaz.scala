@@ -49,8 +49,8 @@ trait IdiomaticMockitoScalaz extends ScalacticSerialisableHack {
   implicit class DoSomethingOpsScalaz[R](v: R) {
     def willBe(r: ReturnedF.type): ReturnedByF[R]   = ReturnedByF[R]()
     def willBe(r: ReturnedFG.type): ReturnedByFG[R] = ReturnedByFG[R]()
-    def willBe(r: Raised.type): Raised[R]           = Raised[R]()
-    def willBe(r: RaisedG.type): RaisedG[R]         = RaisedG[R]()
+    def willBe(r: Raised.type): RaisedBy[R]         = RaisedBy[R]()
+    def willBe(r: RaisedG.type): RaisedByG[R]       = RaisedByG[R]()
     def willBe(r: AnsweredF.type): AnsweredByF[R]   = AnsweredByF[R]()
     def willBe(r: AnsweredFG.type): AnsweredByFG[R] = AnsweredByFG[R]()
   }
@@ -127,12 +127,12 @@ object IdiomaticMockitoScalaz extends IdiomaticMockitoScalaz {
   }
 
   object Raised
-  case class Raised[T]() {
+  case class RaisedBy[T]() {
     def by[F[_], E](stubbing: F[E])(implicit F: MonadError[F, ? >: T]): F[E] = macro DoSomethingMacro.raised[E]
   }
 
   object RaisedG
-  case class RaisedG[T]() {
+  case class RaisedByG[T]() {
     def by[F[_], G[_], E](stubbing: F[G[E]])(implicit F: Applicative[F], G: MonadError[G, ? >: T]): F[G[E]] =
       macro DoSomethingMacro.raisedG[E]
   }

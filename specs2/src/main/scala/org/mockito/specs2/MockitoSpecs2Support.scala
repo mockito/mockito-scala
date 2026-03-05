@@ -1,7 +1,7 @@
 package org.mockito.specs2
 
 import org.specs2.matcher.MatchersImplicits.*
-import org.specs2.matcher.{ BeEqualTo, Expectations, MatchFailure, Matcher }
+import org.specs2.matcher.*
 
 trait ArgThat {
   implicit def argThat[T](m: org.specs2.matcher.Matcher[T]): T = org.mockito.hamcrest.MockitoHamcrest.argThat(HamcrestMatcherAdapter(m))
@@ -1186,4 +1186,6 @@ trait FunctionArguments extends FunctionArgumentsLowImplicits {
     )
 }
 
-trait MockitoSpecs2Support extends FunctionArguments
+trait MockitoSpecs2Support extends FunctionArguments {
+  type Verification = MatchResult[Any]
+}

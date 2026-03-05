@@ -5,15 +5,15 @@ import org.mockito.hamcrest.MockitoHamcrest
 import org.mockito.internal.ValueClassExtractor
 import org.mockito.matchers.DefaultMatcher
 import org.mockito.stubbing.ScalaOngoingStubbing
-import org.mockito.{ ArgumentMatchersSugar, IdiomaticStubbing, PostfixVerifications, Specs2VerifyMacro, VerifyInOrder, VerifyOrder }
+import org.mockito.{ ArgumentMatchersSugar, IdiomaticStubbing, PostfixVerifications, VerifyInOrder }
 import org.scalactic.{ Equality, Prettifier }
 import org.specs2.control.Exceptions.catchAll
 import org.specs2.control.Throwablex.*
-import org.specs2.matcher.{ Expectable, MatchFailure, MatchResult, MatchSuccess, Matcher }
+import org.specs2.matcher.{ Expectable, MatchFailure, MatchSuccess, Matcher }
 
 import scala.reflect.ClassTag
 
-trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoSpecs2Support {
+trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentMatchersSugar with MockitoCompat {
   def checkCalls[Any] =
     new Matcher[Any] {
       def apply[S <: Any](s: Expectable[S]) =
@@ -32,7 +32,6 @@ trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentM
         }
     }
 
-  override type Verification = MatchResult[Any]
   override def verification(v: => Any): Verification = createExpectable(v).applyMatcher(checkCalls)
 
   implicit def defaultMatcher[T: Equality: ValueClassExtractor](implicit prettifier: Prettifier): DefaultMatcher[T] =
@@ -47,14 +46,6 @@ trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentM
 
   /** create an object supporting 'was' and 'were' methods */
   def there = new Calls
-
-  /**
-   * class supporting 'was' and 'were' methods to forward mockito calls to the CallsMatcher matcher
-   */
-  class Calls {
-    def were[T](calls: => T)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[T, Verification]
-    def was[T](calls: T)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[T, Verification]
-  }
 
   /** no calls made to the mock */
   def noCallsTo[T <: AnyRef](mocks: T*): Unit = ()
@@ -108,12 +99,6 @@ trait Mockito extends IdiomaticStubbing with PostfixVerifications with ArgumentM
   implicit class Specs2Stubbing[T](s: ScalaOngoingStubbing[T]) {
     def thenReturns(value: T, values: T*): ScalaOngoingStubbing[T] = s.andThen(value, values*)
   }
-
-  implicit class MatchResultOps[T](m: MatchResult[T]) {
-    def andThen[O](calls: => O)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[O, Verification]
-  }
-
-  def got[T](calls: => T)(implicit order: VerifyOrder): Verification = macro Specs2VerifyMacro.wasMacro[T, Verification]
 
   def capture[T: ClassTag]: Captor[T] = ArgCaptor[T]
 

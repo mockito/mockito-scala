@@ -126,4 +126,3 @@ private[mockito] trait VerificationMacroTransformer {
     }
   }
 }
-

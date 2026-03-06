@@ -9,6 +9,7 @@ import scala.reflect.runtime.universe.WeakTypeTag
 
 /**
  * Internal Scala 2 compatibility layer for `ResetMocksAfterEachTest`/`ResetMocksAfterEachAsyncTest`.
+ *
  * Provides WeakTypeTag-based mock override methods that intercept mock creation to track mocks for automatic reset.
  */
 private[scalatest] trait ResetMocksAfterEachTestCompat extends MockCreator with ResetMocksAfterEachTestRuntime {

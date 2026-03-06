@@ -1,5 +1,6 @@
 package org.mockito
 
+import java.util.regex.Pattern
 import scala.util.matching.Regex
 
 /**
@@ -59,4 +60,13 @@ object MacroConstants {
 
   def isSpecs2Matcher(methodName: String): Boolean =
     Specs2Implicits.pattern.matcher(methodName).matches
+
+  val WordsToNumbers: Map[String, Int] = Map(
+    "no"    -> 0,
+    "one"   -> 1,
+    "two"   -> 2,
+    "three" -> 3
+  )
+
+  val WasWere: Pattern = "(was|were)".r.pattern
 }

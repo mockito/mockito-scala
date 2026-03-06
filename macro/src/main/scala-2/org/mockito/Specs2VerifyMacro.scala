@@ -1,19 +1,12 @@
 package org.mockito
 
+import org.mockito.MacroConstants.{ WasWere, WordsToNumbers }
 import org.mockito.Utils.*
 import org.mockito.internal.MacroDebug.debugResult
 
 import scala.reflect.macros.blackbox
 
 object Specs2VerifyMacro extends VerificationMacroTransformer {
-  private val WordsToNumbers = Map(
-    "no"    -> 0,
-    "one"   -> 1,
-    "two"   -> 2,
-    "three" -> 3
-  )
-
-  private val WasWere = "(was|were)".r.pattern
 
   def wasMacro[T: c.WeakTypeTag, R](c: blackbox.Context)(calls: c.Expr[T])(order: c.Expr[VerifyOrder]): c.Expr[R] = {
     import c.universe.*

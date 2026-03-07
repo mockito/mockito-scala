@@ -1,8 +1,9 @@
 package org.mockito
 
 import org.mockito.Utils.*
+import org.mockito.WhenDslKeywords.*
 import org.mockito.internal.MacroDebug.debugResult
-import org.mockito.stubbing.{ ScalaFirstStubbing, ScalaOngoingStubbing }
+import org.mockito.stubbing.ScalaOngoingStubbing
 
 import scala.reflect.macros.blackbox
 
@@ -50,9 +51,6 @@ object WhenMacro {
     } else throw new Exception(s"Couldn't recognize invocation ${show(invocation)}")
   }
 
-  private val ShouldReturnOptions                                 = Set("shouldReturn", "mustReturn", "returns")
-  private val FunctionalShouldReturnOptions                       = ShouldReturnOptions.map(_ + "F")
-  private val FunctionalShouldReturnOptions2                      = ShouldReturnOptions.map(_ + "FG")
   def shouldReturn[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe.*
 
@@ -87,7 +85,6 @@ object WhenMacro {
     r
   }
 
-  val ShouldCallOptions                                                                                                          = Set("shouldCall", "mustCall", "calls")
   def shouldCallRealMethod[T: c.WeakTypeTag](c: blackbox.Context)(crm: c.Expr[RealMethod.type]): c.Expr[ScalaOngoingStubbing[T]] = {
     import c.universe.*
 
@@ -103,9 +100,6 @@ object WhenMacro {
     r
   }
 
-  private val ShouldThrowOptions                                 = Set("shouldThrow", "mustThrow", "throws")
-  private val FunctionalShouldFailOptions                        = Set("shouldFailWith", "mustFailWith", "failsWith", "raises")
-  private val FunctionalShouldFailOptions2                       = Set("shouldFailWithG", "mustFailWithG", "failsWithG", "raisesG")
   def shouldThrow[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe.*
 
@@ -125,9 +119,6 @@ object WhenMacro {
     r
   }
 
-  private val ShouldAnswerOptions                                 = Set("shouldAnswer", "mustAnswer", "answers")
-  private val FunctionalShouldAnswerOptions                       = ShouldAnswerOptions.map(_ + "F")
-  private val FunctionalShouldAnswerOptions2                      = ShouldAnswerOptions.map(_ + "FG")
   def shouldAnswer[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe.*
 
@@ -147,7 +138,6 @@ object WhenMacro {
     r
   }
 
-  private val ShouldAnswerPFOptions                                 = Set("shouldAnswerPF", "mustAnswerPF", "answersPF")
   def shouldAnswerPF[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
     import c.universe.*
 

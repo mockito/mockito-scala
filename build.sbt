@@ -1,6 +1,7 @@
 import scala.language.postfixOps
 
 val currentScalaVersion = "2.13.18"
+val scala3Version       = "3.3.7"
 
 inThisBuild(
   Seq(
@@ -22,17 +23,32 @@ lazy val commonSettings =
     // Load version from the file so that Gradle/Shipkit and SBT use the same version
     crossScalaVersions := Seq(currentScalaVersion, "2.12.21"),
     scalafmtOnCompile  := true,
-    scalacOptions ++= Seq(
-      "-unchecked",
-      "-feature",
-      "-deprecation",
-      "-encoding",
-      "UTF-8",
-      "-Xfatal-warnings",
-      "-Xsource:3",
-//      "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-expect,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-wrapper,mockito-print-lenient",
-      "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds"
-    ),
+    scalacOptions ++= {
+      val common = Seq(
+        "-unchecked",
+        "-feature",
+        "-deprecation",
+        "-encoding",
+        "UTF-8"
+      )
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, _)) =>
+          common ++ Seq(
+            "-Xfatal-warnings",
+            "-Xsource:3",
+            "-Wconf:msg=access modifiers for .copy. method are copied:s",
+//            "-Xmacro-settings:mockito-print-when,mockito-print-do-something,mockito-print-verify,mockito-print-expect,mockito-print-captor,mockito-print-matcher,mockito-print-extractor,mockito-print-wrapper,mockito-print-lenient",
+            "-language:reflectiveCalls,implicitConversions,experimental.macros,higherKinds"
+          )
+        case Some((3, _)) =>
+          common ++ Seq(
+            "-Werror",
+            "-language:reflectiveCalls,implicitConversions,higherKinds"
+          )
+        case _ =>
+          common
+      }
+    },
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, 12)) =>
@@ -43,7 +59,12 @@ lazy val commonSettings =
           Seq()
       }
     },
-    Test / scalacOptions += "-Ywarn-value-discard",
+    Test / scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, _)) => Seq("-Ywarn-value-discard")
+        case _            => Seq()
+      }
+    },
     libraryDependencies ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, major)) if major <= 12 =>

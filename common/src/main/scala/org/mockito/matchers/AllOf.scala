@@ -13,10 +13,6 @@ case class AllOf[A] private (matchers: List[ArgumentMatcher[A]]) extends Argumen
       case matcher :: Nil => matcher.toString
       case _              => matchers.mkString("allOf(", ", ", ")")
     }
-
-  // Address "-Xsource:3" warning
-  @deprecated("for bincompat only, do not use", "2.0.1")
-  private[mockito] def copy(matchers: List[ArgumentMatcher[A]] = this.matchers): AllOf[A] = new AllOf(matchers)
 }
 
 object AllOf {

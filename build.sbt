@@ -211,7 +211,11 @@ lazy val macroCommon = (project in file("macro-common"))
   .settings(
     commonSettings,
     noPublishingSettings,
+    // TODO: Scala 3 is being enabled module-by-module. Once all modules have scala-3/ sources,
+    //  move scala3Version to the global crossScalaVersions in commonSettings and remove per-module overrides.
+    crossScalaVersions += scala3Version,
     libraryDependencies ++= Dependencies.scalaReflection.value,
+    libraryDependencies += Dependencies.scalatest % Test,
     publish         := {},
     publishLocal    := {},
     publishArtifact := false

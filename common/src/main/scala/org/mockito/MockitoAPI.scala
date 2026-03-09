@@ -86,7 +86,7 @@ private[mockito] trait MockCreatorRuntime {
 }
 
 //noinspection MutatorLikeMethodIsParameterless
-private[mockito] trait DoSomething {
+private[mockito] trait DoSomething extends DoSomethingCompat {
 
   /**
    * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code> but fixes the following compiler issue that happens because the overloaded vararg on the
@@ -482,9 +482,9 @@ private[mockito] trait DoSomething {
 }
 
 /**
- * Runtime support for MockitoEnhancer with utility methods that don't require WeakTypeTag. Shared across Scala 2 and Scala 3. Version-specific MockitoEnhancer traits extend this.
+ * Support for object-mocking syntax and utility methods that don't require WeakTypeTag.
  */
-private[mockito] trait MockitoEnhancerRuntime extends MockCreatorRuntime {
+private[mockito] trait MockitoEnhancer extends MockCreator {
 
   /**
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that deal with default argument values

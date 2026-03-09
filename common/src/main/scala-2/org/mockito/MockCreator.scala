@@ -25,6 +25,9 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     mock[T](defaultAnswer)
 
+  /**
+   * Creates a mock using a raw Mockito <code>Answer</code> by wrapping it in a scala-mockito <code>DefaultAnswer</code>.
+   */
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[?])(implicit $pt: Prettifier): T =
     mock[T](DefaultAnswer(defaultAnswer))
 
@@ -67,12 +70,19 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
   def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     mock(withSettings.name(name))
 
+  /**
+   * Creates a spy from a real instance via mock settings (spied instance + <code>CallsRealMethods</code>). When <code>lenient</code> is true, the spy is created with
+   * <code>Strictness.LENIENT</code>.
+   */
   def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false)(implicit $pt: Prettifier): T = {
     val mockSettings: MockSettings = withSettings(CallsRealMethods).spiedInstance(realObj)
     val settings                   = if (lenient) mockSettings.strictness(Strictness.LENIENT) else mockSettings
     mock[T](settings)
   }
 
+  /**
+   * Internal helper that creates a mock and adds extra interfaces discovered from the refined type.
+   */
   private[mockito] def createMock[T <: AnyRef: ClassTag: WeakTypeTag](
       mockSettings: MockSettings,
       mockHandler: (MockCreationSettings[T], Prettifier) => MockHandler[T] = (settings: MockCreationSettings[T], pt: Prettifier) => ScalaMockHandler(settings)(pt)

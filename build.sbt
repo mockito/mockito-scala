@@ -165,10 +165,12 @@ lazy val common = (project in file("common"))
   .settings(
     commonSettings,
     noPublishingSettings,
+    crossScalaVersions += scala3Version,
     libraryDependencies ++= Dependencies.commonLibraries ++
       Dependencies.scalaReflection.value ++ Seq(
         Dependencies.catsLaws   % "test",
-        Dependencies.scalacheck % "test"
+        Dependencies.scalacheck % "test",
+        Dependencies.scalatest  % "test"
       )
   )
 

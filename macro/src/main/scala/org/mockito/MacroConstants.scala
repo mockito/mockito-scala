@@ -69,4 +69,9 @@ object MacroConstants {
   )
 
   val WasWere: Pattern = "(was|were)".r.pattern
+
+  private val Primitives: Set[String] =
+    Set("scala.Int", "scala.Long", "scala.Double", "scala.Float", "scala.Boolean", "scala.Byte", "scala.Short", "scala.Char", "scala.Unit")
+
+  def isPrimitive(fullName: String): Boolean = Primitives.contains(fullName)
 }

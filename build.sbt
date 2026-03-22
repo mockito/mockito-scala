@@ -201,9 +201,11 @@ lazy val macroSub = (project in file("macro"))
   .dependsOn(common)
   .settings(
     commonSettings,
+    crossScalaVersions += scala3Version,
     noPublishingSettings,
     libraryDependencies ++= Dependencies.commonLibraries,
     libraryDependencies ++= Dependencies.scalaReflection.value,
+    libraryDependencies += Dependencies.scalatest % Test,
     publish         := {},
     publishLocal    := {},
     publishArtifact := false

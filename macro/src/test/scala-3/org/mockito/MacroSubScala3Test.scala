@@ -33,6 +33,9 @@ private trait MacroSub_Transformer {
 
 class MacroSubScala3Test extends AnyWordSpec with Matchers {
 
+  /** Required by VerifyMacro and ExpectMacro: wraps a verification call so the macro can locate it in the owner chain. */
+  def verification(v: => Any): Unit = v
+
   "WhenMacro.whenRaw" should {
     "stub a plain method invocation" in {
       val service = Mockito.mock(classOf[MacroSub_Service])
@@ -139,6 +142,100 @@ class MacroSubScala3Test extends AnyWordSpec with Matchers {
 
       Called.by(spy.value())
       spy.value() shouldBe 100
+    }
+  }
+
+  "VerifyMacro" should {
+    "verify a method was called once via wasMacro" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+      WhenMacro.whenRaw(service.value()).thenReturn(5)
+      service.value()
+
+      VerifyMacro.wasMacro[Int, Unit](service.value(), ())(using VerifyUnOrdered)
+    }
+
+    "verify a method was never called via wasNeverMacro" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+
+      VerifyMacro.wasNeverMacro[Int, Unit](service.value(), ())(using VerifyUnOrdered)
+    }
+
+    "verify zero interactions on a mock via wasNeverMacro on the mock itself" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+
+      VerifyMacro.wasNeverMacro[MacroSub_Service, Unit](service, ())(using VerifyUnOrdered)
+    }
+
+    "verify a method was called once via wasCalledMacro" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+      WhenMacro.whenRaw(service.value()).thenReturn(5)
+      service.value()
+
+      VerifyMacro.wasCalledMacro[Int, Unit](service.value(), VerifyMacroRuntime.Once)(using VerifyUnOrdered)
+    }
+
+    "verify no more interactions via wasNeverCalledAgainMacro" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+      WhenMacro.whenRaw(service.value()).thenReturn(5)
+      service.value()
+      Mockito.verify(service).value()
+
+      VerifyMacro.wasNeverCalledAgainMacro[MacroSub_Service, Unit](service, ())
+    }
+
+    "verify with an argument matcher via wasMacro" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+      service.transform("hello")
+
+      VerifyMacro.wasMacro[Int, Unit](service.transform(ArgumentMatchers.any()), ())(using VerifyUnOrdered)
+    }
+
+    "verify with named args via wasMacro" in {
+      val calc = Mockito.mock(classOf[MacroSub_Calculator])
+      calc.add(1, 2)
+
+      VerifyMacro.wasMacro[Int, Unit](calc.add(a = ArgumentMatchers.anyInt(), b = ArgumentMatchers.anyInt()), ())(using VerifyUnOrdered)
+    }
+  }
+
+  "ExpectMacro" should {
+    "verify a method was called once via callsTo" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+      WhenMacro.whenRaw(service.value()).thenReturn(5)
+      service.value()
+
+      ExpectMacro.callsTo[Unit](service.value(), VerifyMacroRuntime.Once)(VerifyUnOrdered)
+    }
+
+    "verify zero interactions on a mock via callsOn" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+
+      ExpectMacro.callsOn[Unit](service)
+    }
+
+    "verify no more interactions via callsOnNoMore" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+      WhenMacro.whenRaw(service.value()).thenReturn(5)
+      service.value()
+      Mockito.verify(service).value()
+
+      ExpectMacro.callsOnNoMore[Unit](service, false)
+    }
+
+    "verify with an argument matcher via callsTo" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+      service.transform("world")
+
+      ExpectMacro.callsTo[Unit](service.transform(ArgumentMatchers.any()), VerifyMacroRuntime.Once)(VerifyUnOrdered)
+    }
+
+    "verify no more interactions (ignoringStubs) via callsOnNoMore" in {
+      val service = Mockito.mock(classOf[MacroSub_Service])
+      WhenMacro.whenRaw(service.value()).thenReturn(5)
+      service.value()
+      Mockito.verify(service).value()
+
+      ExpectMacro.callsOnNoMore[Unit](service, true)
     }
   }
 

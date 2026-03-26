@@ -361,4 +361,70 @@ object Utils {
   /** Determine class name for cats/scalaz based on class name */
   private[mockito] def className(using Quotes)(className: String, start: String): String =
     if (className.contains("Scalaz")) start + "Scalaz" else start + "Cats"
+
+  /**
+   * Check if a term is a method invocation (Apply, TypeApply, or a Select/Ident referring to a def) rather than a plain object or field reference.
+   */
+  private[mockito] def isMethodInvocation(using Quotes)(term: quotes.reflect.Term): Boolean = {
+    import quotes.reflect.*
+    term match {
+      case Apply(_, _)         => true
+      case TypeApply(fun, _)   => isMethodInvocation(fun)
+      case Block(_, last)      => isMethodInvocation(last)
+      case Inlined(_, _, body) => isMethodInvocation(body)
+      case select: Select      => select.symbol.isDefDef
+      case ident: Ident        => ident.symbol.isDefDef
+      case _                   => false
+    }
+  }
+
+  /**
+   * Walk the splice-owner chain (and each class's companion module) to find a method named `"verification"`. Returns `(ownerSymbol, methodSymbol, useThis)` where `useThis=true`
+   * means the owner is an enclosing class (generate `This(owner).verification(...)`) and `useThis=false` means the owner is a companion module (generate
+   * `Ref(owner).verification(...)`).
+   *
+   * Checking companion modules is needed because in Scala 2 `q"verification(...)"` resolves naturally through scoping (which includes companion objects), while in Scala 3 the
+   * macro builds the AST explicitly and must search for it manually.
+   */
+  private[mockito] def findVerificationSymbol(using Quotes): Option[(quotes.reflect.Symbol, quotes.reflect.Symbol, Boolean)] = {
+    import quotes.reflect.*
+    Iterator
+      .iterate(Symbol.spliceOwner)(_.owner)
+      .takeWhile(s => s != Symbol.noSymbol && s != defn.RootClass)
+      .flatMap { current =>
+        val fromSelf =
+          try {
+            val methods = current.methodMembers.filter(_.name == "verification")
+            if (methods.nonEmpty) Some((current, methods.head, true)) else None
+          } catch { case _: Exception => None }
+        fromSelf.orElse {
+          if (!current.isClassDef) None
+          else
+            try {
+              val companion = current.companionModule
+              if (companion == Symbol.noSymbol) None
+              else {
+                val companionMethods = companion.methodMembers.filter(_.name == "verification")
+                if (companionMethods.nonEmpty) Some((companion, companionMethods.head, false)) else None
+              }
+            } catch { case _: Exception => None }
+        }
+      }
+      .nextOption()
+  }
+
+  /**
+   * Wrap a verification call tree in the `verification(...)` method found by [[findVerificationSymbol]]. Uses `This(owner).verification(call)` for enclosing-class owners and
+   * `Ref(owner).verification(call)` for companion-module owners.
+   */
+  private[mockito] def wrapInVerification(using Quotes)(call: quotes.reflect.Term): quotes.reflect.Term = {
+    import quotes.reflect.*
+    findVerificationSymbol match {
+      case Some((owner, method, useThis)) =>
+        val receiver = if (useThis) This(owner) else Ref(owner)
+        Apply(Select(receiver, method), List(call))
+      case None =>
+        report.errorAndAbort(s"Could not find 'verification' method in scope. Searched from: ${Symbol.spliceOwner.fullName}")
+    }
+  }
 }

@@ -1,6 +1,7 @@
 package org.mockito
 
 import org.mockito.internal.MockMetadataCache
+import org.mockito.invocation.InvocationOnMock
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -30,6 +31,14 @@ private[mockito] trait RUT_WithByNameAndFunction0        {
  * NOTE: plain ScalaTest assertions — NOT property-based tests.
  */
 class ReflectionUtilsTest extends AnyWordSpec with Matchers {
+
+  /** Create a minimal InvocationOnMock whose getMethod() returns the given method. */
+  private def makeInvocation(m: java.lang.reflect.Method): InvocationOnMock = {
+    val inv = Mockito.mock(classOf[InvocationOnMock])
+    Mockito.when(inv.getMethod()).thenReturn(m)
+    inv
+  }
+
   private val primitiveMethod          = classOf[RUT_WithPrimitiveBacked].getMethod("id")
   private val referenceMethod          = classOf[RUT_WithReferenceBacked].getMethod("id")
   private val typeMemberMethod         = classOf[RUT_WithTypeMemberBound].getMethod("id")
@@ -78,6 +87,20 @@ class ReflectionUtilsTest extends AnyWordSpec with Matchers {
 
     "be false for generic AnyVal bound method returning type variable" in {
       MockMetadataCache.getReturnsValueClass(genericBoundMethod) shouldBe Some(false)
+    }
+
+    "make ReflectionUtils.returnsValueClass return true via cache" in {
+      // JVM return type of RUT_UserId is String (not primitive) — exercises the cache path.
+      ReflectionUtils.returnsValueClass(makeInvocation(referenceMethod)) shouldBe true
+    }
+
+    "make ReflectionUtils.returnsValueClass return true via primitive fast-path" in {
+      // JVM return type of RUT_IntId is int (primitive) — isPrimitive fires before cache lookup.
+      ReflectionUtils.returnsValueClass(makeInvocation(primitiveMethod)) shouldBe true
+    }
+
+    "make ReflectionUtils.returnsValueClass return false for a method absent from the cache" in {
+      ReflectionUtils.returnsValueClass(makeInvocation(stringReturnMethod)) shouldBe false
     }
   }
 

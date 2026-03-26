@@ -16,7 +16,13 @@ import scala.reflect.ClassTag
  */
 object MockMethodMetadata {
 
-  /** Entry point called from Scala 3 `MockCreator` during mock creation. */
+  /**
+   * Entry point called from Scala 3 `MockCreator` during mock creation.
+   *
+   * `T` '''must be a concrete type''' at the call site — the macro inspects `T`'s methods at compile time. This is guaranteed when every method in the call chain from user code
+   * down to this call is `inline`. If any intermediate method is not `inline`, `T` will be an abstract type variable and the macro will produce no output, leaving the runtime
+   * cache empty for that mock type.
+   */
   inline def registerByNameAndVarArgInfo[T](using classTag: ClassTag[T]): Unit = ${ registerImpl[T]('classTag) }
 
   /** Macro implementation that inspects `T` and emits cache-registration runtime code. */
@@ -68,9 +74,23 @@ object MockMethodMetadata {
         case _          => resultTypeOf(methodType)
       }
 
+    def isPrimitiveType(normalized: TypeRepr): Boolean =
+      normalized =:= TypeRepr.of[Boolean] ||
+        normalized =:= TypeRepr.of[Byte] ||
+        normalized =:= TypeRepr.of[Short] ||
+        normalized =:= TypeRepr.of[Int] ||
+        normalized =:= TypeRepr.of[Long] ||
+        normalized =:= TypeRepr.of[Float] ||
+        normalized =:= TypeRepr.of[Double] ||
+        normalized =:= TypeRepr.of[Char] ||
+        normalized =:= TypeRepr.of[Unit]
+
     def returnsValueClassFor(normalized: TypeRepr): Boolean = {
       val returnSym = normalized.typeSymbol
-      returnSym.isClassDef && returnSym != defn.AnyValClass && (normalized <:< TypeRepr.of[AnyVal])
+      returnSym.isClassDef &&
+      returnSym != defn.AnyValClass &&
+      !isPrimitiveType(normalized) &&
+      (normalized <:< TypeRepr.of[AnyVal])
     }
 
     def returnTypeClassFor(normalized: TypeRepr): Option[Expr[Class[?]]] = {
@@ -109,9 +129,13 @@ object MockMethodMetadata {
     // Phase 1: compile-time analysis of T and its inherited declarations.
     def collectMethodInfos(tpe: TypeRepr, typeSymbol: Symbol): List[MethodInfo] = {
       val allMethods = {
-        val seen = mutable.Set.empty[String] // track by fullName to avoid duplicates
+        // Deduplicate by symbol identity: the same symbol may appear in both `declarations`
+        // and `baseClasses.flatMap(_.declarations)`, so we use the symbol itself as the key.
+        // Using `fullName` would wrongly deduplicate overloaded methods (e.g. `request()`,
+        // `request(String...)` and `request(MediaType...)` all share the same fullName).
+        val seen = mutable.Set.empty[Symbol]
         (typeSymbol.declarations ++ tpe.baseClasses.flatMap(_.declarations))
-          .filter(symbol => symbol.isDefDef && !symbol.isClassConstructor && seen.add(symbol.fullName))
+          .filter(symbol => symbol.isDefDef && !symbol.isClassConstructor && seen.add(symbol))
       }
 
       allMethods.flatMap { methodSym =>
@@ -119,17 +143,24 @@ object MockMethodMetadata {
         val isJavaMethod         = methodSym.flags.is(Flags.JavaDefined)
         val params               = collectParams(methodType, 0)
         val byNameOrVarArgFields = params.collect { case param if param.isByName || param.isVarArg => param.index }.toSet
+        val inferredReturnType   = resultTypeOf(methodType).dealias.simplified
         val normalizedReturnType = declaredOrResolvedReturnType(methodSym, methodType).dealias.simplified
-        val jvmParamTypes        = params.map(param => jvmParamTypeExpr(param, isJavaMethod))
-        Some(
-          MethodInfo(
-            methodSym.name,
-            jvmParamTypes,
-            byNameOrVarArgFields,
-            returnsValueClassFor(normalizedReturnType),
-            returnTypeClassFor(normalizedReturnType)
+        val returnsValueClass    = returnsValueClassFor(normalizedReturnType)
+        val returnTypeClassOpt   =
+          if (!(normalizedReturnType =:= inferredReturnType)) returnTypeClassFor(normalizedReturnType)
+          else None
+        val jvmParamTypes = params.map(param => jvmParamTypeExpr(param, isJavaMethod))
+        if (byNameOrVarArgFields.nonEmpty || returnsValueClass || returnTypeClassOpt.nonEmpty)
+          Some(
+            MethodInfo(
+              methodSym.name,
+              jvmParamTypes,
+              byNameOrVarArgFields,
+              returnsValueClass,
+              returnTypeClassOpt
+            )
           )
-        )
+        else None
       }
     }
 
@@ -172,10 +203,8 @@ object MockMethodMetadata {
             resolvedMethodInfos.collect { case (method, indices, _, _) if indices.nonEmpty => (method, indices) }
           if (byNameInfos.nonEmpty) MockMetadataCache.registerByName(clazz, byNameInfos)
 
-          if (resolvedMethodInfos.nonEmpty)
-            MockMetadataCache.registerReturnsValueClass(
-              resolvedMethodInfos.map { case (method, _, returnsValueClass, _) => (method, returnsValueClass) }
-            )
+          val returnsValueClassInfos = resolvedMethodInfos.collect { case (method, _, true, _) => (method, true) }
+          if (returnsValueClassInfos.nonEmpty) MockMetadataCache.registerReturnsValueClass(returnsValueClassInfos)
 
           val returnTypeInfos = resolvedMethodInfos.collect { case (method, _, _, Some(returnTypeClass)) =>
             (method, returnTypeClass)

@@ -115,7 +115,7 @@ object IdiomaticMockitoBaseRuntime {
   }
 
   class ThrowActions[T](os: ScalaFirstStubbing[T]) {
-    def apply[E <: Throwable](e: E*): ScalaOngoingStubbing[T] = os thenThrow (e*)
+    def apply[E <: Throwable](e: E*): ScalaOngoingStubbing[T] = os.thenThrow(e*)
   }
 
   // types for postfix verifications

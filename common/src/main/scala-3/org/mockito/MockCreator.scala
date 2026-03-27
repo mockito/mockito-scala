@@ -18,6 +18,23 @@ import scala.reflect.ClassTag
  *   - `inline` keeps the concrete `T` at call sites, allowing compile-time metadata extraction.
  *   - `createMock` registers per-method metadata via [[org.mockito.internal.MockMethodMetadata.registerByNameAndVarArgInfo]] before delegating to runtime creation; this feeds
  *     `ReflectionUtils`/`ScalaMockHandler` with by-name, vararg and return metadata.
+ *
+ * ==Wrapper methods must be `inline` (Scala 3)==
+ *
+ * All `mock[T]` overloads are `inline` so that `T` is concrete at the macro expansion point. If you wrap `mock[T]` in your own helper, that helper must also be `inline`:
+ *
+ * {{{
+ * // CORRECT – T is known at every call site
+ * inline def lenientMock[T <: AnyRef: ClassTag]: T =
+ *   mock[T](Mockito.withSettings().strictness(Strictness.LENIENT))
+ *
+ * // WRONG – T is erased; by-name / vararg metadata will NOT be registered
+ * def lenientMock[T <: AnyRef: ClassTag]: T =
+ *   mock[T](Mockito.withSettings().strictness(Strictness.LENIENT))
+ * }}}
+ *
+ * Without `inline`, the compile-time macro [[org.mockito.internal.MockMethodMetadata.registerByNameAndVarArgInfo]] sees `T` as an abstract type variable and produces no output. At
+ * runtime the `ScalaMockHandler` will not find the method in its cache, so vararg arrays won't be expanded and stubs on vararg methods will silently fail to match.
  */
 private[mockito] trait MockCreator extends MockCreatorRuntime {
 

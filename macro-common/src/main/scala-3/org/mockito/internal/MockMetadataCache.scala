@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * Keys and contract:
  *   - `byName`: keyed by declaring `Class[?]`, stores `Seq[(Method, Set[Int])]`:
- *       - outer `Seq`: one entry per method on that class with metadata
- *       - inner `Set[Int]`: zero-based parameter indices that are by-name or vararg for that method
- *         (example: for `def foo(x: => Int, ys: String*, z: () => String)`, indices are `Set(0, 1)`; `z` is plain `Function0`, so excluded)
+ *     - outer `Seq`: one entry per method on that class with metadata
+ *     - inner `Set[Int]`: zero-based parameter indices that are by-name or vararg for that method (example: for `def foo(x: => Int, ys: String*, z: () => String)`, indices are
+ *       `Set(0, 1)`; `z` is plain `Function0`, so excluded)
  *   - `returnsValueClass`: keyed by `Method`, stores whether the declared Scala return type extends `AnyVal`.
  *   - `returnType`: keyed by `Method`, stores the concrete declared return class when JVM erasure gives `Object` but the Scala source type is more specific (e.g. abstract type
  *     aliases, path-dependent types).

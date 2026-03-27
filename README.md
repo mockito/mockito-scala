@@ -40,8 +40,30 @@ The library has independent developers, release cycle and versioning from core m
 ## Partial unification
 If you're in Scala 2.12 you'll probably want to add the compiler flag `-Ypartial-unification`, if you don't you risk some compile errors when trying to stub complex types using the idiomatic syntax
 
+## Notes for 2.1.0
+
+### Scala 3: `mock[T]` wrapper methods must be `inline`
+
+In Scala 3, `mock[T]` uses a compile-time macro to register by-name/vararg parameter metadata
+and value-class return types for `T`. This macro only works when `T` is concrete at the call site,
+which requires every method in the call chain to be `inline`.
+
+If you wrap `mock[T]` in a helper, declare it `inline`:
+
+```scala
+// CORRECT — T is concrete at every call site
+inline def lenientMock[T <: AnyRef: ClassTag]: T =
+  mock[T](Mockito.withSettings().strictness(Strictness.LENIENT))
+
+// WRONG — T is erased; by-name/vararg metadata will NOT be registered
+def lenientMock[T <: AnyRef: ClassTag]: T =
+  mock[T](Mockito.withSettings().strictness(Strictness.LENIENT))
+```
+
+Without `inline`, stubs on by-name or vararg methods will silently fail to match at runtime.
+
 ## Notes for 2.0.0
-We dropped support for Scala 2.11 and Java 8, as Mockito 5 dropped support for Java 8. 
+We dropped support for Scala 2.11 and Java 8, as Mockito 5 dropped support for Java 8.
 Java 11 is now the minimum supported version.
 
 ## Notes for 1.13.6

@@ -5,7 +5,7 @@ import org.mockito.internal.MockMethodMetadata
 import org.mockito.internal.MockMetadataCache
 import org.mockito.invocation.InvocationOnMock
 
-import java.lang.reflect.{ Method, TypeVariable }
+import java.lang.reflect.Method
 import scala.reflect.ClassTag
 
 object ReflectionUtils {
@@ -39,24 +39,15 @@ object ReflectionUtils {
    * Scala 3 strategy (in order):
    *   1. primitive fast-path (`returnType.isPrimitive`)
    *   2. compile-time metadata from [[MockMetadataCache.getReturnsValueClass]]
-   *   3. conservative JVM fallback:
-   *      - generic `TypeVariable` return => `false` (erased/ambiguous)
-   *      - otherwise `classOf[AnyVal].isAssignableFrom(returnType)`
+   *   3. `false` — if the method is not in the cache it means the macro did not classify it as a value-class return, so it is a plain reference type.
    *
-   * This mirrors Scala 2 intent ("identify returns that require value-like handling") while replacing runtime Scala reflection with compile-time metadata plus conservative runtime
-   * checks.
+   * NOTE: `classOf[AnyVal].isAssignableFrom(returnType)` cannot be used as a fallback in Scala 3 because `classOf[AnyVal]` compiles to `java.lang.Object` on the JVM, making the
+   * check return `true` for every reference type and causing null stubs to be replaced by smart-null proxies.
    */
   private[mockito] def returnsValueClass(invocation: InvocationOnMock): Boolean =
     val method     = invocation.method
     val returnType = method.getReturnType
-    returnType.isPrimitive || MockMetadataCache
-      .getReturnsValueClass(method)
-      .getOrElse {
-        method.getGenericReturnType match {
-          case _: TypeVariable[?] => false
-          case _                  => classOf[AnyVal].isAssignableFrom(returnType)
-        }
-      }
+    returnType.isPrimitive || MockMetadataCache.getReturnsValueClass(method).getOrElse(false)
 
   /**
    * Extract extra interfaces from an intersection/refined type at compile time.

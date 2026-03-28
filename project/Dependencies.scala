@@ -3,7 +3,7 @@ import sbt.Keys.*
 
 object Dependencies {
 
-  val scalatestVersion = "3.2.19"
+  val scalatestVersion = "3.2.20"
 
   val commonLibraries = Seq(
     "org.mockito"    % "mockito-core"      % "5.23.0",

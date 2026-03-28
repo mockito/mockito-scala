@@ -39,7 +39,10 @@ package object mockito {
     ScalaAnswer.lift(f.andThen(ValueClassExtractor[T].extractAs[T]))
 
   def functionToAnswer[T: ValueClassExtractor, P0: ValueClassWrapper](f: P0 => T): ScalaAnswer[T] =
-    invocationToAnswer(i => f(i.arg[P0](0)))
+    invocationToAnswer { i =>
+      if (i.args.isEmpty) f(().asInstanceOf[P0])
+      else f(i.arg[P0](0))
+    }
 
   def functionToAnswer[T: ValueClassExtractor, P0: ValueClassWrapper, P1: ValueClassWrapper](f: (P0, P1) => T): ScalaAnswer[T] =
     invocationToAnswer(i => f(i.arg[P0](0), i.arg[P1](1)))

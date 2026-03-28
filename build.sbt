@@ -116,6 +116,7 @@ lazy val scalatest = (project in file("scalatest"))
     name := "mockito-scala-scalatest",
     commonSettings,
     publishSettings,
+    crossScalaVersions += scala3Version,
     libraryDependencies += Dependencies.scalatest % "provided"
   )
 

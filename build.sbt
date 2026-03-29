@@ -181,8 +181,10 @@ lazy val core = (project in file("core"))
     commonSettings,
     publishSettings,
     name := "mockito-scala",
+    crossScalaVersions += scala3Version,
     libraryDependencies ++= Dependencies.commonLibraries,
     libraryDependencies ++= Dependencies.scalaReflection.value,
+    libraryDependencies += Dependencies.scalatest % Test,
     // include the macro classes and resources in the main jar
     Compile / packageBin / mappings ++= (macroSub / Compile / packageBin / mappings).value,
     // include the macro sources in the main source jar

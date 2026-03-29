@@ -708,6 +708,38 @@ class PostfixVerificationsTest extends AnyWordSpec with IdiomaticMockitoTestSetu
       a[WantedButNotInvoked] should be thrownBy (aMock.varargMethod(1, 2) was called)
     }
 
+    "work with mixed java varargs (fixed prefix argument + Integer... values)" in {
+      val aMock = mock[JavaFoo]
+
+      aMock.mixedVarargMethod("hello", 1, 2, 3) returns 42
+
+      aMock.mixedVarargMethod("hello", 1, 2, 3) shouldBe 42
+
+      aMock.mixedVarargMethod("hello", 1, 2, 3) was called
+      a[WantedButNotInvoked] should be thrownBy (aMock.mixedVarargMethod("hello", 1, 2) was called)
+    }
+
+    "work with mixed java varargs (fixed prefix argument + Object... values)" in {
+      val aMock = mock[JavaFoo]
+
+      aMock.mixedObjectVarargMethod("from", "me") returns 42
+
+      aMock.mixedObjectVarargMethod("from", "me") shouldBe 42
+
+      aMock.mixedObjectVarargMethod("from", "me") was called
+      a[WantedButNotInvoked] should be thrownBy (aMock.mixedObjectVarargMethod("from") was called)
+    }
+
+    "work with mixed java varargs (Object...) stubbed with matchers, verified with exact values" in {
+      val aMock = mock[JavaFoo]
+
+      aMock.mixedObjectVarargMethod(any[String], any[AnyRef]) returns 42
+
+      aMock.mixedObjectVarargMethod("from", "me") shouldBe 42
+
+      aMock.mixedObjectVarargMethod("from", "me") was called
+    }
+
     "work when getting varargs from collections" in {
       val aMock = mock[Baz]
       val args  = List(1, 2, 3)

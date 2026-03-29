@@ -397,6 +397,17 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
       a[WantedButNotInvoked] should be thrownBy verify(aMock).varargMethod(1, 2)
     }
 
+    "work with mixed java varargs (fixed prefix argument + Integer... values)" in {
+      val aMock = mock[JavaFoo]
+
+      when(aMock.mixedVarargMethod("hello", 1, 2, 3)) thenReturn 42
+
+      aMock.mixedVarargMethod("hello", 1, 2, 3) shouldBe 42
+
+      verify(aMock).mixedVarargMethod("hello", 1, 2, 3)
+      a[WantedButNotInvoked] should be thrownBy verify(aMock).mixedVarargMethod("hello", 1, 2)
+    }
+
     "stop the user passing traits in the settings" in {
       a[IllegalArgumentException] should be thrownBy
       mock[Foo](withSettings.extraInterfaces(classOf[Baz]))
@@ -419,6 +430,19 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
       aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
 
+      verify(aMock).varargMethod("hola", 1, 2, 3)
+    }
+
+    "stub both overloads of a vararg method independently" in {
+      val aMock = mock[Baz]
+
+      when(aMock.varargMethod(1, 2, 3)) thenReturn 10
+      when(aMock.varargMethod("hola", 1, 2, 3)) thenReturn 42
+
+      aMock.varargMethod(1, 2, 3) shouldBe 10
+      aMock.varargMethod("hola", 1, 2, 3) shouldBe 42
+
+      verify(aMock).varargMethod(1, 2, 3)
       verify(aMock).varargMethod("hola", 1, 2, 3)
     }
 

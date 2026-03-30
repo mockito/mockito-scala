@@ -7,7 +7,7 @@ import org.scalatest.{ AsyncTestSuite, FutureOutcome }
  *
  * Just mix-in after your favourite suite, i.e. {{{class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachAsyncTest}}}
  */
-trait ResetMocksAfterEachAsyncTest extends AsyncTestSuite with ResetMocksAfterEachTestCompat {
+trait ResetMocksAfterEachAsyncTest extends AsyncTestSuite with ResetMocksAfterEachTestBase {
 
   override def withFixture(test: NoArgAsyncTest): FutureOutcome =
     super.withFixture(test).onCompletedThen(_ => resetAll())

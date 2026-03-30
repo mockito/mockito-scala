@@ -68,7 +68,9 @@ class ReturnsEmptyValuesTest extends AnyWordSpec with Matchers with IdiomaticMoc
       aMock.returnsBigDecimal shouldBe BigDecimal(0)
       aMock.returnsBigInt shouldBe BigInt(0)
       aMock.returnsStringBuilder shouldBe new StringBuilder
-      aMock.returnsEither shouldBe Left("Auto stub provided by mockito-scala")
+      // Scala 3 is stricter about the types
+      aMock.returnsEither shouldBe a[Left[?, ?]]
+      aMock.returnsEither.left.getOrElse("") shouldBe "Auto stub provided by mockito-scala"
       aMock.returnsMap shouldBe Map.empty
       aMock.returnsMutableSeq shouldBe ListBuffer.empty
       aMock.returnsListBuffer shouldBe ListBuffer.empty

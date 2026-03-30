@@ -7,7 +7,7 @@ import org.scalatest.{ Outcome, TestSuite }
  *
  * Just mix-in after your favourite suite, i.e. {{{class MyTest extends PlaySpec with MockitoSugar with ResetMocksAfterEachTest}}}
  */
-trait ResetMocksAfterEachTest extends TestSuite with ResetMocksAfterEachTestCompat {
+trait ResetMocksAfterEachTest extends TestSuite with ResetMocksAfterEachTestBase {
 
   override protected def withFixture(test: NoArgTest): Outcome = {
     val outcome = super.withFixture(test)

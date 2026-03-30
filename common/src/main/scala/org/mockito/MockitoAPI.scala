@@ -86,7 +86,7 @@ private[mockito] trait MockCreatorRuntime {
 }
 
 //noinspection MutatorLikeMethodIsParameterless
-private[mockito] trait DoSomething extends DoSomethingCompat {
+private[mockito] trait DoSomething {
 
   /**
    * Delegates the call to <code>Mockito.doReturn(toBeReturned, toBeReturnedNext)</code> but fixes the following compiler issue that happens because the overloaded vararg on the

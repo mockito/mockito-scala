@@ -255,4 +255,67 @@ object DoSomethingMacro {
     val transformed = transformInvocation(stubbing.asTerm, action, hoisted)
     (if (hoisted.nonEmpty) Block(hoisted.toList, transformed) else transformed).asExprOf[A]
   }
+
+  /**
+   * Variant of answeredByThunkMacro that wraps the answer result through a transform function. Used by cats/scalaz modules where the answer must be lifted into F[_] via e.g.
+   * Applicative.pure.
+   */
+  inline def answeredByWrappedThunkMacro[T, S](inline valueThunk: () => T, inline stubbing: S, inline wrap: Any => Any): S =
+    ${ answeredByWrappedThunkImpl[T, S]('valueThunk, 'stubbing, 'wrap) }
+
+  private def answeredByWrappedThunkImpl[T: Type, S: Type](
+      valueThunk: Expr[() => T],
+      stubbing: Expr[S],
+      wrap: Expr[Any => Any]
+  )(using Quotes): Expr[S] = {
+    import quotes.reflect.*
+
+    val v: Expr[T]   = '{ $valueThunk() }
+    val tRepr        = TypeRepr.of[T].dealias.widen
+    val functionInfo = extractFunctionInfo(tRepr)
+
+    val doAnswerCall = functionInfo match {
+      case Some((List(paramType), _)) if paramType <:< TypeRepr.of[org.mockito.invocation.InvocationOnMock] =>
+        '{
+          org.mockito.Mockito.doAnswer(
+            org.mockito.stubbing.ScalaAnswer.lift[Any](invocation => $wrap(${ Select.unique(v.asTerm, "apply").appliedTo('invocation.asTerm).asExprOf[Any] }))
+          )
+        }.asTerm
+      case Some((paramTypes, retType)) =>
+        val answerExpr = buildWrappedFunctionAnswer(v, paramTypes, retType, wrap)
+        '{ org.mockito.Mockito.doAnswer($answerExpr) }.asTerm
+      case None =>
+        '{ org.mockito.Mockito.doAnswer(org.mockito.stubbing.ScalaAnswer.lift[Any](_ => $wrap($v))) }.asTerm
+    }
+    doTransformInvocation[S](stubbing, doAnswerCall)
+  }
+
+  private def buildWrappedFunctionAnswer[T: Type](using
+      Quotes
+  )(
+      fn: Expr[T],
+      paramTypes: List[quotes.reflect.TypeRepr],
+      retType: quotes.reflect.TypeRepr,
+      wrap: Expr[Any => Any]
+  ): Expr[ScalaAnswer[Any]] = {
+    import quotes.reflect.*
+
+    '{
+      org.mockito.stubbing.ScalaAnswer.lift[Any] { invocation =>
+        $wrap {
+          ${
+            val fnTerm   = fn.asTerm
+            val argExprs = paramTypes.zipWithIndex.map { case (pt, i) =>
+              pt.asType match {
+                case '[p] =>
+                  val idxExpr = Expr(i)
+                  '{ org.mockito.internal.ValueClassWrapper[p].wrapAs[p](invocation.getArgument($idxExpr)) }.asTerm
+              }
+            }
+            Select.unique(fnTerm, "apply").appliedToArgs(argExprs).asExprOf[Any]
+          }
+        }
+      }
+    }
+  }
 }

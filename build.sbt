@@ -139,6 +139,7 @@ lazy val cats = (project in file("cats"))
     name := "mockito-scala-cats",
     commonSettings,
     publishSettings,
+    crossScalaVersions += scala3Version,
     libraryDependencies ++= Seq(
       Dependencies.cats,
       Dependencies.catsLaws            % "test",
@@ -155,6 +156,7 @@ lazy val scalaz = (project in file("scalaz"))
     name := "mockito-scala-scalaz",
     commonSettings,
     publishSettings,
+    crossScalaVersions += scala3Version,
     libraryDependencies ++= Seq(
       Dependencies.scalaz,
       Dependencies.scalatest % "test"

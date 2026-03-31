@@ -8,8 +8,6 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import scala.collection.parallel.immutable
-import scala.concurrent.{ Await, Future }
-import scala.util.Random
 
 class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
@@ -144,6 +142,30 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
 
         aMock.returnBar shouldBe a[Bar]
         aMock.returnBar shouldBe a[Bar]
+      }
+
+      "stub a null reference return value (infix)" in {
+        val aMock = orgDouble()
+
+        aMock.returnBar returns null
+
+        aMock.returnBar shouldBe null
+      }
+
+      "stub a null String return value" in {
+        val aMock = orgDouble()
+
+        aMock.bar returns null
+
+        aMock.bar shouldBe null
+      }
+
+      "stub a null String return value via answers" in {
+        val aMock = orgDouble()
+
+        aMock.bar answers (null: String)
+
+        aMock.bar shouldBe null
       }
 
       "stub a high order function" in {

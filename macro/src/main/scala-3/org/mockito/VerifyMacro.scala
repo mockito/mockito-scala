@@ -79,16 +79,6 @@ object VerifyMacro {
     wrapInVerification(wrappedCall.asTerm).asExprOf[R]
   }
 
-  /** Build `order.verifyWithMode[ObjType](obj, times)` — replaces the mock object with a verifying proxy */
-  private def buildVerifiedObj(using Quotes)(obj: quotes.reflect.Term, order: quotes.reflect.Term, times: quotes.reflect.Term): quotes.reflect.Term = {
-    import quotes.reflect.*
-    val objType = obj.tpe.widen.asType
-    Apply(
-      TypeApply(Select.unique(order, "verifyWithMode"), List(TypeTree.of(using objType))),
-      List(obj, times)
-    )
-  }
-
   /**
    * Collect hoisted statements, transform the invocation, wrap in `verification(...)`, and prepend any hoisted bindings.
    */

@@ -379,14 +379,13 @@ object Utils {
   }
 
   /**
-   * Walk the splice-owner chain (and each class's companion module) to find a method named `"verification"`. Returns `(ownerSymbol, methodSymbol, useThis)` where `useThis=true`
-   * means the owner is an enclosing class (generate `This(owner).verification(...)`) and `useThis=false` means the owner is a companion module (generate
-   * `Ref(owner).verification(...)`).
+   * Walk the splice-owner chain (and each class's companion module) to find a method with the given name. Returns `(ownerSymbol, methodSymbol, useThis)` where `useThis=true` means
+   * the owner is an enclosing class (generate `This(owner).method(...)`) and `useThis=false` means the owner is a companion module (generate `Ref(owner).method(...)`).
    *
-   * Checking companion modules is needed because in Scala 2 `q"verification(...)"` resolves naturally through scoping (which includes companion objects), while in Scala 3 the
-   * macro builds the AST explicitly and must search for it manually.
+   * Checking companion modules is needed because in Scala 2 quasiquotes resolve through scoping (which includes companion objects), while in Scala 3 the macro builds the AST
+   * explicitly and must search for it manually.
    */
-  private[mockito] def findVerificationSymbol(using Quotes): Option[(quotes.reflect.Symbol, quotes.reflect.Symbol, Boolean)] = {
+  private[mockito] def findMethodInScope(using Quotes)(methodName: String): Option[(quotes.reflect.Symbol, quotes.reflect.Symbol, Boolean)] = {
     import quotes.reflect.*
     Iterator
       .iterate(Symbol.spliceOwner)(_.owner)
@@ -394,7 +393,7 @@ object Utils {
       .flatMap { current =>
         val fromSelf =
           try {
-            val methods = current.methodMembers.filter(_.name == "verification")
+            val methods = current.methodMembers.filter(_.name == methodName)
             if (methods.nonEmpty) Some((current, methods.head, true)) else None
           } catch { case _: Exception => None }
         fromSelf.orElse {
@@ -404,7 +403,7 @@ object Utils {
               val companion = current.companionModule
               if (companion == Symbol.noSymbol) None
               else {
-                val companionMethods = companion.methodMembers.filter(_.name == "verification")
+                val companionMethods = companion.methodMembers.filter(_.name == methodName)
                 if (companionMethods.nonEmpty) Some((companion, companionMethods.head, false)) else None
               }
             } catch { case _: Exception => None }
@@ -413,18 +412,34 @@ object Utils {
       .nextOption()
   }
 
-  /**
-   * Wrap a verification call tree in the `verification(...)` method found by [[findVerificationSymbol]]. Uses `This(owner).verification(call)` for enclosing-class owners and
-   * `Ref(owner).verification(call)` for companion-module owners.
-   */
-  private[mockito] def wrapInVerification(using Quotes)(call: quotes.reflect.Term): quotes.reflect.Term = {
+  private[mockito] def findVerificationSymbol(using Quotes): Option[(quotes.reflect.Symbol, quotes.reflect.Symbol, Boolean)] =
+    findMethodInScope("verification")
+
+  /** Find a method by name in the enclosing scope and apply it to the given arguments. Aborts compilation if the method is not found. */
+  private[mockito] def callMethodInScope(using Quotes)(methodName: String, args: List[quotes.reflect.Term]): quotes.reflect.Term = {
     import quotes.reflect.*
-    findVerificationSymbol match {
+    findMethodInScope(methodName) match {
       case Some((owner, method, useThis)) =>
         val receiver = if (useThis) This(owner) else Ref(owner)
-        Apply(Select(receiver, method), List(call))
+        Apply(Select(receiver, method), args)
       case None =>
-        report.errorAndAbort(s"Could not find 'verification' method in scope. Searched from: ${Symbol.spliceOwner.fullName}")
+        report.errorAndAbort(s"Could not find '$methodName' method in scope. Searched from: ${Symbol.spliceOwner.fullName}")
     }
+  }
+
+  /** Wrap a verification call tree in the `verification(...)` method found in the enclosing scope. */
+  private[mockito] def wrapInVerification(using Quotes)(call: quotes.reflect.Term): quotes.reflect.Term =
+    callMethodInScope("verification", List(call))
+
+  /** Build `order.verifyWithMode[ObjType](obj, mode)` — replaces the mock object with a verifying proxy. */
+  private[mockito] def buildVerifiedObj(using
+      Quotes
+  )(obj: quotes.reflect.Term, order: quotes.reflect.Term, mode: quotes.reflect.Term): quotes.reflect.Term = {
+    import quotes.reflect.*
+    val objType = obj.tpe.widen.asType
+    Apply(
+      TypeApply(Select.unique(order, "verifyWithMode"), List(TypeTree.of(using objType))),
+      List(obj, mode)
+    )
   }
 }

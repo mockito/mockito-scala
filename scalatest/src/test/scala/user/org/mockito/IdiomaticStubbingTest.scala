@@ -9,6 +9,12 @@ import org.scalatest.wordspec.AnyWordSpec
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
 import scala.collection.parallel.immutable
 
+trait PolymorphicCodec[A]
+case class PolymorphicResponse[A](body: A)
+trait PolymorphicClient {
+  def request[A](path: String)(implicit codec: PolymorphicCodec[A]): Either[String, PolymorphicResponse[A]]
+}
+
 class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
   forAll(scenarios) { (testDouble, orgDouble, foo) =>
@@ -359,6 +365,40 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
   }
 
   "mock" should {
+    "infer the type parameter for shouldReturn on a polymorphic method from the returned value" in {
+      implicit object StringCodec extends PolymorphicCodec[String]
+
+      def stubResponse[A](
+          client: PolymorphicClient,
+          response: Either[String, PolymorphicResponse[A]]
+      )(implicit codec: PolymorphicCodec[A]): org.mockito.stubbing.ScalaOngoingStubbing[Either[String, PolymorphicResponse[A]]] =
+        client.request("path")(*) shouldReturn response
+
+      val client   = mock[PolymorphicClient]
+      val expected = Right(PolymorphicResponse("ok")): Either[String, PolymorphicResponse[String]]
+
+      stubResponse(client, expected)
+
+      client.request[String]("path") shouldBe expected
+    }
+
+    "infer the type parameter for mustReturn on a polymorphic method from the returned value" in {
+      implicit object StringCodec extends PolymorphicCodec[String]
+
+      def stubResponse[A](
+          client: PolymorphicClient,
+          response: Either[String, PolymorphicResponse[A]]
+      )(implicit codec: PolymorphicCodec[A]): org.mockito.stubbing.ScalaOngoingStubbing[Either[String, PolymorphicResponse[A]]] =
+        client.request("path")(*) mustReturn response
+
+      val client   = mock[PolymorphicClient]
+      val expected = Right(PolymorphicResponse("ok")): Either[String, PolymorphicResponse[String]]
+
+      stubResponse(client, expected)
+
+      client.request[String]("path") shouldBe expected
+    }
+
     "stub a map" in {
       val mocked = mock[Map[String, String]]
       mocked(*) returns "123"

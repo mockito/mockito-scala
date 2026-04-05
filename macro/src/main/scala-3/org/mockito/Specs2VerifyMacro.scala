@@ -1,7 +1,7 @@
 package org.mockito
 
 import org.mockito.MacroConstants.WordsToNumbers
-import org.mockito.Utils.{ buildVerifiedObj, callMethodInScope, transformArgsForApply, wrapInVerification }
+import org.mockito.Utils.{ buildVerifiedObj, callMethodInScope, stripWrappers, transformArgsForApply, wrapInVerification }
 import org.mockito.verification.VerificationMode
 
 import scala.quoted.*
@@ -58,12 +58,6 @@ object Specs2VerifyMacro {
   ): Option[quotes.reflect.Term] = {
     import quotes.reflect.*
 
-    def strip(t: Term): Term = t match {
-      case Inlined(_, _, body) => strip(body)
-      case Block(Nil, expr)    => strip(expr)
-      case other               => other
-    }
-
     def buildMode(name: String, times: Term): Term =
       name.toLowerCase match {
         case "exactly" => '{ Times(${ times.asExprOf[Int] }) }.asTerm
@@ -71,7 +65,7 @@ object Specs2VerifyMacro {
         case "atmost"  => '{ AtMost(${ times.asExprOf[Int] }) }.asTerm
       }
 
-    def extractModeAndMock(t: Term): Option[(Term, Term)] = strip(t) match {
+    def extractModeAndMock(t: Term): Option[(Term, Term)] = stripWrappers(t) match {
       case Inlined(_, _, body) =>
         extractModeAndMock(body)
 
@@ -168,7 +162,7 @@ object Specs2VerifyMacro {
         other
     }
 
-    strip(term) match {
+    stripWrappers(term) match {
       case Apply(TypeApply(Select(_, "noCallsTo"), _), List(obj)) =>
         Some(zeroInteractions(obj))
       case Apply(Select(_, "noCallsTo"), List(obj)) =>
@@ -205,7 +199,7 @@ object Specs2VerifyMacro {
       case Apply(fun, args)    => loop(fun) || args.exists(loop)
       case TypeApply(fun, _)   => loop(fun)
       case Select(qual, name)  => Specs2DslNames.contains(name) || loop(qual)
-      case _ => false
+      case _                   => false
     }
 
     loop(term)

@@ -2,7 +2,6 @@ package org.mockito
 
 import org.mockito.Utils.*
 
-import scala.collection.mutable
 import scala.quoted.*
 
 /**
@@ -86,29 +85,6 @@ object ExpectMacro {
     Expr(detectIgnoringStubsInCalls(callsExpr.asTerm))
   }
 
-  /** Strip `Inlined` and empty `Block(Nil, expr)` wrappers from a term */
-  private def stripWrappers(using Quotes)(t: quotes.reflect.Term): quotes.reflect.Term = {
-    import quotes.reflect.*
-    t match {
-      case Inlined(_, _, body) => stripWrappers(body)
-      case Block(Nil, expr)    => stripWrappers(expr)
-      case other               => other
-    }
-  }
-
-  /** Build `order.verifyWithMode[ObjType](obj, times)` — replaces the mock object with a verifying proxy */
-  private def buildVerifiedObj(using Quotes)(obj: quotes.reflect.Term, order: quotes.reflect.Term, times: quotes.reflect.Term): quotes.reflect.Term = {
-    import quotes.reflect.*
-    val objType = obj.tpe.widen.asType
-    Apply(
-      TypeApply(Select.unique(order, "verifyWithMode"), List(TypeTree.of(using objType))),
-      List(obj, times)
-    )
-  }
-
-  /**
-   * Collect hoisted statements, transform the method invocation through `order.verifyWithMode`, wrap in `verification(...)`, and prepend any hoisted bindings.
-   */
   private def transformExpectation(using
       Quotes
   )(
@@ -117,60 +93,7 @@ object ExpectMacro {
       mode: Expr[ScalaVerificationMode]
   ): quotes.reflect.Term = {
     import quotes.reflect.*
-    val hoisted    = mutable.ListBuffer.empty[Statement]
-    val verifyCall = transformInvocation(invocation, order.asTerm, mode.asTerm, hoisted)
-    val verifyExpr = wrapInVerification(verifyCall)
-    if (hoisted.nonEmpty) Block(hoisted.toList, verifyExpr) else verifyExpr
-  }
-
-  /**
-   * Transform invocation: `obj.method(args)` → `order.verifyWithMode(obj, mode).method(transformedArgs)`
-   */
-  private def transformInvocation(using
-      Quotes
-  )(
-      invocation: quotes.reflect.Term,
-      order: quotes.reflect.Term,
-      times: quotes.reflect.Term,
-      hoisted: mutable.ListBuffer[quotes.reflect.Statement],
-      matcherValNames: Set[String] = Set.empty
-  ): quotes.reflect.Term = {
-    import quotes.reflect.*
-
-    invocation match {
-      case Block(stats, expr) =>
-        transformBlock(stats, expr, matcherValNames)((e, mvs) => transformInvocation(e, order, times, hoisted, mvs))
-
-      case inlined: Inlined =>
-        transformInvocation(inlined.body, order, times, hoisted, matcherValNames)
-
-      case Apply(select @ Select(obj, _), args) =>
-        Apply(
-          Select(buildVerifiedObj(obj, order, times), select.symbol),
-          transformArgsForApply(select, args, hoisted, matcherValNames)
-        )
-
-      case Apply(TypeApply(select @ Select(obj, _), targs), args) =>
-        Apply(
-          TypeApply(Select(buildVerifiedObj(obj, order, times), select.symbol), targs),
-          transformArgsForApply(TypeApply(select, targs), args, hoisted, matcherValNames)
-        )
-
-      case select @ Select(obj, _) =>
-        Select(buildVerifiedObj(obj, order, times), select.symbol)
-
-      case TypeApply(select @ Select(obj, _), targs) =>
-        TypeApply(Select(buildVerifiedObj(obj, order, times), select.symbol), targs)
-
-      case Apply(fun, args) =>
-        Apply(
-          transformInvocation(fun, order, times, hoisted, matcherValNames),
-          transformArgsForApply(fun, args, hoisted, matcherValNames)
-        )
-
-      case other =>
-        report.errorAndAbort(s"Could not transform expect invocation: ${other.show}")
-    }
+    hoistAndVerify(invocation, order.asTerm, mode.asTerm)
   }
 
   private def transformNoInteractionsExpectation(using Quotes)(mock: quotes.reflect.Term): quotes.reflect.Term = {

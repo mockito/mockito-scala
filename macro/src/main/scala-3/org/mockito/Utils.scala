@@ -431,6 +431,16 @@ object Utils {
   private[mockito] def wrapInVerification(using Quotes)(call: quotes.reflect.Term): quotes.reflect.Term =
     callMethodInScope("verification", List(call))
 
+  /** Strip `Inlined` and empty `Block(Nil, expr)` wrappers from a term. */
+  private[mockito] def stripWrappers(using Quotes)(t: quotes.reflect.Term): quotes.reflect.Term = {
+    import quotes.reflect.*
+    t match {
+      case Inlined(_, _, body) => stripWrappers(body)
+      case Block(Nil, expr)    => stripWrappers(expr)
+      case other               => other
+    }
+  }
+
   /** Build `order.verifyWithMode[ObjType](obj, mode)` — replaces the mock object with a verifying proxy. */
   private[mockito] def buildVerifiedObj(using
       Quotes
@@ -441,5 +451,66 @@ object Utils {
       TypeApply(Select.unique(order, "verifyWithMode"), List(TypeTree.of(using objType))),
       List(obj, mode)
     )
+  }
+
+  /**
+   * Transform a verification invocation: `obj.method(args)` → `order.verifyWithMode(obj, mode).method(transformedArgs)`. Shared by [[VerifyMacro]] and [[ExpectMacro]].
+   */
+  private[mockito] def transformVerifyInvocation(using
+      Quotes
+  )(
+      invocation: quotes.reflect.Term,
+      order: quotes.reflect.Term,
+      mode: quotes.reflect.Term,
+      hoisted: mutable.ListBuffer[quotes.reflect.Statement],
+      matcherValNames: Set[String] = Set.empty
+  ): quotes.reflect.Term = {
+    import quotes.reflect.*
+
+    invocation match {
+      case Block(stats, expr) =>
+        transformBlock(stats, expr, matcherValNames)((e, mvs) => transformVerifyInvocation(e, order, mode, hoisted, mvs))
+
+      case Inlined(_, _, body) =>
+        transformVerifyInvocation(body, order, mode, hoisted, matcherValNames)
+
+      case Apply(select @ Select(obj, _), args) =>
+        Apply(
+          Select(buildVerifiedObj(obj, order, mode), select.symbol),
+          transformArgsForApply(select, args, hoisted, matcherValNames)
+        )
+
+      case Apply(TypeApply(select @ Select(obj, _), targs), args) =>
+        Apply(
+          TypeApply(Select(buildVerifiedObj(obj, order, mode), select.symbol), targs),
+          transformArgsForApply(TypeApply(select, targs), args, hoisted, matcherValNames)
+        )
+
+      case select @ Select(obj, _) =>
+        Select(buildVerifiedObj(obj, order, mode), select.symbol)
+
+      case TypeApply(select @ Select(obj, _), targs) =>
+        TypeApply(Select(buildVerifiedObj(obj, order, mode), select.symbol), targs)
+
+      case Apply(fun, args) =>
+        Apply(
+          transformVerifyInvocation(fun, order, mode, hoisted, matcherValNames),
+          transformArgsForApply(fun, args, hoisted, matcherValNames)
+        )
+
+      case other =>
+        report.errorAndAbort(s"Could not transform verification invocation: ${other.show}")
+    }
+  }
+
+  /** Collect hoisted statements, transform an invocation for verification, wrap in `verification(...)`, and prepend any hoisted bindings. */
+  private[mockito] def hoistAndVerify(using
+      Quotes
+  )(invocation: quotes.reflect.Term, order: quotes.reflect.Term, mode: quotes.reflect.Term): quotes.reflect.Term = {
+    import quotes.reflect.*
+    val hoisted     = mutable.ListBuffer.empty[Statement]
+    val transformed = transformVerifyInvocation(invocation, order, mode, hoisted)
+    val verifyExpr  = wrapInVerification(transformed)
+    if (hoisted.nonEmpty) Block(hoisted.toList, verifyExpr) else verifyExpr
   }
 }

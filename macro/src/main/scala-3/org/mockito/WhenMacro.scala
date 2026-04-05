@@ -1,7 +1,6 @@
 package org.mockito
 
 import org.mockito.Utils.*
-import org.mockito.WhenDslKeywords.*
 import org.mockito.WhenMacroRuntime.{ AnswerActions, AnswerPFActions, RealMethod }
 import org.mockito.stubbing.{ OngoingStubbing, ScalaFirstStubbing, ScalaOngoingStubbing }
 import org.scalactic.Prettifier
@@ -68,22 +67,6 @@ object WhenMacro {
     buildActionWrapper[T]("org.mockito.WhenMacroRuntime.AnswerPFActions", buildScalaFirstStubbing[T](stubbing))
   }
 
-  inline def shouldReturn[T, R](inline stubbing: => T, inline v: => R)(using $pt: Prettifier): OngoingStubbing[T] =
-    ${ shouldReturnImpl[T, R]('stubbing, 'v, '$pt) }
-
-  def shouldReturnImpl[T: Type, R: Type](
-      stubbing: Expr[T],
-      v: Expr[R],
-      pt: Expr[Prettifier]
-  )(using Quotes): Expr[OngoingStubbing[T]] = {
-    import quotes.reflect.*
-    val returnActionsClass = Symbol.requiredClass("org.mockito.IdiomaticMockitoBaseRuntime.ReturnActions")
-    Apply(
-      Select.overloaded(New(TypeTree.ref(returnActionsClass)), "<init>", List(TypeRepr.of[T]), Nil),
-      List(buildScalaFirstStubbing[T](stubbing))
-    ).asExprOf[OngoingStubbing[T]]
-  }
-
   inline def isLenient[T](inline stubbing: => T)(using $pt: Prettifier): ScalaFirstStubbing[T] =
     ${ isLenientImpl[T]('stubbing, '$pt) }
 
@@ -108,46 +91,6 @@ object WhenMacro {
   )(using Quotes): Expr[ScalaOngoingStubbing[T]] = {
     val transformed = doTransformInvocation(stubbing)
     '{ new ScalaOngoingStubbing[T](org.mockito.Mockito.when[T]($transformed).thenCallRealMethod()) }
-  }
-
-  inline def shouldThrow[T](inline stubbing: => T, inline throwables: Throwable*)(using $pt: Prettifier): OngoingStubbing[T] =
-    ${ shouldThrowImpl[T]('stubbing, 'throwables, '$pt) }
-
-  def shouldThrowImpl[T: Type](
-      stubbing: Expr[T],
-      throwables: Expr[Seq[Throwable]],
-      pt: Expr[Prettifier]
-  )(using Quotes): Expr[OngoingStubbing[T]] = {
-    import quotes.reflect.*
-    val throwActionsClass = Symbol.requiredClass("org.mockito.IdiomaticMockitoBaseRuntime.ThrowActions")
-    Apply(
-      Select.overloaded(New(TypeTree.ref(throwActionsClass)), "<init>", List(TypeRepr.of[T]), Nil),
-      List(buildScalaFirstStubbing[T](stubbing))
-    ).asExprOf[OngoingStubbing[T]]
-  }
-
-  inline def shouldAnswer[T, P1, R](inline stubbing: => T, inline f: Any)(using $pt: Prettifier): AnswerActions[T] =
-    ${ shouldAnswerImpl[T, P1, R]('stubbing, 'f, '$pt) }
-
-  def shouldAnswerImpl[T: Type, P1: Type, R: Type](
-      stubbing: Expr[T],
-      f: Expr[Any],
-      pt: Expr[Prettifier]
-  )(using Quotes): Expr[AnswerActions[T]] = {
-    val transformed = doTransformInvocation(stubbing)
-    '{ new WhenMacroRuntime.AnswerActions[T](org.mockito.Mockito.when[T]($transformed)) }
-  }
-
-  inline def shouldAnswerPF[T, P, R](inline stubbing: => T, inline f: PartialFunction[P, R])(using $pt: Prettifier): AnswerPFActions[T] =
-    ${ shouldAnswerPFImpl[T, P, R]('stubbing, 'f, '$pt) }
-
-  def shouldAnswerPFImpl[T: Type, P: Type, R: Type](
-      stubbing: Expr[T],
-      f: Expr[PartialFunction[P, R]],
-      pt: Expr[Prettifier]
-  )(using Quotes): Expr[AnswerPFActions[T]] = {
-    val transformed = doTransformInvocation(stubbing)
-    '{ new WhenMacroRuntime.AnswerPFActions[T](org.mockito.Mockito.when[T]($transformed)) }
   }
 
   /**

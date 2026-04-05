@@ -3,7 +3,6 @@ package org.mockito
 import org.mockito.Utils.*
 import org.mockito.VerifyMacroRuntime.{ Never, NeverAgain, Once }
 
-import scala.collection.mutable
 import scala.quoted.*
 
 /**
@@ -79,66 +78,8 @@ object VerifyMacro {
     wrapInVerification(wrappedCall.asTerm).asExprOf[R]
   }
 
-  /**
-   * Collect hoisted statements, transform the invocation, wrap in `verification(...)`, and prepend any hoisted bindings.
-   */
-  private def transformVerification(using Quotes)(invocation: quotes.reflect.Term, order: quotes.reflect.Term, times: quotes.reflect.Term): quotes.reflect.Term = {
-    import quotes.reflect.*
-    val hoisted     = mutable.ListBuffer.empty[Statement]
-    val transformed = transformInvocation(invocation, order, times, hoisted)
-    val verifyExpr  = wrapInVerification(transformed)
-    if (hoisted.nonEmpty) Block(hoisted.toList, verifyExpr) else verifyExpr
-  }
-
-  /**
-   * Transform invocation: `obj.method(args)` → `order.verifyWithMode(obj, times).method(transformedArgs)`
-   */
-  private def transformInvocation(using
-      Quotes
-  )(
-      invocation: quotes.reflect.Term,
-      order: quotes.reflect.Term,
-      times: quotes.reflect.Term,
-      hoisted: mutable.ListBuffer[quotes.reflect.Statement],
-      matcherValNames: Set[String] = Set.empty
-  ): quotes.reflect.Term = {
-    import quotes.reflect.*
-
-    invocation match {
-      case Block(stats, expr) =>
-        transformBlock(stats, expr, matcherValNames)((e, mvs) => transformInvocation(e, order, times, hoisted, mvs))
-
-      case Inlined(_, _, expansion) =>
-        transformInvocation(expansion, order, times, hoisted, matcherValNames)
-
-      case Apply(select @ Select(obj, _), args) =>
-        Apply(
-          Select(buildVerifiedObj(obj, order, times), select.symbol),
-          transformArgsForApply(select, args, hoisted, matcherValNames)
-        )
-
-      case Apply(TypeApply(select @ Select(obj, _), targs), args) =>
-        Apply(
-          TypeApply(Select(buildVerifiedObj(obj, order, times), select.symbol), targs),
-          transformArgsForApply(TypeApply(select, targs), args, hoisted, matcherValNames)
-        )
-
-      case select @ Select(obj, _) =>
-        Select(buildVerifiedObj(obj, order, times), select.symbol)
-
-      case TypeApply(select @ Select(obj, _), targs) =>
-        TypeApply(Select(buildVerifiedObj(obj, order, times), select.symbol), targs)
-
-      case Apply(fun, args) =>
-        Apply(
-          transformInvocation(fun, order, times, hoisted, matcherValNames),
-          transformArgsForApply(fun, args, hoisted, matcherValNames)
-        )
-
-      case other =>
-        report.errorAndAbort(s"Could not transform verification invocation: ${other.show}")
-    }
-  }
+  private def transformVerification(using Quotes)(invocation: quotes.reflect.Term, order: quotes.reflect.Term, times: quotes.reflect.Term): quotes.reflect.Term =
+    hoistAndVerify(invocation, order, times)
 
   /** Detect if a `calledAgain(...)` expression is the lenient variant (i.e. `calledAgain(ignoringStubs)`) by inspecting the AST. */
   private def detectIgnoringStubs(using Quotes)(term: quotes.reflect.Term): Boolean = {

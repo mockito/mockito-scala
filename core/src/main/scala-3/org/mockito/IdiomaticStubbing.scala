@@ -3,7 +3,6 @@ package org.mockito
 import org.mockito.WhenMacroRuntime.{ AnswerActions, AnswerPFActions, RealMethod }
 import org.mockito.stubbing.ScalaOngoingStubbing
 import scala.quoted.*
-
 import org.mockito.WhenMacro
 import org.mockito.DoSomethingMacro
 
@@ -16,9 +15,13 @@ trait IdiomaticStubbing extends IdiomaticStubbingRuntime {
   val called: Called.type = Called
 
   extension [T](inline stubbing: T) {
-    transparent inline def shouldReturn: ReturnActions[T] = WhenMacro.shouldReturn[T](stubbing).asInstanceOf[ReturnActions[T]]
-    transparent inline def mustReturn: ReturnActions[T]   = WhenMacro.shouldReturn[T](stubbing).asInstanceOf[ReturnActions[T]]
-    transparent inline def returns: ReturnActions[T]      = WhenMacro.shouldReturn[T](stubbing).asInstanceOf[ReturnActions[T]]
+    transparent inline def shouldReturn: ReturnActions[T]                        = WhenMacro.shouldReturn[T](stubbing).asInstanceOf[ReturnActions[T]]
+    transparent inline def mustReturn: ReturnActions[T]                          = WhenMacro.shouldReturn[T](stubbing).asInstanceOf[ReturnActions[T]]
+    transparent inline def returns: ReturnActions[T]                             = WhenMacro.shouldReturn[T](stubbing).asInstanceOf[ReturnActions[T]]
+    transparent inline infix def shouldReturn(value: T): ScalaOngoingStubbing[T] =
+      WhenMacro.shouldReturn[T](stubbing).asInstanceOf[ReturnActions[T]](value)
+    transparent inline infix def mustReturn(value: T): ScalaOngoingStubbing[T] =
+      WhenMacro.shouldReturn[T](stubbing).asInstanceOf[ReturnActions[T]](value)
 
     transparent inline def shouldCall(crm: RealMethod.type): ScalaOngoingStubbing[T] = WhenMacro.shouldCallRealMethod[T](stubbing)(using org.scalactic.Prettifier.default)
     transparent inline def mustCall(crm: RealMethod.type): ScalaOngoingStubbing[T]   = WhenMacro.shouldCallRealMethod[T](stubbing)(using org.scalactic.Prettifier.default)

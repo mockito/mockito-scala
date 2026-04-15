@@ -18,17 +18,22 @@ apply from: "gradle/shipkit.gradle"
 
 apply plugin: "maven-publish"
 
+def publishableModules = [
+        "mockito-scala",
+        "mockito-scala-cats",
+        "mockito-scala-scalatest",
+        "mockito-scala-scalaz",
+        "mockito-scala-specs2",
+]
+def scalaBinarySuffixes = ["_2.12", "_2.13", "_3"]
+
 def pubNames = []
 publishing {
 publications {
     int i = 1
-    [
-            "mockito-scala_2.12", "mockito-scala_2.13",
-            "mockito-scala-cats_2.12", "mockito-scala-cats_2.13",
-            "mockito-scala-scalatest_2.12", "mockito-scala-scalatest_2.13",
-            "mockito-scala-scalaz_2.12", "mockito-scala-scalaz_2.13",
-            "mockito-scala-specs2_2.12", "mockito-scala-specs2_2.13",
-    ].each {pub ->
+    publishableModules.collectMany { module ->
+        scalaBinarySuffixes.collect { suffix -> "${module}${suffix}" }
+    }.each {pub ->
         String pubName = "publication${i++}"
         pubNames << pubName
         "$pubName"(MavenPublication) {

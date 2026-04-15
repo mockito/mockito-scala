@@ -14,7 +14,7 @@ inThisBuild(
 def scala213PlusSourceDirectory(baseDir: File, sourceScope: String, scalaV: String): Seq[File] =
   CrossVersion.partialVersion(scalaV) match {
     case Some((2, 13)) | Some((3, _)) => Seq(baseDir / "src" / sourceScope / "scala-2.13+")
-    case _                             => Seq.empty
+    case _                            => Seq.empty
   }
 
 lazy val commonSettings =
@@ -205,9 +205,9 @@ lazy val macroSub = (project in file("macro"))
     libraryDependencies ++= Dependencies.commonLibraries,
     libraryDependencies ++= Dependencies.scalaReflection.value,
     libraryDependencies += Dependencies.scalatest % Test,
-    publish         := {},
-    publishLocal    := {},
-    publishArtifact := false
+    publish                                      := {},
+    publishLocal                                 := {},
+    publishArtifact                              := false
   )
 
 lazy val macroCommon = (project in file("macro-common"))
@@ -216,9 +216,9 @@ lazy val macroCommon = (project in file("macro-common"))
     noPublishingSettings,
     libraryDependencies ++= Dependencies.scalaReflection.value,
     libraryDependencies += Dependencies.scalatest % Test,
-    publish         := {},
-    publishLocal    := {},
-    publishArtifact := false
+    publish                                      := {},
+    publishLocal                                 := {},
+    publishArtifact                              := false
   )
 
 lazy val root = (project in file("."))

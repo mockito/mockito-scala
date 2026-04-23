@@ -13,7 +13,7 @@ import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ EitherValues, OptionValues }
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
-import user.org.mockito.model.JavaFoo
+import user.org.mockito.model.{ JavaFoo, JavaStaticFoo }
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -466,6 +466,77 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
 
       aSpy("hi!") shouldBe "mocked!"
       verify(aSpy).apply("hi!")
+    }
+  }
+
+  "mockStatic[T]" should {
+    "replace all static methods with defaults and allow stubbing one" in {
+      val ms = mockStatic[JavaStaticFoo]
+      try {
+        JavaStaticFoo.greet("world") shouldBe ""
+        JavaStaticFoo.sum(2, 3) shouldBe 0
+
+        ms.when { () => JavaStaticFoo.greet("world"); () }.thenReturn("mocked!")
+
+        JavaStaticFoo.greet("world") shouldBe "mocked!"
+        JavaStaticFoo.sum(2, 3) shouldBe 0
+
+        ms.verify({ () => JavaStaticFoo.greet("world"); () }, times(2))
+      } finally ms.close()
+
+      JavaStaticFoo.greet("world") shouldBe "hello world"
+    }
+
+    "accept a name" in {
+      val ms = mockStatic[JavaStaticFoo]("namedMock")
+      try
+        JavaStaticFoo.sum(1, 2) shouldBe 0
+      finally ms.close()
+    }
+
+    "accept a raw Answer" in {
+      val ms = mockStatic[JavaStaticFoo](Answers.CALLS_REAL_METHODS)
+      try
+        JavaStaticFoo.sum(4, 5) shouldBe 9
+      finally ms.close()
+    }
+
+    "accept a DefaultAnswer" in {
+      val ms = mockStatic[JavaStaticFoo](CallsRealMethods: DefaultAnswer)
+      try
+        JavaStaticFoo.greet("x") shouldBe "hello x"
+      finally ms.close()
+    }
+
+    "accept custom mock settings" in {
+      val ms = mockStatic[JavaStaticFoo](withSettings.name("customMock"))
+      try
+        JavaStaticFoo.sum(4, 5) shouldBe 0
+      finally ms.close()
+    }
+  }
+
+  "withStaticMocked[T]" should {
+    "mock static methods only for the duration of the block and auto-close" in {
+      JavaStaticFoo.greet("bob") shouldBe "hello bob"
+
+      withStaticMocked[JavaStaticFoo] { ms =>
+        JavaStaticFoo.greet("bob") shouldBe ""
+        ms.when { () => JavaStaticFoo.greet("bob"); () }.thenReturn("mocked!")
+        JavaStaticFoo.greet("bob") shouldBe "mocked!"
+      }
+
+      JavaStaticFoo.greet("bob") shouldBe "hello bob"
+    }
+
+    "close the static mock even when the block throws" in {
+      a[RuntimeException] shouldBe thrownBy {
+        withStaticMocked[JavaStaticFoo] { _ =>
+          throw new RuntimeException("boom")
+        }
+      }
+
+      JavaStaticFoo.greet("alice") shouldBe "hello alice"
     }
   }
 }

@@ -540,6 +540,50 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   def spyLambda[T <: AnyRef: ClassTag](realObj: T): T = Mockito.mock(clazz, AdditionalAnswers.delegatesTo(realObj))
 
   /**
+   * Delegates to <code>Mockito.mockStatic(classToMock: Class[T], mockSettings: MockSettings)</code>. Creates a thread-local mock for all static methods of <code>T</code>. The
+   * returned controller must be closed after use.
+   *
+   * Uses the implicit <code>DefaultAnswer</code> (defaults to <code>ReturnsSmartNulls</code>) just like <code>mock[T]</code>.
+   */
+  def mockStatic[T <: AnyRef: ClassTag](implicit defaultAnswer: DefaultAnswer): MockedStatic[T] =
+    mockStatic[T](withSettings(defaultAnswer))
+
+  /**
+   * Creates a static mock using a raw Mockito <code>Answer</code> by wrapping it in a scala-mockito <code>DefaultAnswer</code>.
+   */
+  def mockStatic[T <: AnyRef: ClassTag](defaultAnswer: Answer[?]): MockedStatic[T] =
+    mockStatic[T](DefaultAnswer(defaultAnswer))
+
+  /**
+   * Delegates to <code>Mockito.mockStatic(classToMock: Class[T], mockSettings: MockSettings)</code> with a settings object built from the given <code>DefaultAnswer</code>.
+   */
+  def mockStatic[T <: AnyRef: ClassTag](defaultAnswer: DefaultAnswer): MockedStatic[T] =
+    mockStatic[T](withSettings(defaultAnswer))
+
+  /**
+   * Delegates to <code>Mockito.mockStatic(classToMock: Class[T], name: String)</code>.
+   */
+  def mockStatic[T <: AnyRef: ClassTag](name: String)(implicit defaultAnswer: DefaultAnswer): MockedStatic[T] =
+    mockStatic[T](withSettings(defaultAnswer).name(name))
+
+  /**
+   * Delegates to <code>Mockito.mockStatic(classToMock: Class[T], mockSettings: MockSettings)</code>.
+   */
+  def mockStatic[T <: AnyRef: ClassTag](mockSettings: MockSettings): MockedStatic[T] =
+    Mockito.mockStatic(clazz[T], mockSettings)
+
+  /**
+   * Mocks all static methods of <code>T</code> for the duration of <code>block</code>, and closes the static mock afterwards.
+   *
+   * Note: the mock is thread-local &mdash; threads spawned inside the block will see the real static methods, not the mock.
+   */
+  def withStaticMocked[T <: AnyRef: ClassTag](block: MockedStatic[T] => Any)(implicit defaultAnswer: DefaultAnswer): Unit = {
+    val ms = mockStatic[T]
+    try { block(ms); () }
+    finally ms.close()
+  }
+
+  /**
    * Mocks the specified object only for the context of the block
    */
   def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit =

@@ -15,6 +15,22 @@ trait PolymorphicClient {
   def request[A](path: String)(implicit codec: PolymorphicCodec[A]): Either[String, PolymorphicResponse[A]]
 }
 
+trait NumericReturns {
+  def getByte: Byte
+  def getShort: Short
+  def getChar: Char
+  def getInt: Int
+  def getLong: Long
+  def getDouble: Double
+}
+
+trait BoxedNumericReturns {
+  def getBoxedInteger: java.lang.Integer
+  def getBoxedLong: java.lang.Long
+  def getBoxedDouble: java.lang.Double
+  def getBoxedByte: java.lang.Byte
+}
+
 class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
   forAll(scenarios) { (testDouble, orgDouble, foo) =>
@@ -192,6 +208,37 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
         org.iReturnAFunction(3)(3) shouldBe "9"
       }
 
+      "stub a method that returns a partial function with a case-block literal" in {
+        val org = orgDouble()
+
+        org.iReturnAPartialFunction(*) shouldReturn { case i => i.toString }
+
+        org.iReturnAPartialFunction(0)(42) shouldBe "42"
+      }
+
+      "set consecutive return values when passed more than one value" in {
+        val org = orgDouble()
+
+        org.doSomethingWithThisInt(*) shouldReturn (1, 2, 3)
+
+        org.doSomethingWithThisInt(0) shouldBe 1
+        org.doSomethingWithThisInt(0) shouldBe 2
+        org.doSomethingWithThisInt(0) shouldBe 3
+        org.doSomethingWithThisInt(0) shouldBe 3
+      }
+
+      "stub a tuple return value (via extra parens or the -> arrow, since the DSL takes consecutive values as varargs)" in {
+        val org = orgDouble()
+
+        org.returnsATuple shouldReturn ((1, "mocked"))
+
+        org.returnsATuple shouldBe (1, "mocked")
+
+        org.returnsATuple shouldReturn 2 -> "mocked again"
+
+        org.returnsATuple shouldBe (2, "mocked again")
+      }
+
       "doStub a value class return value" in {
         val org = orgDouble()
 
@@ -365,7 +412,7 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
   }
 
   "mock" should {
-    "infer the type parameter for shouldReturn on a polymorphic method from the returned value" in {
+    "infer the type parameter for `shouldReturn` on a polymorphic method from the returned value" in {
       implicit object StringCodec extends PolymorphicCodec[String]
 
       def stubResponse[A](
@@ -382,7 +429,7 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       client.request[String]("path") shouldBe expected
     }
 
-    "infer the type parameter for mustReturn on a polymorphic method from the returned value" in {
+    "infer the type parameter for `mustReturn` on a polymorphic method from the returned value" in {
       implicit object StringCodec extends PolymorphicCodec[String]
 
       def stubResponse[A](
@@ -397,6 +444,96 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
       stubResponse(client, expected)
 
       client.request[String]("path") shouldBe expected
+    }
+
+    "infer the type parameter for `returns` on a polymorphic method from the returned value" in {
+      implicit object StringCodec extends PolymorphicCodec[String]
+
+      def stubResponse[A](
+          client: PolymorphicClient,
+          response: Either[String, PolymorphicResponse[A]]
+      )(implicit codec: PolymorphicCodec[A]): org.mockito.stubbing.ScalaOngoingStubbing[Either[String, PolymorphicResponse[A]]] =
+        client.request("path")(*) returns response
+
+      val client   = mock[PolymorphicClient]
+      val expected = Right(PolymorphicResponse("ok")): Either[String, PolymorphicResponse[String]]
+
+      stubResponse(client, expected)
+
+      client.request[String]("path") shouldBe expected
+    }
+
+    "widen a narrower numeric value to the method's return type" in {
+      val m = mock[NumericReturns]
+
+      m.getLong shouldReturn 1
+      m.getDouble mustReturn 2
+      m.getInt returns 3
+
+      m.getLong shouldBe 1L
+      m.getDouble shouldBe 2.0
+      m.getInt shouldBe 3
+    }
+
+    "narrow an Int constant literal in range to a Byte/Short/Char return type" in {
+      val m = mock[NumericReturns]
+
+      m.getByte shouldReturn 5
+      m.getShort mustReturn 6
+      m.getChar returns 65
+
+      m.getByte shouldBe 5.toByte
+      m.getShort shouldBe 6.toShort
+      m.getChar shouldBe 'A'
+    }
+
+    "reject narrowing an out-of-range or non-constant value (as plain Scala does)" in {
+      "val m = mock[NumericReturns]; m.getByte shouldReturn 5000" shouldNot typeCheck
+      "val m = mock[NumericReturns]; val i = 5; m.getByte shouldReturn i" shouldNot typeCheck
+      "val m = mock[NumericReturns]; m.getInt shouldReturn 5L" shouldNot typeCheck
+    }
+
+    "widen a non-constant numeric value following Scala's weak conformance" in {
+      val m = mock[NumericReturns]
+
+      val b: Byte  = 1
+      val ch: Char = 'A'
+      m.getShort shouldReturn b // Byte widens to Short
+      m.getInt mustReturn ch    // Char widens to Int
+
+      m.getShort shouldBe 1.toShort
+      m.getInt shouldBe 65
+    }
+
+    "reject widening that Scala's weak conformance does not allow (e.g. Byte to Char)" in {
+      "val m = mock[NumericReturns]; val b: Byte = 1; m.getChar shouldReturn b" shouldNot typeCheck
+      "val m = mock[NumericReturns]; val s: Short = 1; m.getChar shouldReturn s" shouldNot typeCheck
+    }
+
+    "widen and box a numeric value to a Java boxed return type" in {
+      val m = mock[BoxedNumericReturns]
+
+      m.getBoxedInteger shouldReturn 5 // Int -> java.lang.Integer
+      m.getBoxedLong mustReturn 6      // Int widened to Long, boxed
+      m.getBoxedDouble returns 7  // Int widened to Double, boxed
+
+      m.getBoxedInteger shouldBe (5: java.lang.Integer)
+      m.getBoxedLong shouldBe (6L: java.lang.Long)
+      m.getBoxedDouble shouldBe (7.0: java.lang.Double)
+    }
+
+    "widen and box a non-constant numeric value to a Java boxed return type" in {
+      val m = mock[BoxedNumericReturns]
+
+      val i = 8
+      m.getBoxedLong returns i // non-constant Int widened to Long, boxed
+
+      m.getBoxedLong shouldBe (8L: java.lang.Long)
+    }
+
+    "reject boxed numeric stubbing that Scala does not allow (literal narrowing or narrowing)" in {
+      "val m = mock[BoxedNumericReturns]; m.getBoxedByte shouldReturn 5" shouldNot typeCheck
+      "val m = mock[BoxedNumericReturns]; m.getBoxedInteger shouldReturn 5L" shouldNot typeCheck
     }
 
     "stub a map" in {

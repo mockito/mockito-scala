@@ -82,9 +82,13 @@ class Org {
 
   def returnBar: Bar = new Bar
 
+  def returnsATuple: (Int, String) = (-1, "not mocked")
+
   def highOrderFunction(f: Int => String): String = "not mocked"
 
   def iReturnAFunction(v: Int): Int => String = i => (i * v).toString
+
+  def iReturnAPartialFunction(v: Int): PartialFunction[Int, String] = { case i => (i * v).toString }
 
   def iBlowUp(v: Int, v2: String): String = throw new IllegalArgumentException("I was called!")
 

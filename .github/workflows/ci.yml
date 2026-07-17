@@ -60,6 +60,8 @@ jobs:
   release:
     permissions:
       contents: write
+      pull-requests: read
+      issues: read
     runs-on: ubuntu-latest
     needs: [build] # build job must pass before we can release
 
@@ -81,14 +83,21 @@ jobs:
           distribution: 'zulu'
           java-version: 17
 
-      - name: Build and publish to Bintray/MavenCentral
+      - name: Build and publish to Maven Central
         run: ./gradlew writeActualVersion
           && export PROJECT_VERSION=`cat version.actual`
           && ./build.sh
-          && ./gradlew publishToSonatype githubRelease closeAndReleaseStagingRepositories releaseSummary
+          && ./gradlew publishToSonatype closeAndReleaseStagingRepositories
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           NEXUS_TOKEN_USER: ${{secrets.NEXUS_TOKEN_USER}}
           NEXUS_TOKEN_PWD: ${{secrets.NEXUS_TOKEN_PWD}}
           PGP_KEY: ${{secrets.PGP_KEY}}
           PGP_PWD: ${{secrets.PGP_PWD}}
+
+      # Changelog / GitHub release is best-effort: it must never fail the release once the
+      # artifacts are already published to Maven Central. The GitHub release can be edited manually.
+      - name: Create GitHub release with changelog
+        continue-on-error: true
+        run: ./gradlew githubRelease releaseSummary
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

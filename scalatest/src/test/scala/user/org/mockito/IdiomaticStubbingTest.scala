@@ -515,7 +515,7 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
 
       m.getBoxedInteger shouldReturn 5 // Int -> java.lang.Integer
       m.getBoxedLong mustReturn 6      // Int widened to Long, boxed
-      m.getBoxedDouble returns 7  // Int widened to Double, boxed
+      m.getBoxedDouble returns 7       // Int widened to Double, boxed
 
       m.getBoxedInteger shouldBe (5: java.lang.Integer)
       m.getBoxedLong shouldBe (6L: java.lang.Long)

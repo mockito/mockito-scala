@@ -1,6 +1,6 @@
 import scala.language.postfixOps
 
-val currentScalaVersion = "2.13.18"
+val currentScalaVersion = "3.9.0"
 val scala3Version       = "3.3.8"
 
 inThisBuild(

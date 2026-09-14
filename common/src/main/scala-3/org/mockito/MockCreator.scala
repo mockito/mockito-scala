@@ -33,6 +33,8 @@ import scala.reflect.ClassTag
  *   mock[T](Mockito.withSettings().strictness(Strictness.LENIENT))
  * }}}
  *
+ * (Note: [[lenientMock]] is already provided as an inline method on this trait.)
+ *
  * Without `inline`, the compile-time macro [[org.mockito.internal.MockMethodMetadata.registerByNameAndVarArgInfo]] sees `T` as an abstract type variable and produces no output. At
  * runtime the `ScalaMockHandler` will not find the method in its cache, so vararg arrays won't be expanded and stubs on vararg methods will silently fail to match.
  */
@@ -56,6 +58,12 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
   @targetName("mockWithName")
   inline def mock[T <: AnyRef: ClassTag](name: String)(using defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
     mock[T](withSettings.name(name))
+
+  /**
+   * Delegates to <code>mock[T](withSettings.strictness(Strictness.LENIENT))</code>.
+   */
+  inline def lenientMock[T <: AnyRef: ClassTag](using defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
+    mock[T](withSettings.strictness(Strictness.LENIENT))
 
   inline def spy[T <: AnyRef: ClassTag](realObj: T, lenient: Boolean = false)(using $pt: Prettifier): T = {
     val mockSettings: MockSettings = withSettings(CallsRealMethods).spiedInstance(realObj)

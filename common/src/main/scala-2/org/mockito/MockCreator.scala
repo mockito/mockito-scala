@@ -71,6 +71,12 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
     mock(withSettings.name(name))
 
   /**
+   * Delegates to <code>mock[T](withSettings.strictness(Strictness.LENIENT))</code>
+   */
+  def lenientMock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
+    mock[T](withSettings.strictness(Strictness.LENIENT))
+
+  /**
    * Creates a spy from a real instance via mock settings (spied instance + <code>CallsRealMethods</code>). When <code>lenient</code> is true, the spy is created with
    * <code>Strictness.LENIENT</code>.
    */

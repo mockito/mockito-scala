@@ -54,12 +54,12 @@ object ReflectionUtils {
 
   private def isNonConstructorMethod(d: ru.Symbol): Boolean = d.isMethod && !d.isConstructor
 
-  def extraInterfaces[T](implicit $wtt: WeakTypeTag[T], $ct: ClassTag[T]): List[Class[?]] =
+  def extraInterfaces[T](implicit wtt: WeakTypeTag[T], ct: ClassTag[T]): List[Class[?]] =
     uTry {
-      val cls = clazz($ct)
-      $wtt.tpe match {
+      val cls = clazz(ct)
+      wtt.tpe match {
         case RefinedType(types, _) =>
-          types.map($wtt.mirror.runtimeClass).collect {
+          types.map(wtt.mirror.runtimeClass).collect {
             case c: Class[?] if c.isInterface && c != cls => c
           }
         case _ => List.empty

@@ -44,7 +44,7 @@ object DoSomethingMacro {
   /**
    * Macro for: Returned(value) by mock.method(args)
    */
-  inline def returnedBy[T, S](inline v: T, inline stubbing: S)(using inline $ev: T <:< S): S =
+  inline def returnedBy[T, S](inline v: T, inline stubbing: S)(using inline ev: T <:< S): S =
     ${ returnedByImpl[T, S]('v, 'stubbing) }
 
   // Wrapper for case class usage
@@ -70,7 +70,7 @@ object DoSomethingMacro {
   /**
    * Macro for: Answered(func) by mock.method(args)
    */
-  inline def answeredBy[T, S](inline v: T, inline stubbing: S)(using inline $ev: T <:< S): S =
+  inline def answeredBy[T, S](inline v: T, inline stubbing: S)(using inline ev: T <:< S): S =
     ${ answeredByImpl[T, S]('v, 'stubbing) }
 
   // Wrapper for case class usage
@@ -141,7 +141,7 @@ object DoSomethingMacro {
   /**
    * Macro for: Thrown(exception) by mock.method(args)
    */
-  inline def thrownBy[T](inline v: Throwable, inline stubbing: T)(using inline $ev: Throwable): T =
+  inline def thrownBy[T](inline v: Throwable, inline stubbing: T)(using inline ev: Throwable): T =
     ${ thrownByImpl[T]('v, 'stubbing) }
 
   // Wrapper for case class usage

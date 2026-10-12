@@ -20,7 +20,7 @@ trait CaptorBase[T] {
 
   def values: List[T]
 
-  def hasCaptured(expectations: T*)(implicit $eq: Equality[T]): Unit = {
+  def hasCaptured(expectations: T*)(implicit eq: Equality[T]): Unit = {
     val elementResult = Try {
       expectations.zip(values).foreach { case (e, v) =>
         if (e !== v) throw new ArgumentsAreDifferent(s"Got [$v] instead of [$e]")

@@ -16,7 +16,7 @@ trait PostfixVerifications extends PostfixVerificationsRuntime {
     transparent inline def wasNever(called: Called.type)(using order: VerifyOrder): Verification =
       ${ VerifyMacro.wasNeverMacroImpl[T, Verification]('stubbing, 'called, 'order) }
 
-    transparent inline def wasNever(inline called: CalledAgain)(using $ev: T <:< AnyRef): Verification =
+    transparent inline def wasNever(inline called: CalledAgain)(using ev: T <:< AnyRef): Verification =
       ${ VerifyMacro.wasNeverCalledAgainMacroImpl[T, Verification]('stubbing, 'called) }
 
     transparent inline def wasCalled(called: ScalaVerificationMode)(using order: VerifyOrder): Verification =

@@ -17,7 +17,7 @@ import scala.annotation.nowarn
 import scala.collection.compat.*
 import scala.jdk.CollectionConverters.*
 
-class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProcess: Seq[(Method, Set[Int])])(implicit $pt: Prettifier) extends MockHandlerImpl[T](mockSettings) {
+class ScalaMockHandler[T](mockSettings: MockCreationSettings[T], methodsToProcess: Seq[(Method, Set[Int])])(implicit pt: Prettifier) extends MockHandlerImpl[T](mockSettings) {
   override def handle(invocation: Invocation): AnyRef =
     invocation match {
       case i: InterceptedInvocation =>
@@ -90,7 +90,7 @@ object ScalaMockHandler {
   implicit def anyArrayToObjectArray(a: Array[Any]): Array[Object] = a.asInstanceOf[Array[Object]]
   implicit def anyRefArrayToAnyArray(a: Array[AnyRef]): Array[Any] = a.asInstanceOf[Array[Any]]
 
-  def apply[T](mockSettings: MockCreationSettings[T])(implicit $pt: Prettifier): MockHandler[T] =
+  def apply[T](mockSettings: MockCreationSettings[T])(implicit pt: Prettifier): MockHandler[T] =
     new InvocationNotifierHandler(
       new ScalaNullResultGuardian(
         new ScalaMockHandler(

@@ -23,7 +23,7 @@ object DoSomethingMacro {
     r
   }
 
-  def returnedBy[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Expr[S]): c.Expr[S] = {
+  def returnedBy[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(ev: c.Expr[S]): c.Expr[S] = {
     import c.universe.*
 
     val r = c.Expr[S] {
@@ -38,7 +38,7 @@ object DoSomethingMacro {
     r
   }
 
-  def returnedF[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
+  def returnedF[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, ev: c.Expr[S]): c.Expr[S] = {
     import c.universe.*
 
     val r = c.Expr[S] {
@@ -53,7 +53,7 @@ object DoSomethingMacro {
     r
   }
 
-  def returnedFG[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, G: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
+  def returnedFG[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, G: c.Tree, ev: c.Expr[S]): c.Expr[S] = {
     import c.universe.*
 
     val r = c.Expr[S] {
@@ -68,7 +68,7 @@ object DoSomethingMacro {
     r
   }
 
-  def answeredBy[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Expr[S]): c.Expr[S] = {
+  def answeredBy[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(ev: c.Expr[S]): c.Expr[S] = {
     import c.universe.*
 
     val r = c.Expr[S] {
@@ -83,7 +83,7 @@ object DoSomethingMacro {
     r
   }
 
-  def answeredF[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
+  def answeredF[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, ev: c.Expr[S]): c.Expr[S] = {
     import c.universe.*
 
     val r = c.Expr[S] {
@@ -98,7 +98,7 @@ object DoSomethingMacro {
     r
   }
 
-  def answeredFG[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, G: c.Tree, $ev: c.Expr[S]): c.Expr[S] = {
+  def answeredFG[T: c.WeakTypeTag, S](c: blackbox.Context)(stubbing: c.Expr[T])(F: c.Tree, G: c.Tree, ev: c.Expr[S]): c.Expr[S] = {
     import c.universe.*
 
     val r = c.Expr[S] {
@@ -113,7 +113,7 @@ object DoSomethingMacro {
     r
   }
 
-  def thrownBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T])($ev: c.Tree): c.Expr[T] = {
+  def thrownBy[T: c.WeakTypeTag](c: blackbox.Context)(stubbing: c.Expr[T])(ev: c.Tree): c.Expr[T] = {
     import c.universe.*
 
     val r = c.Expr[T] {

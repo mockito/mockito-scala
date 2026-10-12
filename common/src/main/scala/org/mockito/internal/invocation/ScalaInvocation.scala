@@ -23,7 +23,7 @@ class ScalaInvocation(
     realMethod: RealMethod,
     location: Location,
     sequenceNumber: Int
-)(implicit $pt: Prettifier)
+)(implicit pt: Prettifier)
     extends Invocation
     with VerificationAwareInvocation {
   private var verified: Boolean                  = false
@@ -64,5 +64,5 @@ class ScalaInvocation(
   }
   override def toString: String                                      = new PrintSettings().print(getArgumentsAsMatchers, this)
   override def getArgumentsAsMatchers: util.List[ArgumentMatcher[?]] =
-    arguments.map(EqTo(_)(serialisableEquality[AnyRef], ValueClassExtractor.instance[AnyRef], $pt): ArgumentMatcher[?]).toList.asJava
+    arguments.map(EqTo(_)(serialisableEquality[AnyRef], ValueClassExtractor.instance[AnyRef], pt): ArgumentMatcher[?]).toList.asJava
 }

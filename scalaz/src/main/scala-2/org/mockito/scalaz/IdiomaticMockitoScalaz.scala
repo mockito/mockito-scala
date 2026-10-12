@@ -128,20 +128,20 @@ object IdiomaticMockitoScalaz extends IdiomaticMockitoScalaz {
   type AnswerActions2[F[_], G[_], T] = IdiomaticMockitoScalazRuntime.AnswerActions2[F, G, T]
 
   case class ReturnedByF[T]() {
-    def by[F[_], S](stubbing: F[S])(implicit F: Applicative[F], $ev: T <:< S): F[S] = macro DoSomethingMacro.returnedF[T, S]
+    def by[F[_], S](stubbing: F[S])(implicit F: Applicative[F], ev: T <:< S): F[S] = macro DoSomethingMacro.returnedF[T, S]
   }
 
   case class AnsweredByF[T]() {
-    def by[F[_], S](stubbing: F[S])(implicit F: Applicative[F], $ev: T <:< S): F[S] = macro DoSomethingMacro.answeredF[T, S]
+    def by[F[_], S](stubbing: F[S])(implicit F: Applicative[F], ev: T <:< S): F[S] = macro DoSomethingMacro.answeredF[T, S]
   }
 
   case class ReturnedByFG[T]() {
-    def by[F[_], G[_], S](stubbing: F[G[S]])(implicit F: Applicative[F], G: Applicative[G], $ev: T <:< S): F[G[S]] =
+    def by[F[_], G[_], S](stubbing: F[G[S]])(implicit F: Applicative[F], G: Applicative[G], ev: T <:< S): F[G[S]] =
       macro DoSomethingMacro.returnedFG[T, S]
   }
 
   case class AnsweredByFG[T]() {
-    def by[F[_], G[_], S](stubbing: F[G[S]])(implicit F: Applicative[F], G: Applicative[G], $ev: T <:< S): F[G[S]] =
+    def by[F[_], G[_], S](stubbing: F[G[S]])(implicit F: Applicative[F], G: Applicative[G], ev: T <:< S): F[G[S]] =
       macro DoSomethingMacro.answeredFG[T, S]
   }
 

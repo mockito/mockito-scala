@@ -21,7 +21,7 @@ object VerifyMacro extends VerificationMacroTransformer {
     r
   }
 
-  def wasNeverCalledAgainMacro[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree)($ev: c.Tree): c.Expr[R] = {
+  def wasNeverCalledAgainMacro[T: c.WeakTypeTag, R](c: blackbox.Context)(called: c.Tree)(ev: c.Tree): c.Expr[R] = {
     val r = c.Expr[R](transformVerification(c)(c.macroApplication))
     debugResult(c)("mockito-print-verify")(r.tree)
     r

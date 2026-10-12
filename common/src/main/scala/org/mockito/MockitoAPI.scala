@@ -52,7 +52,7 @@ private[mockito] trait MockCreatorRuntime {
       mockSettings: MockSettings,
       interfaces: List[Class[?]],
       mockHandler: (MockCreationSettings[T], Prettifier) => MockHandler[T]
-  )(implicit $pt: Prettifier): T = {
+  )(implicit pt: Prettifier): T = {
     val realClass: Class[T] = mockSettings match {
       case m: MockSettingsImpl[?] if !m.getExtraInterfaces.isEmpty =>
         throw new IllegalArgumentException("If you want to add extra traits to the mock use the syntax mock[MyClass with MyTrait]")
@@ -65,7 +65,7 @@ private[mockito] trait MockCreatorRuntime {
       else mockSettings
 
     def createMock(settings: MockCreationSettings[T]): T = {
-      val mock          = getMockMaker.createMock(settings, mockHandler(settings, $pt))
+      val mock          = getMockMaker.createMock(settings, mockHandler(settings, pt))
       val spiedInstance = settings.getSpiedInstance
       if (spiedInstance != null) new LenientCopyTool().copyToMock(spiedInstance, mock)
       mock
@@ -489,7 +489,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Delegates to <code>Mockito.reset(T... mocks)</code>, but restores the default stubs that deal with default argument values
    */
-  def reset(mocks: AnyRef*)(implicit $pt: Prettifier): Unit = {
+  def reset(mocks: AnyRef*)(implicit pt: Prettifier): Unit = {
     val mp = mockingProgress()
     mp.validateState()
     mp.reset()
@@ -586,7 +586,7 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
   /**
    * Mocks the specified object only for the context of the block
    */
-  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): Unit =
+  def withObjectMocked[O <: AnyRef: ClassTag](block: => Any)(implicit defaultAnswer: DefaultAnswer, pt: Prettifier): Unit =
     withObject[O](_ => withSettings(defaultAnswer), block)
 
   /**
@@ -595,12 +595,12 @@ private[mockito] trait MockitoEnhancer extends MockCreator {
    * Automatically pulls in [[org.mockito.LeniencySettings#strictStubs strict stubbing]] behaviour via implicits. To override this default (strict) behaviour, bring lenient
    * settings into implicit scope; see [[org.mockito.leniency]] for details
    */
-  def withObjectSpied[O <: AnyRef: ClassTag](block: => Any)(implicit leniency: LeniencySettings, $pt: Prettifier): Unit = {
+  def withObjectSpied[O <: AnyRef: ClassTag](block: => Any)(implicit leniency: LeniencySettings, pt: Prettifier): Unit = {
     val settings = leniency(Mockito.withSettings().defaultAnswer(CALLS_REAL_METHODS))
     withObject[O](settings.spiedInstance(_), block)
   }
 
-  private[mockito] def withObject[O <: AnyRef: ClassTag](settings: O => MockSettings, block: => Any)(implicit $pt: Prettifier): Unit = {
+  private[mockito] def withObject[O <: AnyRef: ClassTag](settings: O => MockSettings, block: => Any)(implicit pt: Prettifier): Unit = {
     val objectClass = clazz[O]
     objectClass.synchronized {
       val moduleField = objectClass.getDeclaredField("MODULE$")

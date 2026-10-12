@@ -179,8 +179,8 @@ object WhenMacro {
     buildActionWrapper[T]("org.mockito.WhenMacroRuntime.AnswerPFActions", buildScalaFirstStubbing[T](stubbing))
   }
 
-  inline def isLenient[T](inline stubbing: => T)(using $pt: Prettifier): ScalaFirstStubbing[T] =
-    ${ isLenientImpl[T]('stubbing, '$pt) }
+  inline def isLenient[T](inline stubbing: => T)(using pt: Prettifier): ScalaFirstStubbing[T] =
+    ${ isLenientImpl[T]('stubbing, 'pt) }
 
   def isLenientImpl[T: Type](
       stubbing: Expr[T],
@@ -194,8 +194,8 @@ object WhenMacro {
     }
   }
 
-  inline def shouldCallRealMethod[T](inline stubbing: => T)(using $pt: Prettifier): ScalaOngoingStubbing[T] =
-    ${ shouldCallRealMethodImpl[T]('stubbing, '$pt) }
+  inline def shouldCallRealMethod[T](inline stubbing: => T)(using pt: Prettifier): ScalaOngoingStubbing[T] =
+    ${ shouldCallRealMethodImpl[T]('stubbing, 'pt) }
 
   def shouldCallRealMethodImpl[T: Type](
       stubbing: Expr[T],

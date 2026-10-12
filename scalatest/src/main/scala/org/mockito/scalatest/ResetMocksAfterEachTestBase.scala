@@ -22,7 +22,7 @@ trait ResetMocksAfterEachTestBase extends MockCreatorRuntime {
       mockSettings: MockSettings,
       interfaces: List[Class[?]],
       mockHandler: (MockCreationSettings[T], Prettifier) => MockHandler[T]
-  )(implicit $pt: Prettifier): T = {
+  )(implicit pt: Prettifier): T = {
     val mock = super.createMock[T](mockSettings, interfaces, mockHandler)
     mocksToReset.add(mock)
     mock

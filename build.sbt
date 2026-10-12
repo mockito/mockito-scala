@@ -79,11 +79,11 @@ lazy val commonSettings =
   )
 
 lazy val publishSettings = Seq(
-  licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
-  homepage := Some(url("https://github.com/mockito/mockito-scala")),
+  licenses := Seq("MIT" -> uri("https://opensource.org/licenses/MIT")),
+  homepage := Some(uri("https://github.com/mockito/mockito-scala")),
   scmInfo  := Some(
     ScmInfo(
-      url("https://github.com/mockito/mockito-scala"),
+      uri("https://github.com/mockito/mockito-scala"),
       "git@github.com:mockito/mockito-scala.git"
     )
   ),
@@ -92,7 +92,7 @@ lazy val publishSettings = Seq(
       "bbonanno",
       "Bruno Bonanno",
       "bbonanno@gmail.com",
-      url("https://github.com/bbonanno")
+      uri("https://github.com/bbonanno")
     )
   )
 )

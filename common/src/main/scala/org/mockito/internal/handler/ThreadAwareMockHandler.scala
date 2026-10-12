@@ -5,7 +5,7 @@ import org.mockito.invocation.{ Invocation, InvocationContainer, MockHandler }
 import org.mockito.mock.MockCreationSettings
 import org.scalactic.Prettifier
 
-class ThreadAwareMockHandler[T](settings: MockCreationSettings[T], realImpl: T)(implicit $pt: Prettifier) extends MockHandler[T] {
+class ThreadAwareMockHandler[T](settings: MockCreationSettings[T], realImpl: T)(implicit pt: Prettifier) extends MockHandler[T] {
   private val currentThread    = Thread.currentThread()
   private val mockDelegate     = ScalaMockHandler(settings)
   private val realImplDelegate = AdditionalAnswers.delegatesTo(realImpl)
@@ -20,6 +20,6 @@ class ThreadAwareMockHandler[T](settings: MockCreationSettings[T], realImpl: T)(
 }
 
 object ThreadAwareMockHandler {
-  def apply[T](settings: MockCreationSettings[T], realImpl: T)(implicit $pt: Prettifier): ThreadAwareMockHandler[T] =
-    new ThreadAwareMockHandler(settings, realImpl)($pt)
+  def apply[T](settings: MockCreationSettings[T], realImpl: T)(implicit pt: Prettifier): ThreadAwareMockHandler[T] =
+    new ThreadAwareMockHandler(settings, realImpl)(pt)
 }

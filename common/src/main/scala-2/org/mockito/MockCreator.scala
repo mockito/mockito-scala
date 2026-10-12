@@ -22,13 +22,13 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
    * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
    */
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](implicit defaultAnswer: DefaultAnswer, pt: Prettifier): T =
     mock[T](defaultAnswer)
 
   /**
    * Creates a mock using a raw Mockito <code>Answer</code> by wrapping it in a scala-mockito <code>DefaultAnswer</code>.
    */
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[?])(implicit $pt: Prettifier): T =
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: Answer[?])(implicit pt: Prettifier): T =
     mock[T](DefaultAnswer(defaultAnswer))
 
   /**
@@ -41,7 +41,7 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
    * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
    */
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit $pt: Prettifier): T =
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](defaultAnswer: DefaultAnswer)(implicit pt: Prettifier): T =
     mock[T](withSettings(defaultAnswer))
 
   /**
@@ -54,7 +54,7 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
    * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
    */
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit $pt: Prettifier): T =
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](mockSettings: MockSettings)(implicit pt: Prettifier): T =
     createMock(mockSettings)
 
   /**
@@ -67,14 +67,14 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
    * without this fix, if you call it as <code>iHaveSomeDefaultArguments("I'm not gonna pass the second argument")</code> then you could have not verified it like
    * <code>verify(aMock).iHaveSomeDefaultArguments("I'm not gonna pass the second argument", "default value")</code> as the value for the second parameter would have been null...
    */
-  def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, $pt: Prettifier): T =
+  def mock[T <: AnyRef: ClassTag: WeakTypeTag](name: String)(implicit defaultAnswer: DefaultAnswer, pt: Prettifier): T =
     mock(withSettings.name(name))
 
   /**
    * Creates a spy from a real instance via mock settings (spied instance + <code>CallsRealMethods</code>). When <code>lenient</code> is true, the spy is created with
    * <code>Strictness.LENIENT</code>.
    */
-  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false)(implicit $pt: Prettifier): T = {
+  def spy[T <: AnyRef: ClassTag: WeakTypeTag](realObj: T, lenient: Boolean = false)(implicit pt: Prettifier): T = {
     val mockSettings: MockSettings = withSettings(CallsRealMethods).spiedInstance(realObj)
     val settings                   = if (lenient) mockSettings.strictness(Strictness.LENIENT) else mockSettings
     mock[T](settings)
@@ -86,6 +86,6 @@ private[mockito] trait MockCreator extends MockCreatorRuntime {
   private[mockito] def createMock[T <: AnyRef: ClassTag: WeakTypeTag](
       mockSettings: MockSettings,
       mockHandler: (MockCreationSettings[T], Prettifier) => MockHandler[T] = (settings: MockCreationSettings[T], pt: Prettifier) => ScalaMockHandler(settings)(pt)
-  )(implicit $pt: Prettifier): T =
+  )(implicit pt: Prettifier): T =
     createMock[T](mockSettings, ReflectionUtils.extraInterfaces[T], mockHandler)
 }

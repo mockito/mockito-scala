@@ -9,7 +9,7 @@ trait PostfixVerifications extends PostfixVerificationsRuntime {
 
     def wasNever(called: Called.type)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]
 
-    def wasNever(called: CalledAgain)(implicit $ev: T <:< AnyRef): Verification =
+    def wasNever(called: CalledAgain)(implicit ev: T <:< AnyRef): Verification =
       macro VerifyMacro.wasNeverCalledAgainMacro[T, Verification]
 
     def wasCalled(called: ScalaVerificationMode)(implicit order: VerifyOrder): Verification = macro VerifyMacro.wasMacro[T, Verification]

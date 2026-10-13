@@ -91,8 +91,8 @@ jobs:
         env:
           NEXUS_TOKEN_USER: ${{secrets.NEXUS_TOKEN_USER}}
           NEXUS_TOKEN_PWD: ${{secrets.NEXUS_TOKEN_PWD}}
-          PGP_KEY: ${{secrets.PGP_KEY}}
-          PGP_PWD: ${{secrets.PGP_PWD}}
+          PGP_KEY: ${{secrets.PGP_KEY_RENEWED}}
+          PGP_PWD: ${{secrets.PGP_PWD_RENEWED}}
 
       # Changelog / GitHub release is best-effort: it must never fail the release once the
       # artifacts are already published to Maven Central. The GitHub release can be edited manually.

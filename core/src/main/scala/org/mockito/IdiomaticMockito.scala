@@ -1,8 +1,9 @@
 package org.mockito
 
+// Explicit Unit results keep JVM signatures stable across Scala 3.3 and 3.9's different erasure of Unit aliases.
 trait IdiomaticMockito extends IdiomaticStubbing with PostfixVerifications {
   override type Verification = Unit
-  override def verification(v: => Any): Verification = v
+  override def verification(v: => Any): Unit = v
 }
 
 object IdiomaticMockito extends IdiomaticMockito {
@@ -12,7 +13,7 @@ object IdiomaticMockito extends IdiomaticMockito {
    */
   trait WithExpect extends IdiomaticStubbing with PrefixExpectations {
     override type Verification = Unit
-    override def verification(v: => Any): Verification = v
+    override def verification(v: => Any): Unit = v
   }
 
   object WithExpect extends WithExpect

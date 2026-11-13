@@ -124,8 +124,8 @@ object WhenMacro {
 
     val numericCoerce: Option[String] = Option.when(numericWiden || literalNarrow)("to" + tT.typeSymbol.name)
     // `Any`/`Nothing` (e.g. `returns ???`): the value can't be statically re-typed, so cast at runtime.
-    val runtimeCast                                     = tV =:= TypeRepr.of[Any]
-    val (targetType, castStubbing): (TypeRepr, Boolean) =
+    val runtimeCast                = tV =:= TypeRepr.of[Any]
+    val (targetType, castStubbing) =
       if (tV <:< tT || numericWiden || literalNarrow || boxWiden || runtimeCast) (tT, false)
       else if (compatible(tT, tV)) (tV, true)
       else report.errorAndAbort(s"Cannot stub a method returning ${tT.show} with a value of type ${tV.show}")

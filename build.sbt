@@ -238,7 +238,7 @@ lazy val scala3Compatibility = (project in file("scala3-compatibility"))
   .settings(
     noPublishingSettings,
     scalaVersion       := "3.3.9",
-    crossScalaVersions := Seq("3.3.9", "3.8.4"),
+    crossScalaVersions := Seq("3.3.9", "3.8.4", "3.9.0", "3.10.1"),
     resolvers += "compatibility-repo" at (baseDirectory.value.getParentFile / "target" / "compatibility-repo").toURI.toString,
     libraryDependencies ++= Seq(
       (core / organization).value %% "mockito-scala" % version.value,

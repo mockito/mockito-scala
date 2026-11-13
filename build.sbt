@@ -1,7 +1,20 @@
 import scala.language.postfixOps
 
-val currentScalaVersion = "2.13.18"
-val scala3Version       = "3.3.8"
+val currentScalaVersion  = "2.13.18"
+val scala3Version        = "3.3.8"
+val compatibilityVersion = s"compatibility-${System.currentTimeMillis()}-SNAPSHOT"
+
+addCommandAlias(
+  "testScala3Compatibility",
+  Seq(
+    s"++$scala3Version",
+    s"""set ThisBuild / version := "$compatibilityVersion"""",
+    """set core / publishTo := Some(Resolver.file("compatibility-repo", file("target/compatibility-repo"))(Resolver.mavenStylePatterns))""",
+    "core/publish",
+    "+scala3Compatibility/testOnly *IdiomaticApiTest",
+    """+scala3Compatibility/testOnly *PrefixExpectationsTest -- -z "check a method was called""""
+  ).mkString(";", ";", "")
+)
 
 inThisBuild(
   Seq(
@@ -219,6 +232,30 @@ lazy val macroCommon = (project in file("macro-common"))
     publish                                      := {},
     publishLocal                                 := {},
     publishArtifact                              := false
+  )
+
+lazy val scala3Compatibility = (project in file("scala3-compatibility"))
+  .settings(
+    noPublishingSettings,
+    scalaVersion       := "3.3.9",
+    crossScalaVersions := Seq("3.3.9", "3.8.4"),
+    resolvers += "compatibility-repo" at (baseDirectory.value.getParentFile / "target" / "compatibility-repo").toURI.toString,
+    libraryDependencies ++= Seq(
+      (core / organization).value %% "mockito-scala" % version.value,
+      Dependencies.scalatest       % Test
+    ),
+    Test / unmanagedSources ++= {
+      val root          = baseDirectory.value.getParentFile
+      val scalaTestRoot = root / "scalatest" / "src" / "test"
+      Seq(
+        root / "core" / "src" / "test" / "scala" / "org" / "mockito" / "IdiomaticApiTest.scala",
+        scalaTestRoot / "scala" / "user" / "org" / "mockito" / "PrefixExpectationsTest.scala",
+        scalaTestRoot / "scala" / "user" / "org" / "mockito" / "PostfixVerificationsTest.scala",
+        scalaTestRoot / "scala" / "user" / "org" / "mockito" / "TestModel.scala",
+        scalaTestRoot / "scala" / "user" / "org" / "mockito" / "matchers" / "package.scala",
+        scalaTestRoot / "java" / "user" / "org" / "mockito" / "model" / "JavaFoo.java"
+      )
+    }
   )
 
 lazy val root = (project in file("."))

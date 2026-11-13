@@ -36,22 +36,33 @@ jobs:
     steps:
 
       - name: 1. Check out code
-        uses: actions/checkout@v2 # https://github.com/actions/checkout
+        uses: actions/checkout@v7 # https://github.com/actions/checkout
 
       - name: 2. Set up Java ${{ matrix.java }}
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
 
       - name: 3. Build on Java ${{ matrix.java }}
         run: ./build.sh
-  
+
+  scala3-compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: 17
+      - name: Test Scala 3 consumers against the LTS-built library
+        run: java -Xms512M -Xmx2G -Xss2M -XX:ReservedCodeCacheSize=192m -Dfile.encoding=UTF-8 -jar sbt/sbt-launch.jar -Dsbt.parser.simple=true testScala3Compatibility
+
   verify-wrapper:
     name: "Verify Gradle wrapper"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: gradle/actions/wrapper-validation@v4
 
   #
@@ -63,7 +74,7 @@ jobs:
       pull-requests: read
       issues: read
     runs-on: ubuntu-latest
-    needs: [build] # build job must pass before we can release
+    needs: [build, scala3-compatibility] # build and compatibility tests must pass before release
 
     if: github.event_name == 'push'
       && (github.ref == 'refs/heads/release/2.x' || startsWith(github.ref, 'refs/tags/v'))
@@ -73,12 +84,12 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v2 # https://github.com/actions/checkout
+        uses: actions/checkout@v7 # https://github.com/actions/checkout
         with:
           fetch-depth: '0' # https://github.com/shipkit/shipkit-changelog#fetch-depth-on-ci
 
       - name: Set up Java 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: 17

@@ -98,7 +98,7 @@ jobs:
         run: ./gradlew writeActualVersion
           && export PROJECT_VERSION=`cat version.actual`
           && ./build.sh
-          && ./gradlew publishToSonatype closeAndReleaseStagingRepositories
+          && ./gradlew --info --stacktrace --console=plain publishToSonatype closeAndReleaseStagingRepositories
         env:
           NEXUS_TOKEN_USER: ${{secrets.NEXUS_TOKEN_USER}}
           NEXUS_TOKEN_PWD: ${{secrets.NEXUS_TOKEN_PWD}}

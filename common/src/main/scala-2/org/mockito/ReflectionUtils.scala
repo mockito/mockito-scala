@@ -30,7 +30,7 @@ object ReflectionUtils {
   private[mockito] def returnsValueClass(invocation: InvocationOnMock): Boolean =
     findTypeSymbol(invocation).exists { s =>
       val typeSymbol = s.asMethod.returnType.typeSymbol
-      typeSymbol.isClass && typeSymbol.asClass.toType <:< typeOf[AnyVal]
+      typeSymbol.isClass && !typeSymbol.isJava && typeSymbol.asClass.toType <:< typeOf[AnyVal]
     }
 
   private def resolveWithScalaGenerics(invocation: InvocationOnMock): Option[Class[?]] =

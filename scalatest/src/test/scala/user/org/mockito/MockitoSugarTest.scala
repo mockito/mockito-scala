@@ -13,7 +13,7 @@ import org.scalactic.Prettifier
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{ EitherValues, OptionValues }
 import user.org.mockito.matchers.{ ValueCaseClassInt, ValueCaseClassString, ValueClass }
-import user.org.mockito.model.{ JavaFoo, JavaStaticFoo }
+import user.org.mockito.model.{ JavaFoo, JavaStaticFoo, RecursiveJavaClient, RecursiveJavaResponse }
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -27,6 +27,24 @@ class MockitoSugarTest extends AnyWordSpec with MockitoSugar with Matchers with 
         case other      => Prettifier.default(other)
       }
   }
+
+  "Java response types with recursive builders" should
+    forAll(
+      Table(
+        ("response kind", "create response"),
+        ("non-null", () => new RecursiveJavaResponse),
+        ("null", () => null)
+      )
+    ) { (kind, createResponse) =>
+      s"preserve $kind stubbed responses without traversing their generic hierarchy as Scala value classes" in {
+        val aMock    = mock[RecursiveJavaClient]
+        val response = createResponse()
+
+        when(aMock.respond()).thenReturn(response)
+
+        aMock.respond() shouldBe response
+      }
+    }
 
   val scenarios = Table(
     ("testDouble", "foo", "higherKinded", "concreteHigherKinded", "fooWithBaz", "baz", "parametrisedTraitInt"),

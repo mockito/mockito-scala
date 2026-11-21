@@ -8,7 +8,7 @@
 
 The most popular mocking framework for Java, now in Scala!!!
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala_2.12.svg)](https://search.maven.org/search?q=mockito-scala)
+[![Maven Central](https://img.shields.io/maven-central/v/org.mockito/mockito-scala_2.13.svg)](https://mvnrepository.com/artifact/org.mockito/mockito-scala)
 
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/mockito-scala/)
 
@@ -822,6 +822,15 @@ your build.sbt and that warning will be ignored for your tests **only**
 2) If you wanna keep the warning enabled for potentially real dead code statements, but get rid of the warnings related to the 
 matchers usage then you have to explicitly provide the type for the matcher, thus `any` would become `any[MyType]` and
 `*` would become `*[MyType]` (you can also use `anyShort`, `anyInt`, etc for the primitive types)
+
+## Releasing a new version
+
+- Start creating a [new pre-release](https://github.com/mockito/mockito-scala/releases/new) using GH UI
+- Create a new tag (for example if current latest release tag is `v2.2.3`, create `v2.2.4`). Format is important - `vA.B.C`.
+- Generate release notes
+- [Observe](https://github.com/mockito/mockito-scala/actions) release is kicked off and finishes successfully
+- Wait till the new version [appears in maven central](https://mvnrepository.com/artifact/org.mockito/mockito-scala)
+- Update release to mark it as `Latest`
  
 ## Authors
 

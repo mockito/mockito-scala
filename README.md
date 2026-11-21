@@ -831,7 +831,7 @@ matchers usage then you have to explicitly provide the type for the matcher, thu
 - Select `Set as a pre-release` and click `Publish release` to create the tag and trigger CI
 - [Observe](https://github.com/mockito/mockito-scala/actions) release is kicked off and finishes successfully
 - Wait till the new version [appears in maven central](https://mvnrepository.com/artifact/org.mockito/mockito-scala)
-- Update release to mark it as `Latest`
+- Edit the release, clear `Set as a pre-release`, select `Set as latest release`, and save the changes
  
 ## Authors
 

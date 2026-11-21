@@ -828,6 +828,7 @@ matchers usage then you have to explicitly provide the type for the matcher, thu
 - Start creating a [new pre-release](https://github.com/mockito/mockito-scala/releases/new) using GH UI
 - Create a new tag (for example if current latest release tag is `v2.2.3`, create `v2.2.4`). Format is important - `vA.B.C`.
 - Generate release notes
+- Select `Set as a pre-release` and click `Publish release` to create the tag and trigger CI
 - [Observe](https://github.com/mockito/mockito-scala/actions) release is kicked off and finishes successfully
 - Wait till the new version [appears in maven central](https://mvnrepository.com/artifact/org.mockito/mockito-scala)
 - Update release to mark it as `Latest`

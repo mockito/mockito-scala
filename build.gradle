@@ -94,11 +94,36 @@ def githubTokenProvider = providers.environmentVariable("GITHUB_TOKEN").orElse("
 def githubShaProvider = providers.environmentVariable("GITHUB_SHA").orElse("")
 def mockitoScalaRepository = "mockito/mockito-scala"
 
+import org.shipkit.changelog.GithubApi
+import com.eclipsesource.json.Json
+
+def releaseNotesEmpty = null
+def releaseNotesAreEmpty = { ->
+    if (releaseNotesEmpty == null) {
+        def tag = "v${version}"
+        try {
+            def response = new GithubApi(githubTokenProvider.get()).get("https://api.github.com/repos/${mockitoScalaRepository}/releases/tags/${tag}")
+            def body = Json.parse(response.content).asObject().getString("body", "").trim()
+            releaseNotesEmpty = body.isEmpty()
+            if (!releaseNotesEmpty) {
+                logger.lifecycle("Release notes for tag ${tag} already exist! Skipping release notes generation...")
+            }
+        } catch (Exception e) {
+            logger.info("Could not check existing release notes for ${tag}: ${e.message}")
+            releaseNotesEmpty = true
+        }
+    }
+    return releaseNotesEmpty
+}
+
 tasks {
     generateChangelog {
         githubToken = githubTokenProvider.get()
         previousRevision = project.ext["shipkit-auto-version.previous-tag"].toString()
         repository = mockitoScalaRepository
+        onlyIf {
+            releaseNotesAreEmpty()
+        }
     }
 
     githubRelease {
@@ -108,6 +133,9 @@ tasks {
         newTagRevision = githubShaProvider.get()
         repository = mockitoScalaRepository
         changelog = generateChangelog.outputFile
+        onlyIf {
+            releaseNotesAreEmpty()
+        }
     }
 
     closeAndReleaseStagingRepositories {

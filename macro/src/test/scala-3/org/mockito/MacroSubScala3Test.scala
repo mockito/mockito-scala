@@ -31,6 +31,14 @@ private trait MacroSub_Transformer {
   def combine(a: String, b: Int): String
 }
 
+private case class MacroSub_Wrapped(raw: String)
+private case class MacroSub_Box[A](value: Option[A])
+
+private trait MacroSub_ConvertedService {
+  def wrapped(): MacroSub_Wrapped
+  def boxed(): MacroSub_Box[String]
+}
+
 class MacroSubScala3Test extends AnyWordSpec with Matchers {
 
   /** Required by VerifyMacro and ExpectMacro: wraps a verification call so the macro can locate it in the owner chain. */
@@ -59,6 +67,68 @@ class MacroSubScala3Test extends AnyWordSpec with Matchers {
 
       calc.add(a = 1, b = 2) shouldBe 99
       calc.add(a = 7, b = 8) shouldBe 99
+    }
+  }
+
+  "WhenMacro.returnsValue" should {
+    "apply Scala 3 given Conversion instances including heterogeneous varargs, Any values, and conforming splices" in {
+      given Conversion[String, MacroSub_Wrapped]        = s => MacroSub_Wrapped(s"s:$s")
+      given Conversion[Int, MacroSub_Wrapped]           = i => MacroSub_Wrapped(s"i:$i")
+      given [A]: Conversion[Option[A], MacroSub_Box[A]] = opt => {
+        require(opt ne null, "null must not be passed into conversion")
+        MacroSub_Box(opt)
+      }
+
+      val service = Mockito.mock(classOf[MacroSub_ConvertedService])
+      WhenMacro.returnsValue(service.wrapped(), "first", 2, MacroSub_Wrapped("direct"))
+      service.wrapped() shouldBe MacroSub_Wrapped("s:first")
+      service.wrapped() shouldBe MacroSub_Wrapped("i:2")
+      service.wrapped() shouldBe MacroSub_Wrapped("direct")
+
+      val service2       = Mockito.mock(classOf[MacroSub_ConvertedService])
+      val conformingTail = Seq(MacroSub_Wrapped("b"), MacroSub_Wrapped("c"))
+      WhenMacro.returnsValue(service2.wrapped(), "a", conformingTail*)
+      service2.wrapped() shouldBe MacroSub_Wrapped("s:a")
+      service2.wrapped() shouldBe MacroSub_Wrapped("b")
+      service2.wrapped() shouldBe MacroSub_Wrapped("c")
+
+      "WhenMacro.returnsValue(service2.wrapped(), \"a\", Seq(\"b\", \"c\")*)" shouldNot typeCheck
+      "WhenMacro.returnsValue(service2.wrapped(), \"a\", Seq(1, 2)*)" shouldNot typeCheck
+
+      val service3 = Mockito.mock(classOf[MacroSub_ConvertedService])
+      WhenMacro.returnsValue(service3.boxed(), null, Some("ok"), None)
+      service3.boxed() shouldBe null
+      service3.boxed() shouldBe MacroSub_Box(Some("ok"))
+      service3.boxed() shouldBe MacroSub_Box(None)
+
+      new AnyRef {
+        given Conversion[Any, MacroSub_Wrapped] = a => MacroSub_Wrapped(s"any:$a")
+        val anyVal: Any                         = 99
+        val s4                                  = Mockito.mock(classOf[MacroSub_ConvertedService])
+        WhenMacro.returnsValue(s4.wrapped(), anyVal)
+        s4.wrapped() shouldBe MacroSub_Wrapped("any:99")
+      }
+    }
+
+    "reject ambiguous given Conversion instances even when an unambiguous Function1 fallback is in scope" in {
+      trait LowPriorityConversions {
+        given c1: Conversion[String, MacroSub_Wrapped] = s => MacroSub_Wrapped(s"1:$s")
+        given c2: Conversion[String, MacroSub_Wrapped] = s => MacroSub_Wrapped(s"2:$s")
+      }
+      new LowPriorityConversions {
+        // Local Function1 has strictly higher scope priority than inherited c1/c2 for `String => MacroSub_Wrapped`,
+        // so falling back on AmbiguousImplicits would silently select `localFallback` instead of reporting ambiguity.
+        given localFallback: (String => MacroSub_Wrapped) = s => MacroSub_Wrapped(s"fn:$s")
+        val service                                       = Mockito.mock(classOf[MacroSub_ConvertedService])
+        "WhenMacro.returnsValue(service.wrapped(), \"ambiguous\")" shouldNot typeCheck
+      }
+
+      new AnyRef {
+        implicit def conv1(s: String): MacroSub_Wrapped = MacroSub_Wrapped(s"1:$s")
+        implicit def conv2(s: String): MacroSub_Wrapped = MacroSub_Wrapped(s"2:$s")
+        val service                                     = Mockito.mock(classOf[MacroSub_ConvertedService])
+        "WhenMacro.returnsValue(service.wrapped(), \"ambiguous\")" shouldNot typeCheck
+      }
     }
   }
 

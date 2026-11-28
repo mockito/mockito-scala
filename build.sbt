@@ -11,7 +11,7 @@ addCommandAlias(
     s"""set ThisBuild / version := "$compatibilityVersion"""",
     """set core / publishTo := Some(Resolver.file("compatibility-repo", file("target/compatibility-repo"))(Resolver.mavenStylePatterns))""",
     "core/publish",
-    "+scala3Compatibility/testOnly *IdiomaticApiTest",
+    "+scala3Compatibility/testOnly *IdiomaticApi*",
     """+scala3Compatibility/testOnly *PrefixExpectationsTest -- -z "check a method was called""""
   ).mkString(";", ";", "")
 )

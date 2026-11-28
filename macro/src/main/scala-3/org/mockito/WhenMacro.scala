@@ -52,6 +52,7 @@ object WhenMacro {
    *   - `V` numerically widens to `T` (e.g. `Long` method stubbed with an `Int`): stub at `T`, coercing the value with `toLong`/`toDouble`/... so the runtime value has the
    *     method's return type instead of being boxed as the narrower type.
    *   - `T` is a polymorphic type whose parameter defaulted (e.g. `Either[String, Resp[Any]]`) while `V` is more specific: stub at `V`, so the value's type drives inference.
+   *   - an implicit conversion from `V` to `T` (`Conversion[V, T]` or `V => T`) is in scope: stub at `T`, applying the conversion to each returned value.
    *   - otherwise the stub is a genuine type error and is rejected with a clear message.
    */
   transparent inline def returnsValue[T, V](inline stubbing: T, inline value: V, inline values: V*): ScalaOngoingStubbing[?] =
@@ -72,21 +73,25 @@ object WhenMacro {
     val tT          = TypeRepr.of[T].widen.dealias
     val tV          = TypeRepr.of[V].widen.dealias
 
-    val numericWiden = numericWidening.get(tV.typeSymbol.fullName).exists(_.contains(tT.typeSymbol.fullName))
+    def stripSyntheticTyped(t: Term): Term = t match {
+      case Inlined(call, bindings, body) => Inlined(call, bindings, stripSyntheticTyped(body))
+      case Typed(inner, _: Inferred)     => stripSyntheticTyped(inner)
+      case other                         => other
+    }
 
-    // Numeric literal narrowing (per the spec, mirrored by plain Scala assignment and the Scala 2 DSL):
-    // an `Int` *constant* whose value is in the target's range may narrow to Byte/Short/Char. `Expr#value`
-    // returns `Some` exactly for compile-time constants (literals and constant-folded `final val`s), so
-    // out-of-range literals and non-constant `Int` values are still rejected, just like the compiler.
-    def intConst(e: Expr[V]): Option[Int] = if (tV =:= TypeRepr.of[Int]) e.asExprOf[Int].value else None
-    def inTargetRange(n: Int): Boolean    = tT.typeSymbol.fullName match {
+    @annotation.tailrec
+    def rawTerm(t: Term): Term = t match {
+      case Inlined(_, _, body)       => rawTerm(body)
+      case Typed(inner, _: Inferred) => rawTerm(inner)
+      case other                     => other
+    }
+
+    def inTargetRange(n: Int): Boolean = tT.typeSymbol.fullName match {
       case "scala.Byte"  => n >= Byte.MinValue && n <= Byte.MaxValue
       case "scala.Short" => n >= Short.MinValue && n <= Short.MaxValue
       case "scala.Char"  => n >= Char.MinValue && n <= Char.MaxValue
       case _             => false
     }
-    val literalNarrow =
-      intConst(value).exists(inTargetRange) && Varargs.unapply(values).exists(_.forall(intConst(_).exists(inTargetRange)))
 
     // Treats `Any`/`Nothing` positions in the target as wildcards, so a polymorphic method whose
     // type parameter defaulted to `Any` accepts a more specific value, while genuinely unrelated
@@ -100,8 +105,6 @@ object WhenMacro {
         }
       }
 
-    // A single quote is emitted per expansion (rather than unifying several `if`/`else` branches),
-    // so `transparent inline` can refine the result to the precise `ScalaOngoingStubbing[targetType]`.
     val boxed: Map[String, TypeRepr] = Map(
       "scala.Byte"    -> TypeRepr.of[java.lang.Byte],
       "scala.Short"   -> TypeRepr.of[java.lang.Short],
@@ -112,45 +115,106 @@ object WhenMacro {
       "scala.Double"  -> TypeRepr.of[java.lang.Double],
       "scala.Boolean" -> TypeRepr.of[java.lang.Boolean]
     )
+
     // `Int` stubbed on a method returning e.g. `java.lang.Long` (typically Java interop): a Scala numeric
     // that weakly conforms to the target's primitive is widened and boxed, matching the Scala 2 DSL.
-    // `boxWidenPrim` is the primitive to widen the value to before boxing (the value's own type when its
-    // box already conforms, e.g. for a supertype target like `Number`).
-    val boxWidenPrim: Option[String] = {
-      val widenTargets = tV.typeSymbol.fullName :: numericWidening.getOrElse(tV.typeSymbol.fullName, Set.empty).toList
+    def boxWidenPrim(argWiden: TypeRepr): Option[String] = {
+      val widenTargets = argWiden.typeSymbol.fullName :: numericWidening.getOrElse(argWiden.typeSymbol.fullName, Set.empty).toList
       widenTargets.find(p => boxed.get(p).exists(_ <:< tT))
     }
-    val boxWiden = boxWidenPrim.isDefined
 
-    val numericCoerce: Option[String] = Option.when(numericWiden || literalNarrow)("to" + tT.typeSymbol.name)
-    // `Any`/`Nothing` (e.g. `returns ???`): the value can't be statically re-typed, so cast at runtime.
-    val runtimeCast                = tV =:= TypeRepr.of[Any]
-    val (targetType, castStubbing) =
-      if (tV <:< tT || numericWiden || literalNarrow || boxWiden || runtimeCast) (tT, false)
-      else if (compatible(tT, tV)) (tV, true)
-      else report.errorAndAbort(s"Cannot stub a method returning ${tT.show} with a value of type ${tV.show}")
+    def isRepeatedOrSynthetic(tpt: TypeTree): Boolean = tpt match {
+      case _: Inferred => true
+      case _           => tpt.tpe.typeSymbol == defn.RepeatedParamClass
+    }
 
+    def stripRepeatedAndSynthetic(t: Term): Term = t match {
+      case Inlined(call, bindings, body)                   => Inlined(call, bindings, stripRepeatedAndSynthetic(body))
+      case Typed(inner, tpt) if isRepeatedOrSynthetic(tpt) => stripRepeatedAndSynthetic(inner)
+      case other                                           => other
+    }
+
+    // Fallback matching Scala 2's ReturnActions[T].apply(value: T): look up an implicit conversion
+    // in caller scope for this argument (`Conversion[From, To]` / `implicit def`, or `From => To`).
+    // Only `NoMatchingImplicits` falls back to `Function1` (and only when neither exists does `Any`
+    // fall back to the legacy runtime cast); ambiguity or divergence is reported directly.
+    def applyImplicitConversionOrFallback[tgt: Type](argTerm: Term, fromType: TypeRepr, argWiden: TypeRepr, pos: Position): Expr[tgt] =
+      fromType.asType match {
+        case '[src] =>
+          val convOpt: Option[Term] = Implicits.search(TypeRepr.of[Conversion[src, tgt]]) match {
+            case iss: ImplicitSearchSuccess => Some(iss.tree)
+            case _: NoMatchingImplicits     =>
+              Implicits.search(TypeRepr.of[src => tgt]) match {
+                case iss: ImplicitSearchSuccess => Some(iss.tree)
+                case _: NoMatchingImplicits     => None
+                case err: ImplicitSearchFailure => report.errorAndAbort(err.explanation, pos)
+              }
+            case err: ImplicitSearchFailure => report.errorAndAbort(err.explanation, pos)
+          }
+          convOpt match {
+            case Some(conv) =>
+              if (conv.tpe <:< TypeRepr.of[src => tgt]) '{ ${ conv.asExprOf[src => tgt] }(${ argTerm.asExprOf[src] }) } else Apply(conv, List(argTerm)).asExprOf[tgt]
+            case None if argWiden =:= TypeRepr.of[Any] =>
+              '{ ${ argTerm.asExpr }.asInstanceOf[tgt] }
+            case None =>
+              report.errorAndAbort(s"Cannot stub a method returning ${tT.show} with a value of type ${argWiden.show}", pos)
+          }
+      }
+
+    val castStubbing = !(tV <:< tT) && compatible(tT, tV)
+    val targetType   = if (castStubbing) tV else tT
+
+    // A single quote is emitted per expansion (rather than unifying several `if`/`else` branches),
+    // so `transparent inline` can refine the result to the precise `ScalaOngoingStubbing[targetType]`.
     targetType.asType match {
       case '[tgt] =>
-        val whenArg: Expr[tgt]            = if (castStubbing) '{ $transformed.asInstanceOf[tgt] } else transformed.asExprOf[tgt]
-        def coerce(e: Expr[V]): Expr[tgt] =
-          numericCoerce match {
-            case Some(n)       => Select.unique(e.asTerm, n).asExprOf[tgt]
-            case _ if boxWiden =>
-              // Widen to the target's primitive (a no-op when it equals the value's type), then box via `Any`.
-              val prim               = boxWidenPrim.get
-              val widened: Expr[Any] =
-                if (prim == tV.typeSymbol.fullName) e.asExprOf[Any]
-                else Select.unique(e.asTerm, "to" + prim.stripPrefix("scala.")).asExprOf[Any]
-              '{ $widened.asInstanceOf[tgt] }
-            case _ if runtimeCast => '{ $e.asInstanceOf[tgt] }
-            case _                => e.asExprOf[tgt]
-          }
-        val plainPassThrough     = numericCoerce.isEmpty && !boxWiden && !runtimeCast
-        val first: Expr[tgt]     = coerce(value)
-        val rest: Expr[Seq[tgt]] =
-          if (plainPassThrough) values.asExprOf[Seq[tgt]]
-          else '{ $values.map(x => ${ coerce('x) }) }
+        // Numeric literal narrowing (per the spec, mirrored by plain Scala assignment and the Scala 2 DSL):
+        // an `Int` *constant* whose value is in the target's range may narrow to Byte/Short/Char.
+        def coerceArg(argTerm: Term, argType: TypeRepr, allowLiteralNarrow: Boolean, pos: Position): Expr[tgt] = {
+          val argWiden      = argType.widen.dealias
+          val numericWiden  = numericWidening.get(argWiden.typeSymbol.fullName).exists(_.contains(tT.typeSymbol.fullName))
+          val literalNarrow = allowLiteralNarrow && (argWiden =:= TypeRepr.of[Int]) && argTerm.asExprOf[Int].value.exists(inTargetRange)
+          if (argWiden <:< targetType) argTerm.asExprOf[tgt]
+          else if (numericWiden || literalNarrow) Select.unique(argTerm, "to" + tT.typeSymbol.name).asExprOf[tgt]
+          else
+            boxWidenPrim(argWiden) match {
+              case Some(prim) =>
+                val widened: Expr[Any] =
+                  if (prim == argWiden.typeSymbol.fullName) argTerm.asExprOf[Any]
+                  else Select.unique(argTerm, "to" + prim.stripPrefix("scala.")).asExprOf[Any]
+                '{ $widened.asInstanceOf[tgt] }
+              case None =>
+                applyImplicitConversionOrFallback[tgt](argTerm, argType, argWiden, pos)
+            }
+        }
+
+        def coerceExpr(e: Expr[?]): Expr[tgt] = {
+          val clean = stripSyntheticTyped(e.asTerm)
+          val raw   = rawTerm(clean)
+          coerceArg(clean, raw.tpe.widen, allowLiteralNarrow = true, raw.pos)
+        }
+
+        val whenArg: Expr[tgt]   = if (castStubbing) '{ $transformed.asInstanceOf[tgt] } else transformed.asExprOf[tgt]
+        val first: Expr[tgt]     = coerceExpr(value)
+        val rest: Expr[Seq[tgt]] = Varargs.unapply(values) match {
+          case Some(varargExprs) =>
+            Varargs(varargExprs.map(coerceExpr))
+          case None if tV <:< targetType =>
+            values.asExprOf[Seq[tgt]]
+          case None =>
+            val spliced = stripRepeatedAndSynthetic(values.asTerm)
+            if (spliced.tpe <:< TypeRepr.of[Seq[tgt]])
+              spliced.asExprOf[Seq[tgt]]
+            else if (spliced.tpe <:< TypeRepr.of[scala.collection.Seq[tgt]])
+              '{ ${ spliced.asExprOf[scala.collection.Seq[tgt]] }.toSeq }
+            else {
+              val rawSpliced = rawTerm(spliced)
+              report.errorAndAbort(
+                s"Cannot stub a method returning ${tT.show} with spliced values of type ${rawSpliced.tpe.widen.dealias.show}",
+                rawSpliced.pos
+              )
+            }
+        }
         '{ new ScalaFirstStubbing[tgt](org.mockito.Mockito.when[tgt]($whenArg)).thenReturn($first, $rest*) }
     }
   }

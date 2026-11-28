@@ -7,9 +7,12 @@ import org.scalatest.wordspec.AnyWordSpec
 
 // ── test models (package-level to avoid path-dependent type issues with macros) ──
 
+private[mockito] case class IA_Box[A](value: Option[A])
+
 private[mockito] trait IA_Foo {
   def bar: String
   def baz(x: Int): String
+  def boxed: IA_Box[String]
   def unit(): Unit
 }
 
@@ -42,6 +45,15 @@ class IdiomaticApiTest extends AnyWordSpec with Matchers with IdiomaticMockito w
       m.bar returns "first" andThen "second"
       m.bar shouldBe "first"
       m.bar shouldBe "second"
+    }
+
+    "stub return values via implicit conversion" in {
+      implicit def optionToBox[A](opt: Option[A]): IA_Box[A] = IA_Box(opt)
+
+      val m = mock[IA_Foo]
+      m.boxed.shouldReturn(Some("first"), None)
+      m.boxed shouldBe IA_Box(Some("first"))
+      m.boxed shouldBe IA_Box(None)
     }
 
     "stub a computed answer with answers" in {

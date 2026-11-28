@@ -31,6 +31,18 @@ trait BoxedNumericReturns {
   def getBoxedByte: java.lang.Byte
 }
 
+case class WrappedValue(raw: String)
+
+case class Box[A](value: Option[A])
+
+case class Items[A](values: List[A])
+
+trait ImplicitConversionReturns {
+  def getBox: Box[String]
+  def getItems: Items[String]
+  def getWrapped: WrappedValue
+}
+
 class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatchersSugar with IdiomaticMockitoTestSetup with IdiomaticStubbing {
 
   forAll(scenarios) { (testDouble, orgDouble, foo) =>
@@ -534,6 +546,94 @@ class IdiomaticStubbingTest extends AnyWordSpec with Matchers with ArgumentMatch
     "reject boxed numeric stubbing that Scala does not allow (literal narrowing or narrowing)" in {
       "val m = mock[BoxedNumericReturns]; m.getBoxedByte shouldReturn 5" shouldNot typeCheck
       "val m = mock[BoxedNumericReturns]; m.getBoxedInteger shouldReturn 5L" shouldNot typeCheck
+    }
+
+    "apply polymorphic implicit conversions to stubbed return values" in {
+      implicit def optionToBox[A](opt: Option[A]): Box[A] = {
+        require(opt ne null, "null must not be passed into conversion")
+        Box(opt)
+      }
+      implicit def seqToItems[A](seq: Seq[A]): Items[A] = Items(seq.toList)
+
+      val m1 = mock[ImplicitConversionReturns]
+      m1.getBox shouldReturn Some("hello")
+      m1.getItems returns Seq("a", "b")
+
+      m1.getBox shouldBe Box(Some("hello"))
+      m1.getItems shouldBe Items(List("a", "b"))
+
+      val m2 = mock[ImplicitConversionReturns]
+      m2.getBox mustReturn None
+      m2.getBox shouldBe Box(None)
+
+      val m3 = mock[ImplicitConversionReturns]
+      m3.getBox.shouldReturn(Some("first"), None) andThen Some("third")
+      m3.getBox shouldBe Box(Some("first"))
+      m3.getBox shouldBe Box(None)
+      m3.getBox shouldBe Box(Some("third"))
+    }
+
+    "select conversions per argument for heterogeneous, direct, and null return values" in {
+      implicit def optionToBox[A](opt: Option[A]): Box[A] = {
+        require(opt ne null, "null must not be passed into conversion")
+        Box(opt)
+      }
+      implicit def stringToWrapped(s: String): WrappedValue = WrappedValue(s"s:$s")
+      implicit def intToWrapped(i: Int): WrappedValue       = WrappedValue(s"i:$i")
+
+      val m1 = mock[ImplicitConversionReturns]
+      m1.getBox.shouldReturn(null, Some("converted"), Box(Some("direct")))
+      m1.getBox shouldBe null
+      m1.getBox shouldBe Box(Some("converted"))
+      m1.getBox shouldBe Box(Some("direct"))
+
+      val m2 = mock[ImplicitConversionReturns]
+      m2.getWrapped.shouldReturn("first", 42, WrappedValue("direct"))
+      m2.getWrapped shouldBe WrappedValue("s:first")
+      m2.getWrapped shouldBe WrappedValue("i:42")
+      m2.getWrapped shouldBe WrappedValue("direct")
+    }
+
+    "apply an implicit Function1 conversion to stubbed return values" in {
+      implicit val intToWrapped: Int => WrappedValue = i => WrappedValue(i.toString)
+
+      val m = mock[ImplicitConversionReturns]
+      m.getWrapped mustReturn 42
+
+      m.getWrapped shouldBe WrappedValue("42")
+    }
+
+    "prefer an implicit conversion from Any over the fallback runtime cast" in {
+      implicit def anyToWrapped(value: Any): WrappedValue = WrappedValue(s"any:$value")
+
+      val raw: Any = 42
+      val m        = mock[ImplicitConversionReturns]
+      m.getWrapped shouldReturn raw
+
+      m.getWrapped shouldBe WrappedValue("any:42")
+    }
+
+    "interleave argument evaluation and implicit conversion in left-to-right order" in {
+      val events                                            = scala.collection.mutable.ArrayBuffer.empty[String]
+      implicit def stringToWrapped(s: String): WrappedValue = {
+        events += s"conv:$s"
+        WrappedValue(s)
+      }
+
+      val m = mock[ImplicitConversionReturns]
+      m.getWrapped.shouldReturn(
+        { events += "eval:1"; "one" },
+        { events += "eval:2"; "two" },
+        { events += "eval:3"; "three" }
+      )
+
+      events.toList shouldBe List("eval:1", "conv:one", "eval:2", "conv:two", "eval:3", "conv:three")
+    }
+
+    "reject incompatible return types when no implicit conversion is in scope" in {
+      "val m = mock[ImplicitConversionReturns]; m.getWrapped shouldReturn \"unconverted\"" shouldNot typeCheck
+      "val m = mock[ImplicitConversionReturns]; m.getBox shouldReturn Some(\"unconverted\")" shouldNot typeCheck
+      "val m = mock[ImplicitConversionReturns]; m.getWrapped.shouldReturn(\"unconverted\", 42)" shouldNot typeCheck
     }
 
     "stub a map" in {
